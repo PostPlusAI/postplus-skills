@@ -1,0 +1,16 @@
+{
+  "searchQueries": [
+    "AI writing tool",
+    "browser AI assistant",
+    "Gmail AI assistant",
+    "Notion AI workflow",
+    "write faster with AI",
+    "reply to emails faster",
+    "AI tweet writer"
+  ],
+  "searchSection": "/video",
+  "resultsPerPage": 6,
+  "profileSorting": "popular",
+  "excludePinnedPosts": true,
+  "shouldDownloadVideos": false
+}

@@ -1,0 +1,12 @@
+{
+  "searchQueries": [
+    "Grammarly",
+    "Notion AI",
+    "Raycast AI",
+    "Superhuman email",
+    "Copy.ai"
+  ],
+  "searchSection": "/video",
+  "resultsPerPage": 6,
+  "shouldDownloadVideos": false
+}

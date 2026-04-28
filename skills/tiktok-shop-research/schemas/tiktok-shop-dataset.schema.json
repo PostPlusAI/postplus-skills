@@ -1,0 +1,186 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://postplus.local/schemas/tiktok-shop-dataset.schema.json",
+  "title": "TikTok Shop Dataset",
+  "type": "object",
+  "required": ["schemaVersion", "normalizedAt", "itemCount", "items"],
+  "properties": {
+    "schemaVersion": {
+      "type": "string"
+    },
+    "normalizedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "collectionPath": {
+          "type": ["string", "null"]
+        },
+        "fetchedAt": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        },
+        "inputPath": {
+          "type": ["string", "null"]
+        },
+        "sourceDatasetPath": {
+          "type": ["string", "null"]
+        }
+      },
+      "additionalProperties": true
+    },
+    "itemCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["identity", "pricing", "proof", "merchandising", "media", "raw"],
+        "properties": {
+          "source": {
+            "type": "object",
+            "properties": {
+              "collectionPath": {
+                "type": ["string", "null"]
+              },
+              "sourceUrl": {
+                "type": ["string", "null"]
+              },
+              "scrapedAt": {
+                "type": ["string", "null"],
+                "format": "date-time"
+              }
+            },
+            "additionalProperties": true
+          },
+          "identity": {
+            "type": "object",
+            "properties": {
+              "productId": {
+                "type": ["string", "null"]
+              },
+              "title": {
+                "type": ["string", "null"]
+              },
+              "productUrl": {
+                "type": ["string", "null"]
+              },
+              "brand": {
+                "type": ["string", "null"]
+              },
+              "shopId": {
+                "type": ["string", "null"]
+              },
+              "shopName": {
+                "type": ["string", "null"]
+              },
+              "shopUrl": {
+                "type": ["string", "null"]
+              }
+            },
+            "additionalProperties": true
+          },
+          "pricing": {
+            "type": "object",
+            "properties": {
+              "currency": {
+                "type": ["string", "null"]
+              },
+              "currentPrice": {
+                "type": ["number", "null"]
+              },
+              "originalPrice": {
+                "type": ["number", "null"]
+              },
+              "priceMin": {
+                "type": ["number", "null"]
+              },
+              "priceMax": {
+                "type": ["number", "null"]
+              }
+            },
+            "additionalProperties": true
+          },
+          "proof": {
+            "type": "object",
+            "properties": {
+              "orders": {
+                "type": ["number", "null"]
+              },
+              "ratingAverage": {
+                "type": ["number", "null"]
+              },
+              "ratingCount": {
+                "type": ["number", "null"]
+              },
+              "reviewCount": {
+                "type": ["number", "null"]
+              }
+            },
+            "additionalProperties": true
+          },
+          "merchandising": {
+            "type": "object",
+            "properties": {
+              "category": {
+                "type": ["string", "null"]
+              },
+              "breadcrumbs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "tags": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "description": {
+                "type": ["string", "null"]
+              }
+            },
+            "additionalProperties": true
+          },
+          "media": {
+            "type": "object",
+            "properties": {
+              "primaryImageUrl": {
+                "type": ["string", "null"]
+              },
+              "imageUrls": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "additionalProperties": true
+          },
+          "variants": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "specs": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "raw": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

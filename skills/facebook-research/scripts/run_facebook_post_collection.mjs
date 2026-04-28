@@ -1,0 +1,17 @@
+#!/usr/bin/env node
+
+import { main as runMain } from "../internal/brightdata/scripts/run_public_content_collection.mjs";
+import { isDirectRun } from "../internal/brightdata/scripts/lib/brightdata_common.mjs";
+
+const SUPPORTED_PLATFORMS = ["facebook"];
+
+export async function main(argv = process.argv.slice(2), io = console, fetchImpl = globalThis.fetch) {
+  return runMain(argv, io, fetchImpl, { supportedPlatforms: SUPPORTED_PLATFORMS });
+}
+
+if (isDirectRun(import.meta.url)) {
+  main().catch((error) => {
+    console.error(error instanceof Error ? error.message : String(error));
+    process.exit(1);
+  });
+}

@@ -1,0 +1,10 @@
+.DS_Store
+node_modules/
+dist/
+coverage/
+*.pid
+
+.env
+.postplus/
+.idea/
+tmp/
