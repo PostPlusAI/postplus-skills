@@ -1,31 +1,27 @@
 # PostPlus Skills
 
-`postplus-skills` contains the skills that PostPlus CLI installs into your
-local AI agent.
+`postplus-skills` contains the released PostPlus skills for your local AI
+agent.
 
 ## Install
 
-Install and update skills through PostPlus CLI:
+Install PostPlus CLI, sign in, then add the released skills:
 
 ```bash
+npm install -g @postplus/cli
 postplus auth login
-postplus install
-postplus status
+npx -y skills add PostPlusAI/postplus-skills --all
 ```
 
 To see available skills:
 
 ```bash
-postplus list
+npx -y skills add PostPlusAI/postplus-skills --list
 ```
-
-The CLI downloads the current PostPlus skill catalog, installs the selected
-skills into your local agent, and verifies the local setup.
 
 ## What Lives Here
 
 - `skills/`: released PostPlus skills and the shared files they use
-- `.claude/skills`: the Claude-compatible entry that points to `skills/`
 
 ## Product Boundary
 

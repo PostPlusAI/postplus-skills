@@ -1,6 +1,6 @@
 ---
 name: skill-finder-cn
-description: 帮中文用户从当前已发布的 PostPlus skill surface 里找到合适技能，并通过 PostPlus CLI 完成安装与验证。适合“有什么技能可以做 X”“我该装哪个技能”“帮我解释当前已发布技能范围”的场景。
+description: 帮中文用户从当前已发布的 PostPlus skill surface 里找到合适技能，并给出公开安装命令。适合“有什么技能可以做 X”“我该装哪个技能”“帮我解释当前已发布技能范围”的场景。
 ---
 
 # Skill Finder CN
@@ -13,25 +13,26 @@ Use this skill when the user wants to:
 
 - ask which released PostPlus skill can solve a task
 - map a Chinese request into the smallest released skill or skill chain
-- understand whether a capability is currently available through PostPlus CLI
-- install one or more released skills through the official PostPlus CLI flow
+- understand whether a capability is currently available through PostPlus
+- install the released PostPlus skills from the public repository
 
 This skill is for the current released PostPlus surface only.
 
 Do not:
 
-- route the user to skills that are not available through PostPlus CLI
-- tell the user to install legacy third-party skill tooling
-- bypass `PostPlus CLI` with manual directory copying or ad hoc install glue
+- route the user to skills that are not on the released public surface
+- explain third-party installer internals, agent directories, or copy/symlink
+  behavior
+- bypass the public repository with manual directory copying or ad hoc install
+  glue
 
 ## Source Of Truth
 
-Use the released surface exposed by `PostPlus CLI`:
+Use the released surface exposed by the public PostPlus skills repository:
 
+- `npx -y skills add PostPlusAI/postplus-skills --list`
+- `npx -y skills add PostPlusAI/postplus-skills --all`
 - `postplus list`
-- `postplus guide install <skill-id ...>`
-- `postplus install <skill-id ...>`
-- `postplus status`
 
 If the current released surface does not contain a suitable skill, say that directly.
 
@@ -42,9 +43,9 @@ If the current released surface does not contain a suitable skill, say that dire
 3. explain why that route fits
 4. confirm the released skill ids with `postplus list` when needed
 5. hand the user the official install path:
-   - `postplus guide install <skill-id ...>`
-   - `postplus install <skill-id ...>`
-   - `postplus status`
+   - `npm install -g @postplus/cli`
+   - `postplus auth login`
+   - `npx -y skills add PostPlusAI/postplus-skills --all`
 
 ## Recommendation Rules
 
@@ -61,7 +62,6 @@ Return:
 - the recommended released skill id or skill chain
 - one-sentence reason for each recommendation
 - the exact official install command
-- the exact verification command
 - any important release-surface limitation
 
 ## Example
@@ -74,9 +74,9 @@ Good response shape:
 
 1. recommend `tiktok-research`
 2. if the user only wants installation guidance, point to:
-   - `postplus guide install tiktok-research`
-   - `postplus install tiktok-research`
-   - `postplus status`
+   - `npm install -g @postplus/cli`
+   - `postplus auth login`
+   - `npx -y skills add PostPlusAI/postplus-skills --all`
 
 If the user asks:
 

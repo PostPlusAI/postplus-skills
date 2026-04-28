@@ -67,31 +67,6 @@ artifacts, or a compile step before provider execution.
 - If installation or verification fails, stop immediately and report that
   failure directly instead of inventing fallback glue.
 
-## Update Notice Rule
-
-PostPlus CLI injects a `_notice` field into JSON output when skill updates or
-server messages are available. Check for it after every CLI call that returns
-JSON.
-
-```json
-{
-  "_notice": {
-    "update": { "message": "3 skill update(s) available.", "command": "postplus update --apply" },
-    "serverMessages": [{ "title": "release", "body": "...", "ctaLabel": null, "ctaUrl": null }]
-  }
-}
-```
-
-When `_notice.update.message` is non-empty: after completing the user's current
-request, tell the user updates are available and offer to run
-`postplus update --apply`.
-
-When `_notice.serverMessages` is present and non-empty: surface each message
-to the user after the current request completes.
-
-Do not mention `_notice` internals to the user. Only surface the human-readable
-`message` and `body` values.
-
 ## Cost Discipline
 
 - Default to a bounded first pass before a broader second pass.

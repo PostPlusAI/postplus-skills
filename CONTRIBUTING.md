@@ -12,8 +12,8 @@ Thank you for your interest in contributing.
 ## What this repository contains
 
 This repository contains the skill instruction files, shared runtime helpers,
-and reference docs that are installed into your local AI agent via the
-PostPlus CLI.
+and reference docs that can be added to your local AI agent from the public
+PostPlus skills repository.
 
 ## Contribution guidelines
 
@@ -22,8 +22,8 @@ PostPlus CLI.
   that an agent can follow without requiring PostPlus-internal knowledge.
 - Do not include customer names, internal campaign identifiers, or
   provider-specific implementation details in skill files.
-- Run a basic sanity check before submitting: make sure the skill installs
-  cleanly with `postplus install <skill-id>` against a local checkout.
+- Run a basic sanity check before submitting: make sure the local checkout can
+  be listed with `npx -y skills add /path/to/postplus-skills --list`.
 
 ## License
 

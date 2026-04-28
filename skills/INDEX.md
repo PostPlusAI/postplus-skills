@@ -1,8 +1,6 @@
 # Skills Index
 
-This file lists the skills currently available through PostPlus CLI.
-
-For the machine-readable skill catalog, see `skills/registry.json`.
+This file lists the skills currently available through PostPlus.
 
 ## Shared Rulebooks
 
