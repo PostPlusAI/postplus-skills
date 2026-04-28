@@ -7,7 +7,7 @@ description: Collect validated Xiaohongshu image assets from normalized XHS data
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Legacy alias: `xhs-media-collector`.
 

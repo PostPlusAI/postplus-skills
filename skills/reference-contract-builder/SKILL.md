@@ -7,7 +7,7 @@ description: Build explicit learn/do-not-copy contracts for image and video gene
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Use this skill when references exist and the boundary between inspiration and copying must be explicit.
 

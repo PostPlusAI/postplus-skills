@@ -7,7 +7,7 @@ description: Plan short-form post-edit decisions from A-roll, B-roll, scripts, a
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Use this skill when the user wants a strong short-form edit plan, not just a script rewrite or a generic video breakdown.
 

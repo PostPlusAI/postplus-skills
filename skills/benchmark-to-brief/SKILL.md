@@ -7,7 +7,7 @@ description: Turn validated benchmark research into campaign briefs and concept 
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Use this skill after research already exists.
 

@@ -7,7 +7,7 @@ description: Build a semantic inventory of local B-roll assets for edit planning
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Use this skill when the user has B-roll assets and needs a reusable asset inventory before planning the edit.
 

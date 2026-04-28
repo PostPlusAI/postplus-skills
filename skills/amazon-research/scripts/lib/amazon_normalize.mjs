@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { maybeRegisterCampaignReport } from "../../../../scripts/lib/campaign-report-manifest.mjs";
+import { maybeRegisterCampaignReport } from "../../_postplus_shared/scripts/lib/campaign-report-manifest.mjs";
 
 export const SCHEMA_VERSION = "1.0.0";
 

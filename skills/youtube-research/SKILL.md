@@ -7,7 +7,7 @@ description: Research YouTube channels, subscriber counts, audience comment samp
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Use this skill when the request is about YouTube channels, audience proxies, or public videos.
 
@@ -117,4 +117,4 @@ Use these entrypoints:
 
 Use the shared hosted collection runner for actor calls:
 
-- `skills/shared-collection/scripts/collection_actor_run.mjs`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-collection/scripts/collection_actor_run.mjs`

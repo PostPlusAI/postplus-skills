@@ -7,7 +7,7 @@ description: Benchmark Xiaohongshu posts from validated public account surfaces 
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Legacy alias: `xhs-content-benchmark`.
 
@@ -136,7 +136,7 @@ Experimental keyword route:
 
 Use the shared collection runner for actor calls:
 
-- `skills/shared-collection/scripts/collection_actor_run.mjs`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-collection/scripts/collection_actor_run.mjs`
 
 ## Minimal workflow
 
@@ -153,7 +153,7 @@ node ${CLAUDE_SKILL_DIR}/scripts/build_xhs_benchmark_actor_input.mjs \
 Run the validated actor:
 
 ```bash
-node ${CLAUDE_SKILL_DIR}/../shared-collection/scripts/collection_actor_run.mjs \
+node ${CLAUDE_SKILL_DIR}/_postplus_shared/shared-collection/scripts/collection_actor_run.mjs \
   --actor rednote-xiaohongshu-user-posts-scraper \
   --input <work-folder>/.postplus/xhs-benchmark-actor-input.json \
   --output <work-folder>/.postplus/xhs-benchmark-raw.json

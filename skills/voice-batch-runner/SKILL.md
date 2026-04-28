@@ -7,7 +7,7 @@ description: Generate and manage persona-aware voice assets for short-form video
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Use this skill after persona, concept, and script work already exists.
 

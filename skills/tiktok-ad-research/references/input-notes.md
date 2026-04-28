@@ -2,7 +2,7 @@
 
 These notes summarize the currently documented capabilities of:
 
-- `codebyte/tiktok-creative-center-top-ads`
+- `tiktok-creative-center-top-ads`
 
 Based on the actor page, the input supports at least:
 

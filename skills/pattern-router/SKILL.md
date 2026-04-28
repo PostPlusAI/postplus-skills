@@ -7,7 +7,7 @@ description: Route short-form video prompt work into the right hook or segment p
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Use this skill at the start of prompt design.
 

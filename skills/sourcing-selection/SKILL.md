@@ -7,7 +7,7 @@ description: Synthesize supply-side and demand-side evidence into a practical so
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Use this skill when the user is not just asking for platform data, but for a real sourcing or product-selection judgment.
 
@@ -26,7 +26,7 @@ It should decide which evidence to collect, in what order, and how much judgment
 
 Read first:
 
-- `skills/shared-product-selection-preferences.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-product-selection-preferences.md`
 
 ## Design Goal
 

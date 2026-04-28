@@ -7,7 +7,7 @@ description: Package beat-level edit enhancement instructions from a B-roll plan
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Use this skill after B-roll matching exists.
 

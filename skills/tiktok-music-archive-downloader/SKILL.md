@@ -7,7 +7,7 @@ description: Download TikTok video samples for selected music or sounds, extract
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Use this skill when TikTok music or sound candidates have already been selected and the user needs local files.
 
@@ -40,7 +40,7 @@ Expected inputs usually come from:
 Use the shared TikTok downloader:
 
 ```bash
-node ${CLAUDE_SKILL_DIR}/../shared-runtime/scripts/download_videos_from_manifest_with_ytdlp.mjs \
+node ${CLAUDE_SKILL_DIR}/_postplus_shared/shared-runtime/scripts/download_videos_from_manifest_with_ytdlp.mjs \
   --manifest <download-manifest.json> \
   --output-dir <videos-dir> \
   --report <download-report.json> \

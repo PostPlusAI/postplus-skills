@@ -5,7 +5,7 @@ import path from 'node:path';
 import {
   requestHostedWaveSpeedJson,
   uploadHostedWaveSpeedFile,
-} from '../../shared-runtime/scripts/lib/hosted_wavespeed_bridge.mjs';
+} from '../_postplus_shared/shared-runtime/scripts/lib/hosted_wavespeed_bridge.mjs';
 
 export const WAVESPEED_API_BASE = 'https://api.wavespeed.ai/api/v3';
 export const DEFAULT_PROVIDER = 'wavespeed';

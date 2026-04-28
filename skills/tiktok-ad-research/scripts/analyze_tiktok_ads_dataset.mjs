@@ -6,7 +6,7 @@ import {
   readJson,
   toArray,
   writeJson
-} from "../../tiktok-research/scripts/lib/tiktok_common.mjs";
+} from "../_postplus_shared/tiktok-research/scripts/lib/tiktok_common.mjs";
 
 function usage() {
   console.error(

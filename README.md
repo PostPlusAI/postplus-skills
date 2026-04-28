@@ -21,7 +21,8 @@ npx -y skills add PostPlusAI/postplus-skills --list
 
 ## What Lives Here
 
-- `skills/`: released PostPlus skills and the shared files they use
+- `skills/`: released PostPlus skills; each skill includes its required
+  helper files inside its own `_postplus_shared/` directory
 
 ## Product Boundary
 

@@ -7,7 +7,7 @@ description: Review storyboard prompts and video-request prompts before generati
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Use this skill immediately before image or video generation.
 

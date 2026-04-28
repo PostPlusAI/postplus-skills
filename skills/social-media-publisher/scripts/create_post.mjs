@@ -16,7 +16,7 @@ import {
   assertExecutionApproval,
   buildApprovalRequest,
   flagEnabled,
-} from "../../shared-runtime/scripts/lib/execution_approval.mjs";
+} from "../_postplus_shared/shared-runtime/scripts/lib/execution_approval.mjs";
 
 export async function main(argv = process.argv.slice(2), io = console) {
   const args = parseArgs(argv);

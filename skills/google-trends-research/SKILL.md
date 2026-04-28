@@ -7,7 +7,7 @@ description: Research Google Trends search-intent signals for topic discovery, k
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Use this skill for Google Trends platform-data work.
 
@@ -21,7 +21,7 @@ Typical requests:
 
 Read first:
 
-- `skills/shared-research-preferences.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-research-preferences.md`
 
 ## Core Rule
 

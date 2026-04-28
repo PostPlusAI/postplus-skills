@@ -9,7 +9,7 @@ Use this skill for Seedance 2.0 generative video jobs routed through the hosted 
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 ## Workflow
 

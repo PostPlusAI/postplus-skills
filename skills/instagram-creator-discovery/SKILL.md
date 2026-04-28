@@ -7,7 +7,7 @@ description: Discover Instagram creators through search, hashtags, tagged mentio
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Use this skill when the user wants to:
 
@@ -19,7 +19,7 @@ Use this skill when the user wants to:
 
 Read these references before implementation:
 
-- `skills/shared-research-preferences.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-research-preferences.md`
 - `skills/creator-discovery-router/references/candidate-schema.md`
 - `skills/creator-discovery-router/references/instagram-candidate-mapping.md`
 - `skills/instagram-references/actor-selection.md`

@@ -7,7 +7,7 @@ description: Match spoken edit beats to candidate B-roll assets using a normaliz
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Use this skill when the user wants to map a talking-head edit to candidate B-roll coverage.
 

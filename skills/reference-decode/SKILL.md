@@ -7,7 +7,7 @@ description: Decode benchmark videos, contact sheets, frames, or rough ideas int
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Use this skill before prompt writing when any source material or rough concept exists.
 

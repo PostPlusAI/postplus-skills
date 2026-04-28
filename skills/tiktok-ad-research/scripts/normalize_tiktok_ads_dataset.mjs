@@ -10,7 +10,7 @@ import {
   toIsoDate,
   uniqueStrings,
   writeJson
-} from "../../tiktok-research/scripts/lib/tiktok_common.mjs";
+} from "../_postplus_shared/tiktok-research/scripts/lib/tiktok_common.mjs";
 
 function usage() {
   console.error(
@@ -95,7 +95,7 @@ function main() {
   }
 
   const raw = readJson(args.input);
-  const actorId = cleanString(args.actor || raw?.actorId) || "codebyte/tiktok-creative-center-top-ads";
+  const actorId = cleanString(args.actor || raw?.actorId) || "tiktok-creative-center-top-ads";
   const items = Array.isArray(raw?.items) ? raw.items : toArray(raw);
   const normalizedItems = items.map((item) => normalizeItem(item, actorId, raw?.input || null, raw?.fetchedAt));
   const normalized = {

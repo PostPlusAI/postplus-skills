@@ -5,7 +5,7 @@ import {
   parseArgs,
   printOrWriteJson,
   readJson,
-} from "../../shared-runtime/scripts/lib/local_skill_cli.mjs";
+} from "../_postplus_shared/shared-runtime/scripts/lib/local_skill_cli.mjs";
 
 export function buildVideoRequestArchitecture(input = {}) {
   return {

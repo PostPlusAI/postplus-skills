@@ -17,7 +17,7 @@ import {
   toProviderPayload,
   unwrapProviderResult,
   writeJson
-} from "../../audio-transcription/scripts/_shared.mjs";
+} from "../_postplus_shared/audio-transcription/scripts/_shared.mjs";
 
 function usage() {
   console.error("Usage: node transcribe_video.mjs --request <request.json>");

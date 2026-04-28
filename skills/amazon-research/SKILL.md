@@ -7,7 +7,7 @@ description: Research Amazon platform data for competitive products, pricing ban
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Use this skill for Amazon platform-data work.
 
@@ -83,7 +83,7 @@ Normalized schema:
 
 Main scripts:
 
-- `skills/shared-collection/scripts/collection_actor_run.mjs`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-collection/scripts/collection_actor_run.mjs`
 - `scripts/normalize_amazon_dataset.mjs`
 - `scripts/analyze_amazon_dataset.mjs`
 

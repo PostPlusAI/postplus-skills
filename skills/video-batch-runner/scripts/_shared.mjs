@@ -6,7 +6,7 @@ import {
   downloadHostedWaveSpeedFile,
   requestHostedWaveSpeedJson,
   uploadHostedWaveSpeedFile,
-} from '../../shared-runtime/scripts/lib/hosted_wavespeed_bridge.mjs';
+} from '../_postplus_shared/shared-runtime/scripts/lib/hosted_wavespeed_bridge.mjs';
 
 export const WAVESPEED_API_BASE = 'https://api.wavespeed.ai/api/v3';
 export const ARK_API_BASE = 'https://ark.cn-beijing.volces.com/api/v3';

@@ -7,7 +7,7 @@ description: Research Facebook pages, public follower or following surfaces, and
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Use this skill when the request is about Facebook account or content research.
 
@@ -108,4 +108,4 @@ Use these entrypoints:
 
 Use the shared hosted collection runner for actor calls:
 
-- `skills/shared-collection/scripts/collection_actor_run.mjs`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-collection/scripts/collection_actor_run.mjs`

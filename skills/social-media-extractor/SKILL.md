@@ -7,7 +7,7 @@ description: High-level entry point for cross-platform public social data extrac
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Use this skill only as a high-level entry point when the user asks for cross-platform public data extraction and has not named a platform-specific workflow yet.
 
@@ -16,7 +16,7 @@ This file is intentionally lightweight. Platform-specific collection logic lives
 - TikTok: [`skills/tiktok-research/SKILL.md`](skills/tiktok-research/SKILL.md)
 - TikTok music/sound collection: [`skills/tiktok-music-sound-collector/SKILL.md`](skills/tiktok-music-sound-collector/SKILL.md)
 - TikTok music archive downloads: [`skills/tiktok-music-archive-downloader/SKILL.md`](skills/tiktok-music-archive-downloader/SKILL.md)
-- TikTok music chain: [`skills/shared-tiktok-music-workflow.md`](skills/shared-tiktok-music-workflow.md)
+- TikTok music chain: [`${CLAUDE_SKILL_DIR}/_postplus_shared/shared-tiktok-music-workflow.md`](skills/shared-tiktok-music-workflow.md)
 - TikTok ads: [`skills/tiktok-ad-research/SKILL.md`](skills/tiktok-ad-research/SKILL.md)
 - TikTok Shop: [`skills/tiktok-shop-research/SKILL.md`](skills/tiktok-shop-research/SKILL.md)
 - Instagram creator discovery: [`skills/instagram-creator-discovery/SKILL.md`](skills/instagram-creator-discovery/SKILL.md)
@@ -45,7 +45,7 @@ This skill is for deciding the first research path, not for staying as a permane
 Once the route is clear, move into the narrowest useful platform skill and keep the work there.
 
 In the product shell, downstream platform access follows
-`skills/shared-release-shell-rules.md`.
+`${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`.
 
 ## When This Skill Is Appropriate
 

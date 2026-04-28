@@ -7,7 +7,7 @@ description: Extract useful frames from local video files based on task intent, 
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Use this skill when the user needs frames, not just a text analysis of the video.
 
@@ -15,7 +15,7 @@ This is a general-purpose extraction skill. Do not narrow it to creator-face res
 
 Follow shared routing rules in:
 
-- `skills/shared-research-preferences.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-research-preferences.md`
 
 Use `skills/video-analysis` before or alongside this skill when shot-level understanding already exists or would materially improve frame selection.
 

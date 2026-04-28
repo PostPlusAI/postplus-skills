@@ -20,9 +20,8 @@ The readable catalog is in `skills/INDEX.md`.
 
 ## What This Package Contains
 
-- `skills/`: released PostPlus skills and shared files they use
+- `skills/`: released PostPlus skills with self-contained helper files
 - `skills/INDEX.md`: the readable skill catalog
-- `skills/shared-*.md`: shared routing or workflow rules
 
 PostPlus Cloud auth, billing, and hosted capabilities are provided through
 `@postplus/cli` after sign-in.

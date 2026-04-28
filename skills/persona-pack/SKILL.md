@@ -7,7 +7,7 @@ description: Build fact-grounded short-form video personas and visual consistenc
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Use this skill when a production workflow needs:
 

@@ -7,7 +7,7 @@ description: Develop Xiaohongshu note ideas and drafts from rough thoughts, live
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Use this skill when the user wants help turning raw material into a Xiaohongshu note.
 

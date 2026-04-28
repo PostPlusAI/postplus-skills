@@ -7,7 +7,7 @@ description: Local execution tools for X/Twitter hosted collection workflows, in
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Use this skill when implementing or running the local execution layer for the X skill family.
 
@@ -35,7 +35,7 @@ Do not invent a separate actor runner unless the shared collection runner is not
 
 Prefer:
 
-- `skills/shared-collection/scripts/collection_actor_run.mjs`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-collection/scripts/collection_actor_run.mjs`
 
 This skill should stay focused on local contracts after raw data has been collected.
 

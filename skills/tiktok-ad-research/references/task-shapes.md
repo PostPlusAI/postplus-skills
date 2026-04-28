@@ -12,7 +12,7 @@ Use when the user asks:
 
 Preferred actor:
 
-- `codebyte/tiktok-creative-center-top-ads`
+- `tiktok-creative-center-top-ads`
 
 ## 2. Keyword-Led Ad Scan
 
@@ -23,7 +23,7 @@ Use when the user asks:
 
 Preferred actor:
 
-- `codebyte/tiktok-creative-center-top-ads`
+- `tiktok-creative-center-top-ads`
 
 Focus on:
 
@@ -39,7 +39,7 @@ Use when the user asks:
 
 Preferred actor:
 
-- `codebyte/tiktok-creative-center-top-ads`
+- `tiktok-creative-center-top-ads`
 
 Focus on:
 
@@ -55,7 +55,7 @@ Use when the user asks:
 
 Preferred actor:
 
-- `codebyte/tiktok-creative-center-top-ads`
+- `tiktok-creative-center-top-ads`
 
 Use:
 

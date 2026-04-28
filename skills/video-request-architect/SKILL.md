@@ -7,7 +7,7 @@ description: Turn approved storyboard logic, beat sheets, or prompt plans into p
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Use this skill after the scene logic already exists.
 

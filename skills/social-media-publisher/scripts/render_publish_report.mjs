@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { maybeRegisterCampaignReport } from "../../../scripts/lib/campaign-report-manifest.mjs";
+import { maybeRegisterCampaignReport } from "../_postplus_shared/scripts/lib/campaign-report-manifest.mjs";
 import {
   isDirectRun,
   parseArgs,

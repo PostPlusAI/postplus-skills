@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { runHostedProviderOperation } from "../../../shared-runtime/scripts/lib/hosted_provider_bridge.mjs";
+import { runHostedProviderOperation } from "../../_postplus_shared/shared-runtime/scripts/lib/hosted_provider_bridge.mjs";
 
 export const DEFAULT_POSTIZ_API_URL = "https://api.postiz.com/public/v1";
 

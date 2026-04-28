@@ -7,7 +7,7 @@ description: Local execution tools for Xiaohongshu/Rednote hosted collection wor
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Use this skill when implementing or running the local execution layer for the Xiaohongshu skill family.
 
@@ -39,7 +39,7 @@ Do not invent actor-specific downstream workflows unless the schema truly requir
 Prefer:
 
 - `scripts/run_xhs_actor.mjs`
-- `skills/shared-collection/scripts/collection_actor_run.mjs`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-collection/scripts/collection_actor_run.mjs`
 
 This skill should stay focused on stable local contracts after raw data has been collected.
 

@@ -7,7 +7,7 @@ description: Convert normalized timed transcript data into subtitle artifacts su
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Use this skill when the transcript already exists and the next problem is:
 

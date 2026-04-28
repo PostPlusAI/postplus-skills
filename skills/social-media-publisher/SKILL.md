@@ -7,7 +7,7 @@ description: Prepare and, after explicit approval, publish social posts through 
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Use this skill when the user wants to operate social publishing through the PostPlus-managed Postiz workspace.
 

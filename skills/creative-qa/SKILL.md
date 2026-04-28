@@ -7,7 +7,7 @@ description: Record human-in-the-loop quality judgments for generated images, vo
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Use this skill after a human has actually reviewed an asset.
 

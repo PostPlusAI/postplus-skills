@@ -7,7 +7,7 @@ description: Research TikTok Creative Center or ad-library style datasets for wi
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Use this skill when the user wants paid TikTok ad intelligence, not organic creator or content discovery.
 
@@ -20,7 +20,7 @@ Typical requests:
 
 Read first:
 
-- `${CLAUDE_SKILL_DIR}/../shared-research-preferences.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-research-preferences.md`
 - `${CLAUDE_SKILL_DIR}/references/task-shapes.md`
 - `${CLAUDE_SKILL_DIR}/references/input-notes.md`
 - `${CLAUDE_SKILL_DIR}/references/normalized-schema.md`
@@ -44,7 +44,7 @@ This skill is not for:
 
 If the user wants organic content or creator research, route to:
 
-- `${CLAUDE_SKILL_DIR}/../tiktok-research/SKILL.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/tiktok-research/SKILL.reference.md`
 
 ## Preferred Actor
 

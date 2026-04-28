@@ -7,7 +7,7 @@ description: Research Xiaohongshu accounts from validated recent-post surfaces, 
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Legacy alias: `xhs-account-research`.
 
@@ -77,7 +77,7 @@ Treat it as non-default until it returns usable `profileData` on the released sh
 
 Use the shared collection runner for actor calls:
 
-- `skills/shared-collection/scripts/collection_actor_run.mjs`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-collection/scripts/collection_actor_run.mjs`
 
 ## Minimal workflow
 
@@ -86,7 +86,7 @@ node ${CLAUDE_SKILL_DIR}/scripts/build_xhs_account_actor_input.mjs \
   --brief <work-folder>/.postplus/xhs-account-brief.json \
   --output <work-folder>/.postplus/xhs-account-actor-input.json
 
-node ${CLAUDE_SKILL_DIR}/../shared-collection/scripts/collection_actor_run.mjs \
+node ${CLAUDE_SKILL_DIR}/_postplus_shared/shared-collection/scripts/collection_actor_run.mjs \
   --actor rednote-xiaohongshu-user-posts-scraper \
   --input <work-folder>/.postplus/xhs-account-actor-input.json \
   --output <work-folder>/.postplus/xhs-account-raw.json

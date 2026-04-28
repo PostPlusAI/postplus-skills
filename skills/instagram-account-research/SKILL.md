@@ -7,7 +7,7 @@ description: Research Instagram accounts for creator discovery, competitor profi
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Use this skill when the user wants to:
 

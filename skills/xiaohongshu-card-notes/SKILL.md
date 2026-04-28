@@ -7,7 +7,7 @@ description: Turn an existing HTML page, landing page, oral script, memo draft, 
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Use this skill when the user wants to turn existing material into a Xiaohongshu card-style note.
 

@@ -1,0 +1,222 @@
+#!/usr/bin/env node
+import http from "node:http";
+
+import { requestJson } from "./network_runtime.mjs";
+import {
+  refreshPostPlusHostedSessionAuth,
+  resolvePostPlusHostedSessionAuth,
+} from "./postplus_cli_config.mjs";
+
+function createHardError(code, message, cause, extra = {}) {
+  const error = new Error(message);
+  error.code = code;
+  if (cause !== undefined) {
+    error.cause = cause;
+  }
+  Object.assign(error, extra);
+  return error;
+}
+
+function resolveHostedProviderBridgeConfig() {
+  const socketPath = process.env.POSTPLUS_CHAT_RUNTIME_SKILL_BRIDGE_SOCKET_PATH;
+  const accountId = process.env.POSTPLUS_CHAT_ACCOUNT_ID;
+  const conversationId = process.env.POSTPLUS_CHAT_CONVERSATION_ID;
+  const sessionId = process.env.POSTPLUS_CHAT_RUNTIME_SESSION_ID;
+
+  if (
+    typeof socketPath === "string" &&
+    socketPath.trim().length > 0 &&
+    typeof accountId === "string" &&
+    accountId.trim().length > 0 &&
+    typeof conversationId === "string" &&
+    conversationId.trim().length > 0 &&
+    typeof sessionId === "string" &&
+    sessionId.trim().length > 0
+  ) {
+    return {
+      transport: "socket",
+      socketPath: socketPath.trim(),
+      accountId: accountId.trim(),
+      conversationId: conversationId.trim(),
+      sessionId: sessionId.trim(),
+    };
+  }
+
+  const hostedApiAuth = resolvePostPlusHostedSessionAuth();
+
+  if (hostedApiAuth) {
+    return {
+      transport: "https",
+      apiBaseUrl: hostedApiAuth.apiBaseUrl,
+      accessToken: hostedApiAuth.accessToken,
+    };
+  }
+
+  throw createHardError(
+    "skill_server_capability_bridge_unavailable",
+    "Hosted capability bridge is required for repo-owned capability execution.",
+  );
+}
+
+export function hasHostedProviderBridge() {
+  try {
+    return Boolean(resolveHostedProviderBridgeConfig());
+  } catch {
+    return false;
+  }
+}
+
+export async function runHostedProviderOperation(request) {
+  const config = resolveHostedProviderBridgeConfig();
+
+  const response =
+    config.transport === "socket"
+      ? await requestHostedProviderBridgeJson(config.socketPath, {
+          accountId: config.accountId,
+          conversationId: config.conversationId,
+          sessionId: config.sessionId,
+          request,
+        })
+      : await requestHostedProviderApiJsonWithRefresh(config, request);
+
+  const output =
+    config.transport === "socket"
+      ? response?.data?.output
+      : response?.data?.output;
+
+  if (output === undefined) {
+    throw createHardError(
+      "skill_server_capability_invalid_response",
+      "Hosted capability bridge returned an invalid payload.",
+    );
+  }
+
+  return output;
+}
+
+async function requestHostedProviderApiJson(config, request) {
+  return await requestJson(
+    `${config.apiBaseUrl}/api/postplus-cli/hosted/capability`,
+    {
+      allowHttp: true,
+      body: JSON.stringify(request),
+      codePrefix: "skill_server_capability",
+      headers: {
+        authorization: `Bearer ${config.accessToken}`,
+        "content-type": "application/json",
+      },
+      method: "POST",
+      providerName: "Hosted capability bridge",
+    },
+  );
+}
+
+async function requestHostedProviderApiJsonWithRefresh(config, request) {
+  try {
+    return await requestHostedProviderApiJson(config, request);
+  } catch (error) {
+    if (
+      !error ||
+      typeof error !== "object" ||
+      error.code !== "skill_server_capability_unauthorized"
+    ) {
+      throw error;
+    }
+
+    const refreshed = await refreshPostPlusHostedSessionAuth();
+
+    if (!refreshed) {
+      throw error;
+    }
+
+    return await requestHostedProviderApiJson(
+      {
+        ...config,
+        accessToken: refreshed.accessToken,
+      },
+      request,
+    );
+  }
+}
+
+async function requestHostedProviderBridgeJson(socketPath, payload) {
+  const body = JSON.stringify(payload);
+
+  return await new Promise((resolve, reject) => {
+    const request = http.request(
+      {
+        socketPath,
+        path: "/provider",
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "content-length": String(Buffer.byteLength(body)),
+        },
+      },
+      (incoming) => {
+        const chunks = [];
+        incoming.setEncoding("utf8");
+        incoming.on("data", (chunk) => {
+          chunks.push(chunk);
+        });
+        incoming.on("end", () => {
+          const bodyText = chunks.join("");
+          const statusCode = incoming.statusCode ?? 0;
+
+          if (statusCode < 200 || statusCode >= 300) {
+            reject(
+              createHardError(
+                "skill_server_capability_request_failed",
+                `Hosted provider bridge request failed with ${statusCode}.${bodyText ? ` ${bodyText}` : ""}`,
+                undefined,
+                {
+                  bodyText,
+                  status: statusCode,
+                },
+              ),
+            );
+            return;
+          }
+
+          try {
+            resolve({
+              data: bodyText ? JSON.parse(bodyText) : null,
+              statusCode,
+            });
+          } catch (error) {
+            reject(
+              createHardError(
+                "skill_server_capability_invalid_json",
+                "Hosted provider bridge returned non-JSON text.",
+                error,
+                { bodyText },
+              ),
+            );
+          }
+        });
+        incoming.on("error", (error) => {
+          reject(
+            createHardError(
+              "skill_server_capability_network_request_failed",
+              "Hosted provider bridge response stream failed.",
+              error,
+            ),
+          );
+        });
+      },
+    );
+
+    request.on("error", (error) => {
+      reject(
+        createHardError(
+          "skill_server_capability_network_request_failed",
+          "Hosted provider bridge request failed.",
+          error,
+        ),
+      );
+    });
+
+    request.write(body);
+    request.end();
+  });
+}

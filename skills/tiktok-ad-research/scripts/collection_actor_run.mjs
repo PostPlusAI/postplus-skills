@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { runCollectionActor } from "../../shared-collection/scripts/collection_actor_run.mjs";
+import { runCollectionActor } from "../_postplus_shared/shared-collection/scripts/collection_actor_run.mjs";
 
 runCollectionActor(process.argv.slice(2), {
   commandName: "skills/tiktok-ad-research/scripts/collection_actor_run.mjs",

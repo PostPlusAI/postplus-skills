@@ -7,7 +7,7 @@ description: Transcribe video files directly into timed transcripts and subtitle
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Use this skill when the input is video and the main problem is:
 

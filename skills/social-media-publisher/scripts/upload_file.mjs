@@ -2,7 +2,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { formatCliError } from "../../shared-runtime/scripts/lib/network_runtime.mjs";
+import { formatCliError } from "../_postplus_shared/shared-runtime/scripts/lib/network_runtime.mjs";
 
 import {
   isDirectRun,

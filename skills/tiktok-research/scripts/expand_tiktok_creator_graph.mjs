@@ -2,8 +2,8 @@
 import { randomUUID } from 'node:crypto';
 import path from 'node:path';
 
-import { runHostedApifyActor } from '../../shared-collection/scripts/lib/hosted_apify_bridge.mjs';
-import { formatCliError } from '../../shared-runtime/scripts/lib/network_runtime.mjs';
+import { runHostedApifyActor } from '../_postplus_shared/shared-collection/scripts/lib/hosted_apify_bridge.mjs';
+import { formatCliError } from '../_postplus_shared/shared-runtime/scripts/lib/network_runtime.mjs';
 import {
   normalizeDataset,
   parseArgs,

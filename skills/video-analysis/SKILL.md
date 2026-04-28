@@ -7,13 +7,13 @@ description: Analyze local or downloaded social video files with the official Ge
 
 Follow shared release-shell rules in:
 
-- `skills/shared-release-shell-rules.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 
 Use this skill for video-level analysis after metadata research has already narrowed a candidate set.
 
 Follow shared routing and guidance rules in:
 
-- `skills/shared-research-preferences.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-research-preferences.md`
 
 This skill is usually downstream of platform research, not the default first step for broad TikTok discovery.
 
@@ -43,7 +43,7 @@ Do not use this skill as a substitute for broad TikTok trend discovery when no s
 - Official source library: `references/core-sources.md`
 - TikTok analysis prompt: `references/tiktok-video-analysis-prompt.md`
 - JSON schema: `references/tiktok-video-analysis-schema.json`
-- Downloader: `../shared-runtime/scripts/download_videos_from_manifest_with_ytdlp.mjs`
+- Downloader: `_postplus_shared/shared-runtime/scripts/download_videos_from_manifest_with_ytdlp.mjs`
 - Batch runner: `scripts/run_video_analysis_batch.mjs`
 - Manifest builder: `scripts/build_manifest_from_master_table.mjs`
 - Backfill helper: `scripts/backfill_master_table_with_script.mjs`
@@ -80,7 +80,7 @@ Do not store secrets in this repo.
 
 In the product shell:
 
-- follow `skills/shared-release-shell-rules.md`
+- follow `${CLAUDE_SKILL_DIR}/_postplus_shared/shared-release-shell-rules.md`
 - if `python3` is missing, install `python3` with the host package manager
   already present on the machine before continuing
 - if `yt_dlp` is missing, run `python3 -m pip install --user yt-dlp` before

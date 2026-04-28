@@ -1,0 +1,367 @@
+#!/usr/bin/env node
+import { randomUUID } from 'node:crypto';
+import http from 'node:http';
+
+import { requestJson } from '../../../shared-runtime/scripts/lib/network_runtime.mjs';
+import {
+  refreshPostPlusHostedSessionAuth,
+  refreshPostPlusHostedSessionAuthIfNeeded,
+  resolvePostPlusHostedSessionAuth,
+} from '../../../shared-runtime/scripts/lib/postplus_cli_config.mjs';
+
+const HOSTED_APIFY_POLL_INTERVAL_MS = readPositiveIntegerEnv(
+  'POSTPLUS_HOSTED_APIFY_POLL_INTERVAL_MS',
+  2_000,
+);
+const HOSTED_APIFY_POLL_TIMEOUT_MS = readPositiveIntegerEnv(
+  'POSTPLUS_HOSTED_APIFY_POLL_TIMEOUT_MS',
+  180_000,
+);
+
+function createHardError(code, message, cause, extra = {}) {
+  const error = new Error(message);
+  error.code = code;
+  if (cause !== undefined) {
+    error.cause = cause;
+  }
+  Object.assign(error, extra);
+  return error;
+}
+
+function readPositiveIntegerEnv(name, fallback) {
+  const raw = process.env[name];
+
+  if (typeof raw !== 'string' || raw.trim().length === 0) {
+    return fallback;
+  }
+
+  const parsed = Number.parseInt(raw, 10);
+
+  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function resolveHostedApifyBridgeConfig() {
+  const socketPath = process.env.POSTPLUS_CHAT_RUNTIME_SKILL_BRIDGE_SOCKET_PATH;
+  const accountId = process.env.POSTPLUS_CHAT_ACCOUNT_ID;
+  const conversationId = process.env.POSTPLUS_CHAT_CONVERSATION_ID;
+  const sessionId = process.env.POSTPLUS_CHAT_RUNTIME_SESSION_ID;
+
+  if (
+    typeof socketPath === 'string' &&
+    socketPath.trim().length > 0 &&
+    typeof accountId === 'string' &&
+    accountId.trim().length > 0 &&
+    typeof conversationId === 'string' &&
+    conversationId.trim().length > 0 &&
+    typeof sessionId === 'string' &&
+    sessionId.trim().length > 0
+  ) {
+    return {
+      transport: 'socket',
+      socketPath: socketPath.trim(),
+      accountId: accountId.trim(),
+      conversationId: conversationId.trim(),
+      sessionId: sessionId.trim(),
+    };
+  }
+
+  const hostedApiAuth = resolvePostPlusHostedSessionAuth();
+
+  if (hostedApiAuth) {
+    return {
+      transport: 'https',
+      apiBaseUrl: hostedApiAuth.apiBaseUrl,
+      accessToken: hostedApiAuth.accessToken,
+    };
+  }
+
+  throw createHardError(
+    'skill_server_collection_bridge_unavailable',
+    'Hosted collection bridge is required for repo-owned collection runs.',
+  );
+}
+
+export function hasHostedApifyBridge() {
+  try {
+    return Boolean(resolveHostedApifyBridgeConfig());
+  } catch {
+    return false;
+  }
+}
+
+export async function runHostedApifyActor(input) {
+  const config = resolveHostedApifyBridgeConfig();
+
+  const operationId =
+    typeof input.operationId === 'string' && input.operationId.trim().length > 0
+      ? input.operationId.trim()
+      : `skill-apify:${randomUUID()}`;
+
+  if (process.env.POSTPLUS_DEBUG_SKILL_BILLING === '1') {
+    console.error(
+      '[Hosted skill apify request]',
+      JSON.stringify({
+        transport: config.transport,
+        ...(config.transport === 'socket'
+          ? { socketPath: config.socketPath }
+          : { apiBaseUrl: config.apiBaseUrl }),
+        operationId,
+        skillName: input.skillName,
+        actorId: input.actorId,
+      }),
+    );
+  }
+
+  const response =
+    config.transport === 'socket'
+      ? await requestHostedBridgeJson(config.socketPath, '/apify', {
+          accountId: config.accountId,
+          conversationId: config.conversationId,
+          sessionId: config.sessionId,
+          operationId,
+          skillName: input.skillName,
+          actorId: input.actorId,
+          input: input.input,
+        })
+      : await requestHostedApifyApiJsonWithRefresh(config, {
+          operationId,
+          skillName: input.skillName,
+          actorId: input.actorId,
+          input: input.input,
+        });
+
+  const run = readHostedApifyRunResult(response?.data);
+
+  if (run.payload) {
+    return run.payload;
+  }
+
+  if (!run.runHandle) {
+    throw createHardError(
+      'skill_server_collection_invalid_response',
+      'Hosted collection bridge returned an invalid run handle.',
+    );
+  }
+
+  const waitUntil = Date.now() + HOSTED_APIFY_POLL_TIMEOUT_MS;
+  let latestRun = run;
+
+  while (
+    latestRun.status !== 'completed' &&
+    latestRun.status !== 'failed' &&
+    latestRun.status !== 'canceled'
+  ) {
+    if (Date.now() > waitUntil) {
+      throw createHardError(
+        'skill_server_collection_timeout',
+        'Hosted skill Apify task did not complete before the local poll timeout.',
+      );
+    }
+
+    await new Promise((resolve) =>
+      setTimeout(resolve, HOSTED_APIFY_POLL_INTERVAL_MS),
+    );
+
+    const statusResponse =
+      config.transport === 'socket'
+        ? await requestHostedBridgeJson(config.socketPath, '/apify', {
+            runHandle: latestRun.runHandle,
+          })
+        : await requestHostedApifyApiJsonWithRefresh(config, {
+            runHandle: latestRun.runHandle,
+          });
+
+    latestRun = readHostedApifyRunResult(statusResponse?.data);
+  }
+
+  if (latestRun.status !== 'completed' || !latestRun.payload) {
+    throw buildHostedApifyRunFailure(latestRun);
+  }
+
+  return latestRun.payload;
+}
+
+async function requestHostedApifyApiJson(config, payload) {
+  return await requestJson(`${config.apiBaseUrl}/api/postplus-cli/hosted/collection`, {
+    allowHttp: true,
+    body: JSON.stringify(payload),
+    codePrefix: 'skill_server_collection',
+    headers: {
+      authorization: `Bearer ${config.accessToken}`,
+      'content-type': 'application/json',
+    },
+    method: 'POST',
+    providerName: 'Hosted collection',
+  });
+}
+
+async function requestHostedApifyApiJsonWithRefresh(config, payload) {
+  const refreshedConfig = await refreshPostPlusHostedSessionAuthIfNeeded();
+  const resolvedAuth = resolvePostPlusHostedSessionAuth();
+  const initialConfig = refreshedConfig ?? {
+    ...config,
+    accessToken: resolvedAuth?.accessToken ?? config.accessToken,
+    apiBaseUrl: resolvedAuth?.apiBaseUrl ?? config.apiBaseUrl,
+  };
+
+  try {
+    return await requestHostedApifyApiJson(initialConfig, payload);
+  } catch (error) {
+    if (
+      !error ||
+      typeof error !== 'object' ||
+      error.code !== 'skill_server_collection_unauthorized'
+    ) {
+      throw error;
+    }
+
+    const refreshed = await refreshPostPlusHostedSessionAuth();
+
+    if (!refreshed) {
+      throw error;
+    }
+
+    return await requestHostedApifyApiJson(
+      {
+        ...initialConfig,
+        accessToken: refreshed.accessToken,
+      },
+      payload,
+    );
+  }
+}
+
+async function requestHostedBridgeJson(socketPath, routePath, payload) {
+  const body = JSON.stringify(payload);
+
+  return await new Promise((resolve, reject) => {
+    const request = http.request(
+      {
+        socketPath,
+        path: routePath,
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          'content-length': String(Buffer.byteLength(body)),
+        },
+      },
+      (incoming) => {
+        const chunks = [];
+        incoming.setEncoding('utf8');
+        incoming.on('data', (chunk) => {
+          chunks.push(chunk);
+        });
+        incoming.on('end', () => {
+          const bodyText = chunks.join('');
+          const statusCode = incoming.statusCode ?? 0;
+
+          if (statusCode < 200 || statusCode >= 300) {
+            reject(
+              createHardError(
+                'skill_server_apify_request_failed',
+                `Hosted skill Apify bridge request failed with ${statusCode}.${bodyText ? ` ${bodyText}` : ''}`,
+                undefined,
+                {
+                  bodyText,
+                  status: statusCode,
+                },
+              ),
+            );
+            return;
+          }
+
+          try {
+            resolve({
+              data: bodyText ? JSON.parse(bodyText) : null,
+              statusCode,
+            });
+          } catch (error) {
+            reject(
+              createHardError(
+                'skill_server_apify_invalid_json',
+                'Hosted skill Apify bridge returned non-JSON text.',
+                error,
+                { bodyText },
+              ),
+            );
+          }
+        });
+        incoming.on('error', (error) => {
+          reject(
+            createHardError(
+              'skill_server_apify_network_request_failed',
+              'Hosted skill Apify bridge response stream failed.',
+              error,
+            ),
+          );
+        });
+      },
+    );
+
+    request.on('error', (error) => {
+      reject(
+        createHardError(
+          'skill_server_apify_network_request_failed',
+          'Hosted skill Apify bridge request failed.',
+          error,
+        ),
+      );
+    });
+
+    request.write(body);
+    request.end();
+  });
+}
+
+function readHostedApifyRunResult(data) {
+  if (!data || typeof data !== 'object' || Array.isArray(data)) {
+    throw createHardError(
+      'skill_server_collection_invalid_response',
+      'Hosted skill Apify bridge returned an invalid response body.',
+    );
+  }
+
+  const runHandle = typeof data.runHandle === 'string' ? data.runHandle : null;
+  const status = typeof data.status === 'string' ? data.status : null;
+  const payload =
+    data.payload && typeof data.payload === 'object' && !Array.isArray(data.payload)
+      ? data.payload
+      : null;
+  const error =
+    data.error && typeof data.error === 'object' && !Array.isArray(data.error)
+      ? data.error
+      : null;
+
+  if (!status) {
+    throw createHardError(
+      'skill_server_collection_invalid_response',
+      'Hosted skill Apify bridge returned a response without a task status.',
+    );
+  }
+
+  return {
+    error: {
+      code: typeof error?.code === 'string' ? error.code : null,
+      message: typeof error?.message === 'string' ? error.message : null,
+    },
+    payload,
+    runHandle,
+    status,
+  };
+}
+
+function buildHostedApifyRunFailure(run) {
+  const code =
+    run.error?.code && typeof run.error.code === 'string'
+      ? run.error.code
+      : 'skill_server_apify_run_failed';
+  const message =
+    run.error?.message && typeof run.error.message === 'string'
+      ? run.error.message
+      : `Hosted skill Apify run ended with status ${run.status}.`;
+
+  return createHardError(code, message, undefined, {
+    runHandle: run.runHandle,
+    runStatus: run.status,
+  });
+}
