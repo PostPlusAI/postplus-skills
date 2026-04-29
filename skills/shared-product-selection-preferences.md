@@ -52,15 +52,15 @@ Default route:
 
 Use these routes:
 
-- cross-platform demand or content proof -> `skills/social-media-extractor`
-- Amazon platform data -> `skills/amazon-research`
-- TikTok Shop platform data -> `skills/tiktok-shop-research`
-- TikTok content and audience language -> `skills/tiktok-research`
-- Instagram creator/content/comment proof -> `skills/instagram-account-research` or `skills/instagram-content-benchmark` or `skills/instagram-audience-voice`
-- 1688 supply-side product or supplier data -> `skills/1688-research`
-- cross-source sourcing judgment -> `skills/sourcing-selection`
+- cross-platform demand or content proof -> `skills/10-routing/social-media-extractor`
+- Amazon platform data -> `skills/20-research/amazon-research`
+- TikTok Shop platform data -> `skills/20-research/tiktok-shop-research`
+- TikTok content and audience language -> `skills/20-research/tiktok-research`
+- Instagram creator/content/comment proof -> `skills/20-research/instagram-account-research` or `skills/20-research/instagram-content-benchmark` or `skills/20-research/instagram-audience-voice`
+- 1688 supply-side product or supplier data -> `skills/20-research/1688-research`
+- cross-source sourcing judgment -> `skills/30-strategy/sourcing-selection`
 - Hook, structure, and why content works -> a dedicated visual analysis workflow
-- Creative benchmark adaptation -> `skills/benchmark-to-brief`
+- Creative benchmark adaptation -> `skills/40-creative/benchmark-to-brief`
 
 If no supply-chain or finance skill exists yet, state the missing layer clearly and avoid false confidence.
 
