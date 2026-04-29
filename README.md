@@ -22,11 +22,9 @@ The agent then routes the work, collects evidence, makes the judgment explicit, 
 
 PostPlus has three public surfaces that work together:
 
-- `postplus.io`: the hosted product surface for account access, subscription state, and cloud-backed capabilities.
-- `PostPlusAI/postplus-skills`: the public skill repository that installs local marketing workflows into agent tools.
-- `@postplus/cli`: the local command-line tool that signs you in, checks local readiness, and connects released skills to PostPlus account state.
-
-The skills repository contains the released local workflow source. The CLI repository contains the installable local shell. `postplus.io` provides the hosted account and capability layer behind that shell.
+- `https://postplus.io/`: the hosted product surface for account access, subscription state, and cloud-backed capabilities.
+- `https://github.com/RealProductStudio/postplus-skills`: the public skill repository that installs local marketing workflows into agent tools.
+- `https://github.com/PostPlusAI/postplus-cli`: the local command-line tool that signs you in, checks local readiness, and connects released skills to PostPlus account state.
 
 ## Install
 
@@ -396,12 +394,3 @@ The best first prompt includes:
 - any reference links, files, accounts, or assets
 - the artifact you want at the end
 
-## Dependency Notes
-
-Some workflows rely on external accounts, workspace permissions, publishing destinations, or hosted media and research capabilities. When an account, permission, subscription, or destination is required, the skill should make that dependency explicit before running.
-
-## Maintenance Notes
-
-This README is the first-time onboarding page for `PostPlusAI/postplus-skills` and `@postplus/cli`.
-
-The source of truth is `public-readme.md` in the private skill authoring repo. Keep it focused on user understanding, trust, and workflow orientation. Put detailed routing tables, exact skill boundaries, provider contracts, and implementation notes in `skills/INDEX.md`, shared rulebooks, or individual `SKILL.md` files.
