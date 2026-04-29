@@ -43,7 +43,7 @@ async function main() {
   const result = unwrapProviderResult(rawResult);
 
   const manifest = createRenderManifestBase(request, paths);
-  manifest.providerPredictionId = request.provider === "wavespeed" ? result?.id || null : null;
+  manifest.generationHandle = request.provider === "hosted-media" ? result?.id || null : null;
   manifest.providerTaskId = request.provider === "ark" ? result?.id || null : null;
   manifest.providerStatus = result?.status || null;
   manifest.providerUrls = result?.urls || null;

@@ -172,8 +172,8 @@ export function splitCsv(value) {
   );
 }
 
-function detectSourceSurface(actorId, datasetType) {
-  const actor = safeLower(actorId);
+function detectSourceSurface(sourceId, datasetType) {
+  const actor = safeLower(sourceId);
   if (datasetType === "tagged") return "tagged";
   if (datasetType === "hashtags") return "hashtag";
   if (actor.includes("search")) return "search";
@@ -307,13 +307,13 @@ function normalizeCoauthors(item) {
   );
 }
 
-function inferDatasetType(actorId, explicitDatasetType, items) {
+function inferDatasetType(sourceId, explicitDatasetType, items) {
   const provided = cleanString(explicitDatasetType);
   if (provided) {
     return provided;
   }
 
-  const actor = safeLower(actorId);
+  const actor = safeLower(sourceId);
   if (actor.includes("profile")) return "profiles";
   if (actor.includes("followers-count")) return "followers-snapshots";
   if (actor.includes("comment")) return "comments";
@@ -341,7 +341,7 @@ function inferDatasetType(actorId, explicitDatasetType, items) {
   return "unknown";
 }
 
-function normalizeProfileItem(item, actorId, sourceInput, datasetType) {
+function normalizeProfileItem(item, sourceId, sourceInput, datasetType) {
   const website = cleanString(pickFirst(item, ["website", "externalUrl", "link"]));
   return {
     platform: "instagram",
@@ -390,13 +390,13 @@ function normalizeProfileItem(item, actorId, sourceInput, datasetType) {
     },
     sourceEvidence: {
       matchedContentCount: 0,
-      discoveryPaths: [detectSourceSurface(actorId, datasetType)]
+      discoveryPaths: [detectSourceSurface(sourceId, datasetType)]
     },
     source: {
-      actorId,
+      sourceId,
       sourceUrl: cleanString(pickFirst(item, ["profileUrl", "url"])),
       scrapedAt: toIsoDate(pickFirst(item, ["scrapedAt", "fetchedAt", "timestamp"])),
-      sourceSurface: detectSourceSurface(actorId, datasetType),
+      sourceSurface: detectSourceSurface(sourceId, datasetType),
       sourceQuery: detectSourceQuery(sourceInput, datasetType)
     }
   };
@@ -417,7 +417,7 @@ function inferContentType(item, datasetType) {
   return "post";
 }
 
-function normalizePostItem(item, actorId, datasetType, sourceInput) {
+function normalizePostItem(item, sourceId, datasetType, sourceInput) {
   const ownerUsername = cleanString(
     pickFirst(item, ["ownerUsername", "username", "userName", "owner", "authorUsername"])
   );
@@ -452,21 +452,21 @@ function normalizePostItem(item, actorId, datasetType, sourceInput) {
     publishedAt: toIsoDate(pickFirst(item, ["timestamp", "takenAt", "publishedAt"])),
     postUrl,
     media: normalizeMediaList(item),
-    sourceSurface: detectSourceSurface(actorId, datasetType),
+    sourceSurface: detectSourceSurface(sourceId, datasetType),
     sourceQuery: detectSourceQuery(sourceInput, datasetType),
     locationName: cleanString(
       pickFirst(item, ["locationName", "location"]) ||
         (item.location && typeof item.location === "object" ? item.location.name : null)
     ),
     source: {
-      actorId,
+      sourceId,
       sourceUrl: cleanString(pickFirst(item, ["url", "postUrl"])),
       scrapedAt: toIsoDate(pickFirst(item, ["scrapedAt", "fetchedAt", "timestamp"]))
     }
   };
 }
 
-function normalizeCommentItem(item, actorId, sourceInput, datasetType) {
+function normalizeCommentItem(item, sourceId, sourceInput, datasetType) {
   return {
     platform: "instagram",
     recordType: "comment",
@@ -481,16 +481,16 @@ function normalizeCommentItem(item, actorId, sourceInput, datasetType) {
     publishedAt: toIsoDate(pickFirst(item, ["timestamp", "publishedAt", "createdAt"])),
     replyCount: parseNumber(pickFirst(item, ["replyCount", "repliesCount"])),
     source: {
-      actorId,
+      sourceId,
       sourceUrl: cleanString(pickFirst(item, ["url", "postUrl"])),
       scrapedAt: toIsoDate(pickFirst(item, ["scrapedAt", "fetchedAt", "timestamp"])),
-      sourceSurface: detectSourceSurface(actorId, datasetType),
+      sourceSurface: detectSourceSurface(sourceId, datasetType),
       sourceQuery: detectSourceQuery(sourceInput, datasetType)
     }
   };
 }
 
-function normalizeHashtagItem(item, actorId, sourceInput, datasetType) {
+function normalizeHashtagItem(item, sourceId, sourceInput, datasetType) {
   return {
     platform: "instagram",
     recordType: "hashtag",
@@ -510,16 +510,16 @@ function normalizeHashtagItem(item, actorId, sourceInput, datasetType) {
     topPosts: toArray(pickFirst(item, ["topPosts"])).slice(0, 10),
     recentPosts: toArray(pickFirst(item, ["recentPosts", "posts"])).slice(0, 10),
     source: {
-      actorId,
+      sourceId,
       sourceUrl: cleanString(pickFirst(item, ["url"])),
       scrapedAt: toIsoDate(pickFirst(item, ["scrapedAt", "fetchedAt", "timestamp"])),
-      sourceSurface: detectSourceSurface(actorId, datasetType),
+      sourceSurface: detectSourceSurface(sourceId, datasetType),
       sourceQuery: detectSourceQuery(sourceInput, datasetType)
     }
   };
 }
 
-function normalizeFollowersSnapshotItem(item, actorId, sourceInput, datasetType) {
+function normalizeFollowersSnapshotItem(item, sourceId, sourceInput, datasetType) {
   return {
     platform: "instagram",
     recordType: "followersSnapshot",
@@ -529,34 +529,34 @@ function normalizeFollowersSnapshotItem(item, actorId, sourceInput, datasetType)
       pickFirst(item, ["capturedAt", "timestamp", "recordedAt", "scrapedAt", "fetchedAt"])
     ),
     source: {
-      actorId,
+      sourceId,
       sourceUrl: cleanString(pickFirst(item, ["profileUrl", "url"])),
       scrapedAt: toIsoDate(pickFirst(item, ["scrapedAt", "fetchedAt", "timestamp"])),
-      sourceSurface: detectSourceSurface(actorId, datasetType),
+      sourceSurface: detectSourceSurface(sourceId, datasetType),
       sourceQuery: detectSourceQuery(sourceInput, datasetType)
     }
   };
 }
 
 export function normalizeItem(item, options = {}) {
-  const actorId = cleanString(options.actorId);
-  const datasetType = inferDatasetType(actorId, options.datasetType, [item]);
+  const sourceId = cleanString(options.sourceId);
+  const datasetType = inferDatasetType(sourceId, options.datasetType, [item]);
   const sourceInput = options.sourceInput;
 
   if (datasetType === "profiles" || datasetType === "search") {
-    return normalizeProfileItem(item, actorId, sourceInput, datasetType);
+    return normalizeProfileItem(item, sourceId, sourceInput, datasetType);
   }
   if (datasetType === "posts" || datasetType === "reels" || datasetType === "tagged") {
-    return normalizePostItem(item, actorId, datasetType, sourceInput);
+    return normalizePostItem(item, sourceId, datasetType, sourceInput);
   }
   if (datasetType === "comments") {
-    return normalizeCommentItem(item, actorId, sourceInput, datasetType);
+    return normalizeCommentItem(item, sourceId, sourceInput, datasetType);
   }
   if (datasetType === "hashtags") {
-    return normalizeHashtagItem(item, actorId, sourceInput, datasetType);
+    return normalizeHashtagItem(item, sourceId, sourceInput, datasetType);
   }
   if (datasetType === "followers-snapshots") {
-    return normalizeFollowersSnapshotItem(item, actorId, sourceInput, datasetType);
+    return normalizeFollowersSnapshotItem(item, sourceId, sourceInput, datasetType);
   }
 
   return {
@@ -564,27 +564,27 @@ export function normalizeItem(item, options = {}) {
     recordType: "unknown",
     raw: item,
     source: {
-      actorId,
+      sourceId,
       scrapedAt: new Date().toISOString()
     }
   };
 }
 
 export function normalizeDataset(input, options = {}) {
-  const actorId = cleanString(options.actorId || input?.actorId);
+  const sourceId = cleanString(options.sourceId || input?.sourceId);
   const rawItems = Array.isArray(input?.items) ? input.items : toArray(input);
-  const datasetType = inferDatasetType(actorId, options.datasetType, rawItems);
+  const datasetType = inferDatasetType(sourceId, options.datasetType, rawItems);
 
   return {
     schemaVersion: SCHEMA_VERSION,
     platform: "instagram",
     datasetType,
-    actorId,
+    sourceId,
     fetchedAt: cleanString(input?.fetchedAt) || new Date().toISOString(),
     input: input?.input || null,
     inputPath: cleanString(options.inputPath),
     itemCount: rawItems.length,
-    items: rawItems.map((item) => normalizeItem(item, { actorId, datasetType, sourceInput: input?.input || null }))
+    items: rawItems.map((item) => normalizeItem(item, { sourceId, datasetType, sourceInput: input?.input || null }))
   };
 }
 

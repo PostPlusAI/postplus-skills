@@ -2,7 +2,6 @@
 
 import path from "node:path";
 import {
-  WAVESPEED_API_BASE,
   buildRequestPaths,
   createReviewStub,
   downloadFile,
@@ -25,7 +24,7 @@ function inferResultUrl(responsePayload) {
     return result.urls.get;
   }
   if (typeof result?.id === "string" && result.id.length > 0) {
-    return `${WAVESPEED_API_BASE}/predictions/${result.id}/result`;
+    return result.id;
   }
   throw new Error("Could not infer result URL from response.");
 }
@@ -38,15 +37,15 @@ function buildManifest(request, paths, responsePayload, priorManifest = null, au
     personaId: request.personaId || null,
     voiceProfileId: request.voiceProfileId || null,
     voiceIdentityId: request.voiceIdentityId || null,
-    provider: request.provider || "wavespeed",
-    model: request.model || "wavespeed-ai/qwen3-tts/voice-clone",
+    provider: request.provider || "hosted-media",
+    model: request.model || "voice-qwen3-clone",
     mode: request.mode || "voice_clone_take",
     requestPath: paths.requestPath,
     responsePath: paths.responsePath,
     manifestPath: paths.manifestPath,
     audioPath: audioPath || priorManifest?.audioPath || null,
     outputUrls: Array.isArray(result?.outputs) ? result.outputs : [],
-    providerPredictionId: result?.id || priorManifest?.providerPredictionId || null,
+    generationHandle: result?.id || priorManifest?.generationHandle || null,
     providerStatus: result?.status || priorManifest?.providerStatus || null,
     providerUrls: result?.urls || priorManifest?.providerUrls || null,
     referenceAudioUrl: priorManifest?.referenceAudioUrl || request.referenceAudioUrl || null,

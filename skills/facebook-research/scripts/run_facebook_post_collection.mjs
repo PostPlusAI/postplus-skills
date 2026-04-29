@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { main as runMain } from "../internal/brightdata/scripts/run_public_content_collection.mjs";
-import { isDirectRun } from "../internal/brightdata/scripts/lib/brightdata_common.mjs";
+import { main as runMain } from "../internal/public-content/scripts/run_public_content_collection.mjs";
+import { isDirectRun } from "../internal/public-content/scripts/lib/public_content_common.mjs";
 
 const SUPPORTED_PLATFORMS = ["facebook"];
 

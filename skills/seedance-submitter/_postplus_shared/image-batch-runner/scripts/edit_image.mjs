@@ -9,7 +9,7 @@ import {
   ensureDir,
   fetchJson,
   finalizeImageRun,
-  getWaveSpeedImageModelConfig,
+  getHostedImageModelConfig,
   inferSeedreamSize,
   normalizeGenerationInput,
   parseArgs,
@@ -42,8 +42,8 @@ function normalizeEditRequest(input) {
 }
 
 function buildProviderBody(request) {
-  const modelConfig = getWaveSpeedImageModelConfig(request.model, "edit");
-  if (modelConfig.family === "seedream") {
+  const modelConfig = getHostedImageModelConfig(request.model, "edit");
+  if (modelConfig.modelGroup === "seedream") {
     const body = {
       images: request.inputUrls,
       prompt: request.prompt,
@@ -56,13 +56,13 @@ function buildProviderBody(request) {
       body.max_images = request.maxImages;
     }
     return {
-      endpoint: modelConfig.endpoint,
+      endpointKey: modelConfig.endpointKey,
       body
     };
   }
 
   return {
-    endpoint: modelConfig.endpoint,
+    endpointKey: modelConfig.endpointKey,
     body: {
       images: request.inputUrls,
       prompt: request.prompt,
@@ -97,7 +97,7 @@ async function main() {
   writeJson(paths.requestPath, request);
 
   const providerRequest = buildProviderBody(request);
-  const { data } = await fetchJson(providerRequest.endpoint, {
+  const { data } = await fetchJson(providerRequest.endpointKey, {
     method: "POST",
     body: JSON.stringify(providerRequest.body)
   });
@@ -106,7 +106,7 @@ async function main() {
 
   const manifest = createImageManifestBase(request, paths);
   const result = unwrapProviderResult(data);
-  manifest.providerPredictionId = result?.id || null;
+  manifest.generationHandle = result?.id || null;
   manifest.providerStatus = result?.status || null;
   manifest.providerUrls = result?.urls || null;
   manifest.mediaType = "image";

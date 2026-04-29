@@ -10,7 +10,7 @@ Install PostPlus CLI, sign in, then add the released skills:
 ```bash
 npm install -g @postplus/cli
 postplus auth login
-npx -y skills add PostPlusAI/postplus-skills --all
+npx -y skills add PostPlusAI/postplus-skills --skill '*' --agent claude-code codex cursor --yes
 ```
 
 To see available skills:

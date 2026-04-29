@@ -165,7 +165,6 @@ Provider note for Instagram:
 - `GET /integrations`
 - `GET /integration-settings/:id`
 - `POST /integration-trigger/:id`
-- `GET /find-slot/:id`
 - `POST /upload`
 - `POST /upload-from-url`
 - `POST /posts`

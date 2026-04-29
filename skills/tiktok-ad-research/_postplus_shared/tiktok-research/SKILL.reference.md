@@ -243,7 +243,7 @@ Run actor:
 
 ```bash
 node ${CLAUDE_SKILL_DIR}/scripts/collection_actor_run.mjs \
-  --actor tiktok-scraper \
+  --collection-key tiktok-videos \
   --input <work-folder>/.postplus/hashtags-input.json \
   --output <work-folder>/.postplus/hashtags.json
 ```
@@ -276,7 +276,7 @@ Run actor:
 
 ```bash
 node ${CLAUDE_SKILL_DIR}/scripts/collection_actor_run.mjs \
-  --actor tiktok-scraper \
+  --collection-key tiktok-videos \
   --input <work-folder>/.postplus/searches-input.json \
   --output <work-folder>/.postplus/searches.json
 ```
@@ -305,7 +305,7 @@ node ${CLAUDE_SKILL_DIR}/scripts/analyze_tiktok_dataset.mjs \
 
 ```bash
 node ${CLAUDE_SKILL_DIR}/scripts/collection_actor_run.mjs \
-  --actor tiktok-profile-scraper \
+  --collection-key tiktok-profiles \
   --input <work-folder>/.postplus/competitors.json \
   --output <work-folder>/.postplus/competitors-results.json
 ```
@@ -334,7 +334,7 @@ node ${CLAUDE_SKILL_DIR}/scripts/rank_tiktok_accounts.mjs \
 
 ```bash
 node ${CLAUDE_SKILL_DIR}/scripts/collection_actor_run.mjs \
-  --actor tiktok-user-search-scraper \
+  --collection-key tiktok-users \
   --input <work-folder>/.postplus/creator-search.json \
   --output <work-folder>/.postplus/creator-search-results.json
 
@@ -354,7 +354,7 @@ Use this when the request cares about small creators, real topical activity, or 
 
 ```bash
 node ${CLAUDE_SKILL_DIR}/scripts/collection_actor_run.mjs \
-  --actor tiktok-scraper \
+  --collection-key tiktok-videos \
   --input <work-folder>/.postplus/topic-video-search.json \
   --output <work-folder>/.postplus/topic-video-search-raw.json
 
@@ -377,7 +377,7 @@ node ${CLAUDE_SKILL_DIR}/scripts/expand_tiktok_creator_graph.mjs \
 node ${CLAUDE_SKILL_DIR}/scripts/collect_top_video_comments.mjs \
   --input <work-folder>/.postplus/searches.json \
   --output <work-folder>/.postplus/comments.json \
-  --actor tiktok-comments-scraper \
+  --collection-key tiktok-comments \
   --top 8 \
   --max-comments 40
 ```
@@ -468,4 +468,3 @@ For each run, extract:
   - POV/relatable
   - listicle
   - talking head
-

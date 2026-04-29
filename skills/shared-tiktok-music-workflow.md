@@ -40,7 +40,7 @@ Use the existing collection runner unless a skill has a more specific script:
 
 ```bash
 node <installed-skills-root>/tiktok-research/scripts/collection_actor_run.mjs \
-  --actor <actor-id> \
+  --collection-key <collection-key> \
   --input <input.json> \
   --output <raw-output.json>
 ```

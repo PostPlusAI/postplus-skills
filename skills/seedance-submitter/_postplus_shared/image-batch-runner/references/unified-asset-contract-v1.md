@@ -183,7 +183,7 @@ The difference from the old design is:
   "assetId": "female-1-gmail-fixer-v1",
   "mediaType": "image",
   "provider": "hosted",
-  "model": "google/nano-banana-2",
+  "model": "image-nano-banana-2-edit",
   "mode": "edit",
   "createdAt": "2026-03-25T00:00:00.000Z",
   "requestPath": "runs/image/image-run-001/request.json",

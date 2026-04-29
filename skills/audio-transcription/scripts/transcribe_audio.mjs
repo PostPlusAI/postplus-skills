@@ -3,7 +3,6 @@
 import fs from "node:fs";
 
 import {
-  WAVESPEED_API_BASE,
   buildRequestPaths,
   createManifestBase,
   downloadProviderOutputs,
@@ -35,7 +34,7 @@ async function main() {
 
   writeJson(paths.requestPath, request);
 
-  const { data: rawResult } = await fetchJson(`${WAVESPEED_API_BASE}/${request.model}`, {
+  const { data: rawResult } = await fetchJson(request.model, {
     method: "POST",
     body: JSON.stringify(await toProviderPayload(request, { paths }))
   });
@@ -49,7 +48,7 @@ async function main() {
     result = unwrapProviderResult(polledRawResult);
   }
   const manifest = createManifestBase(request, paths);
-  manifest.providerPredictionId = result?.id || null;
+  manifest.generationHandle = result?.id || null;
   manifest.providerStatus = result?.status || null;
   manifest.providerUrls = result?.urls || null;
   manifest.mediaUploadRequestPath = fs.existsSync(paths.mediaUploadRequestPath) ? paths.mediaUploadRequestPath : null;

@@ -6,7 +6,7 @@ import path from "node:path";
 import {
   formatCliError,
 } from "../_postplus_shared/shared-runtime/scripts/lib/network_runtime.mjs";
-import { runHostedProviderOperation } from "../_postplus_shared/shared-runtime/scripts/lib/hosted_provider_bridge.mjs";
+import { runHostedCapabilityRequest } from "../_postplus_shared/shared-runtime/scripts/lib/hosted_capability_bridge.mjs";
 
 function parseArgs(argv) {
   const args = {};
@@ -179,15 +179,15 @@ async function analyzeOne({ item, model, outputDir }) {
   });
 
   const startedAt = new Date().toISOString();
-  const raw = await runHostedProviderOperation({
+  const raw = await runHostedCapabilityRequest({
+    capability: "video-analysis",
+    operation: "analyze",
+    modelKey: "gemini-video-analysis",
+    payload,
     estimatedUsage: buildEstimatedUsage({
       prompt,
       videoSeconds: estimatedVideoSeconds,
     }),
-    family: "llm",
-    operation: "google-generate-content",
-    model,
-    payload,
   });
   const text = extractTextResponse(raw);
   if (!text) {

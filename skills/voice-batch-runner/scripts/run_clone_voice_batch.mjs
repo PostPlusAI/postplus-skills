@@ -2,7 +2,6 @@
 
 import path from "node:path";
 import {
-  WAVESPEED_API_BASE,
   buildRequestPaths,
   createReviewStub,
   downloadFile,
@@ -17,7 +16,7 @@ import {
   writeJson
 } from "./_shared.mjs";
 
-const DEFAULT_MODEL = "wavespeed-ai/qwen3-tts/voice-clone";
+const DEFAULT_MODEL = "voice-qwen3-clone";
 const DEFAULT_SUBMIT_INTERVAL_MS = 1000;
 const DEFAULT_INITIAL_POLL_DELAY_MS = 15000;
 const DEFAULT_POLL_INTERVAL_MS = 5000;
@@ -48,7 +47,7 @@ function normalizeRequest(input) {
     personaId: input.personaId || null,
     voiceProfileId: input.voiceProfileId || null,
     voiceIdentityId: input.voiceIdentityId || null,
-    provider: input.provider || "wavespeed",
+    provider: input.provider || "hosted-media",
     model: input.model || DEFAULT_MODEL,
     mode: input.mode || "voice_clone_take",
     text: input.text,
@@ -91,7 +90,7 @@ function buildManifest(request, paths, responsePayload, extras = {}) {
     manifestPath: paths.manifestPath,
     audioPath: extras.audioPath || null,
     outputUrls: outputs,
-    providerPredictionId: result?.id || null,
+    generationHandle: result?.id || null,
     providerStatus: result?.status || null,
     providerUrls: result?.urls || null,
     referenceAudioUrl: extras.referenceAudioUrl || request.referenceAudioUrl || null,
@@ -110,7 +109,7 @@ function getResultUrl(responsePayload) {
     return result.urls.get;
   }
   if (typeof result?.id === "string" && result.id.length > 0) {
-    return `${WAVESPEED_API_BASE}/predictions/${result.id}/result`;
+    return result.id;
   }
   return null;
 }
@@ -150,7 +149,7 @@ async function submitOne(requestPath, uploadCache) {
     }
   }
 
-  const endpoint = `${WAVESPEED_API_BASE}/wavespeed-ai/qwen3-tts/voice-clone`;
+  const endpoint = "voice-qwen3-clone";
   const { data: submitData } = await fetchJson(endpoint, {
     method: "POST",
     body: JSON.stringify(buildProviderBody(request, referenceAudioUrl))

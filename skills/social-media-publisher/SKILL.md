@@ -88,7 +88,6 @@ Release workflow rules:
 - `scripts/list_integrations.mjs`
 - `scripts/integration_settings.mjs`
 - `scripts/trigger_tool.mjs`
-- `scripts/find_slot.mjs`
 - `scripts/upload_media_from_url.mjs`
 - `scripts/upload_file.mjs`
 - `scripts/create_post.mjs`

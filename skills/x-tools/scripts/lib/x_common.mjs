@@ -199,13 +199,13 @@ function normalizeUrls(item) {
   return uniqueStrings(matchArrayText(item, ["urls", "entities.urls", "expandedUrls"]));
 }
 
-export function inferDatasetType(actorId, explicitDatasetType, items) {
+export function inferDatasetType(sourceId, explicitDatasetType, items) {
   const provided = cleanString(explicitDatasetType);
   if (provided) {
     return provided;
   }
 
-  const actor = safeLower(actorId);
+  const actor = safeLower(sourceId);
   if (actor.includes("tweet")) return "tweets";
   if (actor.includes("follower")) return "followers";
   if (actor.includes("following")) return "following";
@@ -230,7 +230,7 @@ function normalizeProfileUrl(username, item) {
     (username ? `https://x.com/${username}` : null);
 }
 
-function normalizeTweetItem(item, actorId) {
+function normalizeTweetItem(item, sourceId) {
   const authorUsername = cleanString(
     pickFirst(item, [
       "author.userName",
@@ -270,14 +270,14 @@ function normalizeTweetItem(item, actorId) {
       (authorUsername && tweetId ? `https://x.com/${authorUsername}/status/${tweetId}` : null),
     publishedAt: toIsoDate(pickFirst(item, ["created_at", "createdAt", "timestamp"])),
     source: {
-      actorId,
+      sourceId,
       sourceUrl: cleanString(pickFirst(item, ["url", "tweetUrl"])),
       scrapedAt: toIsoDate(pickFirst(item, ["scrapedAt", "fetchedAt", "timestamp"]))
     }
   };
 }
 
-function normalizeProfileItem(item, actorId) {
+function normalizeProfileItem(item, sourceId) {
   const username = cleanString(
     pickFirst(item, ["screen_name", "userName", "username", "handle"])
   );
@@ -312,15 +312,15 @@ function normalizeProfileItem(item, actorId) {
     ),
     email: cleanString(pickFirst(item, ["email"])),
     source: {
-      actorId,
+      sourceId,
       sourceUrl: cleanString(pickFirst(item, ["url", "profileUrl"])),
       scrapedAt: toIsoDate(pickFirst(item, ["scrapedAt", "fetchedAt", "timestamp"]))
     }
   };
 }
 
-function normalizeRelationshipItem(item, actorId, relationshipType) {
-  const normalizedProfile = normalizeProfileItem(item, actorId);
+function normalizeRelationshipItem(item, sourceId, relationshipType) {
+  const normalizedProfile = normalizeProfileItem(item, sourceId);
   return {
     ...normalizedProfile,
     relationship: {
@@ -338,17 +338,17 @@ function normalizeRelationshipItem(item, actorId, relationshipType) {
 }
 
 export function normalizeItem(item, options = {}) {
-  const actorId = cleanString(options.actorId);
-  const datasetType = inferDatasetType(actorId, options.datasetType, [item]);
+  const sourceId = cleanString(options.sourceId);
+  const datasetType = inferDatasetType(sourceId, options.datasetType, [item]);
 
   if (datasetType === "tweets") {
-    return normalizeTweetItem(item, actorId);
+    return normalizeTweetItem(item, sourceId);
   }
   if (datasetType === "profiles") {
-    return normalizeProfileItem(item, actorId);
+    return normalizeProfileItem(item, sourceId);
   }
   if (datasetType === "followers" || datasetType === "following" || datasetType === "retweeters") {
-    return normalizeRelationshipItem(item, actorId, datasetType.slice(0, -1));
+    return normalizeRelationshipItem(item, sourceId, datasetType.slice(0, -1));
   }
 
   return {
@@ -356,27 +356,27 @@ export function normalizeItem(item, options = {}) {
     recordType: "unknown",
     raw: item,
     source: {
-      actorId,
+      sourceId,
       scrapedAt: new Date().toISOString()
     }
   };
 }
 
 export function normalizeDataset(input, options = {}) {
-  const actorId = cleanString(options.actorId || input?.actorId);
+  const sourceId = cleanString(options.sourceId || input?.sourceId);
   const rawItems = Array.isArray(input?.items) ? input.items : toArray(input);
-  const datasetType = inferDatasetType(actorId, options.datasetType, rawItems);
+  const datasetType = inferDatasetType(sourceId, options.datasetType, rawItems);
 
   return {
     schemaVersion: SCHEMA_VERSION,
     platform: "x",
     datasetType,
-    actorId,
+    sourceId,
     fetchedAt: cleanString(input?.fetchedAt) || new Date().toISOString(),
     input: input?.input || null,
     inputPath: cleanString(options.inputPath),
     itemCount: rawItems.length,
-    items: rawItems.map((item) => normalizeItem(item, { actorId, datasetType }))
+    items: rawItems.map((item) => normalizeItem(item, { sourceId, datasetType }))
   };
 }
 

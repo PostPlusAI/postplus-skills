@@ -8,10 +8,10 @@ user-facing credential setup.
 
 ## Supported Model Paths
 
-- `bytedance/seedance-2.0/image-to-video`
-- `bytedance/seedance-2.0/image-to-video-turbo`
-- `bytedance/seedance-2.0/text-to-video`
-- `bytedance/seedance-2.0/text-to-video-turbo`
+- `video-seedance-2-image`
+- `video-seedance-2-image-turbo`
+- `video-seedance-2-text`
+- `video-seedance-2-text-turbo`
 
 ## Request Mapping
 

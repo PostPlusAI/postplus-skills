@@ -8,8 +8,8 @@
 
 ## Model And Duration
 
-- Default model family: `bytedance/seedance-2.0/*`.
-- Use `bytedance/seedance-2.0/text-to-video` when reference images are conditioning references, not first-frame image-to-video inputs.
+- Default hosted endpoint group: `video-seedance-2-*`.
+- Use `video-seedance-2-text` when reference images are conditioning references, not first-frame image-to-video inputs.
 - Use `ratio: "9:16"` unless the user specifies otherwise.
 - Supported duration values: `5`, `10`, or `15` seconds.
 - If user timing is not exactly supported, map to the nearest viable segment structure without breaking action continuity.

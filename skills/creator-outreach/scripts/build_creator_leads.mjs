@@ -221,7 +221,7 @@ function leadFromItem(item, dataset, inputPath) {
     lastContactedAt: cleanString(item.lastContactedAt),
     source: {
       inputPaths: [inputPath],
-      actorIds: mergeTextList(dataset.actorId, item?.source?.actorId),
+      sourceIds: mergeTextList(dataset.sourceId, item?.source?.sourceId),
       sourceUrls: mergeTextList(item?.source?.sourceUrl, item.profileUrl),
       scrapedAt: mergeTextList(item?.source?.scrapedAt)
     }
@@ -303,7 +303,7 @@ function mergeLead(existing, incoming) {
     lastContactedAt: pickPreferred(existing.lastContactedAt, incoming.lastContactedAt),
     source: {
       inputPaths: mergeTextList(existing?.source?.inputPaths, incoming?.source?.inputPaths),
-      actorIds: mergeTextList(existing?.source?.actorIds, incoming?.source?.actorIds),
+      sourceIds: mergeTextList(existing?.source?.sourceIds, incoming?.source?.sourceIds),
       sourceUrls: mergeTextList(existing?.source?.sourceUrls, incoming?.source?.sourceUrls),
       scrapedAt: mergeTextList(existing?.source?.scrapedAt, incoming?.source?.scrapedAt)
     }

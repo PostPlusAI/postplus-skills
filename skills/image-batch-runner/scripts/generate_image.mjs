@@ -9,7 +9,7 @@ import {
   ensureDir,
   fetchJson,
   finalizeImageRun,
-  getWaveSpeedImageModelConfig,
+  getHostedImageModelConfig,
   inferSeedreamSize,
   normalizeGenerationInput,
   parseArgs,
@@ -25,8 +25,8 @@ function usage() {
 }
 
 function buildProviderBody(request) {
-  const modelConfig = getWaveSpeedImageModelConfig(request.model, "text-to-image");
-  if (modelConfig.family === "seedream") {
+  const modelConfig = getHostedImageModelConfig(request.model, "text-to-image");
+  if (modelConfig.modelGroup === "seedream") {
     const body = {
       prompt: request.prompt,
       size: inferSeedreamSize(request),
@@ -38,13 +38,13 @@ function buildProviderBody(request) {
       body.max_images = request.maxImages;
     }
     return {
-      endpoint: modelConfig.endpoint,
+      endpointKey: modelConfig.endpointKey,
       body
     };
   }
 
   return {
-    endpoint: modelConfig.endpoint,
+    endpointKey: modelConfig.endpointKey,
     body: {
       prompt: request.prompt,
       aspect_ratio: request.aspectRatio,
@@ -71,7 +71,7 @@ async function main() {
   writeJson(paths.requestPath, request);
 
   const providerRequest = buildProviderBody(request);
-  const { data } = await fetchJson(providerRequest.endpoint, {
+  const { data } = await fetchJson(providerRequest.endpointKey, {
     method: "POST",
     body: JSON.stringify(providerRequest.body)
   });
@@ -80,7 +80,7 @@ async function main() {
 
   const manifest = createImageManifestBase(request, paths);
   const result = unwrapProviderResult(data);
-  manifest.providerPredictionId = result?.id || null;
+  manifest.generationHandle = result?.id || null;
   manifest.providerStatus = result?.status || null;
   manifest.providerUrls = result?.urls || null;
   manifest.mediaType = "image";

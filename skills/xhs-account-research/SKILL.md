@@ -87,7 +87,7 @@ node ${CLAUDE_SKILL_DIR}/scripts/build_xhs_account_actor_input.mjs \
   --output <work-folder>/.postplus/xhs-account-actor-input.json
 
 node ${CLAUDE_SKILL_DIR}/_postplus_shared/shared-collection/scripts/collection_actor_run.mjs \
-  --actor rednote-xiaohongshu-user-posts-scraper \
+  --collection-key xhs-account-posts \
   --input <work-folder>/.postplus/xhs-account-actor-input.json \
   --output <work-folder>/.postplus/xhs-account-raw.json
 

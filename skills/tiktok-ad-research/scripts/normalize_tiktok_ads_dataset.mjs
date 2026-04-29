@@ -38,7 +38,7 @@ function firstArray(item, keys) {
   return [];
 }
 
-function normalizeItem(item, actorId, input, fetchedAt) {
+function normalizeItem(item, sourceId, input, fetchedAt) {
   const analytics = item?.analytics && typeof item.analytics === "object" ? item.analytics : null;
   const videoInfo = analytics?.video_info || item?.video_info || null;
   const keywordList = uniqueStrings([
@@ -78,7 +78,7 @@ function normalizeItem(item, actorId, input, fetchedAt) {
     videoUrl: cleanString(pickFirst(videoInfo || {}, ["video_url.720p", "video_url.540p", "video_url.360p"])),
     keyframeMetrics: item?.keyframe_metrics || null,
     source: {
-      actorId,
+      sourceId,
       scrapedAt: toIsoDate(fetchedAt) || new Date().toISOString(),
       inputPath: null
     },
@@ -95,13 +95,13 @@ function main() {
   }
 
   const raw = readJson(args.input);
-  const actorId = cleanString(args.actor || raw?.actorId) || "tiktok-creative-center-top-ads";
+  const sourceId = cleanString(args.actor || raw?.sourceId) || "tiktok-creative-center-top-ads";
   const items = Array.isArray(raw?.items) ? raw.items : toArray(raw);
-  const normalizedItems = items.map((item) => normalizeItem(item, actorId, raw?.input || null, raw?.fetchedAt));
+  const normalizedItems = items.map((item) => normalizeItem(item, sourceId, raw?.input || null, raw?.fetchedAt));
   const normalized = {
     platform: "tiktok",
     datasetType: "ads",
-    actorId,
+    sourceId,
     fetchedAt: cleanString(raw?.fetchedAt) || new Date().toISOString(),
     input: raw?.input || null,
     inputPath: path.resolve(args.input),

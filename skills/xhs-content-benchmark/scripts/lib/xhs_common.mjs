@@ -249,7 +249,7 @@ function normalizeSearchImageList(imageList) {
   return images;
 }
 
-function normalizeUserPostItem(item, actorId, input, fetchedAt) {
+function normalizeUserPostItem(item, sourceId, input, fetchedAt) {
   const post = item?.postData && typeof item.postData === "object" ? item.postData : {};
   const user = post?.user && typeof post.user === "object" ? post.user : {};
   const rawType = cleanString(post.type);
@@ -277,14 +277,14 @@ function normalizeUserPostItem(item, actorId, input, fetchedAt) {
     sourceQuery: cleanString(item.profileUrl) || cleanString(toArray(input?.profileUrls)[0]),
     scrapedAt: toIsoDate(item?.scrapedAt || fetchedAt) || new Date().toISOString(),
     source: {
-      actorId,
+      sourceId,
       scrapedAt: toIsoDate(fetchedAt) || new Date().toISOString()
     },
     raw: item
   };
 }
 
-function normalizeSearchItem(item, actorId, fetchedAt) {
+function normalizeSearchItem(item, sourceId, fetchedAt) {
   const record = item?.item && typeof item.item === "object" ? item.item : item;
   const card = record?.note_card && typeof record.note_card === "object" ? record.note_card : record;
   const user = card?.user && typeof card.user === "object" ? card.user : {};
@@ -314,7 +314,7 @@ function normalizeSearchItem(item, actorId, fetchedAt) {
     sourceQuery: cleanString(item.keyword || record.keyword),
     scrapedAt: toIsoDate(item?.scrapedAt || fetchedAt) || new Date().toISOString(),
     source: {
-      actorId,
+      sourceId,
       scrapedAt: toIsoDate(fetchedAt) || new Date().toISOString()
     },
     raw: item
@@ -322,27 +322,27 @@ function normalizeSearchItem(item, actorId, fetchedAt) {
 }
 
 export function normalizeDataset(raw, options = {}) {
-  const actorId = cleanString(options.actorId || raw?.actorId);
-  if (!actorId) {
-    throw new Error("Cannot normalize XHS dataset without actorId.");
+  const sourceId = cleanString(options.sourceId || raw?.sourceId);
+  if (!sourceId) {
+    throw new Error("Cannot normalize XHS dataset without sourceId.");
   }
   const items = Array.isArray(raw?.items) ? raw.items : [];
   const fetchedAt = cleanString(raw?.fetchedAt) || new Date().toISOString();
   let normalizedItems;
 
-  if (actorId === DEFAULT_ACCOUNT_ACTOR) {
-    normalizedItems = items.map((item) => normalizeUserPostItem(item, actorId, raw?.input || null, fetchedAt));
-  } else if (actorId === DEFAULT_SEARCH_ACTOR) {
-    normalizedItems = items.map((item) => normalizeSearchItem(item, actorId, fetchedAt));
+  if (sourceId === DEFAULT_ACCOUNT_ACTOR) {
+    normalizedItems = items.map((item) => normalizeUserPostItem(item, sourceId, raw?.input || null, fetchedAt));
+  } else if (sourceId === DEFAULT_SEARCH_ACTOR) {
+    normalizedItems = items.map((item) => normalizeSearchItem(item, sourceId, fetchedAt));
   } else {
-    throw new Error(`Unsupported XHS actor for normalization: ${actorId}`);
+    throw new Error(`Unsupported XHS actor for normalization: ${sourceId}`);
   }
 
   return {
     schemaVersion: SCHEMA_VERSION,
     platform: "xiaohongshu",
     datasetType: cleanString(options.datasetType) || "benchmark-posts",
-    actorId,
+    sourceId,
     fetchedAt,
     input: raw?.input || null,
     inputPath: options.inputPath ? path.resolve(options.inputPath) : null,
@@ -533,14 +533,14 @@ export function compileBriefToActorRequest(brief, options = {}) {
     throw new Error("Provide profileUrls/profileIds or keywords for XHS benchmark collection.");
   }
 
-  const explicitActor = cleanString(options.actorId);
+  const explicitActor = cleanString(options.sourceId);
   if (profileUrls.length) {
     const maxItems = parseNumber(brief.limit) ?? 12;
     if (!Number.isFinite(maxItems) || maxItems <= 0) {
       throw new Error("Account benchmark limit must be a positive number.");
     }
     return {
-      actorId: explicitActor || DEFAULT_ACCOUNT_ACTOR,
+      sourceId: explicitActor || DEFAULT_ACCOUNT_ACTOR,
       route: "account-benchmark",
       experimental: false,
       input: {
@@ -561,7 +561,7 @@ export function compileBriefToActorRequest(brief, options = {}) {
   }
 
   return {
-    actorId: explicitActor || DEFAULT_SEARCH_ACTOR,
+    sourceId: explicitActor || DEFAULT_SEARCH_ACTOR,
     route: "keyword-benchmark",
     experimental: true,
     input: {

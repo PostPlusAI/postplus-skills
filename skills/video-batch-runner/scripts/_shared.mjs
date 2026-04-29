@@ -3,49 +3,53 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import {
-  downloadHostedWaveSpeedFile,
-  requestHostedWaveSpeedJson,
-  uploadHostedWaveSpeedFile,
-} from '../_postplus_shared/shared-runtime/scripts/lib/hosted_wavespeed_bridge.mjs';
+  downloadHostedMediaFile,
+  requestHostedMediaGenerationJson,
+  uploadHostedMediaFile,
+} from '../_postplus_shared/shared-runtime/scripts/lib/hosted_media_generation_bridge.mjs';
 
-export const WAVESPEED_API_BASE = 'https://api.wavespeed.ai/api/v3';
 export const ARK_API_BASE = 'https://ark.cn-beijing.volces.com/api/v3';
-export const DEFAULT_PROVIDER = 'wavespeed';
-export const DEFAULT_MODEL = 'wavespeed-ai/infinitetalk';
+export const DEFAULT_PROVIDER = 'hosted-media';
+export const DEFAULT_MODEL = 'video-infinitetalk';
 export const DEFAULT_RESOLUTION = '720p';
 
-export const WAVESPEED_VIDEO_MODELS = {
-  'wavespeed-ai/infinitetalk': {
-    family: 'infinitetalk',
+export const HOSTED_VIDEO_MODELS = {
+  'video-infinitetalk': {
+    modelGroup: 'infinitetalk',
+    endpointKey: 'video-infinitetalk',
     requiredFields: ['image', 'audio'],
     supportsSeed: true,
   },
-  'bytedance/seedance-2.0/image-to-video': {
-    family: 'seedance-2.0',
+  'video-seedance-2-image': {
+    modelGroup: 'seedance-2.0',
+    endpointKey: 'video-seedance-2-image',
     mode: 'image-to-video',
     requiredFields: ['prompt', 'image'],
     supportsAspectRatio: true,
     supportsWebSearch: true,
     supportsSeed: false,
   },
-  'bytedance/seedance-2.0/image-to-video-turbo': {
-    family: 'seedance-2.0',
+  'video-seedance-2-image-turbo': {
+    modelGroup: 'seedance-2.0',
+    endpointKey: 'video-seedance-2-image-turbo',
     mode: 'image-to-video',
     requiredFields: ['prompt', 'image'],
     supportsAspectRatio: true,
     supportsWebSearch: true,
     supportsSeed: false,
   },
-  'bytedance/seedance-2.0/text-to-video': {
-    family: 'seedance-2.0',
+  'video-seedance-2-text': {
+    modelGroup: 'seedance-2.0',
+    endpointKey: 'video-seedance-2-text',
     mode: 'text-to-video',
     requiredFields: ['prompt'],
     supportsAspectRatio: true,
     supportsWebSearch: true,
     supportsSeed: false,
   },
-  'bytedance/seedance-2.0/text-to-video-turbo': {
-    family: 'seedance-2.0',
+  'video-seedance-2-text-turbo': {
+    modelGroup: 'seedance-2.0',
+    endpointKey: 'video-seedance-2-text-turbo',
     mode: 'text-to-video',
     requiredFields: ['prompt'],
     supportsAspectRatio: true,
@@ -96,38 +100,31 @@ export function nowIso() {
 function resolveBillableVideoDuration(body) {
   const value = Number(body?.duration ?? body?.durationSeconds ?? 5);
   if (!Number.isFinite(value) || value <= 0) {
-    throw new Error('WaveSpeed video billing requires a positive duration.');
+    throw new Error('Hosted video billing requires a positive duration.');
   }
   return Math.ceil(value);
 }
 
 export async function fetchJson(url, options = {}) {
   const method = String(options.method || 'GET').toUpperCase();
-  const pathname = new URL(url).pathname.replace(/^\/api\/v3\//, '');
   const requestBody =
     typeof options.body === 'string' && options.body.trim().length > 0
       ? JSON.parse(options.body)
       : (options.body ?? {});
 
-  return requestHostedWaveSpeedJson(url, {
+  return requestHostedMediaGenerationJson(url, {
     method,
     body: requestBody,
-    billing:
+    requestDimensions:
       method !== 'POST'
-        ? { charge: false }
+        ? undefined
         : {
-            charge: true,
-            feature: 'vibe-marketing.video-generation',
-            provider: 'wavespeed',
-            providerModelPath: requestBody.model ?? pathname,
-            requestDimensions: {
-              audioMode: 'on',
-              billableUnitCount: 1,
-              duration: resolveBillableVideoDuration(requestBody),
-              providerOperation: pathname,
-              resolution: requestBody.resolution ?? DEFAULT_RESOLUTION,
-              requestBytes: Buffer.byteLength(JSON.stringify(requestBody)),
-            },
+            audioMode: 'on',
+            billableUnitCount: 1,
+            duration: resolveBillableVideoDuration(requestBody),
+            operationKey: url,
+            resolution: requestBody.resolution ?? DEFAULT_RESOLUTION,
+            requestBytes: Buffer.byteLength(JSON.stringify(requestBody)),
           },
   }).then((result) => ({
     data: result.data,
@@ -151,7 +148,7 @@ export function unwrapProviderResult(payload) {
 }
 
 export async function downloadFile(url, outputPath) {
-  await downloadHostedWaveSpeedFile(url, outputPath);
+  await downloadHostedMediaFile(url, outputPath);
 }
 
 export function buildRequestPaths(localOutputDir) {
@@ -192,11 +189,11 @@ function isRemoteOrDataUrl(value) {
   return /^https?:\/\//iu.test(value) || /^data:/iu.test(value);
 }
 
-async function uploadMediaToWaveSpeed(filePath, paths) {
+async function uploadHostedMedia(filePath, paths) {
   const absolutePath = path.resolve(filePath);
   const requestRecord = {
-    provider: 'wavespeed',
-    endpoint: `${WAVESPEED_API_BASE}/media/upload/binary`,
+    provider: 'hosted-media',
+    operation: 'media-upload',
     sourceLocalFilePath: absolutePath,
     fileName: path.basename(absolutePath),
     mimeType: inferMimeTypeFromPath(absolutePath),
@@ -204,7 +201,7 @@ async function uploadMediaToWaveSpeed(filePath, paths) {
   };
 
   writeJson(paths.mediaUploadRequestPath, requestRecord);
-  const data = await uploadHostedWaveSpeedFile(
+  const data = await uploadHostedMediaFile(
     absolutePath,
     requestRecord.mimeType,
   );
@@ -222,7 +219,7 @@ async function uploadMediaToWaveSpeed(filePath, paths) {
 
   if (!uploadedUrl) {
     throw new Error(
-      `WaveSpeed upload did not return a download URL: ${JSON.stringify(data)}`,
+      `Hosted media upload did not return a download URL: ${JSON.stringify(data)}`,
     );
   }
 
@@ -249,7 +246,7 @@ async function resolveProviderMediaInput(value, paths) {
     return trimmed;
   }
 
-  return await uploadMediaToWaveSpeed(candidatePath, paths);
+  return await uploadHostedMedia(candidatePath, paths);
 }
 
 async function resolveProviderMediaList(values, paths) {
@@ -441,14 +438,12 @@ function stringList(values) {
     .filter(Boolean);
 }
 
-function getWaveSpeedVideoModelConfig(model) {
-  return (
-    WAVESPEED_VIDEO_MODELS[model] || {
-      family: 'custom',
-      requiredFields: ['image', 'audio'],
-      supportsSeed: true,
-    }
-  );
+function getHostedVideoModelConfig(model) {
+  const config = HOSTED_VIDEO_MODELS[model];
+  if (!config) {
+    throw new Error(`Unsupported hosted video model: ${model}`);
+  }
+  return config;
 }
 
 function normalizeArkContent(input) {
@@ -526,22 +521,22 @@ export function normalizeRenderInput(input) {
 
   const provider = input.provider || DEFAULT_PROVIDER;
   const model = input.model || DEFAULT_MODEL;
-  const wavespeedModelConfig =
-    provider === 'wavespeed' ? getWaveSpeedVideoModelConfig(model) : null;
+  const hostedModelConfig =
+    provider === 'hosted-media' ? getHostedVideoModelConfig(model) : null;
   const prompt = buildSeedancePromptFromPlan(
     input.promptPlan,
     input.prompt || input.text || null,
   );
 
-  if (provider === 'wavespeed') {
-    for (const field of wavespeedModelConfig.requiredFields) {
+  if (provider === 'hosted-media') {
+    for (const field of hostedModelConfig.requiredFields) {
       if (field === 'prompt' && !prompt) {
         throw new Error(
-          `WaveSpeed model ${model} requires request.prompt or request.promptPlan.`,
+          `Hosted video model ${model} requires request.prompt or request.promptPlan.`,
         );
       }
       if (field !== 'prompt' && !input?.[field]) {
-        throw new Error(`WaveSpeed model ${model} requires request.${field}.`);
+        throw new Error(`Hosted video model ${model} requires request.${field}.`);
       }
     }
   }
@@ -722,8 +717,8 @@ export async function toProviderPayload(normalized, { paths } = {}) {
     return payload;
   }
 
-  const wavespeedModelConfig = getWaveSpeedVideoModelConfig(normalized.model);
-  if (wavespeedModelConfig.family === 'seedance-2.0') {
+  const hostedModelConfig = getHostedVideoModelConfig(normalized.model);
+  if (hostedModelConfig.modelGroup === 'seedance-2.0') {
     const payload = {
       prompt: normalized.prompt,
       resolution: normalized.resolution,
@@ -739,7 +734,7 @@ export async function toProviderPayload(normalized, { paths } = {}) {
       payload.enable_web_search = normalized.enableWebSearch;
     }
 
-    if (wavespeedModelConfig.mode === 'image-to-video') {
+    if (hostedModelConfig.mode === 'image-to-video') {
       payload.image = await resolveProviderMediaInput(normalized.image, paths);
       if (normalized.lastImage) {
         payload.last_image = await resolveProviderMediaInput(
@@ -777,7 +772,7 @@ export async function toProviderPayload(normalized, { paths } = {}) {
     resolution: normalized.resolution,
   };
 
-  if (wavespeedModelConfig.supportsSeed && Number.isInteger(normalized.seed)) {
+  if (hostedModelConfig.supportsSeed && Number.isInteger(normalized.seed)) {
     payload.seed = normalized.seed;
   }
 
@@ -871,7 +866,7 @@ export function getProviderApiConfig(request) {
   }
 
   return {
-    baseUrl: WAVESPEED_API_BASE,
-    submitUrl: `${WAVESPEED_API_BASE}/${request.model}`,
+    baseUrl: 'hosted-media',
+    submitUrl: getHostedVideoModelConfig(request.model).endpointKey,
   };
 }

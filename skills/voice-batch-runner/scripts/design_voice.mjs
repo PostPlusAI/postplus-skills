@@ -2,7 +2,6 @@
 
 import path from "node:path";
 import {
-  WAVESPEED_API_BASE,
   buildRequestPaths,
   createReviewStub,
   DEFAULT_LANGUAGE,
@@ -18,7 +17,7 @@ import {
   writeJson
 } from "./_shared.mjs";
 
-const DEFAULT_MODEL = "wavespeed-ai/qwen3-tts/voice-design";
+const DEFAULT_MODEL = "voice-qwen3-design";
 
 function usage() {
   console.error("Usage: node design_voice.mjs --request <request.json>");
@@ -65,7 +64,7 @@ async function main() {
   const paths = buildRequestPaths(request.localOutputDir);
   writeJson(paths.requestPath, request);
 
-  const endpoint = `${WAVESPEED_API_BASE}/wavespeed-ai/qwen3-tts/voice-design`;
+  const endpoint = "voice-qwen3-design";
   const { data: submitData } = await fetchJson(endpoint, {
     method: "POST",
     body: JSON.stringify(buildProviderBody(request))
@@ -73,7 +72,7 @@ async function main() {
 
   let finalData = submitData;
   let result = unwrapProviderResult(finalData);
-  const getUrl = result?.urls?.get || (result?.id ? `${WAVESPEED_API_BASE}/predictions/${result.id}/result` : null);
+  const getUrl = result?.urls?.get || result?.id || null;
   if (result?.status && result.status !== "completed" && getUrl) {
     finalData = await pollPredictionResult(getUrl);
     result = unwrapProviderResult(finalData);
@@ -102,7 +101,7 @@ async function main() {
     manifestPath: paths.manifestPath,
     audioPath: firstOutput ? audioPath : null,
     outputUrls: outputs,
-    providerPredictionId: result?.id || null,
+    generationHandle: result?.id || null,
     providerStatus: result?.status || null,
     providerUrls: result?.urls || null,
     createdAt: nowIso(),

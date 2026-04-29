@@ -94,18 +94,18 @@ Do not assume one client directory is the default home for all renders.
 
 
 
-## Provider
+## Video Routes
 
-Current provider routes:
+Current routes:
 
 - `talking-head`
   - model: hosted talking-head capability
   - category: image-to-video digital human
 - `seedance` (hosted)
-  - model family: `bytedance/seedance-2.0/*`
+  - endpoint keys: `video-seedance-2-image`, `video-seedance-2-image-turbo`, `video-seedance-2-text`, `video-seedance-2-text-turbo`
   - category: text/image/reference-media to video
 - `ark`
-  - model family: `doubao-seedance-2-0*`
+  - direct workspace route for internal video/audio workflows
   - category: text/image/video/audio to video
 
 Read [`references/hosted-video-talking-head.md`](references/hosted-video-talking-head.md) before implementation or request design.

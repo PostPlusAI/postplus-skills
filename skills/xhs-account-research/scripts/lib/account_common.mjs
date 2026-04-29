@@ -216,7 +216,7 @@ function normalizeCover(cover) {
   };
 }
 
-function normalizeUserPostItem(item, actorId, input, fetchedAt) {
+function normalizeUserPostItem(item, sourceId, input, fetchedAt) {
   const post = item?.postData && typeof item.postData === "object" ? item.postData : {};
   const user = post?.user && typeof post.user === "object" ? post.user : {};
   const rawType = cleanString(post.type);
@@ -244,7 +244,7 @@ function normalizeUserPostItem(item, actorId, input, fetchedAt) {
     sourceQuery: cleanString(item.profileUrl) || cleanString(toArray(input?.profileUrls)[0]),
     scrapedAt: toIsoDate(item?.scrapedAt || fetchedAt) || new Date().toISOString(),
     source: {
-      actorId,
+      sourceId,
       scrapedAt: toIsoDate(fetchedAt) || new Date().toISOString()
     },
     raw: item
@@ -252,21 +252,21 @@ function normalizeUserPostItem(item, actorId, input, fetchedAt) {
 }
 
 export function normalizeDataset(raw, options = {}) {
-  const actorId = cleanString(options.actorId || raw?.actorId);
-  if (!actorId) {
-    throw new Error("Cannot normalize XHS dataset without actorId.");
+  const sourceId = cleanString(options.sourceId || raw?.sourceId);
+  if (!sourceId) {
+    throw new Error("Cannot normalize XHS dataset without sourceId.");
   }
-  if (actorId !== DEFAULT_ACCOUNT_ACTOR) {
-    throw new Error(`Unsupported XHS account actor for normalization: ${actorId}`);
+  if (sourceId !== DEFAULT_ACCOUNT_ACTOR) {
+    throw new Error(`Unsupported XHS account actor for normalization: ${sourceId}`);
   }
   const items = Array.isArray(raw?.items) ? raw.items : [];
   const fetchedAt = cleanString(raw?.fetchedAt) || new Date().toISOString();
-  const normalizedItems = items.map((item) => normalizeUserPostItem(item, actorId, raw?.input || null, fetchedAt));
+  const normalizedItems = items.map((item) => normalizeUserPostItem(item, sourceId, raw?.input || null, fetchedAt));
   return {
     schemaVersion: SCHEMA_VERSION,
     platform: "xiaohongshu",
     datasetType: cleanString(options.datasetType) || "account-posts",
-    actorId,
+    sourceId,
     fetchedAt,
     input: raw?.input || null,
     inputPath: options.inputPath ? path.resolve(options.inputPath) : null,
@@ -440,7 +440,7 @@ export function aggregateAccountsFromPosts(items, themeKeywords = []) {
 
 export function normalizeAccountDataset(raw, options = {}) {
   return normalizeDataset(raw, {
-    actorId: options.actorId,
+    sourceId: options.sourceId,
     inputPath: options.inputPath,
     datasetType: "account-posts"
   });

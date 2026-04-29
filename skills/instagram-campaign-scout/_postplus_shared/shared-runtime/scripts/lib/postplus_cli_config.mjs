@@ -1,40 +1,49 @@
 #!/usr/bin/env node
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 
-import fs from "node:fs";
-import os from "node:os";
-import path from "node:path";
-
-import { requestJson } from "./network_runtime.mjs";
+import { requestJson } from './network_runtime.mjs';
 
 const POSTPLUS_SESSION_REFRESH_LEEWAY_SECONDS = 60;
+
+function createHardError(code, message, cause, extra = {}) {
+  const error = new Error(message);
+  error.code = code;
+  if (cause !== undefined) {
+    error.cause = cause;
+  }
+  Object.assign(error, extra);
+  return error;
+}
 
 function resolveConfigProfile() {
   const value = process.env.POSTPLUS_PROFILE?.trim();
 
-  if (!value || value.toLowerCase() === "default") {
+  if (!value || value.toLowerCase() === 'default') {
     return null;
   }
 
-  return value.replace(/[^a-zA-Z0-9._-]+/g, "-");
+  return value.replace(/[^a-zA-Z0-9._-]+/g, '-');
 }
 
 function resolveDefaultConfigRoot() {
   const profile = resolveConfigProfile();
   const appendProfile = (basePath) =>
-    profile ? path.join(basePath, "profiles", profile) : basePath;
+    profile ? path.join(basePath, 'profiles', profile) : basePath;
 
   switch (process.platform) {
-    case "darwin":
+    case 'darwin':
       return appendProfile(
-        path.join(os.homedir(), "Library", "Application Support", "postplus"),
+        path.join(os.homedir(), 'Library', 'Application Support', 'postplus'),
       );
-    case "win32": {
+    case 'win32': {
       const appData = process.env.APPDATA?.trim();
 
       return appendProfile(
         appData && appData.length > 0
-          ? path.join(appData, "postplus")
-          : path.join(os.homedir(), "AppData", "Roaming", "postplus"),
+          ? path.join(appData, 'postplus')
+          : path.join(os.homedir(), 'AppData', 'Roaming', 'postplus'),
       );
     }
     default: {
@@ -42,8 +51,8 @@ function resolveDefaultConfigRoot() {
 
       return appendProfile(
         xdgConfigHome && xdgConfigHome.length > 0
-          ? path.join(xdgConfigHome, "postplus")
-          : path.join(os.homedir(), ".config", "postplus"),
+          ? path.join(xdgConfigHome, 'postplus')
+          : path.join(os.homedir(), '.config', 'postplus'),
       );
     }
   }
@@ -56,14 +65,34 @@ export function getPostPlusCliConfigPath() {
       ? path.resolve(override)
       : resolveDefaultConfigRoot();
 
-  return path.join(root, "config.json");
+  return path.join(root, 'config.json');
 }
 
 export function readPostPlusCliConfig() {
+  const configPath = getPostPlusCliConfigPath();
+
   try {
-    return JSON.parse(fs.readFileSync(getPostPlusCliConfigPath(), "utf8"));
-  } catch {
-    return null;
+    return JSON.parse(fs.readFileSync(configPath, 'utf8'));
+  } catch (error) {
+    if (error && typeof error === 'object' && error.code === 'ENOENT') {
+      return null;
+    }
+
+    if (error instanceof SyntaxError) {
+      throw createHardError(
+        'postplus_cli_config_invalid_json',
+        `PostPlus CLI config is not valid JSON: ${configPath}`,
+        error,
+        { configPath },
+      );
+    }
+
+    throw createHardError(
+      'postplus_cli_config_read_failed',
+      `Failed to read PostPlus CLI config: ${configPath}`,
+      error,
+      { configPath },
+    );
   }
 }
 
@@ -80,7 +109,7 @@ function writePostPlusCliConfig(config) {
       null,
       2,
     )}\n`,
-    "utf8",
+    'utf8',
   );
 }
 
@@ -89,16 +118,16 @@ export function resolvePostPlusAccessToken() {
 
   if (envValue) {
     return {
-      source: "env",
+      source: 'env',
       value: envValue,
     };
   }
 
   const configValue = readPostPlusCliConfig()?.accessToken;
 
-  return typeof configValue === "string" && configValue.trim().length > 0
+  return typeof configValue === 'string' && configValue.trim().length > 0
     ? {
-        source: "config",
+        source: 'config',
         value: configValue.trim(),
       }
     : null;
@@ -109,16 +138,16 @@ export function resolvePostPlusRefreshToken() {
 
   if (envValue) {
     return {
-      source: "env",
+      source: 'env',
       value: envValue,
     };
   }
 
   const configValue = readPostPlusCliConfig()?.refreshToken;
 
-  return typeof configValue === "string" && configValue.trim().length > 0
+  return typeof configValue === 'string' && configValue.trim().length > 0
     ? {
-        source: "config",
+        source: 'config',
         value: configValue.trim(),
       }
     : null;
@@ -128,13 +157,13 @@ export function resolvePostPlusApiBaseUrl() {
   const envValue = process.env.POSTPLUS_API_BASE_URL?.trim();
 
   if (envValue) {
-    return envValue.replace(/\/+$/, "");
+    return envValue.replace(/\/+$/, '');
   }
 
   const configValue = readPostPlusCliConfig()?.apiBaseUrl;
 
-  return typeof configValue === "string" && configValue.trim().length > 0
-    ? configValue.trim().replace(/\/+$/, "")
+  return typeof configValue === 'string' && configValue.trim().length > 0
+    ? configValue.trim().replace(/\/+$/, '')
     : null;
 }
 
@@ -152,7 +181,7 @@ export function resolvePostPlusHostedSessionAuth() {
     accessTokenSource: accessToken.source,
     apiBaseUrl,
     refreshToken: refreshToken?.value ?? null,
-    refreshTokenSource: refreshToken?.source ?? "missing",
+    refreshTokenSource: refreshToken?.source ?? 'missing',
   };
 }
 
@@ -164,9 +193,9 @@ export async function refreshPostPlusHostedSessionAuthIfNeeded() {
   if (
     !auth ||
     !auth.refreshToken ||
-    auth.accessTokenSource !== "config" ||
-    auth.refreshTokenSource !== "config" ||
-    typeof sessionExpiresAt !== "number" ||
+    auth.accessTokenSource !== 'config' ||
+    auth.refreshTokenSource !== 'config' ||
+    typeof sessionExpiresAt !== 'number' ||
     !Number.isFinite(sessionExpiresAt)
   ) {
     return null;
@@ -195,48 +224,52 @@ export async function refreshPostPlusHostedSessionAuth(input = {}) {
       body: JSON.stringify({
         refreshToken: auth.refreshToken,
       }),
-      codePrefix: "postplus_cli_auth_refresh",
+      codePrefix: 'postplus_cli_auth_refresh',
       headers: {
         authorization: `Bearer ${auth.accessToken}`,
-        "content-type": "application/json",
+        'content-type': 'application/json',
       },
-      method: "POST",
-      providerName: "PostPlus auth refresh",
+      method: 'POST',
+      providerName: 'PostPlus auth refresh',
     },
   );
 
   const payload = response?.data;
 
-  if (!payload || typeof payload !== "object") {
-    throw new Error("PostPlus auth refresh returned an invalid payload.");
+  if (!payload || typeof payload !== 'object') {
+    throw new Error('PostPlus auth refresh returned an invalid payload.');
   }
 
   if (
-    typeof payload.accessToken !== "string" ||
+    typeof payload.accessToken !== 'string' ||
     !payload.accessToken.trim() ||
-    typeof payload.refreshToken !== "string" ||
+    typeof payload.refreshToken !== 'string' ||
     !payload.refreshToken.trim()
   ) {
-    throw new Error("PostPlus auth refresh returned incomplete session tokens.");
+    throw new Error(
+      'PostPlus auth refresh returned incomplete session tokens.',
+    );
   }
 
   if (
-    auth.accessTokenSource === "config" &&
-    auth.refreshTokenSource === "config"
+    auth.accessTokenSource === 'config' &&
+    auth.refreshTokenSource === 'config'
   ) {
     const currentConfig = readPostPlusCliConfig() || {};
     writePostPlusCliConfig({
       ...currentConfig,
       accessToken: payload.accessToken.trim(),
       refreshToken: payload.refreshToken.trim(),
-      ...(typeof payload.accountId === "string" ? { accountId: payload.accountId } : {}),
-      ...(typeof payload.sessionExpiresAt === "number"
+      ...(typeof payload.accountId === 'string'
+        ? { accountId: payload.accountId }
+        : {}),
+      ...(typeof payload.sessionExpiresAt === 'number'
         ? { sessionExpiresAt: payload.sessionExpiresAt }
         : {}),
-      ...(typeof payload.userEmail === "string" || payload.userEmail === null
+      ...(typeof payload.userEmail === 'string' || payload.userEmail === null
         ? { userEmail: payload.userEmail }
         : {}),
-      ...(typeof payload.userId === "string" ? { userId: payload.userId } : {}),
+      ...(typeof payload.userId === 'string' ? { userId: payload.userId } : {}),
     });
   }
 

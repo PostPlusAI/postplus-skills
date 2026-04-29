@@ -26,8 +26,8 @@ function inferResultUrl(request, responsePayload) {
   if (typeof payload?.urls?.get === "string" && payload.urls.get.length > 0) {
     return payload.urls.get;
   }
-  if (payload?.id && request?.provider === "wavespeed") {
-    return `https://api.wavespeed.ai/api/v3/predictions/${payload.id}/result`;
+  if (payload?.id && request?.provider === "hosted-media") {
+    return payload.id;
   }
   throw new Error("Could not infer result URL from request/response.");
 }
@@ -106,7 +106,7 @@ async function main() {
 
   const result = unwrapProviderResult(rawResult);
   const manifest = createImageManifestBase(request, paths);
-  manifest.providerPredictionId = result?.id || null;
+  manifest.generationHandle = result?.id || null;
   manifest.providerStatus = result?.status || null;
   manifest.providerUrls = result?.urls || null;
   manifest.mediaType = "image";

@@ -154,7 +154,7 @@ Run the validated actor:
 
 ```bash
 node ${CLAUDE_SKILL_DIR}/_postplus_shared/shared-collection/scripts/collection_actor_run.mjs \
-  --actor rednote-xiaohongshu-user-posts-scraper \
+  --collection-key xhs-account-posts \
   --input <work-folder>/.postplus/xhs-benchmark-actor-input.json \
   --output <work-folder>/.postplus/xhs-benchmark-raw.json
 ```

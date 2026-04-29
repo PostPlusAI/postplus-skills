@@ -40,16 +40,16 @@ function inferNeedsTimestamps(brief) {
 function choosePrimaryModel(brief) {
   if (brief.inputType === "audio") {
     if (brief.costMode === "cheap-first" && brief.quality === "rough") {
-      return "wavespeed-ai/openai-whisper-turbo";
+      return "transcription-whisper-turbo";
     }
-    return "wavespeed-ai/openai-whisper";
+    return "transcription-whisper";
   }
 
   if (brief.inputType === "video") {
     if (brief.costMode === "cheap-first" && brief.quality === "rough") {
-      return "wavespeed-ai/openai-whisper-turbo";
+      return "transcription-whisper-turbo";
     }
-    return "wavespeed-ai/openai-whisper-with-video";
+    return "transcription-whisper-with-video";
   }
 
   return null;

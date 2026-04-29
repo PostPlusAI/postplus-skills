@@ -24,7 +24,7 @@ function main() {
 
   const input = readJson(args.input);
   const normalized = normalizeDataset(input, {
-    actorId: args.actor,
+    sourceId: args.actor,
     datasetType: args["dataset-type"],
     inputPath: path.resolve(args.input)
   });

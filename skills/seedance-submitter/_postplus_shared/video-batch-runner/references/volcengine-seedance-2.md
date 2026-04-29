@@ -32,7 +32,7 @@ Seedance 2.0 / 2.0 fast supports:
   - reference audios
   - optional text prompt
 
-The adapter should treat these as one provider family, not separate hard-coded scripts.
+The adapter should treat these as one model group, not separate hard-coded scripts.
 
 ## Prompting Direction
 

@@ -32,7 +32,7 @@ function main() {
   });
 
   const payload = {
-    actorId: null,
+    sourceId: null,
     sourceType: "live-vendor-page",
     sellerId,
     fetchedAt: new Date().toISOString(),

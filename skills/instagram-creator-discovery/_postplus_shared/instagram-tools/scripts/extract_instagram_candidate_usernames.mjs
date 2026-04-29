@@ -38,11 +38,11 @@ function normalizeSourceSurface(dataset, item) {
   if (item.recordType === "profile") {
     return "search";
   }
-  const actorId = safeLower(dataset.actorId);
-  if (actorId.includes("search")) return "search";
-  if (actorId.includes("hashtag")) return "hashtag";
-  if (actorId.includes("reel")) return "reel";
-  if (actorId.includes("post")) return "post";
+  const sourceId = safeLower(dataset.sourceId);
+  if (sourceId.includes("search")) return "search";
+  if (sourceId.includes("hashtag")) return "hashtag";
+  if (sourceId.includes("reel")) return "reel";
+  if (sourceId.includes("post")) return "post";
   return dataset.datasetType || "unknown";
 }
 
@@ -108,7 +108,7 @@ function main() {
     input: {
       datasetPath: path.resolve(args.input),
       route,
-      actorId: cleanString(dataset.actorId),
+      sourceId: cleanString(dataset.sourceId),
       datasetType: cleanString(dataset.datasetType)
     },
     itemCount: itemsOut.length,

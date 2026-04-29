@@ -25,7 +25,7 @@ function main() {
 
   const brief = readJson(args.brief);
   const compiled = compileBriefToActorRequest(brief, {
-    actorId: cleanString(args.actor)
+    sourceId: cleanString(args.actor)
   });
 
   const payload = {

@@ -24,13 +24,13 @@ function main() {
 
   const raw = readJson(args.input);
   const normalized = normalizeDataset(raw, {
-    actorId: args.actor,
+    sourceId: args.actor,
     inputPath: args.input
   });
 
   if (normalized.itemCount === 0) {
     throw new Error(
-      `XHS benchmark normalization produced zero items for actor ${normalized.actorId}. Inspect the raw actor output first.`
+      `XHS benchmark normalization produced zero items for actor ${normalized.sourceId}. Inspect the raw actor output first.`
     );
   }
 

@@ -38,7 +38,7 @@ function normalizeUploadRequest(input) {
     assetId,
     runId,
     jobId: input.jobId || runId,
-    provider: input.provider || "wavespeed",
+    provider: input.provider || "hosted-media",
     localFilePath: path.resolve(input.localFilePath),
     localAssetDir,
     localOutputDir: input.localOutputDir || localAssetDir

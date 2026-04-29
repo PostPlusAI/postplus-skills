@@ -187,7 +187,7 @@ function normalizeStructuredList(value) {
 }
 
 export function normalizeItem(item, options = {}) {
-  const actorId = cleanString(options.actorId);
+  const sourceId = cleanString(options.sourceId);
   const sourceUrl = cleanString(
     pickFirst(item, [
       "sourceUrl",
@@ -221,7 +221,7 @@ export function normalizeItem(item, options = {}) {
 
   return {
     source: {
-      actorId,
+      sourceId,
       sourceUrl,
       scrapedAt
     },
@@ -322,15 +322,15 @@ export function normalizeItem(item, options = {}) {
 
 export function normalizeDataset(input, options = {}) {
   const payload = Array.isArray(input) ? { items: input } : input;
-  const actorId = cleanString(payload.actorId || options.actorId);
+  const sourceId = cleanString(payload.sourceId || options.sourceId);
   const items = toArray(payload.items || payload);
-  const normalizedItems = items.map((item) => normalizeItem(item, { actorId }));
+  const normalizedItems = items.map((item) => normalizeItem(item, { sourceId }));
 
   return {
     schemaVersion: SCHEMA_VERSION,
     normalizedAt: new Date().toISOString(),
     source: {
-      actorId,
+      sourceId,
       fetchedAt: cleanString(payload.fetchedAt),
       inputPath: cleanString(options.inputPath),
       sourceDatasetPath: cleanString(options.inputPath)
@@ -340,13 +340,13 @@ export function normalizeDataset(input, options = {}) {
   };
 }
 
-export function readDatasetForAnalysis(filePath, explicitActorId = null) {
+export function readDatasetForAnalysis(filePath, explicitSourceId = null) {
   const input = readJson(filePath);
   if (input && input.schemaVersion === SCHEMA_VERSION && Array.isArray(input.items)) {
     return input;
   }
   return normalizeDataset(input, {
-    actorId: explicitActorId,
+    sourceId: explicitSourceId,
     inputPath: filePath
   });
 }

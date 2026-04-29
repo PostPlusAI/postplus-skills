@@ -60,8 +60,8 @@ function passthroughFields(brief) {
   );
 }
 
-function buildInput(brief, actorId) {
-  const actor = String(actorId || "").toLowerCase();
+function buildInput(brief, sourceId) {
+  const actor = String(sourceId || "").toLowerCase();
   const queries = normalizeStringArray(brief.queries || brief.searchQueries || brief.keywords);
   const hashtags = normalizeStringArray(brief.hashtags);
   const usernames = normalizeStringArray(brief.usernames || brief.profiles || brief.handles);
@@ -208,10 +208,10 @@ function main() {
   }
 
   const brief = readJson(args.brief);
-  const actorId = cleanString(args.actor);
-  const input = buildInput(brief, actorId);
+  const sourceId = cleanString(args.actor);
+  const input = buildInput(brief, sourceId);
   const payload = {
-    actorId,
+    sourceId,
     builtAt: new Date().toISOString(),
     briefPath: path.resolve(args.brief),
     input

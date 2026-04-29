@@ -3,13 +3,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import {
-  downloadHostedWaveSpeedFile,
-  requestHostedWaveSpeedJson,
-  uploadHostedWaveSpeedFile,
-} from '../_postplus_shared/shared-runtime/scripts/lib/hosted_wavespeed_bridge.mjs';
+  downloadHostedMediaFile,
+  requestHostedMediaGenerationJson,
+  uploadHostedMediaFile,
+} from '../_postplus_shared/shared-runtime/scripts/lib/hosted_media_generation_bridge.mjs';
 
-export const WAVESPEED_API_BASE = 'https://api.wavespeed.ai/api/v3';
-export const DEFAULT_PROVIDER = 'wavespeed';
+export const DEFAULT_PROVIDER = 'hosted-media';
 export const DEFAULT_LANGUAGE = 'auto';
 
 export function parseArgs(argv) {
@@ -58,40 +57,27 @@ function countBillableTextBlocks(body) {
 
 export async function fetchJson(url, options = {}) {
   const method = String(options.method || 'GET').toUpperCase();
-  const pathname = new URL(url).pathname.replace(/^\/api\/v3\//, '');
   const requestBody =
     typeof options.body === 'string' && options.body.trim().length > 0
       ? JSON.parse(options.body)
       : (options.body ?? {});
-  const providerModelPath =
-    pathname === 'wavespeed-ai/qwen3-tts/voice-design'
-      ? 'wavespeed-ai/qwen3-tts/voice-design'
-      : pathname === 'wavespeed-ai/qwen3-tts/voice-clone'
-        ? 'wavespeed-ai/qwen3-tts/voice-clone'
-        : pathname;
+  const isBillableVoiceModel =
+    url === 'voice-qwen3-design' || url === 'voice-qwen3-clone';
 
-  return requestHostedWaveSpeedJson(url, {
+  return requestHostedMediaGenerationJson(url, {
     method,
     body: requestBody,
-    billing:
-      method !== 'POST' ||
-      (providerModelPath !== 'wavespeed-ai/qwen3-tts/voice-design' &&
-        providerModelPath !== 'wavespeed-ai/qwen3-tts/voice-clone')
-        ? { charge: false }
+    requestDimensions:
+      method !== 'POST' || !isBillableVoiceModel
+        ? undefined
         : {
-            charge: true,
-            feature: 'vibe-marketing.voice-generation',
-            provider: 'wavespeed',
-            providerModelPath,
-            requestDimensions: {
-              billableUnitCount: countBillableTextBlocks(requestBody),
-              characterCount:
-                typeof requestBody.text === 'string'
-                  ? [...requestBody.text].length
-                  : 0,
-              providerOperation: pathname,
-              requestBytes: Buffer.byteLength(JSON.stringify(requestBody)),
-            },
+            billableUnitCount: countBillableTextBlocks(requestBody),
+            characterCount:
+              typeof requestBody.text === 'string'
+                ? [...requestBody.text].length
+                : 0,
+            operationKey: url,
+            requestBytes: Buffer.byteLength(JSON.stringify(requestBody)),
           },
   });
 }
@@ -143,7 +129,7 @@ export async function pollPredictionResult(
 }
 
 export async function downloadFile(url, outputPath) {
-  await downloadHostedWaveSpeedFile(url, outputPath);
+  await downloadHostedMediaFile(url, outputPath);
 }
 
 export function inferAudioExtension(url, fallback = 'wav') {
@@ -157,7 +143,7 @@ export function inferAudioExtension(url, fallback = 'wav') {
 }
 
 export async function uploadLocalMedia(localFilePath) {
-  const data = await uploadHostedWaveSpeedFile(localFilePath);
+  const data = await uploadHostedMediaFile(localFilePath);
 
   const uploadedUrl = data?.data?.download_url || data?.download_url || null;
   if (!uploadedUrl) {

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { randomUUID } from 'node:crypto';
 
-import { runHostedApifyActor } from '../../shared-collection/scripts/lib/hosted_apify_bridge.mjs';
+import { runHostedCollection } from '../../shared-collection/scripts/lib/hosted_collection_bridge.mjs';
 import { formatCliError } from '../../shared-runtime/scripts/lib/network_runtime.mjs';
 import {
   normalizeDataset,
@@ -12,7 +12,7 @@ import {
 
 function usage() {
   console.error(
-    'Usage: node collect_top_video_comments.mjs --input <dataset.json> --output <comments.json> [--actor clockworks/tiktok-comments-scraper] [--top 8] [--max-comments 40]',
+    'Usage: node collect_top_video_comments.mjs --input <dataset.json> --output <comments.json> [--collection-key tiktok-comments] [--top 8] [--max-comments 40]',
   );
 }
 
@@ -35,7 +35,8 @@ async function main() {
     return;
   }
 
-  const actorId = args.actor || 'clockworks/tiktok-comments-scraper';
+  const collectionKey = args['collection-key'] || 'tiktok-comments';
+  const sourceId = 'clockworks/tiktok-comments-scraper';
   const topCount = Number(args.top || 8);
   const maxComments = Number(args['max-comments'] || 40);
   const raw = readJson(args.input);
@@ -52,28 +53,23 @@ async function main() {
     )
     .slice(0, topCount);
 
-  const input = actorId.includes('apidojo/')
-    ? {
-        startUrls: topVideos.map((video) => ({ url: video.url })),
-        maxItems: maxComments,
-      }
-    : {
-        postUrls: topVideos.map((video) => video.url),
-        maxItems: maxComments,
-      };
+  const input = {
+    postUrls: topVideos.map((video) => video.url),
+    maxItems: maxComments,
+  };
 
   const outputPath = args.output;
   const tempOutput = `${outputPath}.raw.json`;
-  const hostedPayload = await runHostedApifyActor({
-    actorId,
+  const hostedPayload = await runHostedCollection({
+    collectionKey,
     input,
-    operationId: `skill-apify:${randomUUID()}`,
+    operationId: `skill-collection:${randomUUID()}`,
     skillName: 'tiktok-research',
   });
   writeJson(tempOutput, hostedPayload);
 
   const normalized = normalizeDataset(readJson(tempOutput), {
-    actorId,
+    sourceId,
     datasetType: 'comments',
     inputPath: tempOutput,
   });

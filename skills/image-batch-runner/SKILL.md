@@ -59,24 +59,18 @@ If a current task already lives inside one project folder, keep the evidence loo
 Do not assume one client's reports are the default source basis for all image work.
 
 
-## Provider
+## Hosted Media
 
-Current hosted image provider support:
+Current hosted image endpoint keys:
 
-- supported models:
-  - `google/nano-banana-2`
-    - `text-to-image`
-    - `edit`
-  - `bytedance/seedream-v5.0-lite`
-    - `text-to-image`
-  - `bytedance/seedream-v5.0-lite/edit`
-    - `edit`
-  - `bytedance/seedream-v5.0-lite/sequential`
-    - `text-to-image`
-  - `bytedance/seedream-v5.0-lite/edit-sequential`
-    - `edit`
+- `image-nano-banana-2-text`
+- `image-nano-banana-2-edit`
+- `image-seedream-v5-lite-text`
+- `image-seedream-v5-lite-edit`
+- `image-seedream-v5-lite-sequential`
+- `image-seedream-v5-lite-edit-sequential`
 
-Read [`references/hosted-image-models.md`](references/hosted-image-models.md) for the current provider-specific notes.
+Read [`references/hosted-image-models.md`](references/hosted-image-models.md) for endpoint request notes.
 
 If you need image and video outputs to live under one durable asset folder instead of separate job folders, also read [`references/unified-asset-contract-v1.md`](references/unified-asset-contract-v1.md).
 
@@ -247,8 +241,6 @@ This skill expects two tool adapters:
 
 The normalized request/response shapes live in [`references/tool-contracts.md`](references/tool-contracts.md).
 
-The provider-specific first version is also described there.
-
 For the current hosted integration:
 
 - `generate_image` calls the selected model endpoint directly
@@ -257,8 +249,8 @@ For the current hosted integration:
 
 Model selection rule:
 
-- set `request.model` explicitly when you want a non-default model
-- default remains `google/nano-banana-2` for backward compatibility
+- set `request.model` to one of the hosted image endpoint keys above
+- default is `image-nano-banana-2-text`
 - use Seedream sequential variants when cross-shot identity consistency matters more than single-image iteration speed
 - for Seedream models, prefer explicit `size`
 - for sequential Seedream models, set `maxImages` to the intended number of outputs

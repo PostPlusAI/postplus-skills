@@ -191,8 +191,8 @@ function normalizeStartUrls(input) {
   }).filter(Boolean);
 }
 
-function inferSourceSurface(actorId, input, item) {
-  const actor = safeLower(actorId);
+function inferSourceSurface(sourceId, input, item) {
+  const actor = safeLower(sourceId);
   const rawUrl = cleanString(
     pickFirst(item, ["url", "webVideoUrl", "videoUrl", "videoWebUrl", "aweme_url", "video_url"])
   );
@@ -295,13 +295,13 @@ function normalizeMentions(item) {
   return uniqueStrings(collected);
 }
 
-export function inferDatasetType(actorId, explicitDatasetType, items) {
+export function inferDatasetType(sourceId, explicitDatasetType, items) {
   const provided = cleanString(explicitDatasetType);
   if (provided) {
     return provided;
   }
 
-  const actor = safeLower(actorId);
+  const actor = safeLower(sourceId);
   if (actor.includes("user-search")) return "user-search";
   if (actor.includes("profile")) return "profiles";
   if (actor.includes("comment")) return "comments";
@@ -330,7 +330,7 @@ function normalizeProfileUrl(username, item) {
   ) || (username ? `https://www.tiktok.com/@${username}` : null);
 }
 
-function normalizeProfileItem(item, actorId, datasetType, input) {
+function normalizeProfileItem(item, sourceId, datasetType, input) {
   const profileSource = item?.authorMeta && typeof item.authorMeta === "object" ? item.authorMeta : item;
   const username = cleanString(
     pickFirst(profileSource, [
@@ -340,7 +340,7 @@ function normalizeProfileItem(item, actorId, datasetType, input) {
       "userName"
     ])
   );
-  const sourceSurface = inferSourceSurface(actorId, input, item);
+  const sourceSurface = inferSourceSurface(sourceId, input, item);
   const sourceQuery = inferSourceQuery(input, item, sourceSurface);
   const regionCode = inferRegionCode(input, item);
 
@@ -379,7 +379,7 @@ function normalizeProfileItem(item, actorId, datasetType, input) {
       pickFirst(profileSource, ["avatar", "avatarThumb", "avatarMedium", "avatarUrl", "originalAvatarUrl"])
     ),
     source: {
-      actorId,
+      sourceId,
       datasetType,
       sourceUrl: cleanString(pickFirst(profileSource, ["url", "profileUrl"])) || cleanString(pickFirst(item, ["url", "profileUrl"])),
       scrapedAt: toIsoDate(
@@ -390,7 +390,7 @@ function normalizeProfileItem(item, actorId, datasetType, input) {
   };
 }
 
-function normalizeVideoItem(item, actorId, input) {
+function normalizeVideoItem(item, sourceId, input) {
   const username = cleanString(
     pickFirst(item, [
       "authorMeta.name",
@@ -409,7 +409,7 @@ function normalizeVideoItem(item, actorId, input) {
     ])
   );
   const videoId = cleanString(pickFirst(item, ["id", "videoId", "aweme_id"]));
-  const sourceSurface = inferSourceSurface(actorId, input, item);
+  const sourceSurface = inferSourceSurface(sourceId, input, item);
   const sourceQuery = inferSourceQuery(input, item, sourceSurface);
   const regionCode = inferRegionCode(input, item);
   return {
@@ -472,7 +472,7 @@ function normalizeVideoItem(item, actorId, input) {
     ) ||
       (username && videoId ? `https://www.tiktok.com/@${username}/video/${videoId}` : null),
     source: {
-      actorId,
+      sourceId,
       sourceUrl: cleanString(
         pickFirst(item, ["postPage", "inputSource", "url", "webVideoUrl", "video.url", "videoUrl"])
       ),
@@ -483,8 +483,8 @@ function normalizeVideoItem(item, actorId, input) {
   };
 }
 
-function normalizeCommentItem(item, actorId, input) {
-  const sourceSurface = inferSourceSurface(actorId, input, item);
+function normalizeCommentItem(item, sourceId, input) {
+  const sourceSurface = inferSourceSurface(sourceId, input, item);
   const sourceQuery = inferSourceQuery(input, item, sourceSurface);
   const regionCode = inferRegionCode(input, item);
   return {
@@ -502,16 +502,16 @@ function normalizeCommentItem(item, actorId, input) {
     replyCount: parseNumber(pickFirst(item, ["reply_comment_total", "replyCount"])),
     publishedAt: toIsoDate(pickFirst(item, ["create_time", "createTime", "timestamp"])),
     source: {
-      actorId,
+      sourceId,
       sourceUrl: cleanString(pickFirst(item, ["videoWebUrl", "aweme_url", "video_url"])),
       scrapedAt: toIsoDate(pickFirst(item, ["scrapedAt", "fetchedAt", "timestamp"]))
     }
   };
 }
 
-function normalizeShopCreatorItem(item, actorId, input) {
+function normalizeShopCreatorItem(item, sourceId, input) {
   const username = cleanString(pickFirst(item, ["username", "creatorUsername", "handle"]));
-  const sourceSurface = inferSourceSurface(actorId, input, item);
+  const sourceSurface = inferSourceSurface(sourceId, input, item);
   const sourceQuery = inferSourceQuery(input, item, sourceSurface);
   const regionCode = inferRegionCode(input, item);
   return {
@@ -529,7 +529,7 @@ function normalizeShopCreatorItem(item, actorId, input) {
     productCount30d: parseNumber(pickFirst(item, ["productCount30d", "products30d", "productCount"])),
     profileUrl: normalizeProfileUrl(username, item),
     source: {
-      actorId,
+      sourceId,
       sourceUrl: cleanString(pickFirst(item, ["url", "profileUrl"])),
       scrapedAt: toIsoDate(pickFirst(item, ["scrapedAt", "fetchedAt", "timestamp"]))
     }
@@ -537,21 +537,21 @@ function normalizeShopCreatorItem(item, actorId, input) {
 }
 
 export function normalizeItem(item, options = {}) {
-  const actorId = cleanString(options.actorId);
-  const datasetType = inferDatasetType(actorId, options.datasetType, [item]);
+  const sourceId = cleanString(options.sourceId);
+  const datasetType = inferDatasetType(sourceId, options.datasetType, [item]);
   const input = options.input || null;
 
   if (datasetType === "videos") {
-    return normalizeVideoItem(item, actorId, input);
+    return normalizeVideoItem(item, sourceId, input);
   }
   if (datasetType === "profiles" || datasetType === "user-search") {
-    return normalizeProfileItem(item, actorId, datasetType, input);
+    return normalizeProfileItem(item, sourceId, datasetType, input);
   }
   if (datasetType === "comments") {
-    return normalizeCommentItem(item, actorId, input);
+    return normalizeCommentItem(item, sourceId, input);
   }
   if (datasetType === "shop-creators") {
-    return normalizeShopCreatorItem(item, actorId, input);
+    return normalizeShopCreatorItem(item, sourceId, input);
   }
 
   return {
@@ -559,16 +559,16 @@ export function normalizeItem(item, options = {}) {
     recordType: "unknown",
     raw: item,
     source: {
-      actorId,
+      sourceId,
       scrapedAt: new Date().toISOString()
     }
   };
 }
 
 export function normalizeDataset(input, options = {}) {
-  const actorId = cleanString(options.actorId || input?.actorId);
+  const sourceId = cleanString(options.sourceId || input?.sourceId);
   const rawItems = Array.isArray(input?.items) ? input.items : toArray(input);
-  const datasetType = inferDatasetType(actorId, options.datasetType, rawItems);
+  const datasetType = inferDatasetType(sourceId, options.datasetType, rawItems);
   const actorInput = options.input || input?.input || null;
   const effectiveItems =
     datasetType === "profiles"
@@ -588,7 +588,7 @@ export function normalizeDataset(input, options = {}) {
           .filter(Boolean)
       : rawItems;
 
-  const normalizedItems = effectiveItems.map((item) => normalizeItem(item, { actorId, datasetType, input: actorInput }));
+  const normalizedItems = effectiveItems.map((item) => normalizeItem(item, { sourceId, datasetType, input: actorInput }));
   const dedupedItems =
     datasetType === "profiles" || datasetType === "user-search"
       ? normalizedItems.filter((item, index, items) => {
@@ -607,7 +607,7 @@ export function normalizeDataset(input, options = {}) {
     schemaVersion: SCHEMA_VERSION,
     platform: "tiktok",
     datasetType,
-    actorId,
+    sourceId,
     fetchedAt: cleanString(input?.fetchedAt) || new Date().toISOString(),
     input: actorInput,
     inputPath: cleanString(options.inputPath),

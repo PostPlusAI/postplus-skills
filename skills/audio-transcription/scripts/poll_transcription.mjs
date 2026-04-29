@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 import {
-  WAVESPEED_API_BASE,
   buildRequestPaths,
   buildNormalizedTranscript,
   createManifestBase,
@@ -24,7 +23,7 @@ function inferGetUrl(resultUrl, request, rawResponse) {
     return resultUrl;
   }
   const responsePayload = rawResponse?.data || rawResponse || {};
-  return responsePayload?.urls?.get || (responsePayload?.id ? `${WAVESPEED_API_BASE}/predictions/${responsePayload.id}/result` : null);
+  return responsePayload?.urls?.get || responsePayload?.id || null;
 }
 
 async function main() {
@@ -50,7 +49,7 @@ async function main() {
 
   const result = unwrapProviderResult(rawResult);
   const manifest = createManifestBase(request, paths);
-  manifest.providerPredictionId = result?.id || null;
+  manifest.generationHandle = result?.id || null;
   manifest.providerStatus = result?.status || null;
   manifest.providerUrls = result?.urls || null;
   manifest.downloadedArtifacts = await downloadProviderOutputs(result, paths);

@@ -90,7 +90,7 @@ Run the actor:
 
 ```bash
 node ${CLAUDE_SKILL_DIR}/scripts/collection_actor_run.mjs \
-  --actor tiktok-creative-center-top-ads \
+  --collection-key tiktok-ads-top \
   --input ${CLAUDE_SKILL_DIR}/templates/top-ads-sample.json \
   --output <work-folder>/.postplus/tiktok-top-ads-raw.json
 ```

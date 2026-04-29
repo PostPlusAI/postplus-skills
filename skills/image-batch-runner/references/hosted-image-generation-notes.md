@@ -32,7 +32,7 @@ Reason:
 - weak source images amplify fake-looking motion later in talking-head render stages
 - realism problems should be debugged from the earliest visual stage, not only at the video stage
 
-Current known top tier for `google/nano-banana-2` is `4k`.
+Current known top tier for `image-nano-banana-2-text` is `4k`.
 
 If a lower setting is used, record that decision explicitly in the request record as a cost or speed tradeoff.
 

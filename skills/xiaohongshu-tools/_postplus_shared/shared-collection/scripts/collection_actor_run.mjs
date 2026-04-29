@@ -6,7 +6,7 @@ import {
   createSkillBoundary,
   logSkillEvent,
 } from '../../shared-runtime/scripts/lib/skill_runtime.mjs';
-import { runHostedApifyActor } from './lib/hosted_apify_bridge.mjs';
+import { runHostedCollection } from './lib/hosted_collection_bridge.mjs';
 
 export function parseArgs(argv) {
   const args = {};
@@ -40,7 +40,7 @@ export function writeJson(filePath, value) {
 
 function usage(commandName = 'collection_actor_run.mjs') {
   console.error(
-    `Usage: node ${commandName} --actor <actor-id> --input <input.json> [--output <output.json>] [--skill-name <skill-id>]`,
+    `Usage: node ${commandName} --collection-key <collection-key> --input <input.json> [--output <output.json>] [--skill-name <skill-id>]`,
   );
 }
 
@@ -48,7 +48,7 @@ function buildBoundary(input) {
   return createSkillBoundary({
     skillName: input.skillName ?? inferSkillName(input.commandName),
     actionName: input.actionName ?? inferActionName(input.commandName),
-    provider: 'apify',
+    provider: 'collection',
   });
 }
 
@@ -78,11 +78,13 @@ export async function runCollectionActor(argv, options = {}) {
     actionName: options.actionName,
   });
 
-  if (args.help || !args.actor || !args.input) {
+  if (args.help || !args['collection-key'] || !args.input) {
     usage(commandName);
     process.exitCode = args.help ? 0 : 1;
     return;
   }
+
+  const collectionKey = String(args['collection-key']).trim();
 
   let input;
   try {
@@ -106,17 +108,17 @@ export async function runCollectionActor(argv, options = {}) {
     eventType: 'script_started',
     phase: 'executing',
     status: 'started',
-    actorId: args.actor,
+    collectionKey,
     inputPath: path.resolve(args.input),
     outputPath: args.output ? path.resolve(args.output) : null,
     commandName,
   });
 
   try {
-    const payload = await runHostedApifyActor({
-      actorId: args.actor,
+    const payload = await runHostedCollection({
+      collectionKey,
       input,
-      operationId: `skill-apify:${boundary.runId}`,
+      operationId: `skill-collection:${boundary.runId}`,
       skillName: boundary.skillName,
     });
 
@@ -126,7 +128,7 @@ export async function runCollectionActor(argv, options = {}) {
         eventType: 'artifact_written',
         phase: 'output',
         status: 'completed',
-        actorId: args.actor,
+        collectionKey,
         outputPath: path.resolve(args.output),
         itemCount: payload.itemCount,
       });
@@ -142,7 +144,7 @@ export async function runCollectionActor(argv, options = {}) {
       eventType: 'script_failed',
       phase: 'executing',
       status: 'failed',
-      actorId: args.actor,
+      collectionKey,
       errorCode:
         error && typeof error === 'object' && 'code' in error
           ? error.code

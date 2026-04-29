@@ -2,7 +2,7 @@
 import { randomUUID } from 'node:crypto';
 import path from 'node:path';
 
-import { runHostedApifyActor } from '../../shared-collection/scripts/lib/hosted_apify_bridge.mjs';
+import { runHostedCollection } from '../../shared-collection/scripts/lib/hosted_collection_bridge.mjs';
 import { formatCliError } from '../../shared-runtime/scripts/lib/network_runtime.mjs';
 import {
   normalizeDataset,
@@ -13,7 +13,7 @@ import {
 
 function usage() {
   console.error(
-    'Usage: node expand_tiktok_creator_graph.mjs --input <normalized-videos.json> --output <raw.json> [--actor clockworks/tiktok-scraper] [--top 10] [--results-per-seed 6]',
+    'Usage: node expand_tiktok_creator_graph.mjs --input <normalized-videos.json> --output <raw.json> [--collection-key tiktok-related-videos] [--top 10] [--results-per-seed 6]',
   );
 }
 
@@ -35,7 +35,8 @@ async function main() {
     return;
   }
 
-  const actorId = args.actor || 'clockworks/tiktok-scraper';
+  const collectionKey = args['collection-key'] || 'tiktok-related-videos';
+  const sourceId = 'clockworks/tiktok-scraper';
   const top = Number(args.top || 10);
   const resultsPerSeed = Number(args['results-per-seed'] || 6);
 
@@ -52,7 +53,7 @@ async function main() {
 
   if (!seedVideos.length) {
     writeJson(args.output, {
-      actorId,
+      sourceId,
       fetchedAt: new Date().toISOString(),
       input: {
         postURLs: [],
@@ -73,10 +74,10 @@ async function main() {
     shouldDownloadVideos: false,
   };
 
-  const hostedPayload = await runHostedApifyActor({
-    actorId,
+  const hostedPayload = await runHostedCollection({
+    collectionKey,
     input: actorInput,
-    operationId: `skill-apify:${randomUUID()}`,
+    operationId: `skill-collection:${randomUUID()}`,
     skillName: 'tiktok-research',
   });
   writeJson(args.output, {

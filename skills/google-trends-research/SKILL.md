@@ -149,7 +149,7 @@ For product-shell execution, use the repo-owned collection runner:
 
 ```bash
 node skills/google-trends-research/scripts/collection_actor_run.mjs \
-  --actor <actor-id> \
+  --collection-key google-trends-keywords \
   --input <input.json> \
   --output <raw-output.json>
 ```

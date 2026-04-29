@@ -3,14 +3,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import {
-  requestHostedWaveSpeedJson,
-  uploadHostedWaveSpeedFile,
-} from '../../shared-runtime/scripts/lib/hosted_wavespeed_bridge.mjs';
+  requestHostedMediaGenerationJson,
+  uploadHostedMediaFile,
+} from '../../shared-runtime/scripts/lib/hosted_media_generation_bridge.mjs';
 
-export const WAVESPEED_API_BASE = 'https://api.wavespeed.ai/api/v3';
-export const DEFAULT_PROVIDER = 'wavespeed';
-export const DEFAULT_AUDIO_MODEL = 'wavespeed-ai/openai-whisper';
-export const DEFAULT_VIDEO_MODEL = 'wavespeed-ai/openai-whisper-with-video';
+export const DEFAULT_PROVIDER = 'hosted-media';
+export const DEFAULT_AUDIO_MODEL = 'transcription-whisper';
+export const DEFAULT_VIDEO_MODEL = 'transcription-whisper-with-video';
 export const DEFAULT_LANGUAGE = 'auto';
 export const DEFAULT_TASK = 'transcribe';
 
@@ -55,7 +54,6 @@ export function nowIso() {
 
 export async function fetchJson(url, options = {}) {
   const method = String(options.method || 'GET').toUpperCase();
-  const pathname = new URL(url).pathname.replace(/^\/api\/v3\//, '');
   const requestBody =
     typeof options.body === 'string' && options.body.trim().length > 0
       ? JSON.parse(options.body)
@@ -65,30 +63,23 @@ export async function fetchJson(url, options = {}) {
       ? { ...requestBody }
       : requestBody;
   const mediaSeconds = Number(requestBody?.duration_seconds);
-  const providerModelPath =
-    requestBody?.enable_timestamps === true
-      ? `${pathname}:timestamps`
-      : pathname;
-  const billing =
+  const requestDimensions =
     method !== 'POST' ||
-    ![
-      'wavespeed-ai/openai-whisper',
-      'wavespeed-ai/openai-whisper-turbo',
-      'wavespeed-ai/openai-whisper-with-video',
-    ].includes(pathname)
-      ? { charge: false }
+	    ![
+	      'transcription-whisper',
+	      'transcription-whisper-turbo',
+	      'transcription-whisper-with-video',
+	    ].includes(url)
+      ? undefined
       : Number.isFinite(mediaSeconds) && mediaSeconds > 0
         ? {
-            charge: true,
-            feature: 'vibe-marketing.transcription',
-            provider: 'wavespeed',
-            providerModelPath,
-            requestDimensions: {
-              billableUnitCount: 1,
-              mediaSeconds: Math.ceil(mediaSeconds),
-              providerOperation: pathname,
-              requestBytes: Buffer.byteLength(JSON.stringify(providerBody)),
-            },
+            billableUnitCount: 1,
+            mediaSeconds: Math.ceil(mediaSeconds),
+	            operationKey:
+	              requestBody?.enable_timestamps === true
+	                ? `${url}:timestamps`
+	                : url,
+            requestBytes: Buffer.byteLength(JSON.stringify(providerBody)),
           }
         : (() => {
             throw new Error(
@@ -96,7 +87,7 @@ export async function fetchJson(url, options = {}) {
             );
           })();
 
-  const result = await requestHostedWaveSpeedJson(url, {
+  const result = await requestHostedMediaGenerationJson(url, {
     method,
     body:
       providerBody && typeof providerBody === 'object'
@@ -106,7 +97,7 @@ export async function fetchJson(url, options = {}) {
             ),
           )
         : providerBody,
-    billing,
+    requestDimensions,
   });
 
   return {
@@ -244,11 +235,11 @@ function isRemoteOrDataUrl(value) {
   return /^https?:\/\//iu.test(value) || /^data:/iu.test(value);
 }
 
-export async function uploadMediaToWaveSpeed(filePath, paths) {
+export async function uploadHostedMedia(filePath, paths) {
   const absolutePath = path.resolve(filePath);
   const requestRecord = {
-    provider: 'wavespeed',
-    endpoint: `${WAVESPEED_API_BASE}/media/upload/binary`,
+    provider: 'hosted-media',
+    operation: 'media-upload',
     sourceLocalFilePath: absolutePath,
     fileName: path.basename(absolutePath),
     mimeType: inferMimeTypeFromPath(absolutePath),
@@ -256,7 +247,7 @@ export async function uploadMediaToWaveSpeed(filePath, paths) {
   };
 
   writeJson(paths.mediaUploadRequestPath, requestRecord);
-  const data = await uploadHostedWaveSpeedFile(
+  const data = await uploadHostedMediaFile(
     absolutePath,
     requestRecord.mimeType,
   );
@@ -271,7 +262,7 @@ export async function uploadMediaToWaveSpeed(filePath, paths) {
 
   if (!uploadedUrl) {
     throw new Error(
-      `WaveSpeed upload did not return a download URL: ${JSON.stringify(data)}`,
+      `Hosted media upload did not return a download URL: ${JSON.stringify(data)}`,
     );
   }
 
@@ -329,7 +320,7 @@ export async function resolveProviderMediaInput(value, { paths } = {}) {
     throw new Error('paths are required to upload local media inputs.');
   }
 
-  const upload = await uploadMediaToWaveSpeed(candidatePath, paths);
+  const upload = await uploadHostedMedia(candidatePath, paths);
   return upload.uploadedUrl;
 }
 

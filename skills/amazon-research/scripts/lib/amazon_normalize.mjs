@@ -196,7 +196,7 @@ function normalizeSpecs(item) {
     .filter(Boolean);
 }
 
-function normalizeProductItem(item, actorId) {
+function normalizeProductItem(item, sourceId) {
   const asin = cleanString(
     pickFirst(item, ["asin", "ASIN", "productAsin", "productId"])
   );
@@ -207,7 +207,7 @@ function normalizeProductItem(item, actorId) {
   return {
     entityType: "product",
     source: {
-      actorId,
+      sourceId,
       sourceUrl: cleanString(
         pickFirst(item, ["sourceUrl", "url", "productUrl", "link"])
       ),
@@ -288,7 +288,7 @@ function normalizeProductItem(item, actorId) {
   };
 }
 
-function normalizeReviewItem(item, actorId) {
+function normalizeReviewItem(item, sourceId) {
   const title = cleanString(
     pickFirst(item, ["reviewTitle", "title", "headline"])
   );
@@ -299,7 +299,7 @@ function normalizeReviewItem(item, actorId) {
   return {
     entityType: "review",
     source: {
-      actorId,
+      sourceId,
       sourceUrl: cleanString(
         pickFirst(item, ["sourceUrl", "url", "productUrl", "reviewUrl"])
       ),
@@ -350,8 +350,8 @@ function normalizeReviewItem(item, actorId) {
   };
 }
 
-function detectEntityType(item, actorId) {
-  const actor = cleanString(actorId)?.toLowerCase() || "";
+function detectEntityType(item, sourceId) {
+  const actor = cleanString(sourceId)?.toLowerCase() || "";
   if (actor.includes("review")) {
     return "review";
   }
@@ -372,26 +372,26 @@ function detectEntityType(item, actorId) {
 }
 
 export function normalizeItem(item, options = {}) {
-  const actorId = cleanString(options.actorId);
-  const entityType = detectEntityType(item, actorId);
+  const sourceId = cleanString(options.sourceId);
+  const entityType = detectEntityType(item, sourceId);
   if (entityType === "review") {
-    return normalizeReviewItem(item, actorId);
+    return normalizeReviewItem(item, sourceId);
   }
-  return normalizeProductItem(item, actorId);
+  return normalizeProductItem(item, sourceId);
 }
 
 export function normalizeDataset(input, options = {}) {
-  const actorId = cleanString(options.actorId || input?.actorId);
+  const sourceId = cleanString(options.sourceId || input?.sourceId);
   const fetchedAt = cleanString(input?.fetchedAt);
   const items = toArray(input?.items).map((item) =>
-    normalizeItem(item, { actorId })
+    normalizeItem(item, { sourceId })
   );
 
   return {
     schemaVersion: SCHEMA_VERSION,
     normalizedAt: new Date().toISOString(),
     source: {
-      actorId,
+      sourceId,
       fetchedAt,
       inputPath: cleanString(options.inputPath) || null,
       sourceDatasetPath: cleanString(options.sourceDatasetPath) || null
@@ -401,13 +401,13 @@ export function normalizeDataset(input, options = {}) {
   };
 }
 
-export function readDatasetForAnalysis(filePath, actorId = null) {
+export function readDatasetForAnalysis(filePath, sourceId = null) {
   const input = readJson(filePath);
   if (Array.isArray(input?.items) && input?.schemaVersion) {
     return input;
   }
   return normalizeDataset(input, {
-    actorId,
+    sourceId,
     sourceDatasetPath: path.resolve(filePath)
   });
 }

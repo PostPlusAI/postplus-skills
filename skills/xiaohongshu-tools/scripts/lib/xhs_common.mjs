@@ -154,11 +154,11 @@ export function uniqueStrings(values) {
   return deduped;
 }
 
-export function detectDatasetType(actorId, explicitDatasetType) {
+export function detectDatasetType(sourceId, explicitDatasetType) {
   if (cleanString(explicitDatasetType)) {
     return cleanString(explicitDatasetType);
   }
-  const actor = safeLower(actorId);
+  const actor = safeLower(sourceId);
   if (actor.includes("comments")) {
     return "comments";
   }
@@ -556,8 +556,8 @@ export function normalizeDownloadRecord(item) {
 }
 
 export function normalizeDataset(dataset, options = {}) {
-  const actorId = cleanString(options.actorId || dataset.actorId) || null;
-  const datasetType = detectDatasetType(actorId, options.datasetType || dataset.datasetType);
+  const sourceId = cleanString(options.sourceId || dataset.sourceId) || null;
+  const datasetType = detectDatasetType(sourceId, options.datasetType || dataset.datasetType);
   const items = Array.isArray(dataset.items) ? dataset.items : [];
 
   const normalizers = {
@@ -577,7 +577,7 @@ export function normalizeDataset(dataset, options = {}) {
     schemaVersion: SCHEMA_VERSION,
     platform: "xiaohongshu",
     datasetType,
-    actorId,
+    sourceId,
     fetchedAt: dataset.fetchedAt || new Date().toISOString(),
     input: dataset.input || null,
     inputPath: options.inputPath || null,

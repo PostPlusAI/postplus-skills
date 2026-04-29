@@ -1,9 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { runHostedProviderOperation } from "../../_postplus_shared/shared-runtime/scripts/lib/hosted_provider_bridge.mjs";
+import { runHostedCapabilityRequest } from "../../_postplus_shared/shared-runtime/scripts/lib/hosted_capability_bridge.mjs";
 
-export const DEFAULT_POSTIZ_API_URL = "https://api.postiz.com/public/v1";
+const SOCIAL_PUBLISHING_BASE_URL = "https://social-publishing.postplus.local";
 
 export function isDirectRun(importMetaUrl) {
   return importMetaUrl === new URL(process.argv[1], "file:").href;
@@ -87,19 +87,19 @@ export function assertAllowedIntegrationIds(customerConfig, integrationIds) {
 }
 
 export async function postizJson(pathname, { method = "GET", body, headers = {} } = {}, options = {}) {
-  const url = pathname.startsWith("http")
-    ? pathname
-    : `${DEFAULT_POSTIZ_API_URL}${pathname}`;
-  const charge = method === "POST" && new URL(url).pathname.endsWith("/posts");
+  if (Object.keys(headers).length > 0) {
+    throw new Error("Custom social-publishing headers are not part of the hosted capability contract.");
+  }
 
-  return await runHostedProviderOperation({
-    family: "postiz",
-    operation: "json-request",
-    url,
-    method,
-    ...(body !== undefined ? { body } : {}),
-    ...(Object.keys(headers).length > 0 ? { headers } : {}),
-    charge,
+  const operation = resolveSocialPublishingOperation(pathname, method);
+
+  return await runHostedCapabilityRequest({
+    capability: "social-publishing",
+    operation: operation.operation,
+    input: {
+      ...operation.input,
+      ...(body !== undefined ? { body } : {}),
+    },
   });
 }
 
@@ -107,13 +107,98 @@ export async function postizUploadFile(localFilePath, options = {}) {
   const absoluteInput = path.resolve(localFilePath);
   const fileBuffer = fs.readFileSync(absoluteInput);
 
-  return await runHostedProviderOperation({
-    family: "postiz",
+  return await runHostedCapabilityRequest({
+    capability: "social-publishing",
     operation: "upload-file",
-    fileContentBase64: fileBuffer.toString("base64"),
-    fileName: path.basename(absoluteInput),
-    mimeType: options.mimeType ?? "application/octet-stream",
+    input: {
+      file: {
+        contentBase64: fileBuffer.toString("base64"),
+        name: path.basename(absoluteInput),
+        mimeType: options.mimeType ?? "application/octet-stream",
+      },
+    },
   });
+}
+
+function resolveSocialPublishingOperation(pathname, method = "GET") {
+  if (/^https?:\/\//i.test(pathname)) {
+    throw new Error("Social-publishing helpers accept product pathnames, not supplier URLs.");
+  }
+
+  const url = new URL(pathname, SOCIAL_PUBLISHING_BASE_URL);
+  const pathOnly = url.pathname.replace(/^\/public\/v1/, "");
+  const query = Object.fromEntries(url.searchParams.entries());
+
+  if (pathOnly === "/integrations") {
+    return { operation: "list-channels", input: { query } };
+  }
+  if (pathOnly.startsWith("/integration-settings/")) {
+    return {
+      operation: "channel-settings",
+      input: { integrationId: decodeURIComponent(pathOnly.split("/").at(-1)) },
+    };
+  }
+  if (pathOnly.startsWith("/integration-trigger/")) {
+    return {
+      operation: "trigger-channel-tool",
+      input: { integrationId: decodeURIComponent(pathOnly.split("/").at(-1)) },
+    };
+  }
+  if (pathOnly === "/upload-from-url") {
+    return { operation: "upload-from-url", input: {} };
+  }
+  if (pathOnly === "/posts") {
+    return method === "POST"
+      ? { operation: "create-post", input: { query } }
+      : { operation: "list-posts", input: { query } };
+  }
+  if (pathOnly.startsWith("/posts/group/")) {
+    return {
+      operation: "delete-post-group",
+      input: { group: decodeURIComponent(pathOnly.split("/").at(-1)) },
+    };
+  }
+  if (pathOnly.endsWith("/status") && pathOnly.startsWith("/posts/")) {
+    return {
+      operation: "update-post-status",
+      input: { postId: decodeURIComponent(pathOnly.split("/").at(-2)) },
+    };
+  }
+  if (pathOnly.endsWith("/missing") && pathOnly.startsWith("/posts/")) {
+    return {
+      operation: "missing-content",
+      input: { postId: decodeURIComponent(pathOnly.split("/").at(-2)) },
+    };
+  }
+  if (pathOnly.endsWith("/release-id") && pathOnly.startsWith("/posts/")) {
+    return {
+      operation: "set-release-id",
+      input: { postId: decodeURIComponent(pathOnly.split("/").at(-2)) },
+    };
+  }
+  if (pathOnly.startsWith("/posts/")) {
+    return {
+      operation: "delete-post",
+      input: { postId: decodeURIComponent(pathOnly.split("/").at(-1)) },
+    };
+  }
+  if (pathOnly.startsWith("/analytics/post/")) {
+    return {
+      operation: "analytics",
+      input: { postId: decodeURIComponent(pathOnly.split("/").at(-1)), query },
+    };
+  }
+  if (pathOnly.startsWith("/analytics/")) {
+    return {
+      operation: "analytics",
+      input: { integrationId: decodeURIComponent(pathOnly.split("/").at(-1)), query },
+    };
+  }
+  if (pathOnly === "/notifications") {
+    return { operation: "notifications", input: { query } };
+  }
+
+  throw new Error(`Unsupported social-publishing operation: ${pathname}`);
 }
 
 export function normalizeMediaUrls(mediaUrls = []) {

@@ -276,8 +276,8 @@ function passthroughFields(brief) {
   );
 }
 
-export function buildInput(brief, actorId) {
-  const actor = String(actorId || "").toLowerCase();
+export function buildInput(brief, sourceId) {
+  const actor = String(sourceId || "").toLowerCase();
   const task = cleanString(brief.task) || "video-discovery";
   const costMode = readCostMode(brief);
   const rawQueries = normalizeStringArray(brief.queries || brief.searchQueries || brief.keywords);
@@ -610,10 +610,10 @@ function main() {
   }
 
   const brief = args.brief ? readJson(args.brief) : briefFromArgs;
-  const actorId = cleanString(args.actor);
-  const input = buildInput(brief, actorId);
+  const sourceId = cleanString(args.actor);
+  const input = buildInput(brief, sourceId);
   const payload = {
-    actorId,
+    sourceId,
     builtAt: new Date().toISOString(),
     briefPath: args.brief ? path.resolve(args.brief) : null,
     input

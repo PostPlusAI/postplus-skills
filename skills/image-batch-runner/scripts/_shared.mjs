@@ -4,62 +4,48 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import {
-  downloadHostedWaveSpeedFile,
-  requestHostedWaveSpeedJson,
-  uploadHostedWaveSpeedFile,
-} from '../_postplus_shared/shared-runtime/scripts/lib/hosted_wavespeed_bridge.mjs';
+  downloadHostedMediaFile,
+  requestHostedMediaGenerationJson,
+  uploadHostedMediaFile,
+} from '../_postplus_shared/shared-runtime/scripts/lib/hosted_media_generation_bridge.mjs';
 
-export const WAVESPEED_API_BASE = 'https://api.wavespeed.ai/api/v3';
-export const DEFAULT_PROVIDER = 'wavespeed';
-export const DEFAULT_MODEL = 'google/nano-banana-2';
+export const DEFAULT_PROVIDER = 'hosted-media';
+export const DEFAULT_MODEL = 'image-nano-banana-2-text';
 export const DEFAULT_OUTPUT_FORMAT = 'png';
 export const DEFAULT_RESOLUTION = '4k';
 export const DEFAULT_ASPECT_RATIO = '9:16';
 export const DEFAULT_SEEDREAM_SIZE = '1440*2560';
 
-export const WAVESPEED_IMAGE_MODELS = {
-  'google/nano-banana-2': {
-    family: 'nano-banana',
-    operations: {
-      'text-to-image': {
-        endpoint: '/google/nano-banana-2/text-to-image',
-      },
-      edit: {
-        endpoint: '/google/nano-banana-2/edit',
-      },
-    },
+export const HOSTED_IMAGE_MODELS = {
+  'image-nano-banana-2-text': {
+    modelGroup: 'nano-banana',
+    operation: 'text-to-image',
+    endpointKey: 'image-nano-banana-2-text',
   },
-  'bytedance/seedream-v5.0-lite': {
-    family: 'seedream',
-    operations: {
-      'text-to-image': {
-        endpoint: '/bytedance/seedream-v5.0-lite',
-      },
-    },
+  'image-nano-banana-2-edit': {
+    modelGroup: 'nano-banana',
+    operation: 'edit',
+    endpointKey: 'image-nano-banana-2-edit',
   },
-  'bytedance/seedream-v5.0-lite/sequential': {
-    family: 'seedream',
-    operations: {
-      'text-to-image': {
-        endpoint: '/bytedance/seedream-v5.0-lite/sequential',
-      },
-    },
+  'image-seedream-v5-lite-text': {
+    modelGroup: 'seedream',
+    operation: 'text-to-image',
+    endpointKey: 'image-seedream-v5-lite-text',
   },
-  'bytedance/seedream-v5.0-lite/edit': {
-    family: 'seedream',
-    operations: {
-      edit: {
-        endpoint: '/bytedance/seedream-v5.0-lite/edit',
-      },
-    },
+  'image-seedream-v5-lite-sequential': {
+    modelGroup: 'seedream',
+    operation: 'text-to-image',
+    endpointKey: 'image-seedream-v5-lite-sequential',
   },
-  'bytedance/seedream-v5.0-lite/edit-sequential': {
-    family: 'seedream',
-    operations: {
-      edit: {
-        endpoint: '/bytedance/seedream-v5.0-lite/edit-sequential',
-      },
-    },
+  'image-seedream-v5-lite-edit': {
+    modelGroup: 'seedream',
+    operation: 'edit',
+    endpointKey: 'image-seedream-v5-lite-edit',
+  },
+  'image-seedream-v5-lite-edit-sequential': {
+    modelGroup: 'seedream',
+    operation: 'edit',
+    endpointKey: 'image-seedream-v5-lite-edit-sequential',
   },
 };
 
@@ -116,39 +102,32 @@ export function sha256(input) {
 
 export async function fetchJson(url, options = {}) {
   const method = String(options.method || 'GET').toUpperCase();
-  const pathname = new URL(url).pathname.replace(/^\/api\/v3\//, '');
   const requestBody =
     typeof options.body === 'string' && options.body.trim().length > 0
       ? JSON.parse(options.body)
       : (options.body ?? {});
   const billableImageModels = new Set([
-    'google/nano-banana-2/text-to-image',
-    'google/nano-banana-2/edit',
-    'bytedance/seedream-v5.0-lite',
-    'bytedance/seedream-v5.0-lite/sequential',
-    'bytedance/seedream-v5.0-lite/edit',
-    'bytedance/seedream-v5.0-lite/edit-sequential',
+    'image-nano-banana-2-text',
+    'image-nano-banana-2-edit',
+    'image-seedream-v5-lite-text',
+    'image-seedream-v5-lite-sequential',
+    'image-seedream-v5-lite-edit',
+    'image-seedream-v5-lite-edit-sequential',
   ]);
-  const billing =
-    method !== 'POST' || !billableImageModels.has(pathname)
-      ? { charge: false }
+  const requestDimensions =
+    method !== 'POST' || !billableImageModels.has(url)
+      ? undefined
       : {
-          charge: true,
-          feature: 'vibe-marketing.image-generation',
-          provider: 'wavespeed',
-          providerModelPath: pathname,
-          requestDimensions: {
-            billableUnitCount: 1,
-            imageSize: requestBody.resolution ?? '2k',
-            providerOperation: pathname,
-            requestBytes: Buffer.byteLength(JSON.stringify(requestBody)),
-          },
+          billableUnitCount: 1,
+          imageSize: requestBody.resolution ?? '2k',
+          operationKey: url,
+          requestBytes: Buffer.byteLength(JSON.stringify(requestBody)),
         };
 
-  return requestHostedWaveSpeedJson(url, {
+  return requestHostedMediaGenerationJson(url, {
     method,
     body: requestBody,
-    billing,
+    requestDimensions,
   });
 }
 
@@ -165,11 +144,11 @@ export function unwrapProviderResult(payload) {
 }
 
 export async function downloadFile(url, outputPath) {
-  await downloadHostedWaveSpeedFile(url, outputPath);
+  await downloadHostedMediaFile(url, outputPath);
 }
 
 export async function uploadLocalMedia(localFilePath) {
-  return await uploadHostedWaveSpeedFile(localFilePath);
+  return await uploadHostedMediaFile(localFilePath);
 }
 
 export function buildAssetPaths(localAssetDir, runId, mediaType = 'image') {
@@ -253,20 +232,19 @@ export function normalizeGenerationInput(input, mode) {
   };
 }
 
-export function getWaveSpeedImageModelConfig(model, operation) {
-  const config = WAVESPEED_IMAGE_MODELS[model];
+export function getHostedImageModelConfig(model, operation) {
+  const config = HOSTED_IMAGE_MODELS[model];
   if (!config) {
     throw new Error(`Unsupported image model: ${model}`);
   }
-  const operationConfig = config.operations?.[operation];
-  if (!operationConfig) {
+  if (config.operation !== operation) {
     throw new Error(`Model ${model} does not support ${operation}.`);
   }
   return {
     model,
-    family: config.family,
+    modelGroup: config.modelGroup,
     operation,
-    endpoint: `${WAVESPEED_API_BASE}${operationConfig.endpoint}`,
+    endpointKey: config.endpointKey,
   };
 }
 

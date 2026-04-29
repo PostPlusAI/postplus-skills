@@ -2,15 +2,28 @@
 
 This file records the hosted image capability model assumptions for the released shell.
 
-## Supported Models
+## Supported Endpoint Keys
 
-### `google/nano-banana-2`
+### `image-nano-banana-2-text`
 
-Documented request shape:
+Text-to-image request shape:
 
 - required:
   - `prompt`
-- edit also requires:
+- optional:
+  - `aspect_ratio`
+  - `resolution`
+  - `enable_web_search`
+  - `output_format`
+  - `enable_sync_mode`
+  - `enable_base64_output`
+
+### `image-nano-banana-2-edit`
+
+Edit request shape:
+
+- required:
+  - `prompt`
   - `images`
 - optional:
   - `aspect_ratio`
@@ -22,17 +35,13 @@ Documented request shape:
 
 Workspace fit:
 
-- good default for legacy requests already using `aspectRatio` + `resolution`
 - good for single-image generation and single-image edit
 
-### `bytedance/seedream-v5.0-lite`
+### `image-seedream-v5-lite-text`
 
-Documented request shape:
+Text-to-image request shape:
 
-- text-to-image required:
-  - `prompt`
-- edit required:
-  - `images`
+- required:
   - `prompt`
 - optional:
   - `size`
@@ -42,6 +51,27 @@ Documented request shape:
 - sequential-only optional:
   - `max_images`
 
+### `image-seedream-v5-lite-edit`
+
+Edit request shape:
+
+- required:
+  - `images`
+  - `prompt`
+- optional:
+  - `size`
+  - `output_format`
+  - `enable_sync_mode`
+  - `enable_base64_output`
+
+### `image-seedream-v5-lite-sequential`
+
+Same as `image-seedream-v5-lite-text`, with `max_images` support.
+
+### `image-seedream-v5-lite-edit-sequential`
+
+Same as `image-seedream-v5-lite-edit`, with `max_images` support.
+
 Workspace fit:
 
 - use `size` instead of relying on `resolution` tiers
@@ -50,7 +80,7 @@ Workspace fit:
 
 ## Model Selection In Normalized Requests
 
-The released shell keeps one normalized request shape and maps provider fields per model.
+The released shell keeps one normalized request shape and maps endpoint-specific fields server-side.
 
 Shared fields:
 
@@ -71,7 +101,7 @@ Seedream oriented fields:
 - `size`
 - `maxImages`
 
-Compatibility rule:
+Defaulting rule:
 
 - if a Seedream request omits `size`, the adapter infers one from `aspectRatio` when possible
 - if a Nano Banana request omits `resolution`, the adapter uses the default release-shell setting
@@ -89,9 +119,9 @@ Workflow:
 
 This applies to:
 
-- `google/nano-banana-2` edit
-- `bytedance/seedream-v5.0-lite/edit`
-- `bytedance/seedream-v5.0-lite/edit-sequential`
+- `image-nano-banana-2-edit`
+- `image-seedream-v5-lite-edit`
+- `image-seedream-v5-lite-edit-sequential`
 
 ## Output Shape
 

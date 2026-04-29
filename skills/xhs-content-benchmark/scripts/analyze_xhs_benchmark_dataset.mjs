@@ -37,7 +37,7 @@ function main() {
   const payload = {
     generatedAt: new Date().toISOString(),
     datasetPath: path.resolve(args.input),
-    actorId: dataset.actorId,
+    sourceId: dataset.sourceId,
     ...summary
   };
 
