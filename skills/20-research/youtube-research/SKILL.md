@@ -1,6 +1,6 @@
 ---
 name: youtube-research
-description: Research YouTube channels, subscriber counts, audience comment samples, and public videos using hosted collection capability. Use this when the user wants YouTube account research or public video metrics.
+description: Research YouTube channel summaries, audience comment samples, downloadable video records, and public videos using hosted collection capability. Use this when the user wants YouTube account research or public video metrics.
 ---
 
 # YouTube Research
@@ -30,20 +30,21 @@ This skill is not for:
 
 ## Hosted Capability Boundary
 
-This skill depends on host-managed collection capability for the corresponding collection paths.
+This skill depends on host-managed collection capability for the corresponding collection keys.
 
 In the product shell:
 
 - do not probe or print provider secrets
 - do not ask the user to export them inside chat
-- if a collection path returns a stable capability/network hard error, stop
+- if a collection key returns a stable capability/network hard error, stop
   immediately instead of trying alternate shell commands
 
-## Default Collection Paths
+## Default Collection Keys
 
-Use these hosted collection paths by default:
+Use these hosted collection keys by default:
 
 - channel metadata and subscriber counts
+  - collection key: `youtube-channel-summary`
   - use for channel metadata and subscriber counts
   - tested input shape:
     - `channels = ["@Google"]`
@@ -59,6 +60,7 @@ Use these hosted collection paths by default:
     - `avatarUrl`
     - `bannerUrl`
 - audience comments collection
+  - collection key: `youtube-comments`
   - use for audience proxy research from comments on a specific video or Shorts URL
   - tested input shape:
     - `startUrls = ["https://www.youtube.com/watch?v=<video-id>"]`
@@ -72,6 +74,10 @@ Use these hosted collection paths by default:
     - `publishedTime`
     - `author`
 
+- downloadable video records
+  - collection key: `youtube-video-download`
+  - use when the workflow needs the rented downloader-backed record for explicit video URLs
+
 Use comments as an audience proxy when subscriber identities are not public.
 
 ## Failure Posture
@@ -84,8 +90,8 @@ Use comments as an audience proxy when subscriber identities are not public.
 
 ## Recommended Workflow
 
-1. For channel research, start with the hosted channel collection path.
-2. For audience research, collect a small comments sample from representative videos with the hosted comments collection path.
+1. For channel research, start with `youtube-channel-summary`.
+2. For audience research, collect a small comments sample from representative videos with `youtube-comments`.
 3. For broad public video discovery, use the hosted content collection scripts below.
 
 Do not present comment authors as a full subscriber list.

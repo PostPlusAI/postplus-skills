@@ -30,22 +30,22 @@ Classify the request first:
 - keywords
 - category pages
 - search URLs
-- actor: `amazon-crawler`
-- fallback: `free-amazon-product-scraper`
+- collection key: `amazon-products`
+- alternate collection key: `amazon-free-products`
 
 2. ASIN enrichment
 - known ASIN list
 - need titles, prices, ratings, seller details
-- actor: `amazon-asins-scraper`
+- collection key: `amazon-asins`
 
 3. Review mining
 - need reviews, complaints, low-star patterns
-- actor: `amazon-reviews-scraper`
-- fallback: `amazon-reviews-scraper-v2`
+- collection key: `amazon-reviews`
+- alternate collection key: `amazon-reviews-v2`
 
 4. Bestseller mapping
 - need trend products or leaderboard products
-- actor: `amazon-bestsellers`
+- collection key: `amazon-bestsellers`
 
 ## Default Workflow
 

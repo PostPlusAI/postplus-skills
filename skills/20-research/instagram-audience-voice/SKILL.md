@@ -22,9 +22,9 @@ Read these references before implementation:
 - `skills/20-research/instagram-references/normalized-schema.md`
 - `skills/20-research/instagram-references/tool-contracts.md`
 
-## Primary Actor
+## Primary Hosted Collection Key
 
-- `instagram/comment-scraper`
+- `instagram-comments`
 
 ## Entry Requirement
 

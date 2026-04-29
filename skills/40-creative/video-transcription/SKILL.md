@@ -18,12 +18,12 @@ Use this skill when the input is video and the main problem is:
 
 This skill is not a substitute for semantic video analysis.
 
-## Provider
+## Hosted Endpoint
 
-First-version provider:
+First-version hosted transcription endpoint:
 
 - hosted transcription capability
-- `openai-whisper-with-video`
+- `transcription-whisper-with-video`
 
 Use `enableTimestamps=true` by default when the result will drive subtitles or edit decisions.
 

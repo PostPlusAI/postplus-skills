@@ -46,20 +46,16 @@ prefer content-first or mixed discovery:
 5. rank creators by profile + content evidence
 6. return a research pool plus shortlist
 
-## Primary Actors
+## Primary Hosted Collection Keys
 
-- `instagram/search-scraper`
-- `instagram/hashtag-scraper`
-- `instagram/tagged-scraper`
-- `instagram/profile-scraper`
-- `instagram/post-scraper`
-- `instagram/reel-scraper`
+- `instagram-search`
+- `instagram-hashtags`
+- `instagram-profiles`
+- `instagram-posts`
 
-Fallback / enrichment:
+Released enrichment:
 
-- `instagram/scraper`
-- `coderx/instagram-profile-scraper-api`
-- `bhansalisoft/instagram-email-scraper`
+- hosted collection key `instagram-email-search`
 
 ## Local Tools
 
@@ -95,7 +91,7 @@ Use `mixed` when:
 ```bash
 node ${CLAUDE_SKILL_DIR}/../instagram-tools/scripts/build_instagram_actor_input.mjs \
   --brief <work-folder>/.postplus/instagram-brief.json \
-  --actor instagram/search-scraper \
+  --actor instagram-search \
   --output <work-folder>/.postplus/instagram-search-input.json
 ```
 
@@ -103,7 +99,7 @@ node ${CLAUDE_SKILL_DIR}/../instagram-tools/scripts/build_instagram_actor_input.
 
 ```bash
 node ${CLAUDE_SKILL_DIR}/../instagram-tools/scripts/run_instagram_actor.mjs \
-  --actor instagram/search-scraper \
+  --collection-key instagram-search \
   --input <work-folder>/.postplus/instagram-search-input.json \
   --output <work-folder>/.postplus/instagram-search-raw.json
 ```
@@ -113,7 +109,7 @@ node ${CLAUDE_SKILL_DIR}/../instagram-tools/scripts/run_instagram_actor.mjs \
 ```bash
 node ${CLAUDE_SKILL_DIR}/../instagram-tools/scripts/normalize_instagram_dataset.mjs \
   --input <work-folder>/.postplus/instagram-search-raw.json \
-  --actor instagram/search-scraper \
+  --actor instagram-search \
   --dataset-type posts \
   --output <work-folder>/.postplus/instagram-search-normalized.json
 ```
@@ -131,7 +127,7 @@ node ${CLAUDE_SKILL_DIR}/../instagram-tools/scripts/extract_instagram_candidate_
 
 ```bash
 node ${CLAUDE_SKILL_DIR}/../instagram-tools/scripts/run_instagram_actor.mjs \
-  --actor instagram/profile-scraper \
+  --collection-key instagram-profiles \
   --input <work-folder>/.postplus/instagram-profile-input.json \
   --output <work-folder>/.postplus/instagram-profiles-raw.json
 ```
@@ -141,7 +137,7 @@ Then normalize:
 ```bash
 node ${CLAUDE_SKILL_DIR}/../instagram-tools/scripts/normalize_instagram_dataset.mjs \
   --input <work-folder>/.postplus/instagram-profiles-raw.json \
-  --actor instagram/profile-scraper \
+  --actor instagram-profiles \
   --dataset-type profiles \
   --output <work-folder>/.postplus/instagram-profiles-normalized.json
 ```

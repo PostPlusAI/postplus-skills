@@ -57,10 +57,9 @@ Use when the user asks:
 - 某个国家今天 / 这几天的热点搜索是什么
 - 先给我一批实时热点主题
 
-Preferred route:
+Preferred hosted collection key:
 
-- primary: `google-trending-now`
-- specialized fallback: trending mode in `google-trends-fast-scraper`
+- `google-trends-fast`
 
 ### 2. Keyword Momentum Check
 
@@ -70,10 +69,10 @@ Use when the user asks:
 - 比较几个词的趋势变化
 - 看过去几个月 / 一年里的搜索热度
 
-Preferred route:
+Preferred hosted collection keys:
 
-- primary: `google-trends-scraper`
-- fallback: `google-trends-fast-scraper`
+- `google-trends-fast` for the current released fast path
+- `google-trends-keywords` for the older keyword-only path
 
 ### 3. Regional Interest Mapping
 
@@ -83,9 +82,9 @@ Use when the user asks:
 - 这个词在不同市场哪里更热
 - 想做 geo priority 判断
 
-Preferred route:
+Preferred hosted collection key:
 
-- primary: `google-trends-scraper`
+- `google-trends-fast`
 
 ### 4. Related Query Expansion
 
@@ -95,53 +94,56 @@ Use when the user asks:
 - 有没有 rising queries 可当 seed
 - 帮我扩一组关键词池
 
-Preferred route:
+Preferred hosted collection key:
 
-- primary: `google-trends-scraper`
+- `google-trends-fast`
 
-## Actor Strategy
+## Hosted Collection Strategy
 
-Do not bind the skill to one actor.
+Do not expose provider selection to the user.
 
 Current defaults:
 
-- broad keyword analysis: `google-trends-scraper`
-- realtime trending feed: `google-trending-now`
-- flexible all-in-one fallback: `google-trends-fast-scraper`
+- broad keyword analysis: `google-trends-fast`
+- realtime trending feed: `google-trends-fast`
+- older keyword-only path: `google-trends-keywords`
 
 Choose the narrowest actor that fits the task.
 
-Use the default collection actor by default when the task is keyword-centric and needs:
+Use `google-trends-fast` by default when the task needs:
 
 - interest over time
 - geo comparison
-- related queries
-- related topics
+- realtime trending searches
+- regional trend signals
 
-Use `google-trending-now` when the task is specifically a realtime trend feed, not a keyword analysis job.
+Use `google-trends-keywords` only when the workflow is already validated against that older keyword-only input shape.
 
-## Actor Input Fields
+## Hosted Collection Input Fields
 
-### `google-trends-scraper` Actor Input Fields
+### `google-trends-fast`
 
-Required field: `searchTerms` (array of strings). Do **not** use `keywords` — the actor
-rejects it with a validation error and the run ends with status `FAILED`.
+Keyword analysis input:
 
 ```json
 {
-  "searchTerms": ["led skincare device", "red light therapy"],
-  "geo": "US"
+  "keyword": "led skincare device",
+  "predefinedTimeframe": "today 12-m",
+  "geo": "US",
+  "fetchRegionalData": false
 }
 ```
 
-### `google-trending-now`
+Trending-search input:
 
-Pass `geo` (country code) and optional `timeRange`. No `searchTerms` needed — this actor
-returns the current trending feed, not per-keyword analysis.
-
-### `google-trends-fast-scraper`
-
-Accepts flexible input; consult actor docs for exact field names before use.
+```json
+{
+  "enableTrendingSearches": true,
+  "trendingSearchesCountry": "US",
+  "trendingSearchesTimeframe": "24",
+  "trendingSearchesMaxItems": 50
+}
+```
 
 ## Repo-Owned Runner
 
@@ -149,7 +151,7 @@ For product-shell execution, use the repo-owned collection runner:
 
 ```bash
 node skills/20-research/google-trends-research/scripts/collection_actor_run.mjs \
-  --collection-key google-trends-keywords \
+  --collection-key google-trends-fast \
   --input <input.json> \
   --output <raw-output.json>
 ```

@@ -1,6 +1,6 @@
 ---
 name: instagram-campaign-scout
-description: Scout Instagram hashtag opportunities, tagged mentions, and campaign spread to monitor branded activity, UGC, and creator participation.
+description: Scout Instagram hashtag opportunities, branded mentions, and campaign spread to monitor public UGC and creator participation.
 ---
 
 # Instagram Campaign Scout
@@ -22,21 +22,17 @@ Read these references before implementation:
 - `skills/20-research/instagram-references/normalized-schema.md`
 - `skills/20-research/instagram-references/tool-contracts.md`
 
-## Primary Actors
+## Primary Hosted Collection Keys
 
-- `instagram/hashtag-analytics-scraper`
-- `instagram/hashtag-scraper`
-- `instagram/tagged-scraper`
-- `instagram/scraper` as fallback only
+- `instagram-hashtags`
+- `instagram-search`
+- `instagram-posts`
 
 Current verified release-shell path:
 
-- hashtag post collection via `instagram/hashtag-scraper`
-- tagged mention collection via `instagram/tagged-scraper`
-- watchlist synthesis from normalized hashtag/tagged datasets
-
-Use `instagram/hashtag-analytics-scraper` only when you explicitly need
-hashtag-metadata surfaces beyond the current verified post/tagged path.
+- hashtag post collection via `instagram-hashtags`
+- branded keyword or account discovery via `instagram-search`
+- watchlist synthesis from normalized hashtag/search/post datasets
 
 ## Recommended Workflow
 
@@ -44,8 +40,8 @@ hashtag-metadata surfaces beyond the current verified post/tagged path.
    - hashtag
    - target username
    - brand keyword
-2. collect hashtag analytics or tagged-post data
-3. normalize outputs into hashtag or tagged datasets
+2. collect hashtag, search, or post data
+3. normalize outputs into hashtag/search/post datasets
 4. identify:
    - volume signals
    - related hashtags

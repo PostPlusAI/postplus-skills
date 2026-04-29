@@ -1,6 +1,6 @@
 ---
 name: instagram-account-research
-description: Research Instagram accounts for creator discovery, competitor profiling, and account health snapshots using hosted collection profile, post, and follower-count actors.
+description: Research Instagram accounts for creator discovery, competitor profiling, and account health snapshots using hosted profile and post collection.
 ---
 
 # Instagram Account Research
@@ -24,20 +24,18 @@ Read these references before implementation:
 - `skills/20-research/instagram-references/normalized-schema.md`
 - `skills/20-research/instagram-references/tool-contracts.md`
 
-## Primary Actors
+## Primary Hosted Collection Keys
 
-- `instagram/profile-scraper`
-- `instagram/post-scraper`
-- `instagram/followers-count-scraper`
+- `instagram-profiles`
+- `instagram-posts`
 
 ## Recommended Workflow
 
 1. collect a profile snapshot for each username
 2. collect a small recent-post sample for each shortlisted account
-3. collect follower-count snapshots only if momentum matters
-4. normalize profile and post outputs
-5. rank accounts by audience size, engagement proxy, posting cadence, and relevance
-6. return a shortlist plus account notes
+3. normalize profile and post outputs
+4. rank accounts by audience size, engagement proxy, posting cadence, and relevance
+5. return a shortlist plus account notes
 
 ## Cost Discipline
 
@@ -45,7 +43,6 @@ Start with:
 
 - 5-15 usernames
 - 6-12 recent posts per account
-- follower snapshots only for the final shortlist
 
 Do not start with broad market scraping.
 

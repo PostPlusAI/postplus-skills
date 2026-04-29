@@ -6,7 +6,7 @@
 {
   "jobId": "audio-stt-001",
   "provider": "hosted",
-  "model": "hosted/stt/whisper",
+  "model": "transcription-whisper",
   "audio": "/absolute/or/public/audio.mp3",
   "language": "auto",
   "task": "transcribe",
@@ -31,4 +31,4 @@
   nearest whole second; hosted transcription uses it for billing and rejects
   requests that omit it.
 - `enableTimestamps=true` should be the default when the downstream goal is subtitles or edit prep.
-- Use `openai-whisper-turbo` only for rough or cost-sensitive first-pass jobs.
+- Use `transcription-whisper-turbo` only for rough or cost-sensitive first-pass jobs.

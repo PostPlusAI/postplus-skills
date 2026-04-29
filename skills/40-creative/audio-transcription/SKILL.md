@@ -18,17 +18,17 @@ Use this skill when the input is audio and the main job is:
 
 This skill is not for video semantic understanding.
 
-## Provider
+## Hosted Endpoint
 
-First-version provider direction:
+First-version hosted transcription endpoints:
 
 - hosted transcription capability
-- `openai-whisper`
-- `openai-whisper-turbo`
+- `transcription-whisper`
+- `transcription-whisper-turbo`
 
-Use `openai-whisper` by default when subtitle quality matters.
+Use `transcription-whisper` by default when subtitle quality matters.
 
-Use `openai-whisper-turbo` when:
+Use `transcription-whisper-turbo` when:
 
 - the user wants a cheaper rough pass
 - timestamps are not the primary requirement

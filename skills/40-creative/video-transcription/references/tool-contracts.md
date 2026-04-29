@@ -6,7 +6,7 @@
 {
   "jobId": "video-stt-001",
   "provider": "hosted",
-  "model": "hosted/stt/whisper-with-video",
+  "model": "transcription-whisper-with-video",
   "video": "/absolute/or/public/video.mp4",
   "language": "auto",
   "task": "transcribe",

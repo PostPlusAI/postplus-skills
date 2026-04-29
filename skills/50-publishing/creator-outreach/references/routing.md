@@ -112,8 +112,8 @@ Use:
 
 Preferred actor routes:
 
-- account snapshot -> `instagram/profile-scraper`
-- tagged/mention scouting -> `instagram/tagged-scraper`
+- account snapshot -> `instagram-profiles`
+- mention scouting -> `instagram-search`
 
 Use for:
 

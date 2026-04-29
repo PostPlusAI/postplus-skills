@@ -14,8 +14,8 @@ Use this skill when the user wants TikTok Shop data gathered, normalized, and an
 This skill is not a fixed workflow for one narrow task. Its main job is to help the agent:
 
 - interpret flexible TikTok Shop research requests
-- choose a suitable actor
-- map the request into actor input fields
+- choose a suitable hosted collection key
+- map the request into hosted collection input fields
 - normalize raw output into one stable local shape
 - run lightweight analysis without binding the workflow to one product or one report format
 
@@ -26,7 +26,7 @@ The user will usually describe a research goal, not an actor input schema.
 Your job is to translate the user request into:
 
 - scrape target type
-- actor choice
+- hosted collection key
 - input JSON
 - local output paths
 - optional normalization
@@ -59,10 +59,9 @@ Use when the user gives:
 - several product URLs
 - "analyze this listing"
 
-Preferred actor:
+Preferred hosted collection key:
 
-- primary: `tiktok-shop-scraper`
-- fallback: `tiktok-shop-scraper-v2`
+- `tiktok-shop-products`
 
 ### 2. Shop Audit
 
@@ -72,10 +71,9 @@ Use when the user asks:
 - "what is this seller pushing"
 - "compare these shops"
 
-Preferred actor:
+Preferred hosted collection key:
 
-- primary: `tiktok-shop-scraper`
-- fallback only if the primary actor cannot handle the URL shape
+- `tiktok-shop-products`
 
 ### 3. Category or Search Sampling
 
@@ -85,39 +83,37 @@ Use when the user asks:
 - "what price bands show up in this niche"
 - "find benchmark products in this segment"
 
-Prefer the actor that supports the required page type or query shape.
+Use `tiktok-shop-products` when the request can be expressed as TikTok Shop product, shop, or category URLs.
 
-If only one actor can accept the available input, use it and state that constraint.
+If the request cannot be expressed as URLs for the released collection key, stop and state that constraint.
 
-## Actor Strategy
+## Hosted Collection Strategy
 
 Current defaults:
 
-- primary: `tiktok-shop-scraper`
-- fallback: `tiktok-shop-scraper-v2`
+- `tiktok-shop-products`
 
-Use the primary actor by default because it is the richer general backend.
+Use the hosted collection key by default because it is the released product-shell path.
 
-Use the fallback actor when:
+Do not switch to unreleased collection paths when:
 
-- the primary actor fails
-- the primary actor does not support the needed page type
-- the user only needs a simple URL-based scrape
+- the hosted collection fails
+- the page type is unsupported
+- the user asks for a query shape that the released collection key does not support
 
-Treat actor choice as replaceable infrastructure.
+Treat provider selection as server-owned infrastructure.
 
 ## Input Mapping Rule
 
-Map the user request into actor input in the lightest possible way.
+Map the user request into hosted collection input in the lightest possible way.
 
 Typical mappings:
 
-- single product URL for `tiktok-shop-scraper` -> `url`
-- multiple product or shop URLs -> `startUrls` only when the selected actor supports it
-- category URLs -> `startUrls`
-- pre-known identifiers -> actor-specific id fields only if needed
+- single product URL -> `start_urls: [{ "url": "https://..." }]`
+- multiple product, shop, or category URLs -> `start_urls`
+- optional sample bound -> `max_items`
 
-Do not overfit the skill to one input template. Build the smallest valid input for the actor being used.
+Build the smallest valid input for `tiktok-shop-products`.
 
 When the user request is vague, prefer:
 
@@ -186,6 +182,15 @@ The scripts are modular on purpose:
 - normalize when downstream portability matters
 - analyze when the user wants decisions, not raw rows
 
+Run the released collection through:
+
+```bash
+node ${CLAUDE_SKILL_DIR}/scripts/collection_actor_run.mjs \
+  --collection-key tiktok-shop-products \
+  --input <work-folder>/.postplus/tiktok-shop/input.json \
+  --output <work-folder>/.postplus/tiktok-shop/raw.json
+```
+
 ## Analysis Guidance
 
 The current analysis layer is best for:
@@ -204,20 +209,19 @@ If the user asks for something more specific, use the normalized dataset as the 
 
 If a run fails:
 
-1. check whether the page type matches the chosen actor
+1. check whether the page type matches `tiktok-shop-products`
 2. reduce scope to a smaller sample
-3. switch to the fallback actor
-4. preserve the raw response or error context
+3. preserve the raw response or error context
 
-Do not silently switch actors without noting it in the output summary.
+Do not silently switch collection keys.
 
 ## Things To Avoid
 
 Do not:
 
 - assume every request is a fixed "选品" workflow
-- hard-code one actor's field names into analysis logic
-- require the user to speak in actor input terms
+- hard-code collection fields into analysis logic
+- require the user to speak in collection input terms
 - bundle scraping, normalization, analysis, and reporting into one giant step by default
 
 This skill should stay as a decision guide plus a small reusable toolkit.

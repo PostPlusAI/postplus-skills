@@ -13,7 +13,7 @@ Input:
 
 ```json
 {
-  "collectionPath": "instagram/profile-scraper",
+  "collectionKey": "instagram-profiles",
   "inputPath": "tmp/input.json",
   "outputPath": "tmp/raw.json"
 }
@@ -23,7 +23,7 @@ Output:
 
 ```json
 {
-  "collectionPath": "instagram/profile-scraper",
+  "collectionKey": "instagram-profiles",
   "itemCount": 12,
   "fetchedAt": "2026-03-19T12:00:00.000Z",
   "outputPath": "tmp/raw.json"
@@ -34,14 +34,14 @@ Output:
 
 Purpose:
 
-- compile a brief-shaped discovery or enrichment request into actor-specific input JSON
+- compile a brief-shaped discovery or enrichment request into hosted collection input JSON
 
 Input:
 
 ```json
 {
   "briefPath": "tmp/brief.json",
-  "collectionPath": "instagram/search-scraper",
+  "collectionKey": "instagram-search",
   "outputPath": "tmp/input.json"
 }
 ```
@@ -50,7 +50,7 @@ Output:
 
 ```json
 {
-  "collectionPath": "instagram/search-scraper",
+  "collectionKey": "instagram-search",
   "outputPath": "tmp/input.json"
 }
 ```
@@ -59,7 +59,7 @@ Output:
 
 Purpose:
 
-- convert actor-specific output into a stable normalized dataset
+- convert collection output into a stable normalized dataset
 
 Input:
 
@@ -67,7 +67,7 @@ Input:
 {
   "inputPath": "tmp/raw.json",
   "datasetType": "profiles",
-  "collectionPath": "instagram/profile-scraper",
+  "collectionKey": "instagram-profiles",
   "outputPath": "tmp/normalized.json"
 }
 ```

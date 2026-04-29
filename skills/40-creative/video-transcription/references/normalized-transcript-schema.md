@@ -30,7 +30,7 @@ Downstream subtitle and edit tooling should consume this object instead of provi
   "words": [],
   "meta": {
     "provider": "hosted",
-    "model": "openai-whisper-with-video",
+    "model": "transcription-whisper-with-video",
     "task": "transcribe",
     "enableTimestamps": true,
     "createdAt": "2026-04-07T07:19:38.036Z",

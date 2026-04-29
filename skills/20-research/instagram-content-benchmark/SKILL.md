@@ -22,12 +22,10 @@ Read these references before implementation:
 - `skills/20-research/instagram-references/normalized-schema.md`
 - `skills/20-research/instagram-references/tool-contracts.md`
 
-## Primary Actors
+## Primary Hosted Collection Keys
 
-- `instagram/post-scraper`
-- `instagram/reel-scraper`
-- `instagram/hashtag-scraper`
-- `instagram/scraper` as fallback only
+- `instagram-posts`
+- `instagram-hashtags`
 
 ## Recommended Workflow
 
@@ -37,7 +35,7 @@ Read these references before implementation:
    - Reel URLs
    - hashtags
 2. scrape a small candidate pool
-3. normalize posts and reels into one comparable dataset
+3. normalize posts and Reel-like results into one comparable dataset
 4. rank by engagement, relevance, recency, and format fit
 5. produce a shortlist of benchmark content
 6. summarize:
