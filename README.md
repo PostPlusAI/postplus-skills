@@ -11,7 +11,7 @@ Instead of asking you to choose tools first, PostPlus starts from the job you wa
 ```text
 "Find creators for this product."
 "Analyze why this competitor video works."
-"Tell me whether this product has TikTok Shop potential."
+"Tell me whether this product has marketplace potential."
 "Turn these references into a short-form video brief."
 "Package the research into a client-ready Feishu report."
 ```
@@ -162,7 +162,7 @@ Use PostPlus when you need to decide whether a product, category, or channel is 
 Example requests:
 
 ```text
-"Does this product fit TikTok Shop or Amazon better?"
+"Does this product fit Amazon or a content-led launch better?"
 "Find 1688 suppliers and compare them against demand signals."
 "Analyze whether this category has enough content proof to test."
 ```
@@ -244,7 +244,7 @@ Typical outputs:
 
 ```text
 Product idea
--> collect TikTok, Amazon, TikTok Shop, Xiaohongshu, Google Trends, or 1688 evidence
+-> collect TikTok, Amazon, Xiaohongshu, Google Trends, or 1688 evidence
 -> compare demand, content fit, supply, price, and risk
 -> produce a go / no-go / test-first recommendation
 ```
@@ -305,7 +305,7 @@ Examples: social media routing, creator discovery routing, media routing, patter
 
 For collecting and analyzing public signals from platforms, marketplaces, search behavior, and social content.
 
-Examples: TikTok, TikTok ads, Instagram, X, YouTube, LinkedIn, Facebook, Xiaohongshu, 1688, Amazon, TikTok Shop, Google Trends.
+Examples: TikTok, TikTok ads, Instagram, X, YouTube, LinkedIn, Facebook, Xiaohongshu, 1688, Amazon, Google Trends.
 
 ### 3. Decide and Shortlist
 
@@ -345,7 +345,7 @@ This is not a full catalog. It is a practical map of the problems PostPlus is me
 |---|---|---|
 | Understand a market or audience | Topic listening, trend discovery, competitor snapshots, comment mining, audience language, demand signals | TikTok, Instagram, X, YouTube, LinkedIn, Facebook, Xiaohongshu, Google Trends, Amazon reviews |
 | Find creators or KOL/KOC partners | Creator discovery, profile enrichment, content-fit scoring, shortlist building, contact signal extraction, outreach prep | TikTok creators, Instagram creators, Xiaohongshu accounts, X accounts, creator graph, follower bands, engagement proxy |
-| Decide whether a product is worth testing | Product selection, marketplace comparison, channel fit, price bands, review analysis, supply-side checks, sourcing judgment | Amazon, TikTok Shop, 1688, Google Trends, Xiaohongshu commerce, supplier ranking, SKU, MOQ, margin risk |
+| Decide whether a product is worth testing | Product selection, marketplace comparison, channel fit, price bands, review analysis, supply-side checks, sourcing judgment | Amazon, 1688, Google Trends, Xiaohongshu commerce, supplier ranking, SKU, MOQ, margin risk |
 | Turn references into creative direction | Reference decoding, hook analysis, visual grammar, benchmark-to-brief, persona packs, storyboard planning, prompt QA | TikTok videos, Reels, Xiaohongshu notes, short-form hooks, UGC, product demo, lifestyle, testimonial |
 | Produce media assets | Transcription, subtitles, frame extraction, B-roll planning, image generation, video generation, voice generation, edit packaging | Whisper, SRT/VTT/ASS, B-roll, storyboard grid, hosted media generation, image prompts, video requests |
 | Plan content and messaging | Positioning, content strategy, copywriting, social content, email sequences, SEO, AI search, launch planning | Blog, landing page, LinkedIn, X, Xiaohongshu, cold email, content pillars, hooks, objections, offers |

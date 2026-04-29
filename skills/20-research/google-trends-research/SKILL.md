@@ -127,12 +127,17 @@ Keyword analysis input:
 
 ```json
 {
+  "enableTrendingSearches": false,
   "keyword": "led skincare device",
   "predefinedTimeframe": "today 12-m",
   "geo": "US",
   "fetchRegionalData": false
 }
 ```
+
+`google-trends-fast` defaults to trending-search mode in its hosted input
+schema. For keyword analysis, `enableTrendingSearches` must be explicitly
+`false`; otherwise keyword fields are ignored by the actor.
 
 Trending-search input:
 
@@ -206,7 +211,7 @@ Escalate to platform research skills when search intent should be validated agai
 - TikTok content heat or hook patterns -> `skills/20-research/tiktok-research`
 - Instagram creator, account, or campaign scouting -> `skills/20-research/instagram-account-research` or `skills/20-research/instagram-campaign-scout`
 - Amazon marketplace demand -> `skills/20-research/amazon-research`
-- TikTok Shop marketplace demand -> `skills/20-research/tiktok-shop-research`
+- marketplace demand -> `skills/20-research/amazon-research`
 
 Escalate to higher synthesis when the user is making a real business decision:
 

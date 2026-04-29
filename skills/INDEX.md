@@ -40,8 +40,6 @@ Organic and paid TikTok research plus the TikTok music chain.
   - Path: `skills/20-research/tiktok-research/SKILL.md`
 - `tiktok-ad-research`
   - Path: `skills/20-research/tiktok-ad-research/SKILL.md`
-- `tiktok-shop-research`
-  - Path: `skills/20-research/tiktok-shop-research/SKILL.md`
 - `tiktok-music-archive-downloader`
   - Path: `skills/20-research/tiktok-music-archive-downloader/SKILL.md`
 
