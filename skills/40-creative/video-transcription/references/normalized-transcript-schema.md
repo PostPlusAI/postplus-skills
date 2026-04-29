@@ -29,7 +29,7 @@ Downstream subtitle and edit tooling should consume this object instead of provi
   ],
   "words": [],
   "meta": {
-    "provider": "hosted",
+    "provider": "hosted-media",
     "model": "transcription-whisper-with-video",
     "task": "transcribe",
     "enableTimestamps": true,

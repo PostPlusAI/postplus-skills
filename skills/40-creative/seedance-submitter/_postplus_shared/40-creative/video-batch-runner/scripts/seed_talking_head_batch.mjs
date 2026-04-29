@@ -84,7 +84,7 @@ function main() {
       voiceTakeId: voiceManifest.jobId,
       imageAssetId: imageAsset.assetId || 'img-001',
       assetPurpose: 'talking_head',
-      provider: 'hosted',
+      provider: 'hosted-media',
       model: 'video-infinitetalk',
       image: imageAsset.remoteUrl,
       audio: audioUrl,

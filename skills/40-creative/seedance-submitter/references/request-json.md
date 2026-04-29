@@ -26,7 +26,7 @@ Use this shape for Seedance 2.0 request records on the released shell.
 
 ```json
 {
-  "provider": "hosted",
+  "provider": "hosted-media",
   "model": "video-seedance-2-text",
   "resolution": "720p",
   "ratio": "9:16",

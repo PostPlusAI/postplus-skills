@@ -34,4 +34,4 @@ If a job stays in `processing` for unusually long:
 
 ## Wrong Provider Field
 
-If a request has `provider` set to a direct supplier name, change it to `hosted` and use one of the released `video-seedance-2-*` model keys. The hosted capability handles provider routing server-side.
+If a request has `provider` set to a direct supplier name, change it to `hosted-media` and use one of the released `video-seedance-2-*` model keys. The hosted capability handles provider routing server-side.

@@ -5,7 +5,7 @@
 ```json
 {
   "jobId": "video-stt-001",
-  "provider": "hosted",
+  "provider": "hosted-media",
   "model": "transcription-whisper-with-video",
   "video": "/absolute/or/public/video.mp4",
   "language": "auto",

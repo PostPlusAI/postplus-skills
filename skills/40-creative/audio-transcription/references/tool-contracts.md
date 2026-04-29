@@ -5,7 +5,7 @@
 ```json
 {
   "jobId": "audio-stt-001",
-  "provider": "hosted",
+  "provider": "hosted-media",
   "model": "transcription-whisper",
   "audio": "/absolute/or/public/audio.mp3",
   "language": "auto",

@@ -22,7 +22,7 @@ Normalized request shape:
   "campaignId": "example-co-2026-Q1-persona-test",
   "personaId": "example-persona-a-v1",
   "voiceProfileId": "voice-profile-example-persona-a-v1",
-  "provider": "hosted",
+  "provider": "hosted-media",
   "model": "voice-qwen3-design",
   "mode": "voice_design",
   "text": "Stop switching tabs to reply to emails.",
@@ -40,7 +40,7 @@ Normalized response shape:
 ```json
 {
   "jobId": "example-co-2026-Q1-voice-design-a-v1",
-  "provider": "hosted",
+  "provider": "hosted-media",
   "model": "voice-qwen3-design",
   "mode": "voice_design",
   "requestPath": "customers/example-co/campaigns/example-campaign-2026-Q1/voices/example-co-2026-Q1-voice-design-a-v1/request.json",
@@ -89,7 +89,7 @@ Normalized request shape:
   "personaId": "example-persona-a-v1",
   "voiceProfileId": "voice-profile-example-persona-a-v1",
   "voiceIdentityId": null,
-  "provider": "hosted",
+  "provider": "hosted-media",
   "model": "voice-qwen3-design",
   "mode": "voice_take",
   "text": "The annoying part isn't writing the email. It's all the extra steps.",
@@ -108,7 +108,7 @@ Normalized response shape:
 ```json
 {
   "jobId": "example-co-2026-Q1-th-001-voice-a-v1",
-  "provider": "hosted",
+  "provider": "hosted-media",
   "model": "voice-qwen3-design",
   "mode": "voice_take",
   "requestPath": "customers/<customer-id>/campaigns/example-co-2026-Q1-th-test/voices/example-co-2026-Q1-th-001-voice-a-v1/request.json",
@@ -158,7 +158,7 @@ Normalized request shape:
   "personaId": "example-persona-a-v1",
   "voiceProfileId": "voice-profile-example-persona-a-v1",
   "voiceIdentityId": "voice-identity-example-persona-a-v1",
-  "provider": "hosted",
+  "provider": "hosted-media",
   "model": "voice-qwen3-clone",
   "mode": "voice_clone_take",
   "referenceAudioPath": "customers/example-co/assets/personas/example-persona-a-v1/voice/approved/reference-001.wav",
@@ -179,7 +179,7 @@ Normalized response shape:
 ```json
 {
   "jobId": "example-co-2026-Q1-th-001-voice-clone-a-v1",
-  "provider": "hosted",
+  "provider": "hosted-media",
   "model": "voice-qwen3-clone",
   "mode": "voice_clone_take",
   "requestPath": "customers/<customer-id>/campaigns/example-co-2026-Q1-th-test/voices/example-co-2026-Q1-th-001-voice-clone-a-v1/request.json",
