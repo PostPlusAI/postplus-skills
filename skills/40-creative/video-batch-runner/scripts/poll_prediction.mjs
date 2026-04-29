@@ -35,22 +35,16 @@ function inferResultUrl(request, responsePayload) {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
-  if (!args.request && !args.response) {
+  if (args.help || !args.request) {
     usage();
-    process.exitCode = 1;
+    process.exitCode = args.help ? 0 : 1;
     return;
   }
 
-  const request = args.request ? readJson(args.request) : null;
+  const request = readJson(args.request);
   const priorResponse = args.response
     ? readJson(args.response)
-    : request
-      ? readJson(buildRequestPaths(request.localOutputDir).responsePath)
-      : null;
-
-  if (!request) {
-    throw new Error("--request is required when manifest refresh depends on local output paths.");
-  }
+    : readJson(buildRequestPaths(request.localOutputDir).responsePath);
 
   const paths = buildRequestPaths(request.localOutputDir);
   const resultUrl = args["result-url"] || inferResultUrl(request, priorResponse);

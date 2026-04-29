@@ -84,16 +84,13 @@ async function downloadOutputs(request, result, manifest, paths) {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
-  if (!args.request && !args.response) {
+  if (args.help || !args.request) {
     usage();
-    process.exitCode = 1;
+    process.exitCode = args.help ? 0 : 1;
     return;
   }
 
-  const rawRequest = args.request ? readJson(args.request) : null;
-  if (!rawRequest) {
-    throw new Error("--request is required.");
-  }
+  const rawRequest = readJson(args.request);
   const request = normalizePollRequest(rawRequest);
 
   const paths = buildAssetPaths(request.localAssetDir, request.runId, "image");

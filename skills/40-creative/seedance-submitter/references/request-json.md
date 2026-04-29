@@ -5,20 +5,28 @@ Use this shape for Seedance 2.0 request records on the released shell.
 ## Required Top-Level Fields
 
 - `jobId`
+- `provider`
+- `model`
+- `localOutputDir`
+
+Model-specific required fields:
+
+- `video-seedance-2-text` / `video-seedance-2-text-turbo`: `prompt` or
+  `promptPlan`
+- `video-seedance-2-image` / `video-seedance-2-image-turbo`: `prompt` or
+  `promptPlan`, plus `image`
+
+Recommended context fields:
+
 - `campaignId`
 - `personaId`
 - `conceptId`
 - `scriptId`
 - `assetPurpose`
-- `provider`
-- `model`
-- `promptPlan`
-- `referenceImages`
 - `resolution`
 - `ratio`
 - `duration`
 - `enableWebSearch`
-- `localOutputDir`
 - `sourceBasis`
 - `feedback`
 
@@ -88,7 +96,7 @@ Good:
 
 ## Reference Images
 
-Use uploaded URLs, not local paths, when submitting:
+For text-to-video reference conditioning, use uploaded URLs, not local paths:
 
 ```json
 {
@@ -96,6 +104,14 @@ Use uploaded URLs, not local paths, when submitting:
     "https://...",
     "https://..."
   ]
+}
+```
+
+For image-to-video models, use top-level `image` for the required first frame:
+
+```json
+{
+  "image": "https://..."
 }
 ```
 

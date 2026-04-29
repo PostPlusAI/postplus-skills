@@ -74,7 +74,7 @@ Hosted execution mapping:
   - `created_at`
   - `has_nsfw_contents`
 
-## 2. `generate_voice_take`
+## 2. Script-Specific `design_voice` Take
 
 Purpose:
 
@@ -121,7 +121,8 @@ Normalized response shape:
 }
 ```
 
-If the provider does not yet support true reusable voice identities, this tool can temporarily call the same `voice-design` endpoint with a stable `voiceDescription`, but it should still preserve the outer `voice_take` object shape.
+Run this shape through `scripts/design_voice.mjs`. The script calls the hosted
+voice-design endpoint and preserves the outer `voice_take` object shape.
 
 ## 3. Future `capture_voice_identity`
 

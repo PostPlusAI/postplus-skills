@@ -157,9 +157,12 @@ Use when:
 
 Expected inputs:
 
-- `request.json` path or `response.json` path
-- optional explicit result URL
-- local output directory
+- `--request <request.json>` is required because the script needs
+  `localOutputDir` to refresh the local manifest
+- `--response <response.json>` is optional; when omitted, the script reads the
+  response from the request's output directory
+- `--result-url <url>` is optional when the response does not include a pollable
+  `urls.get` or hosted prediction id
 
 Expected outputs:
 

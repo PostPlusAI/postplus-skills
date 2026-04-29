@@ -9,21 +9,20 @@ Purpose:
 - run one hosted collection actor
 - save raw dataset locally
 
-Input:
+CLI contract:
 
-```json
-{
-  "collectionPath": "tiktok/scraper",
-  "inputPath": "tmp/input.json",
-  "outputPath": "tmp/raw.json"
-}
+```bash
+node ${CLAUDE_SKILL_DIR}/scripts/collection_actor_run.mjs \
+  --collection-key tiktok-videos \
+  --input tmp/input.json \
+  --output tmp/raw.json
 ```
 
 Output:
 
 ```json
 {
-  "collectionPath": "tiktok/scraper",
+  "collectionKey": "tiktok-videos",
   "itemCount": 120,
   "fetchedAt": "2026-03-26T12:00:00.000Z",
   "outputPath": "tmp/raw.json"
@@ -36,15 +35,14 @@ Purpose:
 
 - convert actor-specific output into a stable normalized dataset
 
-Input:
+CLI contract:
 
-```json
-{
-  "inputPath": "tmp/raw.json",
-  "datasetType": "videos",
-  "collectionPath": "tiktok/scraper",
-  "outputPath": "tmp/normalized.json"
-}
+```bash
+node ${CLAUDE_SKILL_DIR}/scripts/normalize_tiktok_dataset.mjs \
+  --input tmp/raw.json \
+  --dataset-type videos \
+  --actor tiktok-scraper \
+  --output tmp/normalized.json
 ```
 
 Output:
@@ -83,20 +81,19 @@ Purpose:
 
 Input:
 
-```json
-{
-  "inputPath": "tmp/normalized-videos.json",
-  "outputPath": "tmp/graph-expanded-raw.json",
-  "top": 10,
-  "resultsPerSeed": 6
-}
+```bash
+node ${CLAUDE_SKILL_DIR}/scripts/expand_tiktok_creator_graph.mjs \
+  --input tmp/normalized-videos.json \
+  --output tmp/graph-expanded-raw.json \
+  --top 10 \
+  --results-per-seed 6
 ```
 
 Output:
 
 ```json
 {
-  "collectionPath": "tiktok/scraper",
+  "collectionKey": "tiktok-related-videos",
   "itemCount": 60,
   "outputPath": "tmp/graph-expanded-raw.json"
 }
@@ -140,14 +137,13 @@ Purpose:
 - compile a user- or brief-shaped request into the smallest valid actor input JSON
 - keep actor-specific field naming out of upstream task logic
 
-Input:
+CLI contract:
 
-```json
-{
-  "briefPath": "tmp/brief.json",
-  "outputPath": "tmp/actor-input.json",
-  "collectionPath": "tiktok/scraper"
-}
+```bash
+node ${CLAUDE_SKILL_DIR}/scripts/build_tiktok_actor_input.mjs \
+  --brief tmp/brief.json \
+  --actor tiktok-scraper \
+  --output tmp/actor-input.json
 ```
 
 Example brief:
@@ -167,7 +163,7 @@ Output:
 
 ```json
 {
-  "collectionPath": "tiktok/scraper",
+  "sourceId": "tiktok-scraper",
   "input": {
     "keywords": ["ai tools", "gmail workflow"],
     "startUrls": [

@@ -180,7 +180,31 @@ export function buildAssetPaths(localAssetDir, runId, mediaType = 'image') {
   };
 }
 
+const FORBIDDEN_NORMALIZED_FIELD_ALIASES = {
+  aspect_ratio: 'aspectRatio',
+  enable_base64_output: 'enableBase64Output',
+  enable_sync_mode: 'enableSyncMode',
+  enable_web_search: 'enableWebSearch',
+  output_format: 'outputFormat',
+};
+
+function assertNoProviderFieldAliases(input) {
+  const aliases = Object.keys(FORBIDDEN_NORMALIZED_FIELD_ALIASES).filter(
+    (key) => Object.hasOwn(input ?? {}, key),
+  );
+  if (aliases.length === 0) {
+    return;
+  }
+  const replacements = aliases
+    .map((key) => `${key} -> ${FORBIDDEN_NORMALIZED_FIELD_ALIASES[key]}`)
+    .join(', ');
+  throw new Error(
+    `Image normalized request uses provider-style field names. Use local camelCase fields: ${replacements}.`,
+  );
+}
+
 export function normalizeGenerationInput(input, mode) {
+  assertNoProviderFieldAliases(input);
   const assetId = input?.assetId || input?.jobId || null;
   const runId = input?.runId || input?.jobId || null;
   const localAssetDir = input?.localAssetDir || input?.localOutputDir || null;

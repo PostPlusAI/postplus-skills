@@ -229,7 +229,9 @@ This skill expects these tool adapters:
 
 - `design_voice`
 - `clone_voice_take`
-- `upload_media` when a clone job starts from local reference audio
+
+`clone_voice_take` accepts `referenceAudioPath` for local files and uploads it
+inside the script before calling the hosted clone endpoint.
 
 Future extension:
 

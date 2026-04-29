@@ -93,15 +93,15 @@ Hosted execution mapping:
   - `created_at`
   - `has_nsfw_contents`
 
-Recommended first-pass request defaults:
+Recommended normalized request defaults:
 
 ```json
 {
-  "enable_sync_mode": true,
-  "enable_base64_output": false,
-  "enable_web_search": false,
-  "output_format": "png",
-  "aspect_ratio": "9:16",
+  "enableSyncMode": true,
+  "enableBase64Output": false,
+  "enableWebSearch": false,
+  "outputFormat": "png",
+  "aspectRatio": "9:16",
   "resolution": "1k"
 }
 ```
@@ -184,8 +184,8 @@ Normalized request shape:
   "model": "image-nano-banana-2-edit",
   "mode": "edit",
   "prompt": "keep the same person, reduce studio feel, make the desk setup more natural and home-office-like",
-  "inputImages": [
-    "customers/<customer-id>/campaigns/example-co-2026-03-persona-test/assets/example-co-th-001-persona-a/images/approved/base.png"
+  "inputUrls": [
+    "https://..."
   ],
   "localAssetDir": "customers/<customer-id>/campaigns/example-co-2026-03-persona-test/assets/example-co-th-001-persona-a",
   "feedback": [
@@ -226,7 +226,8 @@ Hosted execution mapping:
 
 - The CLI skill calls the PostPlus Cloud hosted image edit capability endpoint.
 - The server selects the underlying provider and model.
-- upstream normalized requests may start from local files; the adapter uploads via `upload_media` first and passes the returned URL into the edit request
+- local files must be uploaded with `upload_media` first; pass the returned
+  `uploadedUrl` into `inputUrls`
 - Request body minimum: `{ "images": ["https://..."], "prompt": "..." }`
 - Response fields to preserve raw:
   - `id`
@@ -237,15 +238,15 @@ Hosted execution mapping:
   - `created_at`
   - `has_nsfw_contents`
 
-Recommended first-pass request defaults:
+Recommended normalized request defaults:
 
 ```json
 {
-  "enable_sync_mode": true,
-  "enable_base64_output": false,
-  "enable_web_search": false,
-  "output_format": "png",
-  "aspect_ratio": "9:16",
+  "enableSyncMode": true,
+  "enableBase64Output": false,
+  "enableWebSearch": false,
+  "outputFormat": "png",
+  "aspectRatio": "9:16",
   "resolution": "1k"
 }
 ```

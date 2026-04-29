@@ -101,18 +101,22 @@ Interpretation for first-version adapter design:
 
 ## Parameters To Capture
 
-Even if the hosted capability evolves, the local request record should keep these fields when available:
+Even if the hosted capability evolves, the local request record should keep
+these normalized camelCase fields when available:
 
 - `prompt`
-- `aspect_ratio`
+- `aspectRatio`
 - `resolution`
-- `output_format`
-- `enable_sync_mode`
-- `enable_base64_output`
-- `images` for edit mode
+- `outputFormat`
+- `enableSyncMode`
+- `enableBase64Output`
+- `inputUrls` for edit mode
 - `id`
 - `status`
 - `outputs`
 - `urls`
+
+The adapter maps local camelCase fields to hosted provider snake_case fields at
+execution time.
 
 Do not make the whole workflow depend on one provider-specific response field.
