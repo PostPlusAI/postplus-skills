@@ -33,14 +33,13 @@ Requires Node.js and npm.
 ```bash
 npm install -g @postplus/cli
 postplus auth login
-postplus install
+npx -y skills add PostPlusAI/postplus-skills --full-depth --skill '*' --agent claude-code codex cursor --yes
 ```
 
 Useful checks:
 
 ```bash
 postplus status
-postplus update
 npx -y skills add PostPlusAI/postplus-skills --list --full-depth
 ```
 
