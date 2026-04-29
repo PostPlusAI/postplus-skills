@@ -1,0 +1,172 @@
+# Video Tool Contracts
+
+> All `jobId`, `campaignId`, `personaId`, path values, and filenames in the
+> examples below are structural placeholders. They illustrate the expected
+> shape; no real customer or campaign data appears here.
+
+This file defines the normalized local contract for the video render adapters on the released shell.
+
+## 1. `generate_video_from_image_audio`
+
+Use when:
+
+- an approved image exists
+- an approved voice take exists
+- the goal is a talking portrait or singing avatar render
+
+### Normalized request shape
+
+```json
+{
+  "jobId": "example-co-2026-03-render-001",
+  "campaignId": "example-co-2026-03-persona-test",
+  "personaId": "example-persona-d-v1",
+  "conceptId": "gmail-reply-friction-v1",
+  "scriptId": "script-gmail-reply-friction-v1",
+  "voiceTakeId": "example-co-2026-03-voice-design-c-v1",
+  "imageAssetId": "example-co-2026-03-persona-d-img-001",
+  "assetPurpose": "talking_head",
+  "provider": "hosted",
+  "model": "hosted/video/talking-head",
+  "image": "customers/<customer-id>/campaigns/<campaign-id>/images/.../approved/frame-001.png",
+  "audio": "customers/<customer-id>/campaigns/<campaign-id>/voices/.../audio/take.wav",
+  "maskImage": null,
+  "prompt": "subtle natural head motion, realistic ugc talking head",
+  "resolution": "720p",
+  "seed": -1,
+  "localOutputDir": "customers/<customer-id>/campaigns/example-co-2026-03-persona-test/videos/example-co-2026-03-render-001",
+  "sourceBasis": [],
+  "mustKeep": [],
+  "canVary": [],
+  "feedback": []
+}
+```
+
+Hosted execution mapping:
+
+- The CLI skill calls the PostPlus Cloud hosted video capability endpoint.
+- The server selects the underlying provider and model.
+- Request body minimum: `{ "image": "...", "audio": "..." }`
+- Response fields to preserve raw:
+  - `id`
+  - `model`
+  - `outputs`
+  - `status`
+  - `urls`
+  - `created_at`
+
+## 2. `generate_video`
+
+Use when:
+
+- the goal is generative video from text, image, or multimodal reference inputs
+- the job may be text-to-video, first-frame image-to-video, first+last-frame image-to-video, or multimodal reference video generation
+
+### Normalized request shape
+
+```json
+{
+  "jobId": "example-co-2026-04-seedance-001",
+  "campaignId": "example-co-outreach-2026-04",
+  "conceptId": "ugc-hook-v2",
+  "assetPurpose": "ugc_variation",
+  "provider": "hosted",
+  "model": "hosted/video/generative",
+  "promptPlan": {
+    "subject": "a realistic creator in front of a natural background",
+    "action": "opens a product, demonstrates it, then looks at camera",
+    "scene": "clean home setting, natural light",
+    "style": "real UGC, not a polished studio ad",
+    "camera": "handheld close-up, subtle natural motion",
+    "mustKeep": ["product label clearly visible", "action is continuous"],
+    "mustAvoid": ["exaggerated distortion", "extra fingers", "heavy retouching"]
+  },
+  "images": [
+    {
+      "url": "https://example.com/first-frame.jpg",
+      "role": "first_frame"
+    }
+  ],
+  "resolution": "720p",
+  "ratio": "9:16",
+  "duration": 5,
+  "seed": -1,
+  "returnLastFrame": true,
+  "generateAudio": true,
+  "localOutputDir": "customers/<customer-id>/campaigns/<campaign-id>/videos/example-co-2026-04-seedance-001",
+  "sourceBasis": [],
+  "mustKeep": [],
+  "canVary": [],
+  "feedback": []
+}
+```
+
+### Notes
+
+- `request.content` can be passed directly when you need full control.
+- If `request.content` is omitted, the adapter will synthesize it from:
+  - `prompt` or `promptPlan`
+  - `images[]`
+  - `videos[]`
+  - `audios[]`
+  - `draftTaskId`
+- `promptPlan.referenceMap` is converted into `[图1]...，[图2]...` style prompt text to better match reference-image guidance.
+
+### Normalized manifest shape
+
+```json
+{
+  "jobId": "example-co-2026-03-render-001",
+  "campaignId": "example-co-2026-03-persona-test",
+  "personaId": "example-persona-d-v1",
+  "conceptId": "gmail-reply-friction-v1",
+  "scriptId": "script-gmail-reply-friction-v1",
+  "voiceTakeId": "example-co-2026-03-voice-design-c-v1",
+  "imageAssetId": "example-co-2026-03-persona-d-img-001",
+  "assetPurpose": "talking_head",
+  "provider": "hosted",
+  "model": "hosted/video/talking-head",
+  "requestPath": "/abs/path/request.json",
+  "responsePath": "/abs/path/response.json",
+  "providerStatus": "completed",
+  "createdAt": "2026-03-13T00:00:00.000Z",
+  "sourceBasis": [],
+  "upstreamRefs": {
+    "image": "customers/<customer-id>/campaigns/<campaign-id>/images/.../manifest.json",
+    "audio": "customers/<customer-id>/campaigns/<campaign-id>/voices/.../manifest.json"
+  },
+  "assets": [
+    {
+      "assetId": "example-co-2026-03-render-001-video-001",
+      "localPath": "/abs/path/renders/render-001.mp4",
+      "remoteUrl": "https://...",
+      "mimeType": "video/mp4",
+      "createdAt": "2026-03-13T00:00:00.000Z"
+    }
+  ],
+  "feedback": []
+}
+```
+
+## 3. `poll_prediction`
+
+Use when:
+
+- the provider returns a prediction ID and async status
+- you need to refresh local response and manifest later
+
+Expected inputs:
+
+- `request.json` path or `response.json` path
+- optional explicit result URL
+- local output directory
+
+Expected outputs:
+
+- refreshed `response.json`
+- refreshed `manifest.json`
+- downloaded assets if status is `completed`
+
+The CLI skill calls the PostPlus Cloud hosted polling endpoint.
+
+The server maps to the underlying provider's async result API and returns a normalized status response.

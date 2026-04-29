@@ -1,0 +1,4 @@
+interface:
+  display_name: "TikTok Research"
+  short_description: "Research TikTok creators, comments, and trends."
+  default_prompt: "Use $tiktok-research to collect and analyze TikTok metadata and benchmark data."

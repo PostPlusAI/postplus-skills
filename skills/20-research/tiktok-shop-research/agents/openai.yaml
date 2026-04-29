@@ -1,0 +1,4 @@
+interface:
+  display_name: "TikTok Shop Research"
+  short_description: "Research TikTok Shop listings and benchmarks."
+  default_prompt: "Use $tiktok-shop-research to collect and analyze TikTok Shop data."

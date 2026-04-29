@@ -1,0 +1,16 @@
+PostPlus Skills
+Copyright 2026 RealProductStudio
+
+This product is licensed under the Apache License, Version 2.0.
+See the LICENSE file for the full text.
+
+Third-Party Notices
+-------------------
+
+The skills in this repository call PostPlus Cloud hosted capabilities over
+HTTPS after authentication. They do not directly embed or redistribute any
+third-party provider SDK.
+
+Runtime helpers (Node.js built-ins, https-proxy-agent) used by skill scripts:
+
+- https-proxy-agent — MIT License — https://github.com/TooTallNate/proxy-agents

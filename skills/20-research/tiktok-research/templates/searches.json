@@ -1,0 +1,12 @@
+{
+  "task": "bounded search-query sampling",
+  "queries": [
+    "desk setup cable management",
+    "home office organization",
+    "work from home desk setup"
+  ],
+  "limit": 12,
+  "country": "US",
+  "searchSection": "/video",
+  "costMode": "bounded"
+}

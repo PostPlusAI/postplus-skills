@@ -1,0 +1,4 @@
+interface:
+  display_name: "Social Media Extractor"
+  short_description: "Route cross-platform social data extraction."
+  default_prompt: "Use $social-media-extractor to route cross-platform public social extraction to the right platform skill."
