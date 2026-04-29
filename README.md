@@ -23,7 +23,7 @@ The agent then routes the work, collects evidence, makes the judgment explicit, 
 PostPlus has three public surfaces that work together:
 
 - `https://postplus.io/`: the hosted product surface for account access, subscription state, and cloud-backed capabilities.
-- `https://github.com/RealProductStudio/postplus-skills`: the public skill repository that installs local marketing workflows into agent tools.
+- `https://github.com/PostPlusAI/postplus-skills`: the public skill repository that installs local marketing workflows into agent tools.
 - `https://github.com/PostPlusAI/postplus-cli`: the local command-line tool that signs you in, checks local readiness, and connects released skills to PostPlus account state.
 
 ## Install
@@ -33,14 +33,14 @@ Requires Node.js and npm.
 ```bash
 npm install -g @postplus/cli
 postplus auth login
-npx -y skills add PostPlusAI/postplus-skills --full-depth --skill '*' --agent claude-code codex cursor --yes
+postplus install
 ```
 
 Useful checks:
 
 ```bash
-postplus auth status
-postplus doctor
+postplus status
+postplus update
 npx -y skills add PostPlusAI/postplus-skills --list --full-depth
 ```
 
@@ -393,4 +393,3 @@ The best first prompt includes:
 - the target platform if you already know it
 - any reference links, files, accounts, or assets
 - the artifact you want at the end
-
