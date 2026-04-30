@@ -1,11 +1,11 @@
 #!/usr/bin/env node
-import http from "node:http";
+import http from 'node:http';
 
-import { requestJson } from "./network_runtime.mjs";
+import { requestJson } from './network_runtime.mjs';
 import {
   refreshPostPlusHostedSessionAuth,
   resolvePostPlusHostedSessionAuth,
-} from "./postplus_cli_config.mjs";
+} from './postplus_cli_config.mjs';
 
 function createHardError(code, message, cause, extra = {}) {
   const error = new Error(message);
@@ -24,17 +24,17 @@ function resolveHostedCapabilityBridgeConfig() {
   const sessionId = process.env.POSTPLUS_CHAT_RUNTIME_SESSION_ID;
 
   if (
-    typeof socketPath === "string" &&
+    typeof socketPath === 'string' &&
     socketPath.trim().length > 0 &&
-    typeof accountId === "string" &&
+    typeof accountId === 'string' &&
     accountId.trim().length > 0 &&
-    typeof conversationId === "string" &&
+    typeof conversationId === 'string' &&
     conversationId.trim().length > 0 &&
-    typeof sessionId === "string" &&
+    typeof sessionId === 'string' &&
     sessionId.trim().length > 0
   ) {
     return {
-      transport: "socket",
+      transport: 'socket',
       socketPath: socketPath.trim(),
       accountId: accountId.trim(),
       conversationId: conversationId.trim(),
@@ -46,15 +46,15 @@ function resolveHostedCapabilityBridgeConfig() {
 
   if (hostedApiAuth) {
     return {
-      transport: "https",
+      transport: 'https',
       apiBaseUrl: hostedApiAuth.apiBaseUrl,
       accessToken: hostedApiAuth.accessToken,
     };
   }
 
   throw createHardError(
-    "skill_server_capability_bridge_unavailable",
-    "Hosted capability bridge is required for repo-owned capability execution.",
+    'skill_server_capability_bridge_unavailable',
+    'Hosted capability bridge is required for repo-owned capability execution.',
   );
 }
 
@@ -67,10 +67,16 @@ export function hasHostedCapabilityBridge() {
 }
 
 export async function runHostedCapabilityRequest(request) {
+  const envelope = await runHostedCapabilityEnvelopeRequest(request);
+
+  return envelope.output;
+}
+
+export async function runHostedCapabilityEnvelopeRequest(request) {
   const config = resolveHostedCapabilityBridgeConfig();
 
   const response =
-    config.transport === "socket"
+    config.transport === 'socket'
       ? await requestHostedCapabilityBridgeJson(config.socketPath, {
           accountId: config.accountId,
           conversationId: config.conversationId,
@@ -79,19 +85,57 @@ export async function runHostedCapabilityRequest(request) {
         })
       : await requestHostedCapabilityApiJsonWithRefresh(config, request);
 
-  const output =
-    config.transport === "socket"
-      ? response?.data?.output
-      : response?.data?.output;
+  const output = response?.data?.output;
 
   if (output === undefined) {
     throw createHardError(
-      "skill_server_capability_invalid_response",
-      "Hosted capability bridge returned an invalid payload.",
+      'skill_server_capability_invalid_response',
+      'Hosted capability bridge returned an invalid payload.',
     );
   }
 
-  return output;
+  const charged = response?.data?.charged === true;
+  const billing = normalizeBillingSummary(response?.data?.billing);
+
+  return {
+    billing,
+    charged,
+    operationId:
+      typeof response?.data?.operationId === 'string'
+        ? response.data.operationId
+        : null,
+    output,
+  };
+}
+
+function normalizeBillingSummary(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return null;
+  }
+
+  const finalizedMillicredits = Number(value.finalizedMillicredits);
+  const finalizedCredits = Number(value.finalizedCredits);
+
+  if (
+    !Number.isFinite(finalizedMillicredits) ||
+    finalizedMillicredits < 0 ||
+    !Number.isFinite(finalizedCredits) ||
+    finalizedCredits < 0
+  ) {
+    return null;
+  }
+
+  return {
+    billingUnit:
+      value.billingUnit === 'credit' || value.billingUnit === 'milliCredit'
+        ? value.billingUnit
+        : null,
+    charged: value.charged === true,
+    estimatedOnly:
+      typeof value.estimatedOnly === 'boolean' ? value.estimatedOnly : null,
+    finalizedCredits,
+    finalizedMillicredits,
+  };
 }
 
 async function requestHostedCapabilityApiJson(config, request) {
@@ -100,13 +144,13 @@ async function requestHostedCapabilityApiJson(config, request) {
     {
       allowHttp: true,
       body: JSON.stringify(request),
-      codePrefix: "skill_server_capability",
+      codePrefix: 'skill_server_capability',
       headers: {
         authorization: `Bearer ${config.accessToken}`,
-        "content-type": "application/json",
+        'content-type': 'application/json',
       },
-      method: "POST",
-      providerName: "Hosted capability bridge",
+      method: 'POST',
+      providerName: 'Hosted capability bridge',
     },
   );
 }
@@ -117,8 +161,8 @@ async function requestHostedCapabilityApiJsonWithRefresh(config, request) {
   } catch (error) {
     if (
       !error ||
-      typeof error !== "object" ||
-      error.code !== "skill_server_capability_unauthorized"
+      typeof error !== 'object' ||
+      error.code !== 'skill_server_capability_unauthorized'
     ) {
       throw error;
     }
@@ -146,28 +190,28 @@ async function requestHostedCapabilityBridgeJson(socketPath, payload) {
     const request = http.request(
       {
         socketPath,
-        path: "/capability",
-        method: "POST",
+        path: '/capability',
+        method: 'POST',
         headers: {
-          "content-type": "application/json",
-          "content-length": String(Buffer.byteLength(body)),
+          'content-type': 'application/json',
+          'content-length': String(Buffer.byteLength(body)),
         },
       },
       (incoming) => {
         const chunks = [];
-        incoming.setEncoding("utf8");
-        incoming.on("data", (chunk) => {
+        incoming.setEncoding('utf8');
+        incoming.on('data', (chunk) => {
           chunks.push(chunk);
         });
-        incoming.on("end", () => {
-          const bodyText = chunks.join("");
+        incoming.on('end', () => {
+          const bodyText = chunks.join('');
           const statusCode = incoming.statusCode ?? 0;
 
           if (statusCode < 200 || statusCode >= 300) {
             reject(
               createHardError(
-                "skill_server_capability_request_failed",
-                `Hosted capability bridge request failed with ${statusCode}.${bodyText ? ` ${bodyText}` : ""}`,
+                'skill_server_capability_request_failed',
+                `Hosted capability bridge request failed with ${statusCode}.${bodyText ? ` ${bodyText}` : ''}`,
                 undefined,
                 {
                   bodyText,
@@ -186,19 +230,19 @@ async function requestHostedCapabilityBridgeJson(socketPath, payload) {
           } catch (error) {
             reject(
               createHardError(
-                "skill_server_capability_invalid_json",
-                "Hosted capability bridge returned non-JSON text.",
+                'skill_server_capability_invalid_json',
+                'Hosted capability bridge returned non-JSON text.',
                 error,
                 { bodyText },
               ),
             );
           }
         });
-        incoming.on("error", (error) => {
+        incoming.on('error', (error) => {
           reject(
             createHardError(
-              "skill_server_capability_network_request_failed",
-              "Hosted capability bridge response stream failed.",
+              'skill_server_capability_network_request_failed',
+              'Hosted capability bridge response stream failed.',
               error,
             ),
           );
@@ -206,11 +250,11 @@ async function requestHostedCapabilityBridgeJson(socketPath, payload) {
       },
     );
 
-    request.on("error", (error) => {
+    request.on('error', (error) => {
       reject(
         createHardError(
-          "skill_server_capability_network_request_failed",
-          "Hosted capability bridge request failed.",
+          'skill_server_capability_network_request_failed',
+          'Hosted capability bridge request failed.',
           error,
         ),
       );

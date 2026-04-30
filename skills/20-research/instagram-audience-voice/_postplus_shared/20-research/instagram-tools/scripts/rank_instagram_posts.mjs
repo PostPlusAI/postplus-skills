@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   cleanString,
   parseArgs,
@@ -50,10 +51,15 @@ function scoreRelevance(item, themeKeywords) {
   return matches;
 }
 
-function scorePost(item, themeKeywords) {
-  const likeScore = Math.log10((item.likeCount || 0) + 1) * 12;
-  const commentScore = Math.log10((item.commentCount || 0) + 1) * 10;
-  const viewScore = Math.log10((item.viewCount || 0) + 1) * 8;
+function nonNegativeCount(value) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
+}
+
+export function scorePost(item, themeKeywords) {
+  const likeScore = Math.log10(nonNegativeCount(item.likeCount) + 1) * 12;
+  const commentScore = Math.log10(nonNegativeCount(item.commentCount) + 1) * 10;
+  const viewScore = Math.log10(nonNegativeCount(item.viewCount) + 1) * 8;
   const relevanceScore = scoreRelevance(item, themeKeywords) * 6;
   const reelBonus = item.contentType === "reel" ? 6 : 0;
   const carouselBonus = item.contentType === "carousel" ? 3 : 0;
@@ -119,4 +125,8 @@ function main() {
   console.log(JSON.stringify(payload, null, 2));
 }
 
-main();
+const isDirectRun = path.resolve(process.argv[1] || "") === fileURLToPath(import.meta.url);
+
+if (isDirectRun) {
+  main();
+}
