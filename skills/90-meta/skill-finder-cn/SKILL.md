@@ -31,7 +31,7 @@ Do not:
 Use the released surface exposed by the public PostPlus skills repository:
 
 - `npx -y skills add PostPlusAI/postplus-skills --list`
-- `npx -y skills add PostPlusAI/postplus-skills --skill '*' --agent claude-code codex cursor --yes`
+- `npx -y skills add PostPlusAI/postplus-skills --full-depth --skill '*' --agent claude-code codex cursor github-copilot windsurf trae trae-cn --yes`
 - `postplus list`
 
 If the current released surface does not contain a suitable skill, say that directly.
@@ -45,7 +45,7 @@ If the current released surface does not contain a suitable skill, say that dire
 5. hand the user the official install path:
    - `npm install -g @postplus/cli`
    - `postplus auth login`
-   - `npx -y skills add PostPlusAI/postplus-skills --skill '*' --agent claude-code codex cursor --yes`
+   - `npx -y skills add PostPlusAI/postplus-skills --full-depth --skill '*' --agent claude-code codex cursor github-copilot windsurf trae trae-cn --yes`
 
 ## Recommendation Rules
 
@@ -76,7 +76,7 @@ Good response shape:
 2. if the user only wants installation guidance, point to:
    - `npm install -g @postplus/cli`
    - `postplus auth login`
-   - `npx -y skills add PostPlusAI/postplus-skills --skill '*' --agent claude-code codex cursor --yes`
+   - `npx -y skills add PostPlusAI/postplus-skills --full-depth --skill '*' --agent claude-code codex cursor github-copilot windsurf trae trae-cn --yes`
 
 If the user asks:
 
