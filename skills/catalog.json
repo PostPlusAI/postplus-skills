@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "revision": "1-761e8cf6dd2d5db3",
+  "revision": "1-2a04f70d399a367a",
   "source": "PostPlusAI/postplus-skills",
   "primaryIndex": "skills/INDEX.md",
   "skills": [
@@ -361,6 +361,7 @@
       "requirements": {
         "accountConnections": [],
         "collectionKeys": [
+          "instagram-email-search",
           "instagram-profiles",
           "instagram-search"
         ],

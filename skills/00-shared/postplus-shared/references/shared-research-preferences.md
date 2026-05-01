@@ -44,7 +44,6 @@ Default execution order:
 - Google search-intent and topic momentum -> `skills/20-research/google-trends-research`
 - TikTok platform data -> `skills/20-research/tiktok-research`
 - TikTok ad creative research -> `skills/20-research/tiktok-ad-research`
-- TikTok Shop platform data -> `skills/20-research/tiktok-shop-research`
 - Amazon platform data -> `skills/20-research/amazon-research`
 - 1688 product or supplier data -> `skills/20-research/1688-research`
 - Instagram creator discovery -> `skills/20-research/instagram-creator-discovery`

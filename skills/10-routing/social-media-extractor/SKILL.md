@@ -14,11 +14,9 @@ Use this skill only as a high-level entry point when the user asks for cross-pla
 This file is intentionally lightweight. Platform-specific collection logic lives elsewhere:
 
 - TikTok: [`skills/20-research/tiktok-research/SKILL.md`](skills/20-research/tiktok-research/SKILL.md)
-- TikTok music/sound collection: [`skills/20-research/tiktok-music-sound-collector/SKILL.md`](skills/20-research/tiktok-music-sound-collector/SKILL.md)
 - TikTok music archive downloads: [`skills/20-research/tiktok-music-archive-downloader/SKILL.md`](skills/20-research/tiktok-music-archive-downloader/SKILL.md)
 - TikTok music chain: `postplus-shared` TikTok music workflow
 - TikTok ads: [`skills/20-research/tiktok-ad-research/SKILL.md`](skills/20-research/tiktok-ad-research/SKILL.md)
-- TikTok Shop: [`skills/20-research/tiktok-shop-research/SKILL.md`](skills/20-research/tiktok-shop-research/SKILL.md)
 - Instagram creator discovery: [`skills/20-research/instagram-creator-discovery/SKILL.md`](skills/20-research/instagram-creator-discovery/SKILL.md)
 - Instagram accounts: [`skills/20-research/instagram-account-research/SKILL.md`](skills/20-research/instagram-account-research/SKILL.md)
 - Instagram content benchmark: [`skills/20-research/instagram-content-benchmark/SKILL.md`](skills/20-research/instagram-content-benchmark/SKILL.md)
@@ -64,7 +62,6 @@ Do not stay in this skill when the request is already specific, for example:
 - TikTok creator discovery
 - TikTok benchmark or comments research
 - TikTok sound-specific video collection or music archive download
-- TikTok Shop creator analytics
 - Instagram account enrichment
 - X account or tweet research
 

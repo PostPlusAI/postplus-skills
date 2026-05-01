@@ -54,7 +54,6 @@ Use these routes:
 
 - cross-platform demand or content proof -> `skills/10-routing/social-media-extractor`
 - Amazon platform data -> `skills/20-research/amazon-research`
-- TikTok Shop platform data -> `skills/20-research/tiktok-shop-research`
 - TikTok content and audience language -> `skills/20-research/tiktok-research`
 - Instagram creator/content/comment proof -> `skills/20-research/instagram-account-research` or `skills/20-research/instagram-content-benchmark` or `skills/20-research/instagram-audience-voice`
 - 1688 supply-side product or supplier data -> `skills/20-research/1688-research`

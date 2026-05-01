@@ -71,8 +71,7 @@ Use when the user asks:
 
 Preferred hosted collection keys:
 
-- `google-trends-fast` for the current released fast path
-- `google-trends-keywords` for the older keyword-only path
+- `google-trends-fast`
 
 ### 3. Regional Interest Mapping
 
@@ -106,7 +105,6 @@ Current defaults:
 
 - broad keyword analysis: `google-trends-fast`
 - realtime trending feed: `google-trends-fast`
-- older keyword-only path: `google-trends-keywords`
 
 Choose the narrowest actor that fits the task.
 
@@ -116,8 +114,6 @@ Use `google-trends-fast` by default when the task needs:
 - geo comparison
 - realtime trending searches
 - regional trend signals
-
-Use `google-trends-keywords` only when the workflow is already validated against that older keyword-only input shape.
 
 ## Hosted Collection Input Fields
 

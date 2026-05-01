@@ -182,7 +182,6 @@ Use for:
 Current preferred routes:
 
 - Amazon search-led demand -> `skills/20-research/amazon-research`
-- TikTok Shop marketplace demand -> `skills/20-research/tiktok-shop-research`
 
 ### Search-Intent Source
 
@@ -288,7 +287,6 @@ Current building blocks:
 - supply-side: `skills/20-research/1688-research`
 - search-intent: `skills/20-research/google-trends-research`
 - search-led demand: `skills/20-research/amazon-research`
-- marketplace demand: `skills/20-research/tiktok-shop-research`
 - content-language fit: `skills/20-research/tiktok-research`
 
 Future sources should be slotted into the same roles.
