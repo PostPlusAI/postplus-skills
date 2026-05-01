@@ -1,0 +1,981 @@
+{
+  "schemaVersion": 1,
+  "revision": "1-761e8cf6dd2d5db3",
+  "source": "PostPlusAI/postplus-skills",
+  "primaryIndex": "skills/INDEX.md",
+  "skills": [
+    {
+      "familyId": "marketplace-sourcing",
+      "familyName": "Marketplace, Sourcing, and Growth",
+      "name": "amazon-research",
+      "path": "skills/20-research/amazon-research/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [
+          "amazon-asins",
+          "amazon-bestsellers",
+          "amazon-free-products",
+          "amazon-products",
+          "amazon-reviews",
+          "amazon-reviews-v2"
+        ],
+        "endpointKeys": [],
+        "hostedCapabilities": [
+          "hosted-collection"
+        ],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released"
+    },
+    {
+      "familyId": "media-production",
+      "familyName": "Media and Creative Production",
+      "name": "audio-transcription",
+      "path": "skills/40-creative/audio-transcription/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [
+          "transcription-whisper",
+          "transcription-whisper-turbo"
+        ],
+        "hostedCapabilities": [
+          "media-file",
+          "media-generation"
+        ],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released"
+    },
+    {
+      "familyId": "media-production",
+      "familyName": "Media and Creative Production",
+      "name": "benchmark-to-brief",
+      "path": "skills/40-creative/benchmark-to-brief/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [],
+        "hostedCapabilities": [],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released"
+    },
+    {
+      "familyId": "media-production",
+      "familyName": "Media and Creative Production",
+      "name": "broll-catalog-builder",
+      "path": "skills/40-creative/b-roll-family/broll-catalog-builder/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [],
+        "hostedCapabilities": [],
+        "localDependencies": [
+          "ffmpeg",
+          "ffprobe"
+        ],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released/support"
+    },
+    {
+      "familyId": "media-production",
+      "familyName": "Media and Creative Production",
+      "name": "broll-match-engine",
+      "path": "skills/40-creative/b-roll-family/broll-match-engine/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [],
+        "hostedCapabilities": [],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released"
+    },
+    {
+      "familyId": "media-production",
+      "familyName": "Media and Creative Production",
+      "name": "creative-qa",
+      "path": "skills/40-creative/creative-qa/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [],
+        "hostedCapabilities": [],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released"
+    },
+    {
+      "familyId": "routing-contracts",
+      "familyName": "Routing & Contracts",
+      "name": "creator-discovery-router",
+      "path": "skills/10-routing/creator-discovery-router/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [],
+        "hostedCapabilities": [],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released/router"
+    },
+    {
+      "familyId": "routing-contracts",
+      "familyName": "Routing & Contracts",
+      "name": "creator-outreach",
+      "path": "skills/50-publishing/creator-outreach/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [],
+        "hostedCapabilities": [],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released"
+    },
+    {
+      "familyId": "media-production",
+      "familyName": "Media and Creative Production",
+      "name": "edit-enhancement-packager",
+      "path": "skills/40-creative/b-roll-family/edit-enhancement-packager/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [],
+        "hostedCapabilities": [],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released/support"
+    },
+    {
+      "familyId": "media-production",
+      "familyName": "Media and Creative Production",
+      "name": "editing-decision-engine",
+      "path": "skills/40-creative/editing-decision-engine/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [],
+        "hostedCapabilities": [],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released"
+    },
+    {
+      "familyId": "platform-research",
+      "familyName": "LinkedIn, Facebook, and YouTube",
+      "name": "facebook-research",
+      "path": "skills/20-research/facebook-research/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [],
+        "hostedCapabilities": [
+          "public-content-collection",
+          "public-content-discovery"
+        ],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": [
+          "facebook-group-posts",
+          "facebook-post-by-url",
+          "facebook-profile-posts"
+        ]
+      },
+      "status": "released"
+    },
+    {
+      "familyId": "media-production",
+      "familyName": "Media and Creative Production",
+      "name": "frame-extraction",
+      "path": "skills/40-creative/frame-extraction/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [],
+        "hostedCapabilities": [],
+        "localDependencies": [
+          "ffmpeg"
+        ],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released"
+    },
+    {
+      "familyId": "marketplace-sourcing",
+      "familyName": "Marketplace, Sourcing, and Growth",
+      "name": "google-trends-research",
+      "path": "skills/20-research/google-trends-research/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [
+          "google-trends-fast"
+        ],
+        "endpointKeys": [],
+        "hostedCapabilities": [
+          "hosted-collection"
+        ],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released"
+    },
+    {
+      "familyId": "media-production",
+      "familyName": "Media and Creative Production",
+      "name": "image-batch-runner",
+      "path": "skills/40-creative/image-batch-runner/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [
+          "image-nano-banana-2-edit",
+          "image-nano-banana-2-text",
+          "image-seedream-v5-lite-edit",
+          "image-seedream-v5-lite-edit-sequential",
+          "image-seedream-v5-lite-sequential",
+          "image-seedream-v5-lite-text"
+        ],
+        "hostedCapabilities": [
+          "media-file",
+          "media-generation"
+        ],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released"
+    },
+    {
+      "familyId": "instagram",
+      "familyName": "Instagram",
+      "name": "instagram-account-research",
+      "path": "skills/20-research/instagram-account-research/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [
+          "instagram-posts",
+          "instagram-profiles"
+        ],
+        "endpointKeys": [],
+        "hostedCapabilities": [
+          "hosted-collection"
+        ],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released"
+    },
+    {
+      "familyId": "instagram",
+      "familyName": "Instagram",
+      "name": "instagram-audience-voice",
+      "path": "skills/20-research/instagram-audience-voice/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [
+          "instagram-comments"
+        ],
+        "endpointKeys": [],
+        "hostedCapabilities": [
+          "hosted-collection"
+        ],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released"
+    },
+    {
+      "familyId": "instagram",
+      "familyName": "Instagram",
+      "name": "instagram-campaign-scout",
+      "path": "skills/20-research/instagram-campaign-scout/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [
+          "instagram-hashtags",
+          "instagram-posts",
+          "instagram-search"
+        ],
+        "endpointKeys": [],
+        "hostedCapabilities": [
+          "hosted-collection"
+        ],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released"
+    },
+    {
+      "familyId": "instagram",
+      "familyName": "Instagram",
+      "name": "instagram-content-benchmark",
+      "path": "skills/20-research/instagram-content-benchmark/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [
+          "instagram-hashtags",
+          "instagram-posts"
+        ],
+        "endpointKeys": [],
+        "hostedCapabilities": [
+          "hosted-collection"
+        ],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released"
+    },
+    {
+      "familyId": "instagram",
+      "familyName": "Instagram",
+      "name": "instagram-creator-discovery",
+      "path": "skills/20-research/instagram-creator-discovery/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [
+          "instagram-profiles",
+          "instagram-search"
+        ],
+        "endpointKeys": [],
+        "hostedCapabilities": [
+          "hosted-collection"
+        ],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released"
+    },
+    {
+      "familyId": "instagram",
+      "familyName": "Instagram",
+      "name": "instagram-tools",
+      "path": "skills/20-research/instagram-tools/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [
+          "instagram-comments",
+          "instagram-hashtags",
+          "instagram-posts",
+          "instagram-profiles",
+          "instagram-search"
+        ],
+        "endpointKeys": [],
+        "hostedCapabilities": [
+          "hosted-collection"
+        ],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released/support"
+    },
+    {
+      "familyId": "routing-contracts",
+      "familyName": "Routing & Contracts",
+      "name": "media-router",
+      "path": "skills/10-routing/media-router/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [],
+        "hostedCapabilities": [],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released/router"
+    },
+    {
+      "familyId": "routing-contracts",
+      "familyName": "Routing & Contracts",
+      "name": "pattern-router",
+      "path": "skills/10-routing/pattern-router/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [],
+        "hostedCapabilities": [],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released/router"
+    },
+    {
+      "familyId": "media-production",
+      "familyName": "Media and Creative Production",
+      "name": "persona-pack",
+      "path": "skills/40-creative/persona-pack/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [],
+        "hostedCapabilities": [],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released"
+    },
+    {
+      "familyId": "shared-rules",
+      "familyName": "Shared Rules",
+      "name": "postplus-shared",
+      "path": "skills/00-shared/postplus-shared/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [],
+        "hostedCapabilities": [],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released/support"
+    },
+    {
+      "familyId": "routing-contracts",
+      "familyName": "Routing & Contracts",
+      "name": "prompt-preflight-qa",
+      "path": "skills/10-routing/prompt-preflight-qa/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [],
+        "hostedCapabilities": [],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released/support"
+    },
+    {
+      "familyId": "routing-contracts",
+      "familyName": "Routing & Contracts",
+      "name": "reference-contract-builder",
+      "path": "skills/10-routing/reference-contract-builder/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [],
+        "hostedCapabilities": [],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released/support"
+    },
+    {
+      "familyId": "routing-contracts",
+      "familyName": "Routing & Contracts",
+      "name": "reference-decode",
+      "path": "skills/10-routing/reference-decode/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [],
+        "hostedCapabilities": [],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released/support"
+    },
+    {
+      "familyId": "media-production",
+      "familyName": "Media and Creative Production",
+      "name": "seedance-submitter",
+      "path": "skills/40-creative/seedance-submitter/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [
+          "video-seedance-2-image",
+          "video-seedance-2-image-turbo",
+          "video-seedance-2-text",
+          "video-seedance-2-text-turbo"
+        ],
+        "hostedCapabilities": [
+          "media-file",
+          "media-generation"
+        ],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released/support"
+    },
+    {
+      "familyId": "workspace-publishing",
+      "familyName": "Workspace, Publishing, and Meta",
+      "name": "skill-finder-cn",
+      "path": "skills/90-meta/skill-finder-cn/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [],
+        "hostedCapabilities": [],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released"
+    },
+    {
+      "familyId": "routing-contracts",
+      "familyName": "Routing & Contracts",
+      "name": "social-media-extractor",
+      "path": "skills/10-routing/social-media-extractor/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [],
+        "hostedCapabilities": [],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released/router"
+    },
+    {
+      "familyId": "workspace-publishing",
+      "familyName": "Workspace, Publishing, and Meta",
+      "name": "social-media-publisher",
+      "path": "skills/50-publishing/social-media-publisher/SKILL.md",
+      "requirements": {
+        "accountConnections": [
+          "postiz-workspace"
+        ],
+        "collectionKeys": [],
+        "endpointKeys": [],
+        "hostedCapabilities": [
+          "social-publishing"
+        ],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released"
+    },
+    {
+      "familyId": "marketplace-sourcing",
+      "familyName": "Marketplace, Sourcing, and Growth",
+      "name": "sourcing-selection",
+      "path": "skills/30-strategy/sourcing-selection/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [],
+        "hostedCapabilities": [],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released"
+    },
+    {
+      "familyId": "media-production",
+      "familyName": "Media and Creative Production",
+      "name": "subtitle-packager",
+      "path": "skills/40-creative/subtitle-packager/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [],
+        "hostedCapabilities": [],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released/support"
+    },
+    {
+      "familyId": "tiktok",
+      "familyName": "TikTok",
+      "name": "tiktok-ad-research",
+      "path": "skills/20-research/tiktok-ad-research/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [
+          "tiktok-ads-top"
+        ],
+        "endpointKeys": [],
+        "hostedCapabilities": [
+          "hosted-collection"
+        ],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released"
+    },
+    {
+      "familyId": "tiktok",
+      "familyName": "TikTok",
+      "name": "tiktok-music-archive-downloader",
+      "path": "skills/20-research/tiktok-music-archive-downloader/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [],
+        "hostedCapabilities": [],
+        "localDependencies": [
+          "ffmpeg",
+          "python3",
+          "python3:yt_dlp"
+        ],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released"
+    },
+    {
+      "familyId": "tiktok",
+      "familyName": "TikTok",
+      "name": "tiktok-research",
+      "path": "skills/20-research/tiktok-research/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [
+          "tiktok-comments",
+          "tiktok-profiles",
+          "tiktok-related-videos",
+          "tiktok-users",
+          "tiktok-videos"
+        ],
+        "endpointKeys": [],
+        "hostedCapabilities": [
+          "hosted-collection"
+        ],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released"
+    },
+    {
+      "familyId": "media-production",
+      "familyName": "Media and Creative Production",
+      "name": "video-analysis",
+      "path": "skills/40-creative/video-analysis/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [],
+        "hostedCapabilities": [
+          "video-analysis"
+        ],
+        "localDependencies": [
+          "python3",
+          "python3:yt_dlp"
+        ],
+        "modelKeys": [
+          "gemini-video-analysis"
+        ],
+        "sourceKeys": []
+      },
+      "status": "released"
+    },
+    {
+      "familyId": "media-production",
+      "familyName": "Media and Creative Production",
+      "name": "video-batch-runner",
+      "path": "skills/40-creative/video-batch-runner/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [
+          "video-infinitetalk",
+          "video-seedance-2-image",
+          "video-seedance-2-image-turbo",
+          "video-seedance-2-text",
+          "video-seedance-2-text-turbo"
+        ],
+        "hostedCapabilities": [
+          "media-file",
+          "media-generation"
+        ],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released"
+    },
+    {
+      "familyId": "routing-contracts",
+      "familyName": "Routing & Contracts",
+      "name": "video-request-architect",
+      "path": "skills/10-routing/video-request-architect/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [],
+        "hostedCapabilities": [],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released"
+    },
+    {
+      "familyId": "media-production",
+      "familyName": "Media and Creative Production",
+      "name": "video-transcription",
+      "path": "skills/40-creative/video-transcription/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [
+          "transcription-whisper-with-video"
+        ],
+        "hostedCapabilities": [
+          "media-file",
+          "media-generation"
+        ],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released"
+    },
+    {
+      "familyId": "media-production",
+      "familyName": "Media and Creative Production",
+      "name": "visual-hook",
+      "path": "skills/40-creative/visual-hook/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [],
+        "hostedCapabilities": [],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released/support"
+    },
+    {
+      "familyId": "media-production",
+      "familyName": "Media and Creative Production",
+      "name": "voice-batch-runner",
+      "path": "skills/40-creative/voice-batch-runner/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [
+          "voice-qwen3-clone",
+          "voice-qwen3-design"
+        ],
+        "hostedCapabilities": [
+          "media-file",
+          "media-generation"
+        ],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released/evolving"
+    },
+    {
+      "familyId": "x",
+      "familyName": "X / Twitter",
+      "name": "x-tools",
+      "path": "skills/20-research/x-tools/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [
+          "x-posts",
+          "x-profiles"
+        ],
+        "endpointKeys": [],
+        "hostedCapabilities": [
+          "hosted-collection"
+        ],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released/support"
+    },
+    {
+      "familyId": "xiaohongshu",
+      "familyName": "Xiaohongshu / Rednote",
+      "name": "xiaohongshu-account-research",
+      "path": "skills/20-research/xhs-account-research/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [
+          "xhs-account-posts"
+        ],
+        "endpointKeys": [],
+        "hostedCapabilities": [
+          "hosted-collection"
+        ],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released"
+    },
+    {
+      "familyId": "media-production",
+      "familyName": "Media and Creative Production",
+      "name": "xiaohongshu-article-packager",
+      "path": "skills/40-creative/xiaohongshu-article-packager/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [],
+        "hostedCapabilities": [],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released"
+    },
+    {
+      "familyId": "media-production",
+      "familyName": "Media and Creative Production",
+      "name": "xiaohongshu-card-notes",
+      "path": "skills/40-creative/xiaohongshu-card-notes/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [],
+        "hostedCapabilities": [],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released"
+    },
+    {
+      "familyId": "xiaohongshu",
+      "familyName": "Xiaohongshu / Rednote",
+      "name": "xiaohongshu-content-benchmark",
+      "path": "skills/20-research/xhs-content-benchmark/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [
+          "xhs-account-posts"
+        ],
+        "endpointKeys": [],
+        "hostedCapabilities": [
+          "hosted-collection"
+        ],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released"
+    },
+    {
+      "familyId": "xiaohongshu",
+      "familyName": "Xiaohongshu / Rednote",
+      "name": "xiaohongshu-media-collector",
+      "path": "skills/20-research/xhs-media-collector/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [],
+        "hostedCapabilities": [],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released"
+    },
+    {
+      "familyId": "xiaohongshu",
+      "familyName": "Xiaohongshu / Rednote",
+      "name": "xiaohongshu-notes",
+      "path": "skills/40-creative/xiaohongshu-notes/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [],
+        "hostedCapabilities": [],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released"
+    },
+    {
+      "familyId": "xiaohongshu",
+      "familyName": "Xiaohongshu / Rednote",
+      "name": "xiaohongshu-tools",
+      "path": "skills/20-research/xiaohongshu-tools/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [
+          "xhs-account-posts",
+          "xhs-search"
+        ],
+        "endpointKeys": [],
+        "hostedCapabilities": [
+          "hosted-collection"
+        ],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released/support"
+    },
+    {
+      "familyId": "platform-research",
+      "familyName": "LinkedIn, Facebook, and YouTube",
+      "name": "youtube-research",
+      "path": "skills/20-research/youtube-research/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [
+          "youtube-channel-summary",
+          "youtube-comments",
+          "youtube-video-download"
+        ],
+        "endpointKeys": [],
+        "hostedCapabilities": [
+          "hosted-collection",
+          "public-content-collection",
+          "public-content-discovery"
+        ],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": [
+          "youtube-videos"
+        ]
+      },
+      "status": "released"
+    }
+  ]
+}
