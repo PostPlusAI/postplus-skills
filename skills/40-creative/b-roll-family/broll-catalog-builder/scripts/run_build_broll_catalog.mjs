@@ -110,7 +110,7 @@ function ffprobeJson(filePath) {
   } catch (error) {
     if (error?.code === "ENOENT") {
       throw new Error(
-        "local_dependency_missing: ffprobe is required for broll-catalog-builder. Run `postplus doctor` or install ffprobe before continuing.",
+        "local_dependency_missing: ffprobe is required for broll-catalog-builder. Follow the postplus-shared Local Dependency Bootstrap Rule, then rerun this script.",
       );
     }
     throw error;

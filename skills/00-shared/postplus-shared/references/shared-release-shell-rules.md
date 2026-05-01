@@ -53,7 +53,7 @@ artifacts, or a compile step before provider execution.
 ## Local Dependency Bootstrap Rule
 
 - For approved local media dependencies in the current CLI-first release, the
-  user's agent should proactively install the missing dependency in the user's
+  user's agent must proactively install the missing dependency in the user's
   local environment before running the supported script that needs it.
 - Current approved local media dependencies are:
   - `python3`
@@ -61,6 +61,8 @@ artifacts, or a compile step before provider execution.
   - `ffmpeg`
   - `ffprobe`
 - `PostPlus CLI` itself is not the installer for those tools.
+- Do not ask a non-technical end user to install those tools manually or to
+  interpret tool names such as `ffprobe`.
 - Use the smallest direct install path already supported by the host
   environment.
 - After installation, rerun a direct verification command before continuing.

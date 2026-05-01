@@ -135,9 +135,7 @@ Treat downloaded TikTok music as research/reference material unless the user con
 - this skill currently depends on explicit host-installed local tools:
   - `python3` with `yt_dlp`
   - `ffmpeg`
-- verify dependencies before the first download or extraction using
-  `postplus doctor` or direct checks such as `python3 --version`,
-  `python3 -c "import yt_dlp"`, and `ffmpeg -version`
-- if a dependency is missing, stop immediately and ask the user to install or
-  approve installation; do not silently install, repair, or switch to ad hoc
-  shell glue
+- follow the `postplus-shared` Local Dependency Bootstrap Rule before the first
+  download or extraction
+- if local dependency bootstrap fails, stop immediately instead of switching to
+  ad hoc shell glue

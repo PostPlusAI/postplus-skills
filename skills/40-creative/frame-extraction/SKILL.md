@@ -182,11 +182,10 @@ Match the packaging to the downstream task:
 - keep only final user-facing frame exports, contact sheets, or review packs
   outside `.postplus/`
 - use small, task-shaped extraction scopes before broad full-video pulls
-- verify `ffmpeg` before extraction using `postplus doctor` or a direct check
-  such as `ffmpeg -version`
-- if `ffmpeg` is missing, stop immediately and ask the user to install or
-  approve installation; do not silently install, repair, or switch to ad hoc
-  shell glue
+- this skill requires `ffmpeg`; follow the `postplus-shared` Local Dependency
+  Bootstrap Rule before extraction
+- if local dependency bootstrap fails, stop immediately instead of switching to
+  ad hoc shell glue
 
 ## Default Sequence
 

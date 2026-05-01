@@ -164,13 +164,10 @@ node ${CLAUDE_SKILL_DIR}/scripts/run_build_broll_catalog.mjs \
   `.postplus/`
 - start with a bounded first pass on one folder or shortlist before broader
   cataloging
-- verify `ffprobe` before cataloging using `postplus doctor` or a direct check
-  such as `ffprobe -version`
-- if `ffprobe` is missing, stop immediately and ask the user to install or
-  approve installation; do not silently install, repair, or switch to ad hoc
-  shell glue
-- if verification fails, stop immediately instead of switching
-  to ad hoc shell glue
+- this skill requires `ffprobe`; follow the `postplus-shared` Local Dependency
+  Bootstrap Rule before cataloging
+- if local dependency bootstrap fails, stop immediately instead of switching to
+  ad hoc shell glue
 
 ## Output Standard
 

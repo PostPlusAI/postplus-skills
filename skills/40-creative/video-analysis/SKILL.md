@@ -60,8 +60,8 @@ If the local video files are missing, do not stop at metadata. Recover the sourc
 For this workspace, a practical recovery path is:
 
 1. try to locate previously downloaded local videos
-2. if missing, proactively install the local downloader dependency first when
-   needed
+2. if downloader dependencies are missing, follow the `postplus-shared` Local
+   Dependency Bootstrap Rule first
 3. if still missing, download from the TikTok web URL with `yt-dlp`
 4. save files under a stable workspace path
 5. only then call the Gemini analysis scripts
@@ -81,15 +81,11 @@ Do not store secrets in this repo.
 In the product shell:
 
 - follow `postplus-shared` release-shell rules
-- verify local dependencies before analysis using `postplus doctor` or direct
-  checks such as `python3 --version`, `python3 -c "import yt_dlp"`, and
-  `ffprobe -version`
-- if a dependency is missing, stop immediately and ask the user to install or
-  approve installation; do not silently install, repair, or switch to ad hoc
-  shell glue
+- this skill requires `python3`, `yt_dlp`, and `ffprobe`; follow the
+  `postplus-shared` Local Dependency Bootstrap Rule before analysis
 - if the required Gemini capability is missing, or local dependency
-  verification fails, or the script returns a stable network/proxy/DNS error,
-  stop immediately and report that failure
+  bootstrap fails, or the script returns a stable network/proxy/DNS error, stop
+  immediately and report that failure
 
 ## Default Model
 

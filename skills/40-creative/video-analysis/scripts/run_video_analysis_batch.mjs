@@ -60,7 +60,7 @@ function detectVideoDurationSeconds(filePath) {
 
   if (result.error?.code === "ENOENT") {
     throw new Error(
-      "local_dependency_missing: ffprobe is required for video-analysis duration estimation. Run `postplus doctor` or install ffprobe before continuing.",
+      "local_dependency_missing: ffprobe is required for video-analysis duration estimation. Follow the postplus-shared Local Dependency Bootstrap Rule, then rerun this script.",
     );
   }
 
