@@ -7,7 +7,7 @@ PostPlus Skills is the released local skill catalog for PostPlus.
 ```bash
 npm install -g @postplus/cli
 postplus auth login
-npx -y skills add PostPlusAI/postplus-skills --full-depth --skill '*' --agent claude-code codex cursor github-copilot windsurf trae trae-cn --yes
+npx -y skills add PostPlusAI/postplus-skills --global --full-depth --skill '*' --agent claude-code codex cursor github-copilot windsurf trae trae-cn --yes
 ```
 
 ## Browse
