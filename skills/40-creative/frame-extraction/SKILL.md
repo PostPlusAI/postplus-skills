@@ -182,11 +182,11 @@ Match the packaging to the downstream task:
 - keep only final user-facing frame exports, contact sheets, or review packs
   outside `.postplus/`
 - use small, task-shaped extraction scopes before broad full-video pulls
-- if `ffmpeg` is missing, the user's agent should proactively install it with
-  the host package manager already present on the machine before continuing
-- rerun a direct check such as `ffmpeg -version` after installation
-- if installation or verification fails, stop immediately instead of switching
-  to ad hoc shell glue
+- verify `ffmpeg` before extraction using `postplus doctor` or a direct check
+  such as `ffmpeg -version`
+- if `ffmpeg` is missing, stop immediately and ask the user to install or
+  approve installation; do not silently install, repair, or switch to ad hoc
+  shell glue
 
 ## Default Sequence
 

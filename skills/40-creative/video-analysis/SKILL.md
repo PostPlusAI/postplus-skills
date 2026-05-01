@@ -81,15 +81,15 @@ Do not store secrets in this repo.
 In the product shell:
 
 - follow `postplus-shared` release-shell rules
-- if `python3` is missing, install `python3` with the host package manager
-  already present on the machine before continuing
-- if `yt_dlp` is missing, run `python3 -m pip install --user yt-dlp` before
-  continuing
-- rerun direct checks such as `python3 --version` and
-  `python3 -c "import yt_dlp"` after installation
+- verify local dependencies before analysis using `postplus doctor` or direct
+  checks such as `python3 --version`, `python3 -c "import yt_dlp"`, and
+  `ffprobe -version`
+- if a dependency is missing, stop immediately and ask the user to install or
+  approve installation; do not silently install, repair, or switch to ad hoc
+  shell glue
 - if the required Gemini capability is missing, or local dependency
-  installation/verification fails, or the script returns a stable
-  network/proxy/DNS error, stop immediately and report that failure
+  verification fails, or the script returns a stable network/proxy/DNS error,
+  stop immediately and report that failure
 
 ## Default Model
 

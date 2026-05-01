@@ -164,12 +164,12 @@ node ${CLAUDE_SKILL_DIR}/scripts/run_build_broll_catalog.mjs \
   `.postplus/`
 - start with a bounded first pass on one folder or shortlist before broader
   cataloging
-- if `ffprobe` or `ffmpeg` is missing, the user's agent should proactively
-  install the `ffmpeg` package with the host package manager already present on
-  the machine before continuing
-- rerun direct checks such as `ffprobe -version` and `ffmpeg -version` after
-  installation
-- if installation or verification fails, stop immediately instead of switching
+- verify `ffprobe` before cataloging using `postplus doctor` or a direct check
+  such as `ffprobe -version`
+- if `ffprobe` is missing, stop immediately and ask the user to install or
+  approve installation; do not silently install, repair, or switch to ad hoc
+  shell glue
+- if verification fails, stop immediately instead of switching
   to ad hoc shell glue
 
 ## Output Standard

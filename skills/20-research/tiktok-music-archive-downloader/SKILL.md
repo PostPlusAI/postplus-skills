@@ -135,13 +135,9 @@ Treat downloaded TikTok music as research/reference material unless the user con
 - this skill currently depends on explicit host-installed local tools:
   - `python3` with `yt_dlp`
   - `ffmpeg`
-- if `python3` is missing, proactively install `python3` with the host package
-  manager already present on the machine before continuing
-- if `yt_dlp` is missing, proactively run
-  `python3 -m pip install --user yt-dlp`
-- if `ffmpeg` is missing, proactively install `ffmpeg` with the host package
-  manager already present on the machine before continuing
-- rerun direct checks such as `python3 --version`,
-  `python3 -c "import yt_dlp"`, and `ffmpeg -version` after installation
-- if installation or verification fails, stop immediately instead of switching
-  to ad hoc shell glue
+- verify dependencies before the first download or extraction using
+  `postplus doctor` or direct checks such as `python3 --version`,
+  `python3 -c "import yt_dlp"`, and `ffmpeg -version`
+- if a dependency is missing, stop immediately and ask the user to install or
+  approve installation; do not silently install, repair, or switch to ad hoc
+  shell glue

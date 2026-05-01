@@ -92,20 +92,29 @@ function roundSeconds(value) {
 }
 
 function ffprobeJson(filePath) {
-  const stdout = execFileSync(
-    "ffprobe",
-    [
-      "-v",
-      "error",
-      "-print_format",
-      "json",
-      "-show_streams",
-      "-show_format",
-      path.resolve(filePath)
-    ],
-    { encoding: "utf8", maxBuffer: 10 * 1024 * 1024 }
-  );
-  return JSON.parse(stdout);
+  try {
+    const stdout = execFileSync(
+      "ffprobe",
+      [
+        "-v",
+        "error",
+        "-print_format",
+        "json",
+        "-show_streams",
+        "-show_format",
+        path.resolve(filePath)
+      ],
+      { encoding: "utf8", maxBuffer: 10 * 1024 * 1024 }
+    );
+    return JSON.parse(stdout);
+  } catch (error) {
+    if (error?.code === "ENOENT") {
+      throw new Error(
+        "local_dependency_missing: ffprobe is required for broll-catalog-builder. Run `postplus doctor` or install ffprobe before continuing.",
+      );
+    }
+    throw error;
+  }
 }
 
 function inferMediaType(filePath) {

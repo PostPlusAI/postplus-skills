@@ -58,6 +58,12 @@ function detectVideoDurationSeconds(filePath) {
     },
   );
 
+  if (result.error?.code === "ENOENT") {
+    throw new Error(
+      "local_dependency_missing: ffprobe is required for video-analysis duration estimation. Run `postplus doctor` or install ffprobe before continuing.",
+    );
+  }
+
   if (result.status !== 0 || !result.stdout.trim()) {
     return null;
   }
