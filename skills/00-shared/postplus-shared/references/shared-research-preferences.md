@@ -52,7 +52,6 @@ Default execution order:
 - Instagram audience language -> `skills/20-research/instagram-audience-voice`
 - Instagram hashtag/tagged campaign scouting -> `skills/20-research/instagram-campaign-scout`
 - X account/topic graph research -> `skills/20-research/x-research`
-- LinkedIn company and content research -> `skills/20-research/linkedin-research`
 - YouTube channel and video research -> `skills/20-research/youtube-research`
 - Facebook page and post research -> `skills/20-research/facebook-research`
 - Hook, structure, and why content works -> `skills/40-creative/video-analysis`
