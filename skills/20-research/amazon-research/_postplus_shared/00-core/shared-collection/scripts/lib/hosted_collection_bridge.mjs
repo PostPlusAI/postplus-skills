@@ -2,6 +2,7 @@
 import { randomUUID } from 'node:crypto';
 import http from 'node:http';
 
+import { normalizeHostedBillingSummary } from '../../../shared-runtime/scripts/lib/hosted_billing_summary.mjs';
 import { requestJson } from '../../../shared-runtime/scripts/lib/network_runtime.mjs';
 import {
   refreshPostPlusHostedSessionAuth,
@@ -71,7 +72,7 @@ function resolveHostedCollectionBridgeConfig() {
     return {
       transport: 'https',
       apiBaseUrl: hostedApiAuth.apiBaseUrl,
-      accessToken: hostedApiAuth.accessToken,
+      cliSessionToken: hostedApiAuth.cliSessionToken,
     };
   }
 
@@ -131,9 +132,10 @@ export async function runHostedCollection(input) {
         });
 
   const run = readHostedCollectionRunResult(response?.data);
+  let latestBilling = run.billing;
 
   if (run.payload) {
-    return run.payload;
+    return attachHostedCollectionBilling(run.payload, latestBilling);
   }
 
   if (!run.runHandle) {
@@ -172,27 +174,31 @@ export async function runHostedCollection(input) {
           });
 
     latestRun = readHostedCollectionRunResult(statusResponse?.data);
+    latestBilling = latestRun.billing ?? latestBilling;
   }
 
   if (latestRun.status !== 'completed' || !latestRun.payload) {
     throw buildHostedCollectionRunFailure(latestRun);
   }
 
-  return latestRun.payload;
+  return attachHostedCollectionBilling(latestRun.payload, latestBilling);
 }
 
 async function requestHostedCollectionApiJson(config, payload) {
-  return await requestJson(`${config.apiBaseUrl}/api/postplus-cli/hosted/collection`, {
-    allowHttp: true,
-    body: JSON.stringify(payload),
-    codePrefix: 'skill_server_collection',
-    headers: {
-      authorization: `Bearer ${config.accessToken}`,
-      'content-type': 'application/json',
+  return await requestJson(
+    `${config.apiBaseUrl}/api/postplus-cli/hosted/collection`,
+    {
+      allowHttp: true,
+      body: JSON.stringify(payload),
+      codePrefix: 'skill_server_collection',
+      headers: {
+        authorization: `Bearer ${config.cliSessionToken}`,
+        'content-type': 'application/json',
+      },
+      method: 'POST',
+      providerName: 'Hosted collection',
     },
-    method: 'POST',
-    providerName: 'Hosted collection',
-  });
+  );
 }
 
 async function requestHostedCollectionApiJsonWithRefresh(config, payload) {
@@ -200,7 +206,7 @@ async function requestHostedCollectionApiJsonWithRefresh(config, payload) {
   const resolvedAuth = resolvePostPlusHostedSessionAuth();
   const initialConfig = refreshedConfig ?? {
     ...config,
-    accessToken: resolvedAuth?.accessToken ?? config.accessToken,
+    cliSessionToken: resolvedAuth?.cliSessionToken ?? config.cliSessionToken,
     apiBaseUrl: resolvedAuth?.apiBaseUrl ?? config.apiBaseUrl,
   };
 
@@ -224,7 +230,7 @@ async function requestHostedCollectionApiJsonWithRefresh(config, payload) {
     return await requestHostedCollectionApiJson(
       {
         ...initialConfig,
-        accessToken: refreshed.accessToken,
+        cliSessionToken: refreshed.cliSessionToken,
       },
       payload,
     );
@@ -324,7 +330,9 @@ function readHostedCollectionRunResult(data) {
   const runHandle = typeof data.runHandle === 'string' ? data.runHandle : null;
   const status = typeof data.status === 'string' ? data.status : null;
   const payload =
-    data.payload && typeof data.payload === 'object' && !Array.isArray(data.payload)
+    data.payload &&
+    typeof data.payload === 'object' &&
+    !Array.isArray(data.payload)
       ? data.payload
       : null;
   const error =
@@ -340,6 +348,7 @@ function readHostedCollectionRunResult(data) {
   }
 
   return {
+    billing: normalizeHostedBillingSummary(data.billing),
     error: {
       code: typeof error?.code === 'string' ? error.code : null,
       message: typeof error?.message === 'string' ? error.message : null,
@@ -347,6 +356,22 @@ function readHostedCollectionRunResult(data) {
     payload,
     runHandle,
     status,
+  };
+}
+
+function attachHostedCollectionBilling(payload, billing) {
+  if (
+    !billing ||
+    !payload ||
+    typeof payload !== 'object' ||
+    Array.isArray(payload)
+  ) {
+    return payload;
+  }
+
+  return {
+    ...payload,
+    billing: payload.billing ?? billing,
   };
 }
 

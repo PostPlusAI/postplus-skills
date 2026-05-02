@@ -1,6 +1,6 @@
 ---
 name: video-batch-runner
-description: Generate and manage provider-backed video renders for short-form production. Use this when approved upstream assets or prompt plans already exist and you need local render manifests, downloaded video files, and replaceable routes for talking-head or Seedance generation without losing continuity across concepts and personas.
+description: Generate and manage InfiniteTalk and Seedance 2.0 video renders for short-form production. Use this when approved upstream assets or prompt plans already exist and you need local render manifests, downloaded video files, and replaceable routes for talking-head or Seedance generation without losing continuity across concepts and personas.
 ---
 
 # Video Batch Runner

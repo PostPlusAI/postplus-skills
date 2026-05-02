@@ -105,6 +105,35 @@ function resolveBillableVideoDuration(body) {
   return Math.ceil(value);
 }
 
+export function buildHostedVideoRequestDimensions(endpointKey, body) {
+  const requestBody = body ?? {};
+  const dimensions = {
+    audioMode: 'on',
+    billableUnitCount: 1,
+    duration: resolveBillableVideoDuration(requestBody),
+    operationKey: endpointKey,
+    resolution: requestBody.resolution ?? DEFAULT_RESOLUTION,
+    requestBytes: Buffer.byteLength(JSON.stringify(requestBody)),
+  };
+
+  if (
+    endpointKey === 'video-seedance-2-text' ||
+    endpointKey === 'video-seedance-2-text-turbo'
+  ) {
+    const referenceVideoCount = Array.isArray(requestBody.reference_videos)
+      ? requestBody.reference_videos.length
+      : 0;
+
+    dimensions.referenceVideoCount = referenceVideoCount;
+    dimensions.referenceVideoMode =
+      referenceVideoCount > 0
+        ? 'with_reference_videos'
+        : 'without_reference_videos';
+  }
+
+  return dimensions;
+}
+
 export async function fetchJson(url, options = {}) {
   const method = String(options.method || 'GET').toUpperCase();
   const requestBody =
@@ -118,14 +147,7 @@ export async function fetchJson(url, options = {}) {
     requestDimensions:
       method !== 'POST'
         ? undefined
-        : {
-            audioMode: 'on',
-            billableUnitCount: 1,
-            duration: resolveBillableVideoDuration(requestBody),
-            operationKey: url,
-            resolution: requestBody.resolution ?? DEFAULT_RESOLUTION,
-            requestBytes: Buffer.byteLength(JSON.stringify(requestBody)),
-          },
+        : buildHostedVideoRequestDimensions(url, requestBody),
   }).then((result) => ({
     data: result.data,
     response: {

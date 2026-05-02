@@ -113,37 +113,8 @@ function writePostPlusCliConfig(config) {
   );
 }
 
-export function resolvePostPlusAccessToken() {
-  const envValue = process.env.POSTPLUS_ACCESS_TOKEN?.trim();
-
-  if (envValue) {
-    return {
-      source: 'env',
-      value: envValue,
-    };
-  }
-
-  const configValue = readPostPlusCliConfig()?.accessToken;
-
-  return typeof configValue === 'string' && configValue.trim().length > 0
-    ? {
-        source: 'config',
-        value: configValue.trim(),
-      }
-    : null;
-}
-
-export function resolvePostPlusRefreshToken() {
-  const envValue = process.env.POSTPLUS_REFRESH_TOKEN?.trim();
-
-  if (envValue) {
-    return {
-      source: 'env',
-      value: envValue,
-    };
-  }
-
-  const configValue = readPostPlusCliConfig()?.refreshToken;
+export function resolvePostPlusCliSessionToken() {
+  const configValue = readPostPlusCliConfig()?.cliSessionToken;
 
   return typeof configValue === 'string' && configValue.trim().length > 0
     ? {
@@ -168,20 +139,17 @@ export function resolvePostPlusApiBaseUrl() {
 }
 
 export function resolvePostPlusHostedSessionAuth() {
-  const accessToken = resolvePostPlusAccessToken();
-  const refreshToken = resolvePostPlusRefreshToken();
+  const cliSessionToken = resolvePostPlusCliSessionToken();
   const apiBaseUrl = resolvePostPlusApiBaseUrl();
 
-  if (!accessToken?.value || !apiBaseUrl) {
+  if (!cliSessionToken?.value || !apiBaseUrl) {
     return null;
   }
 
   return {
-    accessToken: accessToken.value,
-    accessTokenSource: accessToken.source,
     apiBaseUrl,
-    refreshToken: refreshToken?.value ?? null,
-    refreshTokenSource: refreshToken?.source ?? 'missing',
+    cliSessionToken: cliSessionToken.value,
+    cliSessionTokenSource: cliSessionToken.source,
   };
 }
 
@@ -192,9 +160,7 @@ export async function refreshPostPlusHostedSessionAuthIfNeeded() {
 
   if (
     !auth ||
-    !auth.refreshToken ||
-    auth.accessTokenSource !== 'config' ||
-    auth.refreshTokenSource !== 'config' ||
+    auth.cliSessionTokenSource !== 'config' ||
     typeof sessionExpiresAt !== 'number' ||
     !Number.isFinite(sessionExpiresAt)
   ) {
@@ -213,7 +179,7 @@ export async function refreshPostPlusHostedSessionAuthIfNeeded() {
 export async function refreshPostPlusHostedSessionAuth(input = {}) {
   const auth = resolvePostPlusHostedSessionAuth();
 
-  if (!auth || !auth.refreshToken) {
+  if (!auth) {
     return null;
   }
 
@@ -221,12 +187,10 @@ export async function refreshPostPlusHostedSessionAuth(input = {}) {
     `${auth.apiBaseUrl}/api/postplus-cli/auth/refresh`,
     {
       allowHttp: true,
-      body: JSON.stringify({
-        refreshToken: auth.refreshToken,
-      }),
+      body: JSON.stringify({}),
       codePrefix: 'postplus_cli_auth_refresh',
       headers: {
-        authorization: `Bearer ${auth.accessToken}`,
+        authorization: `Bearer ${auth.cliSessionToken}`,
         'content-type': 'application/json',
       },
       method: 'POST',
@@ -241,25 +205,17 @@ export async function refreshPostPlusHostedSessionAuth(input = {}) {
   }
 
   if (
-    typeof payload.accessToken !== 'string' ||
-    !payload.accessToken.trim() ||
-    typeof payload.refreshToken !== 'string' ||
-    !payload.refreshToken.trim()
+    typeof payload.cliSessionToken !== 'string' ||
+    !payload.cliSessionToken.trim()
   ) {
-    throw new Error(
-      'PostPlus auth refresh returned incomplete session tokens.',
-    );
+    throw new Error('PostPlus auth refresh returned incomplete session data.');
   }
 
-  if (
-    auth.accessTokenSource === 'config' &&
-    auth.refreshTokenSource === 'config'
-  ) {
+  if (auth.cliSessionTokenSource === 'config') {
     const currentConfig = readPostPlusCliConfig() || {};
     writePostPlusCliConfig({
       ...currentConfig,
-      accessToken: payload.accessToken.trim(),
-      refreshToken: payload.refreshToken.trim(),
+      cliSessionToken: payload.cliSessionToken.trim(),
       ...(typeof payload.accountId === 'string'
         ? { accountId: payload.accountId }
         : {}),
@@ -274,10 +230,8 @@ export async function refreshPostPlusHostedSessionAuth(input = {}) {
   }
 
   return {
-    accessToken: payload.accessToken.trim(),
-    accessTokenSource: auth.accessTokenSource,
     apiBaseUrl: auth.apiBaseUrl,
-    refreshToken: payload.refreshToken.trim(),
-    refreshTokenSource: auth.refreshTokenSource,
+    cliSessionToken: payload.cliSessionToken.trim(),
+    cliSessionTokenSource: auth.cliSessionTokenSource,
   };
 }

@@ -26,6 +26,8 @@
 ## References
 
 - Reference images go in `referenceImages`.
+- `referenceVideos` triggers the provider's reference-video billing tier;
+  `referenceImages` and `referenceAudios` do not.
 - Upload local product and storyboard images before submission and replace local paths with uploaded URLs.
 - Use `promptPlan.referenceMap` to explain each image:
   - storyboard image: character, shot order, camera, motion flow

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "revision": "1-d2aaab5764cb5d02",
+  "revision": "1-0458ff4e8ad73ac5",
   "source": "PostPlusAI/postplus-skills",
   "primaryIndex": "skills/INDEX.md",
   "skills": [
@@ -27,7 +27,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released"
+      "status": "released",
+      "supportedModels": []
     },
     {
       "familyId": "media-production",
@@ -49,7 +50,19 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released"
+      "status": "released",
+      "supportedModels": [
+        {
+          "key": "transcription-whisper",
+          "name": "Whisper",
+          "source": "endpointKey"
+        },
+        {
+          "key": "transcription-whisper-turbo",
+          "name": "Whisper Turbo",
+          "source": "endpointKey"
+        }
+      ]
     },
     {
       "familyId": "media-production",
@@ -65,7 +78,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released"
+      "status": "released",
+      "supportedModels": []
     },
     {
       "familyId": "media-production",
@@ -83,7 +97,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released/support"
+      "status": "released/support",
+      "supportedModels": []
     },
     {
       "familyId": "media-production",
@@ -99,7 +114,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released"
+      "status": "released",
+      "supportedModels": []
     },
     {
       "familyId": "media-production",
@@ -115,7 +131,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released"
+      "status": "released",
+      "supportedModels": []
     },
     {
       "familyId": "routing-contracts",
@@ -131,7 +148,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released/router"
+      "status": "released/router",
+      "supportedModels": []
     },
     {
       "familyId": "routing-contracts",
@@ -147,7 +165,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released"
+      "status": "released",
+      "supportedModels": []
     },
     {
       "familyId": "media-production",
@@ -163,7 +182,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released/support"
+      "status": "released/support",
+      "supportedModels": []
     },
     {
       "familyId": "media-production",
@@ -179,7 +199,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released"
+      "status": "released",
+      "supportedModels": []
     },
     {
       "familyId": "platform-research",
@@ -202,7 +223,8 @@
           "facebook-profile-posts"
         ]
       },
-      "status": "released"
+      "status": "released",
+      "supportedModels": []
     },
     {
       "familyId": "media-production",
@@ -220,7 +242,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released"
+      "status": "released",
+      "supportedModels": []
     },
     {
       "familyId": "marketplace-sourcing",
@@ -240,7 +263,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released"
+      "status": "released",
+      "supportedModels": []
     },
     {
       "familyId": "media-production",
@@ -266,7 +290,39 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released"
+      "status": "released",
+      "supportedModels": [
+        {
+          "key": "image-nano-banana-2-edit",
+          "name": "Nano Banana 2 Edit",
+          "source": "endpointKey"
+        },
+        {
+          "key": "image-nano-banana-2-text",
+          "name": "Nano Banana 2 Text To Image",
+          "source": "endpointKey"
+        },
+        {
+          "key": "image-seedream-v5-lite-text",
+          "name": "Seedream v5.0 Lite",
+          "source": "endpointKey"
+        },
+        {
+          "key": "image-seedream-v5-lite-edit",
+          "name": "Seedream v5.0 Lite Edit",
+          "source": "endpointKey"
+        },
+        {
+          "key": "image-seedream-v5-lite-edit-sequential",
+          "name": "Seedream v5.0 Lite Edit Sequential",
+          "source": "endpointKey"
+        },
+        {
+          "key": "image-seedream-v5-lite-sequential",
+          "name": "Seedream v5.0 Lite Sequential",
+          "source": "endpointKey"
+        }
+      ]
     },
     {
       "familyId": "instagram",
@@ -287,7 +343,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released"
+      "status": "released",
+      "supportedModels": []
     },
     {
       "familyId": "instagram",
@@ -307,7 +364,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released"
+      "status": "released",
+      "supportedModels": []
     },
     {
       "familyId": "instagram",
@@ -329,7 +387,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released"
+      "status": "released",
+      "supportedModels": []
     },
     {
       "familyId": "instagram",
@@ -350,7 +409,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released"
+      "status": "released",
+      "supportedModels": []
     },
     {
       "familyId": "instagram",
@@ -372,7 +432,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released"
+      "status": "released",
+      "supportedModels": []
     },
     {
       "familyId": "instagram",
@@ -396,7 +457,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released/support"
+      "status": "released/support",
+      "supportedModels": []
     },
     {
       "familyId": "routing-contracts",
@@ -412,7 +474,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released/router"
+      "status": "released/router",
+      "supportedModels": []
     },
     {
       "familyId": "routing-contracts",
@@ -428,7 +491,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released/router"
+      "status": "released/router",
+      "supportedModels": []
     },
     {
       "familyId": "media-production",
@@ -444,7 +508,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released"
+      "status": "released",
+      "supportedModels": []
     },
     {
       "familyId": "shared-rules",
@@ -460,7 +525,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released/support"
+      "status": "released/support",
+      "supportedModels": []
     },
     {
       "familyId": "routing-contracts",
@@ -476,7 +542,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released/support"
+      "status": "released/support",
+      "supportedModels": []
     },
     {
       "familyId": "routing-contracts",
@@ -492,7 +559,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released/support"
+      "status": "released/support",
+      "supportedModels": []
     },
     {
       "familyId": "routing-contracts",
@@ -508,7 +576,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released/support"
+      "status": "released/support",
+      "supportedModels": []
     },
     {
       "familyId": "media-production",
@@ -532,7 +601,29 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released/support"
+      "status": "released/support",
+      "supportedModels": [
+        {
+          "key": "video-seedance-2-image",
+          "name": "Seedance 2.0 Image To Video",
+          "source": "endpointKey"
+        },
+        {
+          "key": "video-seedance-2-image-turbo",
+          "name": "Seedance 2.0 Image To Video Turbo",
+          "source": "endpointKey"
+        },
+        {
+          "key": "video-seedance-2-text",
+          "name": "Seedance 2.0 Text To Video",
+          "source": "endpointKey"
+        },
+        {
+          "key": "video-seedance-2-text-turbo",
+          "name": "Seedance 2.0 Text To Video Turbo",
+          "source": "endpointKey"
+        }
+      ]
     },
     {
       "familyId": "workspace-publishing",
@@ -548,7 +639,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released"
+      "status": "released",
+      "supportedModels": []
     },
     {
       "familyId": "routing-contracts",
@@ -564,7 +656,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released/router"
+      "status": "released/router",
+      "supportedModels": []
     },
     {
       "familyId": "workspace-publishing",
@@ -584,7 +677,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released"
+      "status": "released",
+      "supportedModels": []
     },
     {
       "familyId": "marketplace-sourcing",
@@ -600,7 +694,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released"
+      "status": "released",
+      "supportedModels": []
     },
     {
       "familyId": "media-production",
@@ -616,7 +711,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released/support"
+      "status": "released/support",
+      "supportedModels": []
     },
     {
       "familyId": "tiktok",
@@ -636,7 +732,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released"
+      "status": "released",
+      "supportedModels": []
     },
     {
       "familyId": "tiktok",
@@ -656,7 +753,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released"
+      "status": "released",
+      "supportedModels": []
     },
     {
       "familyId": "tiktok",
@@ -680,7 +778,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released"
+      "status": "released",
+      "supportedModels": []
     },
     {
       "familyId": "media-production",
@@ -704,7 +803,14 @@
         ],
         "sourceKeys": []
       },
-      "status": "released"
+      "status": "released",
+      "supportedModels": [
+        {
+          "key": "gemini-video-analysis",
+          "name": "Gemini 3.1 Pro Preview",
+          "source": "modelKey"
+        }
+      ]
     },
     {
       "familyId": "media-production",
@@ -729,7 +835,34 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released"
+      "status": "released",
+      "supportedModels": [
+        {
+          "key": "video-infinitetalk",
+          "name": "InfiniteTalk",
+          "source": "endpointKey"
+        },
+        {
+          "key": "video-seedance-2-image",
+          "name": "Seedance 2.0 Image To Video",
+          "source": "endpointKey"
+        },
+        {
+          "key": "video-seedance-2-image-turbo",
+          "name": "Seedance 2.0 Image To Video Turbo",
+          "source": "endpointKey"
+        },
+        {
+          "key": "video-seedance-2-text",
+          "name": "Seedance 2.0 Text To Video",
+          "source": "endpointKey"
+        },
+        {
+          "key": "video-seedance-2-text-turbo",
+          "name": "Seedance 2.0 Text To Video Turbo",
+          "source": "endpointKey"
+        }
+      ]
     },
     {
       "familyId": "routing-contracts",
@@ -745,7 +878,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released"
+      "status": "released",
+      "supportedModels": []
     },
     {
       "familyId": "media-production",
@@ -766,7 +900,14 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released"
+      "status": "released",
+      "supportedModels": [
+        {
+          "key": "transcription-whisper-with-video",
+          "name": "Whisper With Video",
+          "source": "endpointKey"
+        }
+      ]
     },
     {
       "familyId": "media-production",
@@ -782,7 +923,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released/support"
+      "status": "released/support",
+      "supportedModels": []
     },
     {
       "familyId": "media-production",
@@ -804,7 +946,19 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released/evolving"
+      "status": "released/evolving",
+      "supportedModels": [
+        {
+          "key": "voice-qwen3-clone",
+          "name": "Qwen3 TTS Voice Clone",
+          "source": "endpointKey"
+        },
+        {
+          "key": "voice-qwen3-design",
+          "name": "Qwen3 TTS Voice Design",
+          "source": "endpointKey"
+        }
+      ]
     },
     {
       "familyId": "x",
@@ -825,7 +979,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released/support"
+      "status": "released/support",
+      "supportedModels": []
     },
     {
       "familyId": "xiaohongshu",
@@ -845,7 +1000,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released"
+      "status": "released",
+      "supportedModels": []
     },
     {
       "familyId": "media-production",
@@ -861,7 +1017,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released"
+      "status": "released",
+      "supportedModels": []
     },
     {
       "familyId": "media-production",
@@ -877,7 +1034,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released"
+      "status": "released",
+      "supportedModels": []
     },
     {
       "familyId": "xiaohongshu",
@@ -897,7 +1055,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released"
+      "status": "released",
+      "supportedModels": []
     },
     {
       "familyId": "xiaohongshu",
@@ -913,7 +1072,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released"
+      "status": "released",
+      "supportedModels": []
     },
     {
       "familyId": "xiaohongshu",
@@ -929,7 +1089,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released"
+      "status": "released",
+      "supportedModels": []
     },
     {
       "familyId": "xiaohongshu",
@@ -950,7 +1111,8 @@
         "modelKeys": [],
         "sourceKeys": []
       },
-      "status": "released/support"
+      "status": "released/support",
+      "supportedModels": []
     },
     {
       "familyId": "platform-research",
@@ -976,7 +1138,8 @@
           "youtube-videos"
         ]
       },
-      "status": "released"
+      "status": "released",
+      "supportedModels": []
     }
   ]
 }

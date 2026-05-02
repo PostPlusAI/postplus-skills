@@ -102,10 +102,13 @@ Transcription, video analysis, B-roll planning, prompt architecture, generation,
 
 - `video-analysis`
   - Path: `skills/40-creative/video-analysis/SKILL.md`
+  - Supported models: Gemini 3.1 Pro Preview
 - `video-transcription`
   - Path: `skills/40-creative/video-transcription/SKILL.md`
+  - Supported models: Whisper With Video
 - `audio-transcription`
   - Path: `skills/40-creative/audio-transcription/SKILL.md`
+  - Supported models: Whisper, Whisper Turbo
 - `subtitle-packager`
   - Path: `skills/40-creative/subtitle-packager/SKILL.md`
 - `frame-extraction`
@@ -126,12 +129,16 @@ Transcription, video analysis, B-roll planning, prompt architecture, generation,
   - Path: `skills/40-creative/visual-hook/SKILL.md`
 - `image-batch-runner`
   - Path: `skills/40-creative/image-batch-runner/SKILL.md`
+  - Supported models: Nano Banana 2 Edit, Nano Banana 2 Text To Image, Seedream v5.0 Lite, Seedream v5.0 Lite Edit, Seedream v5.0 Lite Edit Sequential, Seedream v5.0 Lite Sequential
 - `video-batch-runner`
   - Path: `skills/40-creative/video-batch-runner/SKILL.md`
+  - Supported models: InfiniteTalk, Seedance 2.0 Image To Video, Seedance 2.0 Image To Video Turbo, Seedance 2.0 Text To Video, Seedance 2.0 Text To Video Turbo
 - `seedance-submitter`
   - Path: `skills/40-creative/seedance-submitter/SKILL.md`
+  - Supported models: Seedance 2.0 Image To Video, Seedance 2.0 Image To Video Turbo, Seedance 2.0 Text To Video, Seedance 2.0 Text To Video Turbo
 - `voice-batch-runner`
   - Path: `skills/40-creative/voice-batch-runner/SKILL.md`
+  - Supported models: Qwen3 TTS Voice Clone, Qwen3 TTS Voice Design
 - `creative-qa`
   - Path: `skills/40-creative/creative-qa/SKILL.md`
 - `xiaohongshu-card-notes`

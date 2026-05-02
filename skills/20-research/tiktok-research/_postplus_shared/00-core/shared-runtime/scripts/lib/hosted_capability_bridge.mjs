@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import http from 'node:http';
 
+import { normalizeHostedBillingSummary } from './hosted_billing_summary.mjs';
 import { requestJson } from './network_runtime.mjs';
 import {
   refreshPostPlusHostedSessionAuth,
@@ -48,7 +49,7 @@ function resolveHostedCapabilityBridgeConfig() {
     return {
       transport: 'https',
       apiBaseUrl: hostedApiAuth.apiBaseUrl,
-      accessToken: hostedApiAuth.accessToken,
+      cliSessionToken: hostedApiAuth.cliSessionToken,
     };
   }
 
@@ -95,7 +96,7 @@ export async function runHostedCapabilityEnvelopeRequest(request) {
   }
 
   const charged = response?.data?.charged === true;
-  const billing = normalizeBillingSummary(response?.data?.billing);
+  const billing = normalizeHostedBillingSummary(response?.data?.billing);
 
   return {
     billing,
@@ -108,36 +109,6 @@ export async function runHostedCapabilityEnvelopeRequest(request) {
   };
 }
 
-function normalizeBillingSummary(value) {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) {
-    return null;
-  }
-
-  const finalizedMillicredits = Number(value.finalizedMillicredits);
-  const finalizedCredits = Number(value.finalizedCredits);
-
-  if (
-    !Number.isFinite(finalizedMillicredits) ||
-    finalizedMillicredits < 0 ||
-    !Number.isFinite(finalizedCredits) ||
-    finalizedCredits < 0
-  ) {
-    return null;
-  }
-
-  return {
-    billingUnit:
-      value.billingUnit === 'credit' || value.billingUnit === 'milliCredit'
-        ? value.billingUnit
-        : null,
-    charged: value.charged === true,
-    estimatedOnly:
-      typeof value.estimatedOnly === 'boolean' ? value.estimatedOnly : null,
-    finalizedCredits,
-    finalizedMillicredits,
-  };
-}
-
 async function requestHostedCapabilityApiJson(config, request) {
   return await requestJson(
     `${config.apiBaseUrl}/api/postplus-cli/hosted/capability`,
@@ -146,7 +117,7 @@ async function requestHostedCapabilityApiJson(config, request) {
       body: JSON.stringify(request),
       codePrefix: 'skill_server_capability',
       headers: {
-        authorization: `Bearer ${config.accessToken}`,
+        authorization: `Bearer ${config.cliSessionToken}`,
         'content-type': 'application/json',
       },
       method: 'POST',
@@ -176,7 +147,7 @@ async function requestHostedCapabilityApiJsonWithRefresh(config, request) {
     return await requestHostedCapabilityApiJson(
       {
         ...config,
-        accessToken: refreshed.accessToken,
+        cliSessionToken: refreshed.cliSessionToken,
       },
       request,
     );
