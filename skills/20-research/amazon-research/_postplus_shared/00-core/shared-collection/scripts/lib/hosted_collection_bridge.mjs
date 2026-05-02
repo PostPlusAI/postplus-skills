@@ -5,6 +5,8 @@ import http from 'node:http';
 import { normalizeHostedBillingSummary } from '../../../shared-runtime/scripts/lib/hosted_billing_summary.mjs';
 import { requestJson } from '../../../shared-runtime/scripts/lib/network_runtime.mjs';
 import {
+  buildPostPlusClientCompatibilityHeaders,
+  resolvePostPlusClientMetadata,
   refreshPostPlusHostedSessionAuth,
   refreshPostPlusHostedSessionAuthIfNeeded,
   resolvePostPlusHostedSessionAuth,
@@ -118,6 +120,9 @@ export async function runHostedCollection(input) {
       ? await requestHostedBridgeJson(config.socketPath, '/collection', {
           accountId: config.accountId,
           conversationId: config.conversationId,
+          client: resolvePostPlusClientMetadata({
+            skillName: input.skillName,
+          }),
           sessionId: config.sessionId,
           operationId,
           skillName: input.skillName,
@@ -193,6 +198,9 @@ async function requestHostedCollectionApiJson(config, payload) {
       codePrefix: 'skill_server_collection',
       headers: {
         authorization: `Bearer ${config.cliSessionToken}`,
+        ...buildPostPlusClientCompatibilityHeaders({
+          skillName: payload.skillName,
+        }),
         'content-type': 'application/json',
       },
       method: 'POST',

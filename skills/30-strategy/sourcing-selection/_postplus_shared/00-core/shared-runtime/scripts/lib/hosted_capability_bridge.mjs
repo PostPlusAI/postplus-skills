@@ -1,9 +1,12 @@
 #!/usr/bin/env node
+import { randomUUID } from 'node:crypto';
 import http from 'node:http';
 
 import { normalizeHostedBillingSummary } from './hosted_billing_summary.mjs';
 import { requestJson } from './network_runtime.mjs';
 import {
+  buildPostPlusClientCompatibilityHeaders,
+  resolvePostPlusClientMetadata,
   refreshPostPlusHostedSessionAuth,
   resolvePostPlusHostedSessionAuth,
 } from './postplus_cli_config.mjs';
@@ -75,16 +78,23 @@ export async function runHostedCapabilityRequest(request) {
 
 export async function runHostedCapabilityEnvelopeRequest(request) {
   const config = resolveHostedCapabilityBridgeConfig();
+  const normalizedRequest = withHostedOperationId(request);
 
   const response =
     config.transport === 'socket'
       ? await requestHostedCapabilityBridgeJson(config.socketPath, {
           accountId: config.accountId,
           conversationId: config.conversationId,
+          client: resolvePostPlusClientMetadata({
+            skillName: normalizedRequest.skillName,
+          }),
           sessionId: config.sessionId,
-          request,
+          request: normalizedRequest,
         })
-      : await requestHostedCapabilityApiJsonWithRefresh(config, request);
+      : await requestHostedCapabilityApiJsonWithRefresh(
+          config,
+          normalizedRequest,
+        );
 
   const output = response?.data?.output;
 
@@ -109,6 +119,36 @@ export async function runHostedCapabilityEnvelopeRequest(request) {
   };
 }
 
+function withHostedOperationId(request) {
+  if (!request || typeof request !== 'object' || Array.isArray(request)) {
+    throw createHardError(
+      'skill_server_capability_invalid_request',
+      'Hosted capability request must be an object.',
+    );
+  }
+
+  if (typeof request.operationId === 'string' && request.operationId.trim()) {
+    return {
+      ...request,
+      operationId: request.operationId.trim(),
+    };
+  }
+
+  const capability =
+    typeof request.capability === 'string' && request.capability.trim()
+      ? request.capability.trim()
+      : 'unknown';
+  const operation =
+    typeof request.operation === 'string' && request.operation.trim()
+      ? request.operation.trim()
+      : 'unknown';
+
+  return {
+    ...request,
+    operationId: `postplus-cli:hosted-capability:${capability}:${operation}:${randomUUID()}`,
+  };
+}
+
 async function requestHostedCapabilityApiJson(config, request) {
   return await requestJson(
     `${config.apiBaseUrl}/api/postplus-cli/hosted/capability`,
@@ -118,6 +158,9 @@ async function requestHostedCapabilityApiJson(config, request) {
       codePrefix: 'skill_server_capability',
       headers: {
         authorization: `Bearer ${config.cliSessionToken}`,
+        ...buildPostPlusClientCompatibilityHeaders({
+          skillName: request.skillName,
+        }),
         'content-type': 'application/json',
       },
       method: 'POST',

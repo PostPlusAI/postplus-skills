@@ -328,6 +328,22 @@ function buildNetworkError(error, transport) {
 function buildHttpError(statusCode, bodyText, transport) {
   const preview = String(bodyText || "").trim();
   const suffix = preview ? ` ${preview}` : "";
+  const productError = parseProductErrorPayload(preview);
+
+  if (
+    statusCode === 426 &&
+    productError?.code === "postplus_client_upgrade_required"
+  ) {
+    return createHardError(
+      `${transport.codePrefix}_client_upgrade_required`,
+      buildClientUpgradeRequiredMessage(productError),
+      undefined,
+      {
+        status: statusCode,
+        upstreamBodyText: preview,
+      },
+    );
+  }
 
   if (statusCode === 429) {
     return createHardError(
@@ -365,6 +381,38 @@ function buildHttpError(statusCode, bodyText, transport) {
     undefined,
     { status: statusCode },
   );
+}
+
+function parseProductErrorPayload(bodyText) {
+  if (!bodyText) {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(bodyText);
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+      ? parsed
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+function buildClientUpgradeRequiredMessage(payload) {
+  const cliCommand =
+    payload.compatibility?.upgrade?.cli?.command ??
+    "npm install -g @postplus/cli";
+  const skillsCommand =
+    payload.compatibility?.upgrade?.skills?.command ?? "postplus update";
+  const restart = payload.compatibility?.upgrade?.restartAgentSession
+    ? " Restart your agent session after updating."
+    : "";
+  const error =
+    typeof payload.error === "string" && payload.error.trim()
+      ? payload.error.trim()
+      : "Your PostPlus CLI or PostPlus skills are out of date.";
+
+  return `${error} Update CLI: ${cliCommand}. Update skills: ${skillsCommand}.${restart}`;
 }
 
 function shouldUseLowLevelTransport(urlString, options = {}) {

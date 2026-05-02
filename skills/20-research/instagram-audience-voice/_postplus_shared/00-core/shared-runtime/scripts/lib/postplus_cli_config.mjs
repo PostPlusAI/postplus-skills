@@ -6,6 +6,15 @@ import path from 'node:path';
 import { requestJson } from './network_runtime.mjs';
 
 const POSTPLUS_SESSION_REFRESH_LEEWAY_SECONDS = 60;
+export const POSTPLUS_CLIENT_CONTRACT_VERSION = 1;
+export const POSTPLUS_CLIENT_RUNTIME = 'postplus-skill';
+export const POSTPLUS_CLIENT_COMPATIBILITY_HEADERS = {
+  cliVersion: 'x-postplus-cli-version',
+  contractVersion: 'x-postplus-client-contract-version',
+  runtime: 'x-postplus-client-runtime',
+  skillCatalogRevision: 'x-postplus-skill-catalog-revision',
+  skillName: 'x-postplus-skill-name',
+};
 
 function createHardError(code, message, cause, extra = {}) {
   const error = new Error(message);
@@ -153,6 +162,64 @@ export function resolvePostPlusHostedSessionAuth() {
   };
 }
 
+export function resolvePostPlusClientMetadata(input = {}) {
+  const config = readPostPlusCliConfig() ?? {};
+  const cliVersion =
+    typeof config.cliVersion === 'string' && config.cliVersion.trim()
+      ? config.cliVersion.trim()
+      : null;
+  const managedSkills =
+    config.managedSkills &&
+    typeof config.managedSkills === 'object' &&
+    !Array.isArray(config.managedSkills)
+      ? config.managedSkills
+      : null;
+  const skillCatalogRevision =
+    typeof managedSkills?.revision === 'string' &&
+    managedSkills.revision.trim()
+      ? managedSkills.revision.trim()
+      : null;
+  const skillName =
+    typeof input.skillName === 'string' && input.skillName.trim()
+      ? input.skillName.trim()
+      : null;
+
+  return {
+    cliVersion,
+    contractVersion: POSTPLUS_CLIENT_CONTRACT_VERSION,
+    runtime: POSTPLUS_CLIENT_RUNTIME,
+    skillCatalogRevision,
+    skillName,
+  };
+}
+
+export function buildPostPlusClientCompatibilityHeaders(input = {}) {
+  const metadata = resolvePostPlusClientMetadata(input);
+  const headers = {
+    [POSTPLUS_CLIENT_COMPATIBILITY_HEADERS.contractVersion]: String(
+      metadata.contractVersion,
+    ),
+    [POSTPLUS_CLIENT_COMPATIBILITY_HEADERS.runtime]: metadata.runtime,
+  };
+
+  if (metadata.cliVersion) {
+    headers[POSTPLUS_CLIENT_COMPATIBILITY_HEADERS.cliVersion] =
+      metadata.cliVersion;
+  }
+
+  if (metadata.skillCatalogRevision) {
+    headers[POSTPLUS_CLIENT_COMPATIBILITY_HEADERS.skillCatalogRevision] =
+      metadata.skillCatalogRevision;
+  }
+
+  if (metadata.skillName) {
+    headers[POSTPLUS_CLIENT_COMPATIBILITY_HEADERS.skillName] =
+      metadata.skillName;
+  }
+
+  return headers;
+}
+
 export async function refreshPostPlusHostedSessionAuthIfNeeded() {
   const auth = resolvePostPlusHostedSessionAuth();
   const config = readPostPlusCliConfig();
@@ -191,6 +258,7 @@ export async function refreshPostPlusHostedSessionAuth(input = {}) {
       codePrefix: 'postplus_cli_auth_refresh',
       headers: {
         authorization: `Bearer ${auth.cliSessionToken}`,
+        ...buildPostPlusClientCompatibilityHeaders(),
         'content-type': 'application/json',
       },
       method: 'POST',
