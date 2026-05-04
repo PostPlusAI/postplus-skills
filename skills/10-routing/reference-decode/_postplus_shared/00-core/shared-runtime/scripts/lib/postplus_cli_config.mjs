@@ -12,7 +12,7 @@ export const POSTPLUS_CLIENT_COMPATIBILITY_HEADERS = {
   cliVersion: 'x-postplus-cli-version',
   contractVersion: 'x-postplus-client-contract-version',
   runtime: 'x-postplus-client-runtime',
-  skillsReleaseId: 'x-postplus-skills-release-id',
+  skillCatalogRevision: 'x-postplus-skill-catalog-revision',
   skillName: 'x-postplus-skill-name',
 };
 
@@ -174,10 +174,10 @@ export function resolvePostPlusClientMetadata(input = {}) {
     !Array.isArray(config.managedSkills)
       ? config.managedSkills
       : null;
-  const skillsReleaseId =
-    typeof managedSkills?.releaseId === 'string' &&
-    managedSkills.releaseId.trim()
-      ? managedSkills.releaseId.trim()
+  const skillCatalogRevision =
+    typeof managedSkills?.revision === 'string' &&
+    managedSkills.revision.trim()
+      ? managedSkills.revision.trim()
       : null;
   const skillName =
     typeof input.skillName === 'string' && input.skillName.trim()
@@ -188,7 +188,7 @@ export function resolvePostPlusClientMetadata(input = {}) {
     cliVersion,
     contractVersion: POSTPLUS_CLIENT_CONTRACT_VERSION,
     runtime: POSTPLUS_CLIENT_RUNTIME,
-    skillsReleaseId,
+    skillCatalogRevision,
     skillName,
   };
 }
@@ -207,9 +207,9 @@ export function buildPostPlusClientCompatibilityHeaders(input = {}) {
       metadata.cliVersion;
   }
 
-  if (metadata.skillsReleaseId) {
-    headers[POSTPLUS_CLIENT_COMPATIBILITY_HEADERS.skillsReleaseId] =
-      metadata.skillsReleaseId;
+  if (metadata.skillCatalogRevision) {
+    headers[POSTPLUS_CLIENT_COMPATIBILITY_HEADERS.skillCatalogRevision] =
+      metadata.skillCatalogRevision;
   }
 
   if (metadata.skillName) {

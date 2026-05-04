@@ -345,21 +345,6 @@ function buildHttpError(statusCode, bodyText, transport) {
     );
   }
 
-  if (
-    statusCode === 503 &&
-    productError?.code === "postplus_cli_cloud_release_in_progress"
-  ) {
-    return createHardError(
-      `${transport.codePrefix}_cloud_release_in_progress`,
-      buildCloudReleaseInProgressMessage(productError),
-      undefined,
-      {
-        status: statusCode,
-        upstreamBodyText: preview,
-      },
-    );
-  }
-
   if (statusCode === 429) {
     return createHardError(
       `${transport.codePrefix}_rate_limited`,
@@ -428,12 +413,6 @@ function buildClientUpgradeRequiredMessage(payload) {
       : "Your PostPlus CLI or PostPlus skills are out of date.";
 
   return `${error} Update CLI: ${cliCommand}. Update skills: ${skillsCommand}.${restart}`;
-}
-
-function buildCloudReleaseInProgressMessage(payload) {
-  return typeof payload.error === "string" && payload.error.trim()
-    ? payload.error.trim()
-    : "PostPlus Cloud is updating. Please retry in about one minute.";
 }
 
 function shouldUseLowLevelTransport(urlString, options = {}) {
