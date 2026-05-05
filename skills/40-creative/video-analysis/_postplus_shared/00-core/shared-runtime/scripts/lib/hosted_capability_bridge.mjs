@@ -11,8 +11,6 @@ import {
   resolvePostPlusHostedSessionAuth,
 } from './postplus_cli_config.mjs';
 
-export const HOSTED_CAPABILITY_JSON_PAYLOAD_BYTE_LIMIT = 4 * 1024 * 1024;
-
 function createHardError(code, message, cause, extra = {}) {
   const error = new Error(message);
   error.code = code;
@@ -152,18 +150,11 @@ function withHostedOperationId(request) {
 }
 
 async function requestHostedCapabilityApiJson(config, request) {
-  const body = JSON.stringify(request);
-  assertHostedCapabilityPayloadSize({
-    body,
-    request,
-    transport: 'https',
-  });
-
   return await requestJson(
     `${config.apiBaseUrl}/api/postplus-cli/hosted/capability`,
     {
       allowHttp: true,
-      body,
+      body: JSON.stringify(request),
       codePrefix: 'skill_server_capability',
       headers: {
         authorization: `Bearer ${config.cliSessionToken}`,
@@ -208,11 +199,6 @@ async function requestHostedCapabilityApiJsonWithRefresh(config, request) {
 
 async function requestHostedCapabilityBridgeJson(socketPath, payload) {
   const body = JSON.stringify(payload);
-  assertHostedCapabilityPayloadSize({
-    body,
-    request: payload?.request,
-    transport: 'socket',
-  });
 
   return await new Promise((resolve, reject) => {
     const request = http.request(
@@ -291,34 +277,4 @@ async function requestHostedCapabilityBridgeJson(socketPath, payload) {
     request.write(body);
     request.end();
   });
-}
-
-function assertHostedCapabilityPayloadSize({ body, request, transport }) {
-  const requestBytes = Buffer.byteLength(body);
-
-  if (requestBytes <= HOSTED_CAPABILITY_JSON_PAYLOAD_BYTE_LIMIT) {
-    return;
-  }
-
-  const capability = normalizeHostedRequestField(request?.capability);
-  const operation = normalizeHostedRequestField(request?.operation);
-
-  throw createHardError(
-    'postplus_cli_hosted_payload_too_large',
-    `Hosted capability ${transport} request payload is too large: ${requestBytes} bytes exceeds the ${HOSTED_CAPABILITY_JSON_PAYLOAD_BYTE_LIMIT} byte limit for ${capability}/${operation}. Use a file reference contract instead of inline media bytes.`,
-    undefined,
-    {
-      capability,
-      limitBytes: HOSTED_CAPABILITY_JSON_PAYLOAD_BYTE_LIMIT,
-      operation,
-      requestBytes,
-      transport,
-    },
-  );
-}
-
-function normalizeHostedRequestField(value) {
-  return typeof value === 'string' && value.trim().length > 0
-    ? value.trim()
-    : 'unknown';
 }

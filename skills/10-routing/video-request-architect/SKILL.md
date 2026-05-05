@@ -27,12 +27,6 @@ Prompt architecture comes before provider syntax.
 First write the request as a director's brief.
 Then map it into model-specific fields.
 
-Every provider-ready request must be self-contained.
-
-Do not write final prompts as if the model remembers a previous segment, a
-prior request, or an earlier contract block that is not repeated in the same
-request.
-
 ## Method
 
 Read [`references/request-architecture.md`](references/request-architecture.md).
@@ -66,40 +60,6 @@ Use these blocks in order:
 7. camera
 8. sound intent
 9. product policy
-
-### 2.5. Plan segments before provider mapping
-
-If the approved script is longer than one model-supported generation window, do not force everything into one request.
-
-For Seedance 2.0 work, any script longer than 15 seconds must be converted into a multi-segment plan before provider mapping.
-
-Each segment must:
-
-- stay within 15 seconds
-- work as a standalone usable asset
-- preserve stitchable continuity with adjacent segments at the business level
-- include only its own beat, dialogue, and action scope
-- restate any needed continuity targets inside the segment request itself
-- repeat the full binding lines for each persona, product, and audio reference
-  used in that segment
-- avoid phrases such as `continue from the prior segment` in the final
-  provider-ready request
-- avoid shorthand such as `same as previous`, `same character`, or `same
-  contract above`
-
-Print this block before writing the final request set:
-
-```text
-Segment id:
-Target duration:
-Segment role:
-Standalone payoff:
-Continuity targets to restate inside this request:
-Bridge target for editing:
-Dialogue scope:
-Action scope:
-References used:
-```
 
 ### 3. Print the request skeleton before the final request
 
@@ -139,28 +99,6 @@ Examples:
 
 Add more constraints only after you know what the first run missed.
 
-## Reference Binding Rule
-
-When reference images or reference videos are used, bind each reference explicitly before provider mapping.
-
-Agent shorthand such as `@storyboard`, `@product-front`, or `@ref-video-1` is acceptable during planning, but the final request must convert that shorthand into explicit bindings.
-
-Do not say only `use the attached references`.
-
-State what each reference controls, such as:
-
-- character or product identity
-- product shape, material, or packaging details
-- shot order
-- camera motion
-- continuity targets that must be restated in the same request
-
-For Seedance final requests, prefer explicit bindings such as `[图1]`, `[图2]`, and `[视频1]` plus role descriptions.
-
-Unless the user explicitly says a reference is inspiration-only, benchmark-only,
-or weak guidance, treat user-provided persona, product, and audio references as
-identity-binding references that should stay consistent in the generated result.
-
 ## Failure Mode
 
 Stop and say the request is under-specified if:
@@ -169,6 +107,5 @@ Stop and say the request is under-specified if:
 - the reference policy is unclear
 - timecoded actions are missing
 - product policy is not explicit
-- a Seedance script exceeds 15 seconds but no segment plan exists
 
 Do not let the provider request silently invent the strategy.

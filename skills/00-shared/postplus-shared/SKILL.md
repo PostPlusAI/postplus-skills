@@ -19,7 +19,6 @@ business skill's `_postplus_shared/` directory.
 - [`shared-product-selection-preferences.md`](references/shared-product-selection-preferences.md)
 - [`shared-tiktok-music-workflow.md`](references/shared-tiktok-music-workflow.md)
 - [`shared-ads-workflow.md`](references/shared-ads-workflow.md)
-- [`shared-user-guidance.md`](references/shared-user-guidance.md)
 
 ## Default Workflow
 

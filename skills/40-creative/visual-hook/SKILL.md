@@ -51,23 +51,6 @@ A strong visual hook should usually have:
 
 If the hook requires the caption, voiceover, or product claim to make sense, the visual is probably too weak.
 
-## Relationship To Hook Design
-
-Use `hook-design` first when the main uncertainty is which stop-scroll mechanism should carry the opening.
-
-This skill is the visual translator for mechanisms that need visible frame-one proof.
-
-Most natural mappings:
-
-- `patternInterrupt` -> Interrupted Moment, Mechanism Curiosity
-- `proofFirst` -> Proof Close-Up, Contrast / Transformation
-- `painRecognition` -> Pain Evidence
-- `socialOrIdentityStake` -> Status Loss / Social Stakes
-
-Less natural mappings:
-
-- `boldClaim` and `questionGap` can come here, but only if the frame itself can carry the question without relying on the line
-
 ## Hook Families
 
 ### 1. Pain Evidence

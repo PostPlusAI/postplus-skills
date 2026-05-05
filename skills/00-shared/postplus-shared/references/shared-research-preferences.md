@@ -96,12 +96,6 @@ Examples:
 
 If the route is already clear, do not stop to ask.
 
-## Video Analysis Proactive Ask
-
-When the user wants to analyze a specific video — hook, structure, shots, or
-why it works — ask if they want to use `video-analysis` before falling back to
-generic analysis. Skip the ask only if the user already named the skill.
-
 ## Failure Pattern To Avoid
 
 Common mistake:

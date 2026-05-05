@@ -75,14 +75,8 @@ Ask:
 - what may the model learn from references?
 - what identity elements must change?
 - what references were intentionally not used?
-- if references are used, is each one explicitly bound to a role?
 
 If this is unclear, later failure analysis becomes weak.
-
-Reference-binding warning:
-
-- `use the attached references` is too vague
-- prefer explicit bindings such as `[图1] controls shot order` or `[视频1] controls pacing`
 
 ## 7. Realism / Native Feel
 
@@ -99,13 +93,6 @@ Ask:
 - is this supposed to be a storyboard grid or a full video?
 - did storyboard language accidentally leak into a final render request?
 - is aspect ratio explicit?
-- if this is a Seedance request over 15 seconds, does a segment plan exist?
-- does each segment stay within 15 seconds and remain usable on its own?
-
-Fail examples:
-
-- one 28-second Seedance request with no split plan
-- multiple segments that only make sense when merged, but do not stand as usable clips
 
 ## Verdict Labels
 

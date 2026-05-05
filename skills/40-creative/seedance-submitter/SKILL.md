@@ -23,49 +23,12 @@ Follow shared release-shell rules in:
 8. Poll with `skills/40-creative/video-batch-runner/scripts/poll_prediction.mjs` until completed.
 9. Report local `renders/render-001.mp4` paths and prediction ids.
 
-If the user says `sd2`, interpret it as Seedance 2.0 unless they explicitly specify another model.
-
-## Mandatory Split Rule
-
-Seedance 2.0 supports only short generation windows.
-
-If the target script or beat plan exceeds 15 seconds, splitting is mandatory.
-
-Do not submit one oversized request and hope the model compresses it.
-
-Create `segment-01`, `segment-02`, and later request records instead.
-
-Each segment must be:
-
-- independently submit-ready
-- independently downloadable
-- semantically complete as a usable clip
-- explicitly connected to neighboring segments when continuity matters
-
 ## When Splitting
 
 - Split by voiceover meaning, natural pauses, and shot continuity.
 - Do not mechanically split at `0:00-0:15 / 0:15-0:30` unless the script naturally fits.
 - If one grid crosses a segment boundary, the later segment must explicitly say it continues the prior action.
 - Each segment must be a complete request that can be submitted, polled, and downloaded independently.
-- Each segment should keep only its own dialogue and action scope.
-
-## Reference Binding Rule
-
-When reference images or reference videos are present, bind them explicitly.
-
-Working handles such as `@storyboard`, `@product-front`, or `@ref-video-1` are acceptable in planning notes, but the final request must convert them into explicit reference bindings.
-
-Do not say only `use the attached references`.
-
-Say what each reference controls, such as:
-
-- product identity, shape, color, or material
-- shot order
-- camera motion
-- continuation from the prior segment
-
-For final Seedance prompts, prefer explicit bindings such as `[图1]`, `[图2]`, and `[视频1]` plus role descriptions.
 
 ## Hosted Boundary Rule
 

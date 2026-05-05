@@ -97,8 +97,3 @@ If the user asks strategic Amazon questions like:
 - 我们要怎么打
 
 Treat them as Amazon platform-data questions first, not generic strategy questions.
-
-## Downstream Handoff
-
-After delivering results, offer to hand off to `sourcing-selection` for supply-side
-validation or to drill deeper into a specific ASIN's reviews.

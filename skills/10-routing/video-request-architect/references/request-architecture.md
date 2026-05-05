@@ -7,12 +7,6 @@ This is the provider-agnostic method for turning prompt logic into a video reque
 Different models expose different fields.
 The reusable part is the request architecture, not the endpoint.
 
-Final provider requests must be self-contained.
-
-If a production plan uses multiple generated segments, that continuity is for
-your planning and editing workflow. Do not phrase the final provider request as
-if the model has seen a prior segment or remembers previous instructions.
-
 Use this order:
 
 1. `goal`
@@ -51,21 +45,11 @@ This is the strategic core.
 
 Define:
 
-- what each reference is binding
-- what is inspiration-only, if any
-- what the model must not copy from non-binding references
+- what the model may learn
+- what it must not copy
 - what references are intentionally excluded
 
 This prevents mixed-reference drift.
-
-Default binding rule:
-
-- user-provided persona images bind character identity unless the user says
-  otherwise
-- user-provided product images bind product identity unless the user says
-  otherwise
-- user-provided audio references bind voice identity unless the user says
-  otherwise
 
 ### 4. Output Spec
 
@@ -75,10 +59,6 @@ State:
 - aspect ratio
 - full-screen vs storyboard
 - no text / no UI / watermark policy
-
-If the target provider is Seedance 2.0 and the script exceeds 15 seconds, do not keep one long output spec.
-
-Split it into multiple segment specs first.
 
 ### 5. Look And Tone
 
@@ -145,58 +125,6 @@ Only at the end convert into fields like:
 - `reference_audios`
 - `resolution`
 
-## Segment Planning Rule
-
-If one approved script is longer than a single provider-safe generation window, create a segment plan before writing provider fields.
-
-For Seedance 2.0, treat 15 seconds as the hard ceiling for one generated segment.
-
-Each segment should:
-
-- stay within 15 seconds
-- preserve one coherent action unit
-- carry only its own dialogue and beat scope
-- be usable as a standalone clip
-- restate any needed continuity targets inside its own request so it can later
-  connect cleanly to adjacent segments when stitched together
-
-Useful planning fields:
-
-```text
-Segment id:
-Target duration:
-Segment purpose:
-Continuity targets to restate:
-Visible payoff:
-Dialogue:
-Action:
-Reference bindings:
-```
-
-Do not solve an oversized script by compressing too many beats into one prompt.
-
-## Reference Binding Rule
-
-If a draft mentions references, make the role of each reference explicit before provider mapping.
-
-Planning shorthand such as `@storyboard` or `@product-detail` is fine in working notes, but the final provider-ready request must convert those handles into explicit bindings.
-
-Bad:
-
-- `Use the attached references`
-
-Better:
-
-- `[图1] controls shot order and camera flow`
-- `[图2] controls product color and texture`
-- `[视频1] controls pacing and continuity targets that must be restated in this request`
-
-For multi-segment work, each segment's final provider-ready payload must repeat
-the full binding lines for every reference it uses.
-
-Do not rely on `same as previous`, segment IDs, or earlier planning prose that
-is not pasted into the current request.
-
 ## First-Pass Strategy
 
 For early testing:
@@ -223,10 +151,9 @@ Hook logic:
 Viewer question:
 
 [REFERENCE CONTRACT]
-Binding references:
-Inspiration-only references:
-Do not copy from inspiration-only references:
-Intentionally excluded:
+Learn from:
+Do not copy:
+Intentionally not using:
 
 [OUTPUT SPEC]
 ...
@@ -256,5 +183,3 @@ Intentionally excluded:
 - references teach identity instead of rhythm
 - beat sheet is missing, so the model invents pacing
 - product images overpower hook replication testing
-- long Seedance scripts are not split, so pacing and controllability collapse
-- references are mentioned but not explicitly bound to roles

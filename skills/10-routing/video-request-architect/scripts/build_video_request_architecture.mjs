@@ -12,17 +12,11 @@ export function buildVideoRequestArchitecture(input = {}) {
     cameraGrammar: input.cameraGrammar || "handheld UGC close-medium coverage",
     duration: input.duration || 8,
     hookLogic: input.hookLogic || "show the workflow pain before the fix",
-    mainRisks: [
-      "opening drift",
-      "over-explaining before proof",
-      "assuming cross-segment memory",
-      "weak reference binding",
-    ],
+    mainRisks: ["opening drift", "over-explaining before proof"],
     productPolicy:
       input.productPolicy || "show product only when it proves the claim",
     referencePolicy:
-      input.referencePolicy ||
-      "treat user-provided persona, product, and audio references as binding unless explicitly marked inspiration-only; make each request self-contained",
+      input.referencePolicy || "learn the structure, not the identity",
     segmentType: input.segmentType || "hook",
     skeleton: {
       goal: input.goal || "hook replication",
