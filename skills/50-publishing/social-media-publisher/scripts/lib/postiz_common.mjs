@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
+import { uploadHostedMediaFileReference } from "../../_postplus_shared/00-core/shared-runtime/scripts/lib/hosted_media_generation_bridge.mjs";
 import { runHostedCapabilityRequest } from "../../_postplus_shared/00-core/shared-runtime/scripts/lib/hosted_capability_bridge.mjs";
 
 const SOCIAL_PUBLISHING_BASE_URL = "https://social-publishing.postplus.local";
@@ -105,16 +106,20 @@ export async function postizJson(pathname, { method = "GET", body, headers = {} 
 
 export async function postizUploadFile(localFilePath, options = {}) {
   const absoluteInput = path.resolve(localFilePath);
-  const fileBuffer = fs.readFileSync(absoluteInput);
+  const mimeType = options.mimeType ?? "application/octet-stream";
+  const { storageReference } = await uploadHostedMediaFileReference(
+    absoluteInput,
+    mimeType,
+  );
 
   return await runHostedCapabilityRequest({
     capability: "social-publishing",
     operation: "upload-file",
     input: {
       file: {
-        contentBase64: fileBuffer.toString("base64"),
+        storageReference,
         name: path.basename(absoluteInput),
-        mimeType: options.mimeType ?? "application/octet-stream",
+        mimeType,
       },
     },
   });

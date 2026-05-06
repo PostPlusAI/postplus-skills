@@ -120,13 +120,16 @@ export async function uploadHostedMediaFile(
   mimeType = 'application/octet-stream',
 ) {
   const absolutePath = path.resolve(localFilePath);
-  const fileBuffer = fs.readFileSync(absolutePath);
+  const { storageReference } = await uploadHostedMediaFileReference(
+    absolutePath,
+    mimeType,
+  );
 
   return await runHostedCapabilityRequest({
     capability: 'media-file',
     operation: 'upload',
     file: {
-      contentBase64: fileBuffer.toString('base64'),
+      storageReference,
       name: path.basename(absolutePath),
       mimeType,
     },
@@ -171,19 +174,30 @@ export async function uploadHostedMediaFileReference(
   };
 }
 
-export async function downloadHostedMediaFile(url, outputPath) {
+export async function downloadHostedMediaFile(
+  url,
+  outputPath,
+  mimeType = 'application/octet-stream',
+) {
+  const absoluteOutputPath = path.resolve(outputPath);
   const result = await runHostedCapabilityRequest({
     capability: 'media-file',
-    operation: 'download',
+    operation: 'download-to-storage',
+    file: {
+      mimeType,
+      name: path.basename(absoluteOutputPath),
+    },
     url,
   });
-  const absoluteOutputPath = path.resolve(outputPath);
+  const signedUrl = readString(result, 'signedUrl');
+  const downloaded = await requestBytes(signedUrl, {
+    codePrefix: 'hosted_media_download',
+    method: 'GET',
+    providerName: 'Hosted media signed download',
+  });
 
   fs.mkdirSync(path.dirname(absoluteOutputPath), { recursive: true });
-  fs.writeFileSync(
-    absoluteOutputPath,
-    Buffer.from(String(result.contentBase64 || ''), 'base64'),
-  );
+  fs.writeFileSync(absoluteOutputPath, downloaded.bodyBuffer);
 }
 
 function readSignedUpload(value) {
