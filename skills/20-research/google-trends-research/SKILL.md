@@ -135,6 +135,9 @@ Keyword analysis input:
 schema. For keyword analysis, `enableTrendingSearches` must be explicitly
 `false`; otherwise keyword fields are ignored by the actor.
 
+This is an internal actor contract. Do not ask the user about
+`enableTrendingSearches`; classify the request and set it in the compiled input.
+
 Trending-search input:
 
 ```json

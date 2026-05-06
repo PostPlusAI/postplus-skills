@@ -106,6 +106,31 @@ Defaulting rule:
 - if a Seedream request omits `size`, the adapter infers one from `aspectRatio` when possible
 - if a Nano Banana request omits `resolution`, the adapter uses the default release-shell setting
 
+## GPT Image 2
+
+Supported hosted endpoint keys:
+
+- `image-gpt-image-2-text`
+- `image-gpt-image-2-edit`
+
+Requests support `prompt`, `aspectRatio`, `resolution`, `quality`,
+`enableSyncMode`, and `enableBase64Output`. `quality` is billable and should be
+set explicitly to `low`, `medium`, or `high`.
+
+## Nano Banana Pro
+
+Supported hosted endpoint keys:
+
+- `image-nano-banana-pro-text-1k`
+- `image-nano-banana-pro-text-2k`
+- `image-nano-banana-pro-text-4k`
+- `image-nano-banana-pro-edit-1k`
+- `image-nano-banana-pro-edit-2k`
+- `image-nano-banana-pro-edit-4k`
+
+The endpoint key is the billable resolution source of truth. Do not switch a
+Nano Banana Pro request to a different resolution than the chosen endpoint key.
+
 ## Upload Requirement
 
 Edit-style jobs still require uploaded image URLs.

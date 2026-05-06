@@ -29,6 +29,7 @@ Recommended context fields:
 - `enableWebSearch`
 - `sourceBasis`
 - `feedback`
+- `segmentContract`
 
 ## Defaults
 
@@ -64,6 +65,36 @@ Recommended context fields:
     "referenceMap": []
   }
 }
+```
+
+## Segment Contract
+
+For any request that belongs to a source script above 15 seconds, include a
+`segmentContract` copied from `video-request-architect`.
+
+```json
+{
+  "duration": 15,
+  "totalDurationSeconds": 26,
+  "segmentContract": {
+    "segmentId": "segment-01",
+    "targetDurationSeconds": 15,
+    "standalonePayoff": "Fix is introduced with proof.",
+    "continuityTargetsToRestate": [
+      "creator identity",
+      "red product box"
+    ],
+    "dialogueScope": "Now watch the fix. This is why it saves time.",
+    "actionScope": "Creator opens the product and shows proof."
+  }
+}
+```
+
+Before submission, validate the request:
+
+```bash
+node skills/40-creative/seedance-submitter/scripts/validate_seedance_request_contract.mjs \
+  --input path/to/request.seed.json
 ```
 
 ## Dialogue Rule

@@ -104,9 +104,24 @@ Current routes:
 - `seedance` (hosted)
   - endpoint keys: `video-seedance-2-image`, `video-seedance-2-image-turbo`, `video-seedance-2-text`, `video-seedance-2-text-turbo`
   - category: text/image/reference-media to video
+- `kling-motion-control` (hosted)
+  - endpoint key: `video-kling-v2-6-pro-motion-control`
+  - category: reference image plus reference motion video to video
 - `ark`
   - direct workspace route for internal video/audio workflows
   - category: text/image/video/audio to video
+
+Not currently released:
+
+- structured motion-control request fields mapped to provider-native parameters
+
+Current `promptPlan.camera`, `promptPlan.shotType`, and `promptPlan.motion`
+fields are prompt-planning inputs. They can constrain the generated prompt, but
+they do not map to provider-native camera trajectory, object trajectory, or
+motion-brush parameters. Hosted requests with explicit structured motion-control
+fields must fail before provider submission. Use
+`video-kling-v2-6-pro-motion-control` only when the user has a reference image
+and a reference motion video.
 
 Read [`references/hosted-video-talking-head.md`](references/hosted-video-talking-head.md) before implementation or request design.
 Read [`references/hosted-video-generative.md`](references/hosted-video-generative.md) before designing hosted Seedance requests.
@@ -198,6 +213,10 @@ Before calling any provider, write down:
 - `mustKeep`
 - `canVary`
 - `feedback`
+
+Tell the user:
+
+- "我会先锁定 video-batch-runner 的 render brief 和 request JSON，输出本地 render manifest；完成后可以交给 creative-qa、subtitle-packager 或 social-media-publisher。"
 
 ### 2. Produce a normalized request record
 
@@ -343,6 +362,11 @@ The adapter accepts `promptPlan` and turns it into one compact prompt string in 
 - reference bindings such as `[图1]...，[图2]...`
 
 This is a better default than freehand adjective stacks.
+
+Do not represent `promptPlan.motion` as provider-native motion control. If the
+user asks for motion brush, object trajectory, camera trajectory, or
+camera-control parameters, stop and say the current hosted catalog only exposes
+reference-motion transfer through `video-kling-v2-6-pro-motion-control`.
 
 ## Core Scripts
 

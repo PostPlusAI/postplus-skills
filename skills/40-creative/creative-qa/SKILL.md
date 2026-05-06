@@ -78,6 +78,11 @@ Should include:
 - `dependencyImpact`
 - `rerunTarget`
 
+`rerunTarget` must point to the original skill that should rerun, such as
+`image-batch-runner`, `voice-batch-runner`, `video-batch-runner`, or
+`subtitle-packager`. Do not use vague stage labels such as `voice` or `render`
+as the durable rerun target.
+
 ## Scope
 
 This skill should support human review records for:

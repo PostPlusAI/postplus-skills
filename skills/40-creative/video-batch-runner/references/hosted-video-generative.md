@@ -12,6 +12,20 @@ user-facing credential setup.
 - `video-seedance-2-image-turbo`
 - `video-seedance-2-text`
 - `video-seedance-2-text-turbo`
+- `video-kling-v2-6-pro-motion-control`
+
+## Motion-Control Boundary
+
+The hosted catalog exposes one motion-control endpoint:
+
+- `video-kling-v2-6-pro-motion-control`: reference image plus reference motion
+  video to generated video.
+
+`promptPlan.camera` and `promptPlan.motion` are planning and prompt-mapping
+text only. Hosted requests must fast-fail explicit provider-native structured
+motion controls such as `cameraTrajectory`, `objectTrajectory`, `motionBrush`,
+or `camera_fixed` because the current hosted endpoint does not expose those
+parameters.
 
 ## Request Mapping
 
@@ -27,6 +41,15 @@ Image-to-video fields:
 
 - `image` is required.
 - `last_image` is optional for first/last-frame continuation.
+
+Kling motion-control fields:
+
+- `image` is required and should be an uploaded subject/reference image URL.
+- `motionVideo` or `video` is required and should be an uploaded motion
+  reference video URL.
+- `characterOrientation` is required and maps to provider
+  `character_orientation`; use `image` or `video`.
+- `keepOriginalSound` maps to provider `keep_original_sound`.
 
 Text-to-video fields:
 

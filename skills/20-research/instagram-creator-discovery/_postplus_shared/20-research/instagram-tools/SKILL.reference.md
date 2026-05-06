@@ -23,6 +23,22 @@ Main scripts:
 - `scripts/cluster_instagram_comments.mjs`
 - `scripts/build_instagram_watchlist.mjs`
 
+## Script To Skill Map
+
+Use these script groups through the owning business skill instead of presenting
+technical script names as the user-facing workflow:
+
+| Business skill | Script group |
+|---|---|
+| `instagram-account-research` | build actor input, run hosted actor, normalize dataset, rank accounts |
+| `instagram-creator-discovery` | build actor input, run hosted actor, extract candidate usernames, enrich profiles, rank creators |
+| `instagram-content-benchmark` | build actor input, run hosted actor, normalize dataset, rank posts |
+| `instagram-audience-voice` | build actor input, run hosted actor, normalize comments, cluster comments |
+| `instagram-campaign-scout` | build actor input, run hosted actor, normalize tagged or hashtag posts, build watchlist |
+
+Tell the user which business skill is running. Keep the script names in the
+artifact log and failure copy.
+
 Shared helpers:
 
 - `scripts/lib/instagram_common.mjs`

@@ -14,6 +14,7 @@ import {
   normalizeGenerationInput,
   parseArgs,
   readJson,
+  resolveHostedImageOutputFormat,
   sha256,
   toAssetRelative,
   writeJson
@@ -61,14 +62,31 @@ function buildProviderBody(request) {
     };
   }
 
+  if (modelConfig.modelGroup === "gpt-image-2") {
+    return {
+      endpointKey: modelConfig.endpointKey,
+      body: {
+        images: request.inputUrls,
+        prompt: request.prompt,
+        aspect_ratio: request.aspectRatio,
+        resolution: request.resolution,
+        quality: request.quality || "medium",
+        enable_sync_mode: request.enableSyncMode,
+        enable_base64_output: request.enableBase64Output
+      }
+    };
+  }
+
   return {
     endpointKey: modelConfig.endpointKey,
     body: {
       images: request.inputUrls,
       prompt: request.prompt,
       aspect_ratio: request.aspectRatio,
-      resolution: request.resolution,
-      enable_web_search: request.enableWebSearch,
+      resolution: modelConfig.fixedResolution || request.resolution,
+      ...(modelConfig.supportsWebSearch
+        ? { enable_web_search: request.enableWebSearch }
+        : {}),
       output_format: request.outputFormat,
       enable_sync_mode: request.enableSyncMode,
       enable_base64_output: request.enableBase64Output
@@ -117,7 +135,7 @@ async function main() {
     if (typeof output !== "string") {
       continue;
     }
-    const fileExt = request.outputFormat === "jpeg" ? "jpeg" : "png";
+    const fileExt = resolveHostedImageOutputFormat(request, "edit");
     const imageId = `img-${String(index + 1).padStart(3, "0")}`;
     const localPath = path.join(paths.candidatesDir, `${imageId}.${fileExt}`);
     if (/^https?:\/\//.test(output)) {

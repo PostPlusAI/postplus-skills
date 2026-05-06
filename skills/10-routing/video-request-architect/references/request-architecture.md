@@ -150,6 +150,10 @@ Only at the end convert into fields like:
 If one approved script is longer than a single provider-safe generation window, create a segment plan before writing provider fields.
 
 For Seedance 2.0, treat 15 seconds as the hard ceiling for one generated segment.
+Use `scripts/build_video_request_architecture.mjs` to produce the
+machine-checkable `segmentContract`. For target durations above 15 seconds, the
+input must provide a timecoded `beatSheet`; missing or invalid timing is a hard
+error.
 
 Each segment should:
 
@@ -174,6 +178,8 @@ Reference bindings:
 ```
 
 Do not solve an oversized script by compressing too many beats into one prompt.
+Do not infer timings from prose when the script is above 15 seconds; require a
+timecoded beat sheet first.
 
 ## Reference Binding Rule
 

@@ -48,9 +48,12 @@ Read these references before implementation:
 
 Start with:
 
-- 10-30 posts or reels total
+- 10-15 posts or reels per theme for the first pass
 - one or two themes at a time
 - comments only after a shortlist exists
+
+Do not ask the user to choose a broad crawl range up front. Expand only after
+the first shortlist proves the seed quality.
 
 ## Release-Shell Execution Contract
 

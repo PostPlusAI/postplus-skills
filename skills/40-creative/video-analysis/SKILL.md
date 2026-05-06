@@ -5,7 +5,9 @@ description: Analyze local or downloaded social video files with the official Ge
 
 # Video Analysis
 
-> **Tip:** Gemini 3.1 Pro is recommended for video analysis — it has the best video understanding. PostPlus has already wrapped the API, so you can start analyzing directly.
+> **Tip:** Gemini 3.1 Pro is recommended for video analysis. The PostPlus
+> runner uses bounded inline payloads for very small files and hosted
+> `file_reference` upload for larger local videos.
 
 Follow shared release-shell rules in:
 
@@ -21,11 +23,28 @@ This skill is usually downstream of platform research, not the default first ste
 
 ## Use For
 
-- upload local video files to the official Gemini Files API
+- analyze local video files through the hosted Gemini video-analysis path
 - run Gemini 3.1 Pro Preview on video inputs
 - use a stable TikTok/Reels analysis prompt
 - request structured JSON output
 - keep analysis linked to source metadata such as TikTok URL, video id, or dataset row
+
+## Current Boundary
+
+Current script behavior:
+
+- supported local formats: `.mp4`, `.m4v`, `.mov`, `.webm`
+- tiny videos stay on the inline path while they fit inside the shared hosted
+  JSON payload guard
+- larger videos use `media-file/create-upload-url`, upload the local file to
+  the signed upload URL, and send Gemini a `file_reference`
+- Gemini input is single-source: each request uses either `inline_data` or
+  `file_reference`, never both
+- no automatic compression, segmentation, resumable upload, or file URI reuse is
+  claimed in this release
+
+If signed upload or hosted `file_reference` analysis fails, stop on that error.
+Do not retry by base64 inlining the same large video.
 
 ## Trigger Signals
 
@@ -100,6 +119,10 @@ Do not use `gemini-3-pro-preview`; it has been shut down.
 
 ## First Run
 
+Before the first run, tell the user:
+
+- "我会先用 video-analysis 对一条本地视频做 Gemini 分析，输出每个 sourceId 的 JSON 结果；小文件会 inline，大文件会走 hosted file_reference；下一步可以交给 reference-decode 或 benchmark-to-brief。"
+
 Use a single local video and keep the first request simple:
 
 ```bash
@@ -131,21 +154,20 @@ When scaling to many videos:
 
 - keep provider calls concurrent but bounded
 - start with concurrency 2-4
-- prefer `inline` for short TikTok clips under 20MB when the network path to Files API is unreliable
+- small files may use `inline`; larger files use hosted `file_reference`
 - persist one JSON result per source video
 - include source ids and source URLs in every result
-- retry upload and generate calls with bounded backoff
-- separate upload failures from model failures
 
-## Fallback Strategy
+## Larger Files
 
-For this workspace, the preferred first-version strategy is:
+Larger local files use the hosted file-reference path:
 
-1. whole video inline if under 20MB
-2. compress if over 20MB
-3. segment into overlapping clips if still over 20MB
-4. aggregate clip analyses back into one video-level result
-5. join final analyses back to the source metadata dataset
+1. request `media-file/create-upload-url`
+2. upload the video bytes to the returned signed URL
+3. send the returned `storageReference` as Gemini `file_reference`
+
+Segmentation, compression, and file URI reuse are not implemented by this
+script.
 
 ## Keep These Assets
 

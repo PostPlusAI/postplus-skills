@@ -103,4 +103,8 @@ Stop and say the decode is under-specified if there is no way to determine:
 - what the viewer should notice first
 - what the scene must visibly contain
 
+Ask this when the visual anchor is missing:
+
+- "参考视频的首帧最吸引人的画面是什么？"
+
 Do not move to storyboard writing with only mood words.

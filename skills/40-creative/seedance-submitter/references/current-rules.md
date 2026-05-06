@@ -15,6 +15,8 @@
 - Supported duration values: `5`, `10`, or `15` seconds.
 - If user timing is not exactly supported, map to the nearest viable segment structure without breaking action continuity.
 - If the approved script exceeds 15 seconds, splitting is mandatory before submission.
+- Validate request JSON with
+  `scripts/validate_seedance_request_contract.mjs` before submission.
 
 ## Dialogue And Audio
 
@@ -56,11 +58,15 @@
 
 - Split by voiceover meaning, semantic pauses, shot boundaries, and action continuity.
 - Avoid splitting a continuous action unless necessary.
-- If a grid or action crosses two segments, the second request must explicitly say it continues the prior segment.
+- If an action crosses two segments, the second request must restate the needed
+  character, product, scene, and action state inside its own prompt fields.
 - Shared references can be reused across segments.
 - Each segment must include only its own `promptPlan.action` and dialogue.
 - Each segment must be independently submit-ready.
 - Each segment should still be usable as a standalone clip, not just as a middle fragment.
+- Final request text must not depend on previous-segment memory through
+  shorthand such as `continue from the previous segment`, `same as previous`,
+  `same character`, `content above`, or `延续上一段`.
 
 ## User Output Preference
 

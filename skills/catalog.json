@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-1-9a640071803c8e5c",
+  "releaseId": "skills-1-205e2e0e4d0eacdf",
   "source": "PostPlusAI/postplus-skills",
   "primaryIndex": "skills/INDEX.md",
   "skills": [
@@ -275,8 +275,16 @@
         "accountConnections": [],
         "collectionKeys": [],
         "endpointKeys": [
+          "image-gpt-image-2-edit",
+          "image-gpt-image-2-text",
           "image-nano-banana-2-edit",
           "image-nano-banana-2-text",
+          "image-nano-banana-pro-edit-1k",
+          "image-nano-banana-pro-edit-2k",
+          "image-nano-banana-pro-edit-4k",
+          "image-nano-banana-pro-text-1k",
+          "image-nano-banana-pro-text-2k",
+          "image-nano-banana-pro-text-4k",
           "image-seedream-v5-lite-edit",
           "image-seedream-v5-lite-edit-sequential",
           "image-seedream-v5-lite-sequential",
@@ -300,6 +308,46 @@
         {
           "key": "image-nano-banana-2-text",
           "name": "Nano Banana 2 Text To Image",
+          "source": "endpointKey"
+        },
+        {
+          "key": "image-nano-banana-pro-edit-1k",
+          "name": "Nano Banana Pro Edit",
+          "source": "endpointKey"
+        },
+        {
+          "key": "image-nano-banana-pro-edit-2k",
+          "name": "Nano Banana Pro Edit",
+          "source": "endpointKey"
+        },
+        {
+          "key": "image-nano-banana-pro-edit-4k",
+          "name": "Nano Banana Pro Edit",
+          "source": "endpointKey"
+        },
+        {
+          "key": "image-nano-banana-pro-text-1k",
+          "name": "Nano Banana Pro Text To Image",
+          "source": "endpointKey"
+        },
+        {
+          "key": "image-nano-banana-pro-text-2k",
+          "name": "Nano Banana Pro Text To Image",
+          "source": "endpointKey"
+        },
+        {
+          "key": "image-nano-banana-pro-text-4k",
+          "name": "Nano Banana Pro Text To Image",
+          "source": "endpointKey"
+        },
+        {
+          "key": "image-gpt-image-2-edit",
+          "name": "Openai Gpt Image 2 Edit",
+          "source": "endpointKey"
+        },
+        {
+          "key": "image-gpt-image-2-text",
+          "name": "Openai Gpt Image 2 Text To Image",
           "source": "endpointKey"
         },
         {
@@ -822,6 +870,7 @@
         "collectionKeys": [],
         "endpointKeys": [
           "video-infinitetalk",
+          "video-kling-v2-6-pro-motion-control",
           "video-seedance-2-image",
           "video-seedance-2-image-turbo",
           "video-seedance-2-text",
@@ -840,6 +889,11 @@
         {
           "key": "video-infinitetalk",
           "name": "InfiniteTalk",
+          "source": "endpointKey"
+        },
+        {
+          "key": "video-kling-v2-6-pro-motion-control",
+          "name": "Kwaivgi Kling v2.6 Pro Motion Control",
           "source": "endpointKey"
         },
         {

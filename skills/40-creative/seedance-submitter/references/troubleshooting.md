@@ -29,8 +29,10 @@ If a job stays in `processing` for unusually long:
 ## Segment Continuity Problems
 
 - If a later segment resets character, product state, or scene, add continuity language to `promptPlan.subject`, `promptPlan.action`, and `mustKeep`.
-- If a grid crosses segments, write `延续上一段...` at the start of the later segment.
+- If an action crosses segments, restate the visible state inside the later segment request.
 - Reuse the same reference images across related segments.
+- Do not write `延续上一段`, `same as previous`, or similar shorthand. The
+  validator rejects request text that depends on previous-segment memory.
 
 ## Wrong Provider Field
 

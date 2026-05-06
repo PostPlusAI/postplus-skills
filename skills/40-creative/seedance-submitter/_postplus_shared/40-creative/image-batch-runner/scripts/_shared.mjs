@@ -17,15 +17,63 @@ export const DEFAULT_ASPECT_RATIO = '9:16';
 export const DEFAULT_SEEDREAM_SIZE = '1440*2560';
 
 export const HOSTED_IMAGE_MODELS = {
+  'image-gpt-image-2-text': {
+    modelGroup: 'gpt-image-2',
+    operation: 'text-to-image',
+    endpointKey: 'image-gpt-image-2-text',
+  },
+  'image-gpt-image-2-edit': {
+    modelGroup: 'gpt-image-2',
+    operation: 'edit',
+    endpointKey: 'image-gpt-image-2-edit',
+  },
   'image-nano-banana-2-text': {
     modelGroup: 'nano-banana',
     operation: 'text-to-image',
     endpointKey: 'image-nano-banana-2-text',
+    supportsWebSearch: true,
   },
   'image-nano-banana-2-edit': {
     modelGroup: 'nano-banana',
     operation: 'edit',
     endpointKey: 'image-nano-banana-2-edit',
+    supportsWebSearch: true,
+  },
+  'image-nano-banana-pro-text-1k': {
+    modelGroup: 'nano-banana-pro',
+    operation: 'text-to-image',
+    endpointKey: 'image-nano-banana-pro-text-1k',
+    fixedResolution: '1k',
+  },
+  'image-nano-banana-pro-text-2k': {
+    modelGroup: 'nano-banana-pro',
+    operation: 'text-to-image',
+    endpointKey: 'image-nano-banana-pro-text-2k',
+    fixedResolution: '2k',
+  },
+  'image-nano-banana-pro-text-4k': {
+    modelGroup: 'nano-banana-pro',
+    operation: 'text-to-image',
+    endpointKey: 'image-nano-banana-pro-text-4k',
+    fixedResolution: '4k',
+  },
+  'image-nano-banana-pro-edit-1k': {
+    modelGroup: 'nano-banana-pro',
+    operation: 'edit',
+    endpointKey: 'image-nano-banana-pro-edit-1k',
+    fixedResolution: '1k',
+  },
+  'image-nano-banana-pro-edit-2k': {
+    modelGroup: 'nano-banana-pro',
+    operation: 'edit',
+    endpointKey: 'image-nano-banana-pro-edit-2k',
+    fixedResolution: '2k',
+  },
+  'image-nano-banana-pro-edit-4k': {
+    modelGroup: 'nano-banana-pro',
+    operation: 'edit',
+    endpointKey: 'image-nano-banana-pro-edit-4k',
+    fixedResolution: '4k',
   },
   'image-seedream-v5-lite-text': {
     modelGroup: 'seedream',
@@ -107,8 +155,16 @@ export async function fetchJson(url, options = {}) {
       ? JSON.parse(options.body)
       : (options.body ?? {});
   const billableImageModels = new Set([
+    'image-gpt-image-2-text',
+    'image-gpt-image-2-edit',
     'image-nano-banana-2-text',
     'image-nano-banana-2-edit',
+    'image-nano-banana-pro-text-1k',
+    'image-nano-banana-pro-text-2k',
+    'image-nano-banana-pro-text-4k',
+    'image-nano-banana-pro-edit-1k',
+    'image-nano-banana-pro-edit-2k',
+    'image-nano-banana-pro-edit-4k',
     'image-seedream-v5-lite-text',
     'image-seedream-v5-lite-sequential',
     'image-seedream-v5-lite-edit',
@@ -120,6 +176,7 @@ export async function fetchJson(url, options = {}) {
       : {
           billableUnitCount: 1,
           imageSize: requestBody.resolution ?? '2k',
+          quality: requestBody.quality ?? undefined,
           operationKey: url,
           requestBytes: Buffer.byteLength(JSON.stringify(requestBody)),
         };
@@ -241,6 +298,7 @@ export function normalizeGenerationInput(input, mode) {
     negativePrompt: input.negativePrompt || null,
     aspectRatio: input.aspectRatio || DEFAULT_ASPECT_RATIO,
     resolution: input.resolution || DEFAULT_RESOLUTION,
+    quality: input.quality || null,
     size: input.size || null,
     maxImages: Number.isInteger(input.maxImages) ? input.maxImages : null,
     outputFormat: input.outputFormat || DEFAULT_OUTPUT_FORMAT,
@@ -269,7 +327,19 @@ export function getHostedImageModelConfig(model, operation) {
     modelGroup: config.modelGroup,
     operation,
     endpointKey: config.endpointKey,
+    fixedResolution: config.fixedResolution || null,
+    supportsWebSearch: config.supportsWebSearch === true,
   };
+}
+
+export function resolveHostedImageOutputFormat(request, operation) {
+  const modelConfig = getHostedImageModelConfig(request.model, operation);
+
+  if (modelConfig.modelGroup === 'gpt-image-2') {
+    return 'png';
+  }
+
+  return request.outputFormat === 'jpeg' ? 'jpeg' : 'png';
 }
 
 function parseExplicitSize(value) {

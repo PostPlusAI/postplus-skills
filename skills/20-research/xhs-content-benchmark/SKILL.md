@@ -202,6 +202,8 @@ Return:
 
 - fail if the request mixes profile benchmarking and keyword benchmarking without saying which should be primary
 - fail if no `profileUrls`, `profileIds`, or `keywords` are provided
+- name the missing input in the failure copy: either a Xiaohongshu profile URL,
+  profile id, or explicit keyword route
 - fail if the keyword-search actor returns zero items
 - fail if the normalized dataset has no note URLs
 - keep raw actor output for debugging
