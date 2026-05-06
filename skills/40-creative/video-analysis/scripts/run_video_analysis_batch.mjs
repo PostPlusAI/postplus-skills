@@ -307,6 +307,10 @@ async function main() {
     })),
     failures,
   });
+
+  if (failures.length > 0) {
+    process.exitCode = 1;
+  }
 }
 
 main().catch((error) => {

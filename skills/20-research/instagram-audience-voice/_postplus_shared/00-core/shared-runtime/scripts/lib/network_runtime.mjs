@@ -416,7 +416,7 @@ function parseProductErrorPayload(bodyText) {
 function buildClientUpgradeRequiredMessage(payload) {
   const cliCommand =
     payload.compatibility?.upgrade?.cli?.command ??
-    "npm install -g @postplus/cli";
+    "npm install -g @postplus/cli@latest";
   const skillsCommand =
     payload.compatibility?.upgrade?.skills?.command ?? "postplus update";
   const restart = payload.compatibility?.upgrade?.restartAgentSession

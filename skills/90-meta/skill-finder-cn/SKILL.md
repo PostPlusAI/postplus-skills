@@ -43,7 +43,7 @@ If the current released surface does not contain a suitable skill, say that dire
 3. explain why that route fits
 4. confirm the released skill ids with `postplus list` when needed
 5. hand the user the official install path:
-   - `npm install -g @postplus/cli`
+   - `npm install -g @postplus/cli@latest`
    - `postplus auth login`
    - `npx -y skills add PostPlusAI/postplus-skills --full-depth --skill '*' --agent claude-code codex cursor github-copilot windsurf trae trae-cn --yes`
 
@@ -74,7 +74,7 @@ Good response shape:
 
 1. recommend `tiktok-research`
 2. if the user only wants installation guidance, point to:
-   - `npm install -g @postplus/cli`
+   - `npm install -g @postplus/cli@latest`
    - `postplus auth login`
    - `npx -y skills add PostPlusAI/postplus-skills --full-depth --skill '*' --agent claude-code codex cursor github-copilot windsurf trae trae-cn --yes`
 

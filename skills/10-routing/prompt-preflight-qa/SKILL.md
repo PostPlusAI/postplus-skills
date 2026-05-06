@@ -44,13 +44,18 @@ Choose one:
 Check:
 
 - opening strength
+- chosen hook mechanism is legible in the first 3 seconds
 - viewer question clarity
 - visible evidence
+- promise-delivery match by the next few beats
 - product timing
+- ad-detection risk from premature product exposure
 - negative constraints
 - reference contract
+- explicit reference bindings when references are used
 - realism and UGC control
 - output-format correctness
+- segment plan correctness when the target Seedance request exceeds 15 seconds
 
 ### 3. Print a preflight report
 
@@ -74,6 +79,7 @@ Can run now:
 When a prompt is weak, point the problem to the right stage:
 
 - bad routing -> `pattern-router`
+- missing or misfit hook mechanism -> `hook-design`
 - weak hook decode -> `reference-decode`
 - weak panel logic -> `storyboard-grid-writer`
 - bad request mapping -> `video-request-architect`
@@ -83,3 +89,5 @@ When a prompt is weak, point the problem to the right stage:
 
 If the prompt could still run but is risky, do not silently pass it.
 Mark it as risky and say what is most likely to fail first.
+
+If a Seedance request exceeds 15 seconds and no segment plan exists, mark it `not_ready`.
