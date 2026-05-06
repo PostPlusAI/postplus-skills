@@ -21,9 +21,11 @@ The hosted catalog exposes one motion-control endpoint:
 - `video-kling-v2-6-pro-motion-control`: reference image plus reference motion
   video to generated video.
 
-Local fields such as `promptPlan.motion`, `camera`, or `camera_fixed` are
-planning and prompt-mapping fields only. Do not claim they map to provider
-native camera trajectory, object trajectory, or motion-brush parameters.
+`promptPlan.camera` and `promptPlan.motion` are planning and prompt-mapping
+text only. Hosted requests must fast-fail explicit provider-native structured
+motion controls such as `cameraTrajectory`, `objectTrajectory`, `motionBrush`,
+or `camera_fixed` because the current hosted endpoint does not expose those
+parameters.
 
 ## Request Mapping
 

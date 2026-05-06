@@ -115,9 +115,11 @@ Not currently released:
 
 - structured motion-control request fields mapped to provider-native parameters
 
-Current `camera`, `shot`, and `motion` fields are prompt-planning inputs. They
-can constrain the generated prompt, but they do not map to provider-native
-camera trajectory, object trajectory, or motion-brush parameters. Use
+Current `promptPlan.camera`, `promptPlan.shotType`, and `promptPlan.motion`
+fields are prompt-planning inputs. They can constrain the generated prompt, but
+they do not map to provider-native camera trajectory, object trajectory, or
+motion-brush parameters. Hosted requests with explicit structured motion-control
+fields must fail before provider submission. Use
 `video-kling-v2-6-pro-motion-control` only when the user has a reference image
 and a reference motion video.
 
@@ -362,9 +364,9 @@ The adapter accepts `promptPlan` and turns it into one compact prompt string in 
 This is a better default than freehand adjective stacks.
 
 Do not represent `promptPlan.motion` as provider-native motion control. If the
-user asks for motion brush, object trajectory, or camera-control parameters,
-stop and say the current hosted catalog only exposes reference-motion transfer
-through `video-kling-v2-6-pro-motion-control`.
+user asks for motion brush, object trajectory, camera trajectory, or
+camera-control parameters, stop and say the current hosted catalog only exposes
+reference-motion transfer through `video-kling-v2-6-pro-motion-control`.
 
 ## Core Scripts
 

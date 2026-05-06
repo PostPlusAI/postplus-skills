@@ -480,6 +480,74 @@ function getHostedVideoModelConfig(model) {
   return config;
 }
 
+const UNSUPPORTED_HOSTED_STRUCTURED_MOTION_CONTROL_PATHS = [
+  'camera',
+  'camera_fixed',
+  'cameraFixed',
+  'camera_control',
+  'cameraControl',
+  'camera_trajectory',
+  'cameraTrajectory',
+  'camera_trajectories',
+  'cameraTrajectories',
+  'object_trajectory',
+  'objectTrajectory',
+  'object_trajectories',
+  'objectTrajectories',
+  'motion_brush',
+  'motionBrush',
+  'motion_brushes',
+  'motionBrushes',
+  'brush_mask',
+  'brushMask',
+  'promptPlan.camera_control',
+  'promptPlan.cameraControl',
+  'promptPlan.camera_trajectory',
+  'promptPlan.cameraTrajectory',
+  'promptPlan.camera_trajectories',
+  'promptPlan.cameraTrajectories',
+  'promptPlan.object_trajectory',
+  'promptPlan.objectTrajectory',
+  'promptPlan.object_trajectories',
+  'promptPlan.objectTrajectories',
+  'promptPlan.motion_brush',
+  'promptPlan.motionBrush',
+  'promptPlan.motion_brushes',
+  'promptPlan.motionBrushes',
+  'promptPlan.brush_mask',
+  'promptPlan.brushMask',
+];
+
+function hasOwnPath(input, dottedPath) {
+  const parts = dottedPath.split('.');
+  let current = input;
+  for (const part of parts) {
+    if (!current || typeof current !== 'object') {
+      return false;
+    }
+    if (!Object.hasOwn(current, part)) {
+      return false;
+    }
+    current = current[part];
+  }
+  return true;
+}
+
+function assertNoUnsupportedHostedStructuredMotionControls(input, model) {
+  const unsupportedPaths =
+    UNSUPPORTED_HOSTED_STRUCTURED_MOTION_CONTROL_PATHS.filter((fieldPath) =>
+      hasOwnPath(input, fieldPath),
+    );
+
+  if (unsupportedPaths.length === 0) {
+    return;
+  }
+
+  throw new Error(
+    `Hosted video model ${model} does not support provider-native structured motion controls: ${unsupportedPaths.join(', ')}. The current hosted motion-control endpoint only supports reference-motion transfer with image, motionVideo, characterOrientation, and optional prompt/negativePrompt/keepOriginalSound.`,
+  );
+}
+
 function readHostedRequiredInput(input, field) {
   if (field === 'motionVideo') {
     return input.motionVideo || input.motion_video || input.video || null;
@@ -573,6 +641,8 @@ export function normalizeRenderInput(input) {
   );
 
   if (provider === 'hosted-media') {
+    assertNoUnsupportedHostedStructuredMotionControls(input, model);
+
     for (const field of hostedModelConfig.requiredFields) {
       if (field === 'prompt' && !prompt) {
         throw new Error(

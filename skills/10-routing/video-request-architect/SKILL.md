@@ -14,6 +14,8 @@ Use this skill after the scene logic already exists.
 This skill is for:
 
 - converting storyboard logic into full-video requests
+- generating a machine-checkable Seedance segment contract before provider
+  mapping
 - separating provider-agnostic prompt architecture from provider fields
 - making short test iterations easy to diagnose
 - preserving reference boundaries and negative constraints
@@ -72,6 +74,19 @@ Use these blocks in order:
 If the approved script is longer than one model-supported generation window, do not force everything into one request.
 
 For Seedance 2.0 work, any script longer than 15 seconds must be converted into a multi-segment plan before provider mapping.
+Use the repo-owned builder to make that boundary explicit:
+
+```bash
+node skills/10-routing/video-request-architect/scripts/build_video_request_architecture.mjs \
+  --input <brief.json> \
+  --output <request-architecture.json>
+```
+
+For scripts above 15 seconds, `<brief.json>` must include a timecoded
+`beatSheet` with `startSeconds` and `endSeconds` for every beat. The builder
+fast-fails if the beat sheet is missing, unordered, overlapping, or contains a
+single beat above the 15 second Seedance window. It does not invent timing from
+plain prose.
 
 Tell the user:
 
@@ -91,7 +106,8 @@ Each segment must:
 - avoid shorthand such as `same as previous`, `same character`, or `same
   contract above`
 
-Print this block before writing the final request set:
+The generated `segmentContract` is the handoff truth for final request mapping.
+Print this block for every segment before writing the final request set:
 
 ```text
 Segment id:
