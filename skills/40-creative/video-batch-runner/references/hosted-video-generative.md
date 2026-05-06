@@ -12,17 +12,18 @@ user-facing credential setup.
 - `video-seedance-2-image-turbo`
 - `video-seedance-2-text`
 - `video-seedance-2-text-turbo`
+- `video-kling-v2-6-pro-motion-control`
 
-## Unsupported Motion-Control Paths
+## Motion-Control Boundary
 
-The current hosted generative video catalog does not expose native
-motion-control endpoints for camera trajectory, object trajectory, or motion
-brush.
+The hosted catalog exposes one motion-control endpoint:
+
+- `video-kling-v2-6-pro-motion-control`: reference image plus reference motion
+  video to generated video.
 
 Local fields such as `promptPlan.motion`, `camera`, or `camera_fixed` are
 planning and prompt-mapping fields only. Do not claim they map to provider
-native motion-control parameters until the hosted catalog adds explicit endpoint
-keys and billing metadata for that capability.
+native camera trajectory, object trajectory, or motion-brush parameters.
 
 ## Request Mapping
 
@@ -38,6 +39,15 @@ Image-to-video fields:
 
 - `image` is required.
 - `last_image` is optional for first/last-frame continuation.
+
+Kling motion-control fields:
+
+- `image` is required and should be an uploaded subject/reference image URL.
+- `motionVideo` or `video` is required and should be an uploaded motion
+  reference video URL.
+- `characterOrientation` is required and maps to provider
+  `character_orientation`; use `image` or `video`.
+- `keepOriginalSound` maps to provider `keep_original_sound`.
 
 Text-to-video fields:
 

@@ -20,6 +20,12 @@ export const HOSTED_VIDEO_MODELS = {
     requiredFields: ['image', 'audio'],
     supportsSeed: true,
   },
+  'video-kling-v2-6-pro-motion-control': {
+    modelGroup: 'kling-motion-control',
+    endpointKey: 'video-kling-v2-6-pro-motion-control',
+    requiredFields: ['image', 'motionVideo', 'characterOrientation'],
+    supportsSeed: false,
+  },
   'video-seedance-2-image': {
     modelGroup: 'seedance-2.0',
     endpointKey: 'video-seedance-2-image',
@@ -129,6 +135,12 @@ export function buildHostedVideoRequestDimensions(endpointKey, body) {
       referenceVideoCount > 0
         ? 'with_reference_videos'
         : 'without_reference_videos';
+  }
+
+  if (endpointKey === 'video-kling-v2-6-pro-motion-control') {
+    dimensions.motionControlMode = 'reference_motion_transfer';
+    dimensions.characterOrientation =
+      requestBody.character_orientation ?? 'image';
   }
 
   return dimensions;
@@ -468,6 +480,16 @@ function getHostedVideoModelConfig(model) {
   return config;
 }
 
+function readHostedRequiredInput(input, field) {
+  if (field === 'motionVideo') {
+    return input.motionVideo || input.motion_video || input.video || null;
+  }
+  if (field === 'characterOrientation') {
+    return input.characterOrientation || input.character_orientation || null;
+  }
+  return input?.[field] || null;
+}
+
 function normalizeArkContent(input) {
   if (Array.isArray(input.content) && input.content.length > 0) {
     return input.content.map(normalizeContentItem);
@@ -557,7 +579,7 @@ export function normalizeRenderInput(input) {
           `Hosted video model ${model} requires request.prompt or request.promptPlan.`,
         );
       }
-      if (field !== 'prompt' && !input?.[field]) {
+      if (field !== 'prompt' && !readHostedRequiredInput(input, field)) {
         throw new Error(`Hosted video model ${model} requires request.${field}.`);
       }
     }
@@ -575,11 +597,15 @@ export function normalizeRenderInput(input) {
     imageAssetId: input.imageAssetId || null,
     assetPurpose: input.assetPurpose || null,
     image: input.image || null,
+    motionVideo: input.motionVideo || input.motion_video || input.video || null,
     audio: input.audio || null,
     maskImage: input.maskImage || null,
     prompt,
+    negativePrompt: input.negativePrompt || input.negative_prompt || null,
     promptPlan: input.promptPlan || null,
     resolution: input.resolution || DEFAULT_RESOLUTION,
+    characterOrientation:
+      input.characterOrientation || input.character_orientation || null,
     ratio: input.ratio || input.aspect_ratio || input.aspectRatio || null,
     duration: Number.isInteger(input.duration) ? input.duration : null,
     frames: Number.isInteger(input.frames) ? input.frames : null,
@@ -602,6 +628,12 @@ export function normalizeRenderInput(input) {
         ? input.generate_audio
         : typeof input.generateAudio === 'boolean'
           ? input.generateAudio
+          : null,
+    keepOriginalSound:
+      typeof input.keep_original_sound === 'boolean'
+        ? input.keep_original_sound
+        : typeof input.keepOriginalSound === 'boolean'
+          ? input.keepOriginalSound
           : null,
     enableWebSearch:
       typeof input.enable_web_search === 'boolean'
@@ -783,6 +815,26 @@ export async function toProviderPayload(normalized, { paths } = {}) {
           paths,
         );
       }
+    }
+
+    return payload;
+  }
+
+  if (hostedModelConfig.modelGroup === 'kling-motion-control') {
+    const payload = {
+      image: await resolveProviderMediaInput(normalized.image, paths),
+      video: await resolveProviderMediaInput(normalized.motionVideo, paths),
+      character_orientation: normalized.characterOrientation,
+    };
+
+    if (normalized.prompt) {
+      payload.prompt = normalized.prompt;
+    }
+    if (normalized.negativePrompt) {
+      payload.negative_prompt = normalized.negativePrompt;
+    }
+    if (typeof normalized.keepOriginalSound === 'boolean') {
+      payload.keep_original_sound = normalized.keepOriginalSound;
     }
 
     return payload;

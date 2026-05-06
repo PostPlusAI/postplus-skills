@@ -104,19 +104,22 @@ Current routes:
 - `seedance` (hosted)
   - endpoint keys: `video-seedance-2-image`, `video-seedance-2-image-turbo`, `video-seedance-2-text`, `video-seedance-2-text-turbo`
   - category: text/image/reference-media to video
+- `kling-motion-control` (hosted)
+  - endpoint key: `video-kling-v2-6-pro-motion-control`
+  - category: reference image plus reference motion video to video
 - `ark`
   - direct workspace route for internal video/audio workflows
   - category: text/image/video/audio to video
 
 Not currently released:
 
-- hosted motion-control model endpoints such as camera trajectory, object
-  trajectory, or motion brush
 - structured motion-control request fields mapped to provider-native parameters
 
 Current `camera`, `shot`, and `motion` fields are prompt-planning inputs. They
-can constrain the generated prompt, but they are not a claim that the hosted
-catalog exposes native motion-control APIs.
+can constrain the generated prompt, but they do not map to provider-native
+camera trajectory, object trajectory, or motion-brush parameters. Use
+`video-kling-v2-6-pro-motion-control` only when the user has a reference image
+and a reference motion video.
 
 Read [`references/hosted-video-talking-head.md`](references/hosted-video-talking-head.md) before implementation or request design.
 Read [`references/hosted-video-generative.md`](references/hosted-video-generative.md) before designing hosted Seedance requests.
@@ -359,8 +362,9 @@ The adapter accepts `promptPlan` and turns it into one compact prompt string in 
 This is a better default than freehand adjective stacks.
 
 Do not represent `promptPlan.motion` as provider-native motion control. If the
-user asks for motion brush, trajectory control, or camera-control parameters,
-stop and say the current hosted catalog does not expose those endpoints yet.
+user asks for motion brush, object trajectory, or camera-control parameters,
+stop and say the current hosted catalog only exposes reference-motion transfer
+through `video-kling-v2-6-pro-motion-control`.
 
 ## Core Scripts
 

@@ -61,14 +61,31 @@ function buildProviderBody(request) {
     };
   }
 
+  if (modelConfig.modelGroup === "gpt-image-2") {
+    return {
+      endpointKey: modelConfig.endpointKey,
+      body: {
+        images: request.inputUrls,
+        prompt: request.prompt,
+        aspect_ratio: request.aspectRatio,
+        resolution: request.resolution,
+        quality: request.quality || "medium",
+        enable_sync_mode: request.enableSyncMode,
+        enable_base64_output: request.enableBase64Output
+      }
+    };
+  }
+
   return {
     endpointKey: modelConfig.endpointKey,
     body: {
       images: request.inputUrls,
       prompt: request.prompt,
       aspect_ratio: request.aspectRatio,
-      resolution: request.resolution,
-      enable_web_search: request.enableWebSearch,
+      resolution: modelConfig.fixedResolution || request.resolution,
+      ...(modelConfig.supportsWebSearch
+        ? { enable_web_search: request.enableWebSearch }
+        : {}),
       output_format: request.outputFormat,
       enable_sync_mode: request.enableSyncMode,
       enable_base64_output: request.enableBase64Output

@@ -63,19 +63,20 @@ Do not assume one client's reports are the default source basis for all image wo
 
 Current hosted image endpoint keys:
 
+- `image-gpt-image-2-text`
+- `image-gpt-image-2-edit`
 - `image-nano-banana-2-text`
 - `image-nano-banana-2-edit`
+- `image-nano-banana-pro-text-1k`
+- `image-nano-banana-pro-text-2k`
+- `image-nano-banana-pro-text-4k`
+- `image-nano-banana-pro-edit-1k`
+- `image-nano-banana-pro-edit-2k`
+- `image-nano-banana-pro-edit-4k`
 - `image-seedream-v5-lite-text`
 - `image-seedream-v5-lite-edit`
 - `image-seedream-v5-lite-sequential`
 - `image-seedream-v5-lite-edit-sequential`
-
-Not currently released:
-
-- GPT Image 2 endpoints are blocked until the hosted `media-generation` catalog
-  exposes `image-gpt-image-2-text` and `image-gpt-image-2-edit`.
-- Nano Banana Pro multi-resolution endpoints are blocked until the hosted
-  catalog splits the billable endpoint keys by resolution.
 
 Read [`references/hosted-image-models.md`](references/hosted-image-models.md) for endpoint request notes.
 
@@ -261,8 +262,9 @@ Model selection rule:
 - use Seedream sequential variants when cross-shot identity consistency matters more than single-image iteration speed
 - for Seedream models, prefer explicit `size`
 - for sequential Seedream models, set `maxImages` to the intended number of outputs
-- do not set `request.model` to GPT Image 2 or Nano Banana Pro endpoint keys
-  until those keys are present in the hosted catalog and `skills/registry.json`
+- for GPT Image 2, set `quality` explicitly to `low`, `medium`, or `high`
+- for Nano Banana Pro, choose the endpoint key with the intended billable
+  resolution instead of relying on runtime resolution switching
 
 ## Review Rule
 
