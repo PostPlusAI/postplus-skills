@@ -14,6 +14,7 @@ Use this skill when references exist and the boundary between inspiration and co
 This skill is for:
 
 - writing clean reference policies
+- binding user-provided identity references explicitly
 - preventing identity copying
 - deciding which references to exclude from early tests
 - making later failure analysis easier
@@ -24,9 +25,15 @@ This skill is not for decoding the hook itself.
 
 Every reference set should answer three questions:
 
-1. what may the model learn?
-2. what must not be copied?
+1. what references are binding identity and should stay consistent?
+2. what references are inspiration-only and therefore must not be copied?
 3. what references are intentionally not being used yet?
+
+Default assumption:
+
+Unless the user explicitly says a reference is loose, inspirational, benchmark
+only, or weak guidance, treat provided persona, product, and audio references
+as strong bindings for identity consistency.
 
 ## Method
 
@@ -56,10 +63,23 @@ Examples:
 
 The purpose decides what references should stay out.
 
+It also decides whether a reference should be treated as:
+
+- `binding`
+- `inspiration-only`
+- `excluded for now`
+
 ### 3. Print the contract before the final prompt
 
 Do not bury the contract inside prose.
 
+Do not force all references into `learn from`.
+
+If a user supplied a character, product, or voice reference for consistency,
+print it as a binding, not as a loose style lesson.
+
 ## Failure Mode
 
-If the prompt uses references but does not say what is intentionally excluded, the contract is incomplete.
+If the prompt uses references but does not say which ones are binding, which
+ones are inspiration-only, and what is intentionally excluded, the contract is
+incomplete.

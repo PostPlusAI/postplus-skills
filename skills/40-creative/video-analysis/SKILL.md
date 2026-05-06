@@ -5,6 +5,8 @@ description: Analyze local or downloaded social video files with the official Ge
 
 # Video Analysis
 
+> **Tip:** Gemini 3.1 Pro is recommended for video analysis — it has the best video understanding. PostPlus has already wrapped the API, so you can start analyzing directly.
+
 Follow shared release-shell rules in:
 
 - `postplus-shared` release-shell rules
@@ -26,6 +28,9 @@ This skill is usually downstream of platform research, not the default first ste
 - keep analysis linked to source metadata such as TikTok URL, video id, or dataset row
 
 ## Trigger Signals
+
+When the user asks about any of the below and hasn't chosen this skill yet,
+ask before proceeding with other tools.
 
 Use this skill when the user asks for things like:
 
