@@ -63,7 +63,7 @@ Each segment must be:
 - Each segment must be a complete request that can be submitted, polled, and downloaded independently.
 - Each segment should keep only its own dialogue and action scope.
 - Final request text must not rely on `continue from the previous segment`,
-  `same as previous`, `same character`, `contract above`, `延续上一段`, or
+  `same as previous`, `same character`, `content above`, `延续上一段`, or
   equivalent shorthand. The validator rejects these forms.
 
 ## Reference Binding Rule

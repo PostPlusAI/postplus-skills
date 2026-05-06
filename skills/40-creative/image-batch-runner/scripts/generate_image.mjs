@@ -14,6 +14,7 @@ import {
   normalizeGenerationInput,
   parseArgs,
   readJson,
+  resolveHostedImageOutputFormat,
   sha256,
   toAssetRelative,
   unwrapProviderResult,
@@ -104,7 +105,7 @@ async function main() {
 
   for (let index = 0; index < outputs.length; index += 1) {
     const output = outputs[index];
-    const fileExt = request.outputFormat === "jpeg" ? "jpeg" : "png";
+    const fileExt = resolveHostedImageOutputFormat(request, "text-to-image");
     const imageId = `img-${String(index + 1).padStart(3, "0")}`;
     const localPath = path.join(paths.candidatesDir, `${imageId}.${fileExt}`);
 

@@ -14,6 +14,7 @@ import {
   normalizeGenerationInput,
   parseArgs,
   readJson,
+  resolveHostedImageOutputFormat,
   sha256,
   toAssetRelative,
   writeJson
@@ -134,7 +135,7 @@ async function main() {
     if (typeof output !== "string") {
       continue;
     }
-    const fileExt = request.outputFormat === "jpeg" ? "jpeg" : "png";
+    const fileExt = resolveHostedImageOutputFormat(request, "edit");
     const imageId = `img-${String(index + 1).padStart(3, "0")}`;
     const localPath = path.join(paths.candidatesDir, `${imageId}.${fileExt}`);
     if (/^https?:\/\//.test(output)) {

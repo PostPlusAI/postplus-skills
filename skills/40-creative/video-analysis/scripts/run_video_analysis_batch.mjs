@@ -238,6 +238,13 @@ export async function analyzeOne({ item, model, outputDir, dependencies = {} }) 
     const uploadResult = await (
       dependencies.uploadHostedMediaFileReference ?? uploadHostedMediaFileReference
     )(absoluteFilePath, mimeType);
+
+    if (!uploadResult?.storageReference) {
+      throw new Error(
+        `upload_failed: no storage reference returned for ${item.sourceId}`,
+      );
+    }
+
     storageReference = uploadResult.storageReference;
     payload = toGeminiFileReferencePayload({
       prompt,

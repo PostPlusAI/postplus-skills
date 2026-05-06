@@ -66,7 +66,7 @@
 - Each segment should still be usable as a standalone clip, not just as a middle fragment.
 - Final request text must not depend on previous-segment memory through
   shorthand such as `continue from the previous segment`, `same as previous`,
-  `same character`, `contract above`, or `延续上一段`.
+  `same character`, `content above`, or `延续上一段`.
 
 ## User Output Preference
 

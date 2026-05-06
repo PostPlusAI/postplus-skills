@@ -144,21 +144,20 @@ export async function uploadHostedMediaFileReference(
     throw new Error(`Hosted media upload source is not a file: ${absolutePath}`);
   }
 
+  const fileBuffer = fs.readFileSync(absolutePath);
   const uploadRequest = await runHostedCapabilityRequest({
     capability: 'media-file',
     operation: 'create-upload-url',
     file: {
       mimeType,
       name: path.basename(absolutePath),
-      sizeBytes: stat.size,
+      sizeBytes: fileBuffer.length,
     },
   });
   const signedUpload = readSignedUpload(uploadRequest);
   const storageReference = readStorageReference(uploadRequest);
-  const fileBuffer = fs.readFileSync(absolutePath);
 
   await requestBytes(signedUpload.url, {
-    allowHttp: true,
     body: fileBuffer,
     codePrefix: 'hosted_media_upload',
     headers: signedUpload.requiredHeaders,
@@ -220,7 +219,11 @@ function readRecord(value, key) {
   const record = key ? value?.[key] : value;
 
   if (!record || typeof record !== 'object' || Array.isArray(record)) {
-    throw new Error(`Hosted media upload response is missing ${key}.`);
+    throw new Error(
+      key
+        ? `Hosted media upload response is missing ${key}.`
+        : 'Hosted media upload response must be a record.',
+    );
   }
 
   return record;

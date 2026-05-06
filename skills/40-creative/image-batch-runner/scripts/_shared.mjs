@@ -332,6 +332,16 @@ export function getHostedImageModelConfig(model, operation) {
   };
 }
 
+export function resolveHostedImageOutputFormat(request, operation) {
+  const modelConfig = getHostedImageModelConfig(request.model, operation);
+
+  if (modelConfig.modelGroup === 'gpt-image-2') {
+    return 'png';
+  }
+
+  return request.outputFormat === 'jpeg' ? 'jpeg' : 'png';
+}
+
 function parseExplicitSize(value) {
   if (typeof value !== 'string') {
     return null;
