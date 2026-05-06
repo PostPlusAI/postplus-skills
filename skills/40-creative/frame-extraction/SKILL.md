@@ -166,6 +166,16 @@ Typical scope choices:
 - final 3-5 seconds
 - manually specified timestamp range
 
+Long-video boundary:
+
+- if a source video is longer than 5 minutes, do not run broad full-video
+  extraction by default
+- first cap the run to the smallest useful scope and a maximum frame budget
+  such as 60 selected frames
+- tell the user: "这个视频超过 5 分钟，我会先按目标范围抽有限数量的关键帧，避免生成几千张不可用图片。"
+- only expand the scope after the first manifest proves the extraction mode is
+  useful
+
 ### 4. Package outputs
 
 Match the packaging to the downstream task:

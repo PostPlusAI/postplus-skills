@@ -56,7 +56,7 @@ This file defines the intended structure for human review records in the first v
     "voice",
     "render"
   ],
-  "rerunTarget": "voice"
+  "rerunTarget": "voice-batch-runner"
 }
 ```
 
@@ -66,6 +66,8 @@ This file defines the intended structure for human review records in the first v
 - `verdict` should be one of `approved`, `revise`, `reject`
 - `status` should distinguish draft notes from final confirmed review if needed
 - `scores` are optional and should never replace `goodReasons` and `badReasons`
+- `rerunTarget` should name the original rerunnable skill, not a vague stage
+  label
 - if no person has reviewed the asset yet, do not fabricate a completed QA report
 
 ## 4. Rerun priority for realism issues

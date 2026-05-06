@@ -35,6 +35,10 @@ Do not submit one oversized request and hope the model compresses it.
 
 Create `segment-01`, `segment-02`, and later request records instead.
 
+Tell the user:
+
+- "Seedance 2.0 只能稳定处理短窗口。我会先把这条脚本拆成独立 segment，逐段提交、轮询、下载；最后交付每段 render 路径和 prediction id。"
+
 Each segment must be:
 
 - independently submit-ready

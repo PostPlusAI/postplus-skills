@@ -241,6 +241,7 @@ export function normalizeGenerationInput(input, mode) {
     negativePrompt: input.negativePrompt || null,
     aspectRatio: input.aspectRatio || DEFAULT_ASPECT_RATIO,
     resolution: input.resolution || DEFAULT_RESOLUTION,
+    quality: input.quality || null,
     size: input.size || null,
     maxImages: Number.isInteger(input.maxImages) ? input.maxImages : null,
     outputFormat: input.outputFormat || DEFAULT_OUTPUT_FORMAT,

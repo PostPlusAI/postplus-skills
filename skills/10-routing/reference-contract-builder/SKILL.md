@@ -83,3 +83,7 @@ print it as a binding, not as a loose style lesson.
 If the prompt uses references but does not say which ones are binding, which
 ones are inspiration-only, and what is intentionally excluded, the contract is
 incomplete.
+
+Ask this when the boundary is missing:
+
+- "哪些是必须保留的品牌特征，哪些只是参考灵感？"

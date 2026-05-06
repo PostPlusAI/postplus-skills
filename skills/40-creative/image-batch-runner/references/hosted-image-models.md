@@ -106,6 +106,19 @@ Defaulting rule:
 - if a Seedream request omits `size`, the adapter infers one from `aspectRatio` when possible
 - if a Nano Banana request omits `resolution`, the adapter uses the default release-shell setting
 
+## Blocked Endpoint Candidates
+
+These endpoint families are not part of the current released runner or registry
+support claims:
+
+- `image-gpt-image-2-text`
+- `image-gpt-image-2-edit`
+- Nano Banana Pro endpoint keys split by `1k`, `2k`, and `4k`
+
+Unblock these only after the hosted `media-generation` catalog and billing
+metadata expose the exact endpoint keys and `skills/registry.json` lists them
+for `image-batch-runner`.
+
 ## Upload Requirement
 
 Edit-style jobs still require uploaded image URLs.

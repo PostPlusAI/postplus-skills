@@ -3,10 +3,23 @@
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 import {
   formatCliError,
 } from "../_postplus_shared/00-core/shared-runtime/scripts/lib/network_runtime.mjs";
-import { runHostedCapabilityRequest } from "../_postplus_shared/00-core/shared-runtime/scripts/lib/hosted_capability_bridge.mjs";
+import {
+  HOSTED_CAPABILITY_JSON_PAYLOAD_BYTE_LIMIT,
+  runHostedCapabilityRequest,
+} from "../_postplus_shared/00-core/shared-runtime/scripts/lib/hosted_capability_bridge.mjs";
+import { uploadHostedMediaFileReference } from "../_postplus_shared/00-core/shared-runtime/scripts/lib/hosted_media_generation_bridge.mjs";
+
+const INLINE_VIDEO_ENVELOPE_OVERHEAD_BYTES = 64 * 1024;
+export const INLINE_VIDEO_BYTE_LIMIT = Math.floor(
+  ((HOSTED_CAPABILITY_JSON_PAYLOAD_BYTE_LIMIT -
+    INLINE_VIDEO_ENVELOPE_OVERHEAD_BYTES) *
+    3) /
+    4,
+);
 
 function parseArgs(argv) {
   const args = {};
@@ -39,6 +52,24 @@ function formatSeconds(totalSeconds) {
   const minutes = Math.floor(seconds / 60);
   const remain = seconds % 60;
   return `${String(minutes).padStart(2, "0")}:${String(remain).padStart(2, "0")}`;
+}
+
+function inferMimeTypeFromPath(filePath) {
+  const extension = path.extname(filePath).toLowerCase();
+  if (extension === ".mp4" || extension === ".m4v") return "video/mp4";
+  if (extension === ".mov") return "video/quicktime";
+  if (extension === ".webm") return "video/webm";
+  throw new Error(
+    `unsupported_video_format: ${path.basename(filePath)} is not a supported video-analysis format. Supported formats: .mp4, .m4v, .mov, .webm.`,
+  );
+}
+
+export function selectVideoInputMode(fileSizeBytes) {
+  if (!Number.isFinite(fileSizeBytes) || fileSizeBytes < 0) {
+    throw new Error("video_file_size_invalid: file size must be a non-negative number.");
+  }
+
+  return fileSizeBytes <= INLINE_VIDEO_BYTE_LIMIT ? "inline" : "file_reference";
 }
 
 function detectVideoDurationSeconds(filePath) {
@@ -137,7 +168,7 @@ function buildEstimatedUsage({ prompt, videoSeconds }) {
   };
 }
 
-function toGeminiPayload({ prompt, mimeType, base64Data }) {
+export function toGeminiInlinePayload({ prompt, mimeType, base64Data }) {
   return {
     contents: [
       {
@@ -160,6 +191,26 @@ function toGeminiPayload({ prompt, mimeType, base64Data }) {
   };
 }
 
+export function toGeminiFileReferencePayload({ prompt, storageReference }) {
+  return {
+    contents: [
+      {
+        role: "user",
+        parts: [
+          { text: prompt },
+          {
+            file_reference: storageReference,
+          },
+        ],
+      },
+    ],
+    generationConfig: {
+      temperature: 0.2,
+      responseMimeType: "application/json",
+    },
+  };
+}
+
 function extractTextResponse(payload) {
   return (
     payload?.candidates?.[0]?.content?.parts
@@ -169,23 +220,41 @@ function extractTextResponse(payload) {
   );
 }
 
-async function analyzeOne({ item, model, outputDir }) {
-  const fileBuffer = fs.readFileSync(item.filePath);
-  const base64Data = fileBuffer.toString("base64");
+export async function analyzeOne({ item, model, outputDir, dependencies = {} }) {
+  const absoluteFilePath = path.resolve(item.filePath);
+  const stat = fs.statSync(absoluteFilePath);
+  const mimeType = inferMimeTypeFromPath(item.filePath);
   const prompt = buildPrompt(item.sourceUrl);
   const estimatedVideoSeconds =
-    detectVideoDurationSeconds(item.filePath) ??
+    (dependencies.detectVideoDurationSeconds ?? detectVideoDurationSeconds)(item.filePath) ??
     (typeof item.durationSeconds === "number" && Number.isFinite(item.durationSeconds)
       ? Math.ceil(item.durationSeconds)
       : 60);
-  const payload = toGeminiPayload({
-    prompt,
-    mimeType: "video/mp4",
-    base64Data,
-  });
+  const inputMode = selectVideoInputMode(stat.size);
+  let storageReference = null;
+  let payload;
+
+  if (inputMode === "file_reference") {
+    const uploadResult = await (
+      dependencies.uploadHostedMediaFileReference ?? uploadHostedMediaFileReference
+    )(absoluteFilePath, mimeType);
+    storageReference = uploadResult.storageReference;
+    payload = toGeminiFileReferencePayload({
+      prompt,
+      storageReference,
+    });
+  } else {
+    const fileBuffer = fs.readFileSync(absoluteFilePath);
+    const base64Data = fileBuffer.toString("base64");
+    payload = toGeminiInlinePayload({
+      prompt,
+      mimeType,
+      base64Data,
+    });
+  }
 
   const startedAt = new Date().toISOString();
-  const raw = await runHostedCapabilityRequest({
+  const raw = await (dependencies.runHostedCapabilityRequest ?? runHostedCapabilityRequest)({
     capability: "video-analysis",
     operation: "analyze",
     modelKey: "gemini-video-analysis",
@@ -244,7 +313,9 @@ async function analyzeOne({ item, model, outputDir }) {
     },
     gemini: {
       model,
-      inputMode: "inline",
+      inputMode,
+      inlineByteLimit: INLINE_VIDEO_BYTE_LIMIT,
+      ...(storageReference ? { storageReference } : {}),
       analyzedAt: startedAt,
     },
     result: normalized,
@@ -313,7 +384,9 @@ async function main() {
   }
 }
 
-main().catch((error) => {
-  console.error(formatCliError(error));
-  process.exitCode = 1;
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((error) => {
+    console.error(formatCliError(error));
+    process.exitCode = 1;
+  });
+}

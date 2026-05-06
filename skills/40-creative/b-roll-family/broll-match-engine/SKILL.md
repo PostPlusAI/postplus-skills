@@ -181,6 +181,9 @@ node ${CLAUDE_SKILL_DIR}/scripts/run_match_broll_plan.mjs \
   broader edit planning
 - if required upstream inputs are missing or invalid, stop immediately instead
   of switching to ad hoc shell glue
+- before matching, verify transcript beats include timestamps and catalog
+  candidates include `semanticTags`; if either is missing, report the missing
+  field directly instead of guessing matches
 
 ## Output Standard
 

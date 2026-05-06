@@ -108,6 +108,16 @@ Current routes:
   - direct workspace route for internal video/audio workflows
   - category: text/image/video/audio to video
 
+Not currently released:
+
+- hosted motion-control model endpoints such as camera trajectory, object
+  trajectory, or motion brush
+- structured motion-control request fields mapped to provider-native parameters
+
+Current `camera`, `shot`, and `motion` fields are prompt-planning inputs. They
+can constrain the generated prompt, but they are not a claim that the hosted
+catalog exposes native motion-control APIs.
+
 Read [`references/hosted-video-talking-head.md`](references/hosted-video-talking-head.md) before implementation or request design.
 Read [`references/hosted-video-generative.md`](references/hosted-video-generative.md) before designing hosted Seedance requests.
 Read [`references/volcengine-seedance-2.md`](references/volcengine-seedance-2.md) before designing Seedance requests.
@@ -198,6 +208,10 @@ Before calling any provider, write down:
 - `mustKeep`
 - `canVary`
 - `feedback`
+
+Tell the user:
+
+- "我会先锁定 video-batch-runner 的 render brief 和 request JSON，输出本地 render manifest；完成后可以交给 creative-qa、subtitle-packager 或 social-media-publisher。"
 
 ### 2. Produce a normalized request record
 
@@ -343,6 +357,10 @@ The adapter accepts `promptPlan` and turns it into one compact prompt string in 
 - reference bindings such as `[图1]...，[图2]...`
 
 This is a better default than freehand adjective stacks.
+
+Do not represent `promptPlan.motion` as provider-native motion control. If the
+user asks for motion brush, trajectory control, or camera-control parameters,
+stop and say the current hosted catalog does not expose those endpoints yet.
 
 ## Core Scripts
 

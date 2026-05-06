@@ -37,6 +37,9 @@ Read these references before implementation:
 4. rank accounts by audience size, engagement proxy, posting cadence, and relevance
 5. return a shortlist plus account notes
 
+Run profile and post collection serially. Do not fire both broad actor paths at
+once; the profile result should decide which accounts deserve post collection.
+
 ## Cost Discipline
 
 Start with:

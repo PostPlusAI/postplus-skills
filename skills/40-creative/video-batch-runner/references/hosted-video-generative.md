@@ -13,6 +13,17 @@ user-facing credential setup.
 - `video-seedance-2-text`
 - `video-seedance-2-text-turbo`
 
+## Unsupported Motion-Control Paths
+
+The current hosted generative video catalog does not expose native
+motion-control endpoints for camera trajectory, object trajectory, or motion
+brush.
+
+Local fields such as `promptPlan.motion`, `camera`, or `camera_fixed` are
+planning and prompt-mapping fields only. Do not claim they map to provider
+native motion-control parameters until the hosted catalog adds explicit endpoint
+keys and billing metadata for that capability.
+
 ## Request Mapping
 
 Common fields:

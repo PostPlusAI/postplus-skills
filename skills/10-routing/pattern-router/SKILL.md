@@ -104,4 +104,8 @@ Stop and say the routing is under-specified if the brief does not provide enough
 - whether the product can appear in the opening
 - whether references exist
 
+Ask this when the missing piece is the segment type:
+
+- "这个片段是 hook、benefit 还是 CTA？"
+
 Do not let later skills guess the structure from vague taste words alone.

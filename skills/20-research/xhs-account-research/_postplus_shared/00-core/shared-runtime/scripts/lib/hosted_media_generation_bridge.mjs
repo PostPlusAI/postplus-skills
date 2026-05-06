@@ -6,6 +6,7 @@ import {
   runHostedCapabilityEnvelopeRequest,
   runHostedCapabilityRequest,
 } from './hosted_capability_bridge.mjs';
+import { requestBytes } from './network_runtime.mjs';
 
 export async function requestHostedMediaGenerationJson(
   endpointKey,
@@ -132,6 +133,45 @@ export async function uploadHostedMediaFile(
   });
 }
 
+export async function uploadHostedMediaFileReference(
+  localFilePath,
+  mimeType = 'application/octet-stream',
+) {
+  const absolutePath = path.resolve(localFilePath);
+  const stat = fs.statSync(absolutePath);
+
+  if (!stat.isFile()) {
+    throw new Error(`Hosted media upload source is not a file: ${absolutePath}`);
+  }
+
+  const uploadRequest = await runHostedCapabilityRequest({
+    capability: 'media-file',
+    operation: 'create-upload-url',
+    file: {
+      mimeType,
+      name: path.basename(absolutePath),
+      sizeBytes: stat.size,
+    },
+  });
+  const signedUpload = readSignedUpload(uploadRequest);
+  const storageReference = readStorageReference(uploadRequest);
+  const fileBuffer = fs.readFileSync(absolutePath);
+
+  await requestBytes(signedUpload.url, {
+    allowHttp: true,
+    body: fileBuffer,
+    codePrefix: 'hosted_media_upload',
+    headers: signedUpload.requiredHeaders,
+    method: signedUpload.method,
+    providerName: 'Hosted media signed upload',
+  });
+
+  return {
+    signedUpload,
+    storageReference,
+  };
+}
+
 export async function downloadHostedMediaFile(url, outputPath) {
   const result = await runHostedCapabilityRequest({
     capability: 'media-file',
@@ -144,5 +184,94 @@ export async function downloadHostedMediaFile(url, outputPath) {
   fs.writeFileSync(
     absoluteOutputPath,
     Buffer.from(String(result.contentBase64 || ''), 'base64'),
+  );
+}
+
+function readSignedUpload(value) {
+  const signedUpload = readRecord(value, 'signedUpload');
+  const method = readString(signedUpload, 'method');
+
+  if (method !== 'PUT') {
+    throw new Error(`Unsupported hosted media signed upload method: ${method}`);
+  }
+
+  return {
+    expiresInSeconds: readNumber(signedUpload, 'expiresInSeconds'),
+    method,
+    requiredHeaders: readStringRecord(signedUpload, 'requiredHeaders'),
+    token: readString(signedUpload, 'token'),
+    url: readString(signedUpload, 'url'),
+  };
+}
+
+function readStorageReference(value) {
+  const storageReference = readRecord(value, 'storageReference');
+
+  return {
+    bucket: readString(storageReference, 'bucket'),
+    mimeType: readString(storageReference, 'mimeType'),
+    name: readString(storageReference, 'name'),
+    sizeBytes: readOptionalNumber(storageReference, 'sizeBytes'),
+    storagePath: readString(storageReference, 'storagePath'),
+  };
+}
+
+function readRecord(value, key) {
+  const record = key ? value?.[key] : value;
+
+  if (!record || typeof record !== 'object' || Array.isArray(record)) {
+    throw new Error(`Hosted media upload response is missing ${key}.`);
+  }
+
+  return record;
+}
+
+function readString(value, key) {
+  const raw = value?.[key];
+
+  if (typeof raw !== 'string' || !raw.trim()) {
+    throw new Error(`Hosted media upload response ${key} must be a string.`);
+  }
+
+  return raw.trim();
+}
+
+function readNumber(value, key) {
+  const raw = value?.[key];
+
+  if (typeof raw !== 'number' || !Number.isFinite(raw)) {
+    throw new Error(`Hosted media upload response ${key} must be a number.`);
+  }
+
+  return raw;
+}
+
+function readOptionalNumber(value, key) {
+  const raw = value?.[key];
+
+  if (raw === undefined || raw === null) {
+    return null;
+  }
+
+  if (typeof raw !== 'number' || !Number.isFinite(raw)) {
+    throw new Error(`Hosted media upload response ${key} must be a number.`);
+  }
+
+  return raw;
+}
+
+function readStringRecord(value, key) {
+  const record = readRecord(value, key);
+
+  return Object.fromEntries(
+    Object.entries(record).map(([entryKey, entryValue]) => {
+      if (typeof entryValue !== 'string') {
+        throw new Error(
+          `Hosted media upload response ${key}.${entryKey} must be a string.`,
+        );
+      }
+
+      return [entryKey, entryValue];
+    }),
   );
 }

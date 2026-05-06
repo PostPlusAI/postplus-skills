@@ -62,6 +62,10 @@ Prefer:
 - URL input when URLs are known
 - ASIN input for review work
 
+Tell the user:
+
+- "我会先用少量关键词或 ASIN 做第一轮 Amazon 采集，输出排名表、详情表、评论摘要或榜单；如果信号够强，再交给 sourcing-selection 做跨证据判断。"
+
 ## Release-Shell Execution Contract
 
 - keep request files, raw datasets, normalized datasets, and analysis caches

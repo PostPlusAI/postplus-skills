@@ -73,6 +73,10 @@ If the approved script is longer than one model-supported generation window, do 
 
 For Seedance 2.0 work, any script longer than 15 seconds must be converted into a multi-segment plan before provider mapping.
 
+Tell the user:
+
+- "脚本超过 15 秒了，我会先自动切成可独立生成的短 segment，再分别写 provider-ready request，这样比把整段塞进一次生成更稳定。"
+
 Each segment must:
 
 - stay within 15 seconds
