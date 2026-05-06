@@ -5,7 +5,7 @@ PostPlus Skills is the released local skill catalog for PostPlus.
 ## Install
 
 ```bash
-npm install -g @postplus/cli
+npm install -g @postplus/cli@latest
 postplus auth login
 npx -y skills add PostPlusAI/postplus-skills --global --full-depth --skill '*' --agent claude-code codex cursor github-copilot windsurf trae trae-cn --yes
 ```

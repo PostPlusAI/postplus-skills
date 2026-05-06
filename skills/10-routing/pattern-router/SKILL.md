@@ -20,6 +20,8 @@ This skill is for:
 
 This skill is not for writing the final storyboard or provider request.
 
+When the segment is `hook`, this skill should route the segment and opening job, then hand off mechanism selection to `hook-design`.
+
 ## Core Rule
 
 Do not begin from adjective stacks like "premium", "viral", or "cinematic".
@@ -65,13 +67,15 @@ Support pattern:
 Viewer question:
 Opening mechanism:
 Product reveal rule:
+Need explicit hook mechanism:
 Why this route fits:
 ```
 
-This block is the handoff to `reference-decode`, `storyboard-grid-writer`, or `video-request-architect`.
+This block is the handoff to `hook-design`, `reference-decode`, `storyboard-grid-writer`, or `video-request-architect`.
 
 ### 4. Choose the next skill
 
+- If the segment is `hook` and the stop-scroll mechanism still needs to be chosen, hand off to `hook-design`
 - If references exist and need decoding, hand off to `reference-decode`
 - If the target is a storyboard grid or beat sheet, hand off to `storyboard-grid-writer`
 - If the target is a provider-ready request, hand off to `video-request-architect`
@@ -84,6 +88,12 @@ This block is the handoff to `reference-decode`, `storyboard-grid-writer`, or `v
 - `creator`: optimize for believable human delivery and social-native behavior
 - `lifestyle`: optimize for desirability first, explanation second
 - `testimonial`: optimize for proof plus human specificity
+
+For `hook` segments:
+
+- this skill decides segment route and opening job
+- `hook-design` decides the dominant hook mechanism and downstream handoff
+- do not let multiple downstream skills guess the hook mechanism independently
 
 ## Failure Mode
 

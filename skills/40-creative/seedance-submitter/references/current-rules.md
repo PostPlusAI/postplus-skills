@@ -8,11 +8,13 @@
 
 ## Model And Duration
 
+- If the user says `sd2`, interpret it as Seedance 2.0 unless they explicitly name another model.
 - Default hosted endpoint group: `video-seedance-2-*`.
 - Use `video-seedance-2-text` when reference images are conditioning references, not first-frame image-to-video inputs.
 - Use `ratio: "9:16"` unless the user specifies otherwise.
 - Supported duration values: `5`, `10`, or `15` seconds.
 - If user timing is not exactly supported, map to the nearest viable segment structure without breaking action continuity.
+- If the approved script exceeds 15 seconds, splitting is mandatory before submission.
 
 ## Dialogue And Audio
 
@@ -32,6 +34,9 @@
 - Use `promptPlan.referenceMap` to explain each image:
   - storyboard image: character, shot order, camera, motion flow
   - product images: product shape, color, packaging, texture, component details
+- If planning notes use handles such as `@storyboard`, `@product-detail`, or `@ref-video-1`, convert them into explicit bindings before submission.
+- Do not say only `use the attached references`.
+- In the final prompt, prefer explicit bindings such as `[图1]`, `[图2]`, and `[视频1]` plus role descriptions.
 - Always include `字幕`, `屏幕文字`, and `水印` in `promptPlan.mustAvoid` unless the user explicitly wants on-screen text.
 
 ## PromptPlan Mapping
@@ -55,6 +60,7 @@
 - Shared references can be reused across segments.
 - Each segment must include only its own `promptPlan.action` and dialogue.
 - Each segment must be independently submit-ready.
+- Each segment should still be usable as a standalone clip, not just as a middle fragment.
 
 ## User Output Preference
 
