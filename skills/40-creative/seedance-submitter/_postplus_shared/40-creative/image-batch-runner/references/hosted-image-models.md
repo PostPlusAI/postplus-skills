@@ -1,6 +1,6 @@
 # Hosted Image Model Notes
 
-This file records the hosted image capability model assumptions for the released shell.
+This file records the PostPlus Cloud image service model assumptions for the public skill surface.
 
 ## Supported Endpoint Keys
 
@@ -80,7 +80,7 @@ Workspace fit:
 
 ## Model Selection In Normalized Requests
 
-The released shell keeps one normalized request shape and maps endpoint-specific fields server-side.
+The public skill surface keeps one normalized request shape and maps endpoint-specific fields server-side.
 
 Shared fields:
 
@@ -104,7 +104,7 @@ Seedream oriented fields:
 Defaulting rule:
 
 - if a Seedream request omits `size`, the adapter infers one from `aspectRatio` when possible
-- if a Nano Banana request omits `resolution`, the adapter uses the default release-shell setting
+- if a Nano Banana request omits `resolution`, the adapter uses the default public skill setting
 
 ## GPT Image 2
 
@@ -160,4 +160,4 @@ Supported hosted image models all expose the same result pattern:
 - `created_at`
 - `has_nsfw_contents`
 
-The released shell persists raw hosted responses and normalizes downloaded files into local manifests.
+The public skill surface persists raw hosted responses and normalizes downloaded files into local manifests.

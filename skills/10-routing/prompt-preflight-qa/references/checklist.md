@@ -82,7 +82,7 @@ If this is unclear, later failure analysis becomes weak.
 Reference-binding warning:
 
 - `use the attached references` is too vague
-- prefer explicit bindings such as `[图1] controls shot order` or `[视频1] controls pacing`
+- prefer explicit bindings such as `[image 1] controls shot order` or `[video 1] controls pacing`
 
 ## 7. Realism / Native Feel
 

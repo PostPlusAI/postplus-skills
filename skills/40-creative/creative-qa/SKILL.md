@@ -5,9 +5,9 @@ description: Record human-in-the-loop quality judgments for generated images, vo
 
 # Creative QA
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill after a human has actually reviewed an asset.
 
@@ -96,7 +96,7 @@ This skill should support human review records for:
 
 Store QA next to the asset being reviewed.
 
-In the released product shell:
+In the released PostPlus runtime:
 
 - keep draft QA notes or intermediate review payloads under
   `<work-folder>/.postplus/creative-qa/`

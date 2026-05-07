@@ -5,9 +5,9 @@ description: Extract useful frames from local video files based on task intent, 
 
 # Frame Extraction
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill when the user needs frames, not just a text analysis of the video.
 
@@ -35,14 +35,14 @@ Use `skills/40-creative/video-analysis` before or alongside this skill when shot
 
 Use this skill when the user asks for things like:
 
-- 抽帧
-- 截关键帧
-- 做 contact sheet
-- 看人物长相 / vibe
-- 看产品怎么露出
-- 看 UI 怎么展示
-- 抓开头 / 结尾 / CTA 画面
-- 从视频里挑一些可做参考的画面
+- extract frames
+- capture key frames
+- make a contact sheet
+- inspect character appearance / vibe
+- inspect product exposure
+- inspect UI presentation
+- capture opening / ending / CTA frames
+- pick usable reference frames from a video
 
 Do not use this skill when the user only wants:
 
@@ -137,7 +137,7 @@ Classify the ask into one of these buckets:
 
 If the request is ambiguous, ask one short question:
 
-- 你这次抽帧主要是为了看人物、人设 vibe，还是看产品 / UI / 镜头结构？
+- Are you extracting frames mainly to inspect character/persona vibe, or product / UI / shot structure?
 
 ### 2. Select mode
 
@@ -170,9 +170,13 @@ Long-video boundary:
 
 - if a source video is longer than 5 minutes, do not run broad full-video
   extraction by default
-- first cap the run to the smallest useful scope and a maximum frame budget
-  such as 60 selected frames
-- tell the user: "这个视频超过 5 分钟，我会先按目标范围抽有限数量的关键帧，避免生成几千张不可用图片。"
+- derive duration before extraction, usually with `ffprobe`
+- run `scripts/plan_frame_extraction.mjs` before extracting frames
+- for videos above 5 minutes, the preflight plan caps the first pass to a
+  maximum frame budget of 60 selected frames
+- tell the user: "This video is longer than 5 minutes, so I will extract a limited number of key frames based on the target range to avoid generating thousands of unusable images."
+- if the extraction command cannot express the target range and frame budget,
+  stop before extraction instead of generating an unbounded frame dump
 - only expand the scope after the first manifest proves the extraction mode is
   useful
 
@@ -185,7 +189,7 @@ Match the packaging to the downstream task:
 - product review -> product-visible frames + proof notes
 - UI study -> readable UI frames + OCR or text notes if needed
 
-## Release-Shell Execution Contract
+## Public Skill Execution Contract
 
 - keep extraction requests, frame manifests, contact-sheet build inputs, and
   other intermediate state under `<work-folder>/.postplus/frame-extraction/`
@@ -196,6 +200,10 @@ Match the packaging to the downstream task:
   Bootstrap Rule before extraction
 - if local dependency bootstrap fails, stop immediately instead of switching to
   ad hoc shell glue
+
+## Scripts
+
+- `scripts/plan_frame_extraction.mjs`
 
 ## Default Sequence
 

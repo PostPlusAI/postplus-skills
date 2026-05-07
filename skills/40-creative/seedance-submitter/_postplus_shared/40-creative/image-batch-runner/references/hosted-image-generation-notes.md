@@ -1,6 +1,6 @@
 # Hosted Image Generation Notes
 
-This file records the first-version hosted image generation assumptions for the released shell.
+This file records the first-version hosted image generation assumptions for the public skill surface.
 
 ## Intended Use In The Released Shell
 
@@ -18,10 +18,10 @@ Use `edit` for:
 
 ## Integration Assumptions
 
-- product-shell calls should go through the hosted capability bridge
+- PostPlus runtime calls should go through the PostPlus Cloud service
 - responses are stored locally as raw JSON
 - final image files are also stored locally
-- the released shell keeps a normalized manifest independent of hosted response shape
+- the public skill surface keeps a normalized manifest independent of hosted response shape
 
 ## Quality Guideline
 
@@ -101,7 +101,7 @@ Interpretation for first-version adapter design:
 
 ## Parameters To Capture
 
-Even if the hosted capability evolves, the local request record should keep
+Even if the PostPlus Cloud service evolves, the local request record should keep
 these normalized camelCase fields when available:
 
 - `prompt`

@@ -83,4 +83,4 @@ Do not jump from "people are selling it" to "we should sell it."
 - using Amazon demand to justify TikTok Shop without content-demo fit
 - using one social platform's proof as if it represents all audience demand without checking channel fit
 - skipping margin and return sensitivity because top-line demand looks strong
-- treating "选品" as one workflow when the real bottleneck is supply chain or finance
+- treating "product selection" as one workflow when the real bottleneck is supply chain or finance

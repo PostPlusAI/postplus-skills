@@ -5,9 +5,9 @@ description: Prepare and, after explicit approval, publish social posts through 
 
 # Social Media Publisher
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill when the user wants to operate social publishing through the PostPlus-managed Postiz workspace.
 
@@ -66,7 +66,7 @@ Release workflow rules:
 
 - PostPlus backend holds the Postiz API key server-side; scripts never receive
   it directly
-- all Postiz API calls are proxied through the hosted capability bridge
+- all Postiz API calls are proxied through the PostPlus Cloud service
 - do not ask users for Postiz credentials of any kind
 
 ## Default workflow

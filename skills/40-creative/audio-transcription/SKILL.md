@@ -5,9 +5,9 @@ description: Transcribe local or remote audio into durable text and timestamp ar
 
 # Audio Transcription
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill when the input is audio and the main job is:
 
@@ -52,14 +52,20 @@ status is `completed` or `failed`. Default poll window: **150 attempts × 2 s = 
 Short audio clips typically complete in under 30 s. If a job exceeds 5 minutes, retry
 rather than increasing the timeout further.
 
+Before submission, the script logs a polling preflight line from
+`durationSeconds`. Audio at or above 300 seconds is marked as possibly exceeding
+the current polling window. That warning is informational, not a hidden fallback:
+the script still uses the same 5-minute poll contract and fails on timeout.
+
 ## Default Workflow
 
 1. Normalize the transcription request.
-2. Submit to hosted Whisper capability.
-3. Save raw request and response locally.
-4. Poll if the job is asynchronous.
-5. Save downloaded transcript artifacts locally.
-6. Hand off to `subtitle-packager` if SRT/VTT is needed.
+2. Log the 5-minute polling preflight from `durationSeconds`.
+3. Submit to hosted Whisper capability.
+4. Save raw request and response locally.
+5. Poll if the job is asynchronous.
+6. Save downloaded transcript artifacts locally.
+7. Hand off to `subtitle-packager` if SRT/VTT is needed.
 
 ## Scripts
 
@@ -70,7 +76,7 @@ rather than increasing the timeout further.
 
 - `references/tool-contracts.md`
 
-## Release-Shell Execution Contract
+## Public Skill Execution Contract
 
 - keep transcription requests, provider responses, manifests, and downloaded
   transcript artifacts under `<work-folder>/.postplus/audio-transcription/`

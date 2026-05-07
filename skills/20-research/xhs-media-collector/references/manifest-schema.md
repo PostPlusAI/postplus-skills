@@ -25,3 +25,7 @@ The download report then adds:
 - `httpStatus`
 - `downloadStatus`
 - `byteSize`
+
+The released collector only emits `assetType: "image"` with
+`assetRole: "cover"`. Video assets and arbitrary non-cover note images are
+outside the supported manifest contract.

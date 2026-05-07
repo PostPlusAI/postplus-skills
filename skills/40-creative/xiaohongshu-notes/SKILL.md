@@ -5,9 +5,9 @@ description: Develop Xiaohongshu note ideas and drafts from rough thoughts, live
 
 # Xiaohongshu Notes
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill when the user wants help turning raw material into a Xiaohongshu note.
 
@@ -17,8 +17,8 @@ Typical inputs:
 - "I have an idea but not the structure yet"
 - voice-note-like writing
 - a rough draft that needs reshaping
-- a professional observation that needs a better传播角度
-- a request to make something "more像小红书"
+- a professional observation that needs a betterdistribution angle
+- a request to make something "more Xiaohongshu-native"
 
 This skill is not for generic ad copy.
 
@@ -56,8 +56,8 @@ That means:
 
 Default expression preferences:
 
-- avoid `不是……而是……` by default
-- avoid `也就是说` by default
+- avoid `not X, but Y` by default
+- avoid `in other words` by default
 - prefer direct, affirmative statements
 - if a contrast is needed, state the conclusion first, then explain the difference
 
@@ -131,7 +131,7 @@ Prefer preserving:
 
 Do not over-clean.
 
-### 4. Raise传播性 without flattening the thought
+### 4. Raiseshareability without flattening the thought
 
 Possible upgrades:
 
@@ -150,10 +150,10 @@ Avoid:
 - overpromising claims
 - generic inspiration language
 - fake intimacy
-- "姐妹们/宝子们" voice unless the user explicitly wants that
+- "sisters / darlings" voice unless the user explicitly wants that
 - empty platform clichés
-- habitual `不是……而是……` sentence framing
-- filler bridge phrases like `也就是说`
+- habitual `not X, but Y` sentence framing
+- filler bridge phrases like `in other words`
 
 ## Professional Note Heuristics
 
@@ -168,7 +168,7 @@ For experience-dense professional notes, prefer this shape:
 Useful signals of trust:
 
 - clear consequences
-- repeated-pattern language such as "我见过太多次"
+- repeated-pattern language such as "I have seen this too many times"
 - operational details
 - cost of getting it wrong
 - specific boundaries around when the advice applies
@@ -184,14 +184,14 @@ Common shapes:
 - note outline
 - cleaned draft
 - memo-style Xiaohongshu note
-- page-by-page structure for a 图文备忘录帖
+- page-by-page structure for a image-post memo note
 
 If the user gives only a rough idea, it is often useful to return:
 
-- `核心观点`
-- `更适合小红书的切入角度`
-- `可写成的内容结构`
-- `一版成稿`
+- `core point`
+- `Xiaohongshu-native angle`
+- `content structure that can be drafted`
+- `one finished draft`
 
 ## Distinguish Fact From Lift
 
@@ -201,7 +201,7 @@ Separate:
 
 - what the user explicitly said
 - what is a reasonable reframing
-- what is a stronger but still faithful传播角度
+- what is a stronger but still faithfuldistribution angle
 
 ## Anti-Patterns
 
@@ -210,7 +210,7 @@ Do not:
 - rewrite everything into smooth but bland consultant prose
 - pad simple ideas with abstract framework language
 - remove the user's bite just to sound "professional"
-- force symmetry like "3个问题，3个建议" unless it helps
+- force symmetry like "3 problems, 3 suggestions" unless it helps
 - turn every note into a hard sell or CTA post
 
 ## Workspace Preference

@@ -5,9 +5,9 @@ description: Build a semantic inventory of local B-roll assets for edit planning
 
 # B-roll Catalog Builder
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill when the user has B-roll assets and needs a reusable asset inventory before planning the edit.
 
@@ -35,11 +35,11 @@ Optional supporting outputs:
 
 Use this skill when the user asks for things like:
 
-- 先整理一下这些 B-roll 素材
-- 给这些素材打标签
-- 哪些素材适合做 proof
-- 给我一个可复用的 B-roll 素材表
-- 先把素材库建起来
+- Organize these B-roll assets first
+- Tag these assets
+- Which assets are suitable as proof
+- Give me a reusable B-roll asset table
+- Build the asset library first
 
 Do not use this skill when the user already has a good catalog and needs final beat matching.
 
@@ -156,7 +156,7 @@ node ${CLAUDE_SKILL_DIR}/scripts/run_build_broll_catalog.mjs \
   --output <work-folder>/broll-catalog.json
 ```
 
-## Release-Shell Execution Contract
+## Public Skill Execution Contract
 
 - keep folder scans, contact-sheet inputs, frame manifests, and intermediate
   catalog builds under `<work-folder>/.postplus/broll-catalog-builder/`

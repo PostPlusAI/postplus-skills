@@ -145,10 +145,10 @@ Use for:
 
 If the user wants:
 
-- "我有平台官方池或 marketplace 导出" -> ingest export, enrich handles, then lead build
-- "找某个 niche 的 creator shortlist" -> keyword route or content-first route first, then lead build
-- "找正在发这类内容的人" -> content-first route first, then profile enrichment
-- "从竞品那边挖达人/KOC" -> competitor backtracking route first, then profile enrichment
-- "我已经有一批 handles，补联系方式" -> profile actor first, then contact extraction
-- "帮我准备建联文案" -> build leads first, then draft outreach
-- "找 TikTok Shop 带货达人" -> TikTok Shop route, not generic creator route
+- "I have an official platform pool or marketplace export" -> ingest export, enrich handles, then lead build
+- "Find a creator shortlist for a niche" -> keyword route or content-first route first, then lead build
+- "Find people currently posting this kind of content" -> content-first route first, then profile enrichment
+- "Mine creators/KOCs from competitors" -> competitor backtracking route first, then profile enrichment
+- "I already have handles; enrich contact paths" -> profile actor first, then contact extraction
+- "Help me prepare outreach copy" -> build leads first, then draft outreach
+- "Find TikTok Shop affiliate creators" -> TikTok Shop route, not generic creator route

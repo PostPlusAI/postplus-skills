@@ -15,13 +15,28 @@ import {
 } from "./lib/public_content_common.mjs";
 import { canonicalizeFacebookUrl } from "./lib/facebook_urls.mjs";
 
+const BILINGUAL_DISCOVERY_STOPWORDS = Object.freeze([
+  "find", "search", "analyze", "collect", "show", "get", "recent", "public",
+  "relevant", "high engagement", "views", "likes", "comments", "posts",
+  "videos", "items", "给我", "帮我", "找", "搜", "分析", "收集", "查看",
+  "条", "个", "视频", "帖子", "內容", "内容", "最近", "公开", "相关",
+  "高互动", "观看", "点赞", "评论",
+]);
+
+function removeDiscoveryStopwords(value) {
+  return BILINGUAL_DISCOVERY_STOPWORDS.reduce(
+    (current, term) => current.replaceAll(term, " "),
+    value.toLowerCase(),
+  );
+}
+
 export function buildSearchQuery(platform, requestText) {
   const cleaned = normalizeWhitespace(
-    String(requestText || "")
-      .replace(/https?:\/\/\S+/gi, " ")
-      .replace(/\b(linkedin|youtube|facebook)\b/gi, " ")
-      .replace(/\b(find|search|analyze|collect|show|get)\b/gi, " ")
-      .replace(/[找搜分析收集查看给我帮我条个视频帖子內容内容最近公开相关高互动观看点赞评论]+/g, " ")
+    removeDiscoveryStopwords(
+      String(requestText || "")
+        .replace(/https?:\/\/\S+/gi, " ")
+        .replace(/\b(linkedin|youtube|facebook)\b/gi, " "),
+    )
   );
 
   if (platform === "linkedin") {

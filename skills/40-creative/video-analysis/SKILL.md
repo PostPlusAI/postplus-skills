@@ -9,9 +9,9 @@ description: Analyze local or downloaded social video files with the official Ge
 > runner uses bounded inline payloads for very small files and hosted
 > `file_reference` upload for larger local videos.
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill for video-level analysis after metadata research has already narrowed a candidate set.
 
@@ -34,6 +34,8 @@ This skill is usually downstream of platform research, not the default first ste
 Current script behavior:
 
 - supported local formats: `.mp4`, `.m4v`, `.mov`, `.webm`
+- before each item, the runner checks the local file size and logs the selected
+  transfer boundary
 - tiny videos stay on the inline path while they fit inside the shared hosted
   JSON payload guard
 - larger videos use `media-file/create-upload-url`, upload the local file to
@@ -94,7 +96,7 @@ Do not start with full-market video analysis. First shortlist, then analyze.
 
 If the user request is broad or ambiguous, ask one short question before running:
 
-- "你是想先找出值得看的爆款样本，还是已经有视频要我直接拆 hook、结构和镜头？"
+- "Do you want to first find breakout samples worth inspecting, or do you already have videos for direct hook, structure, and shot breakdown?"
 
 If the user appears to want a broader TikTok research outcome, proactively mention that `skills/20-research/tiktok-research` can first build the shortlist this skill should analyze.
 
@@ -102,9 +104,9 @@ If the user appears to want a broader TikTok research outcome, proactively menti
 
 Do not store secrets in this repo.
 
-In the product shell:
+In the PostPlus runtime:
 
-- follow `postplus-shared` release-shell rules
+- follow `postplus-shared` public skill rules
 - this skill requires `python3`, `yt_dlp`, and `ffprobe`; follow the
   `postplus-shared` Local Dependency Bootstrap Rule before analysis
 - if the required Gemini capability is missing, or local dependency
@@ -121,7 +123,7 @@ Do not use `gemini-3-pro-preview`; it has been shut down.
 
 Before the first run, tell the user:
 
-- "我会先用 video-analysis 对一条本地视频做 Gemini 分析，输出每个 sourceId 的 JSON 结果；小文件会 inline，大文件会走 hosted file_reference；下一步可以交给 reference-decode 或 benchmark-to-brief。"
+- "I will first use video-analysis to run Gemini analysis on a local video and output JSON results for each sourceId. Small files use inline input; large files use hosted file_reference. The next step can go to reference-decode or benchmark-to-brief."
 
 Use a single local video and keep the first request simple:
 

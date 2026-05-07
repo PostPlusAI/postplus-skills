@@ -2,7 +2,7 @@
 
 ## Why It Matters
 
-This hosted capability is useful when a persona already has an approved reference audio and later scripts need to preserve the same voice more closely than a text-only voice description can.
+This PostPlus Cloud service is useful when a persona already has an approved reference audio and later scripts need to preserve the same voice more closely than a text-only voice description can.
 
 That makes it important for:
 

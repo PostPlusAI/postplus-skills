@@ -80,7 +80,7 @@ function resolveHostedCollectionBridgeConfig() {
 
   throw createHardError(
     'skill_server_collection_bridge_unavailable',
-    'Hosted collection bridge is required for repo-owned collection runs.',
+    'Hosted collection bridge is required for PostPlus-provided collection runs.',
   );
 }
 

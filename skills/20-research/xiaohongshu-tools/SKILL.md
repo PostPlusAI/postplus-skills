@@ -5,9 +5,9 @@ description: Local execution tools for Xiaohongshu/Rednote hosted collection wor
 
 # Xiaohongshu Tools
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill when implementing or running the local execution layer for the Xiaohongshu skill family.
 
@@ -43,12 +43,12 @@ Prefer:
 
 This skill should stay focused on stable local contracts after raw data has been collected.
 
-## Release-Shell Execution Contract
+## Public Skill Execution Contract
 
 - keep actor inputs, raw datasets, normalized datasets, ranking outputs,
   clustered comments, product rankings, and topic maps under
   `<work-folder>/.postplus/xiaohongshu-tools/`
 - keep only final user-facing shortlists or reports outside `.postplus/`
 - start with a bounded first pass before broader collection
-- if hosted capability is unavailable, unauthorized, or returns a stable
+- if PostPlus Cloud service is unavailable, unauthorized, or returns a stable
   network error, stop immediately instead of switching to ad hoc shell glue

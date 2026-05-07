@@ -280,19 +280,27 @@ export function classifyTitlePattern(title) {
   if (!value) {
     return "unknown";
   }
-  if (/^\d+/.test(value) || /盘点|合集|推荐|总结/.test(value)) {
+  const includesAny = (terms) => terms.some((term) => value.includes(term));
+  const bilingualTitleLexicon = {
+    listicle: ["list", "roundup", "collection", "recommendation", "summary", "盘点", "合集", "推荐", "总结"],
+    contrast: ["contrast", "comparison", "compare", "vs", "difference", "差距", "对比", "有多"],
+    advice: ["how to", "how", "tips", "advice", "avoid", "must", "should", "怎么", "如何", "建议", "不要", "别", "一定", "必须"],
+    relatableWorklife: ["workplace", "office workers", "office", "boss", "coworker", "daily work", "打工人", "职场", "上班", "老板", "同事", "办公室", "年底", "过年", "每天"],
+    emotion: ["breakdown", "awkward", "painful", "hilarious", "angry", "too real", "崩溃", "心酸", "尴尬", "笑死", "气死", "破防"],
+  };
+  if (/^\d+/.test(value) || includesAny(bilingualTitleLexicon.listicle)) {
     return "listicle";
   }
-  if (/差距|对比|vs|有多/.test(value)) {
+  if (includesAny(bilingualTitleLexicon.contrast)) {
     return "contrast";
   }
-  if (/怎么|如何|建议|不要|别|一定|必须/.test(value)) {
+  if (includesAny(bilingualTitleLexicon.advice)) {
     return "advice";
   }
-  if (/打工人|职场|上班|老板|同事|办公室|年底|过年|每天/.test(value)) {
+  if (includesAny(bilingualTitleLexicon.relatableWorklife)) {
     return "relatable-worklife";
   }
-  if (/崩溃|心酸|尴尬|笑死|气死|破防/.test(value)) {
+  if (includesAny(bilingualTitleLexicon.emotion)) {
     return "emotion";
   }
   return "general";

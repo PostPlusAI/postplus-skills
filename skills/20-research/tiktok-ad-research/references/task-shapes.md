@@ -6,9 +6,9 @@ Use this file to classify paid TikTok research requests before collection.
 
 Use when the user asks:
 
-- 某国家最近什么广告在跑
-- 某行业 top ads 有哪些
-- 先给我一个 paid creative map
+- Which ads are running recently in a country
+- Which top ads exist in an industry
+- Give me an initial paid creative map
 
 Preferred actor:
 
@@ -18,8 +18,8 @@ Preferred actor:
 
 Use when the user asks:
 
-- 搜某个品牌或产品词相关广告
-- 想看某个产品卖点在广告里怎么包装
+- Search ads related to a brand or product term
+- Want to see how a product selling point is packaged in ads
 
 Preferred actor:
 
@@ -34,8 +34,8 @@ Focus on:
 
 Use when the user asks:
 
-- 找 product sales / conversion / app install 这类目标下的广告
-- 对比不同 objective 的创意外壳
+- Find ads under objectives such as product sales, conversion, or app install
+- Compare creative wrappers across different objectives
 
 Preferred actor:
 
@@ -50,8 +50,8 @@ Focus on:
 
 Use when the user asks:
 
-- 直接给我平台精选 top ads
-- 我要月度灵感库
+- Give me platform-curated top ads directly
+- I need a monthly inspiration library
 
 Preferred actor:
 

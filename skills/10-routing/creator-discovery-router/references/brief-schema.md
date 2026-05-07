@@ -46,7 +46,7 @@ When the user gives loose wording, rewrite it into this structure before picking
 
 Example:
 
-`找 5k-10k 的 AI tools creator，最好覆盖海外留学生`
+`Find AI tools creators with 5k-10k followers, preferably covering overseas students`
 
 becomes:
 

@@ -5,9 +5,9 @@ description: Research Xiaohongshu accounts from validated recent-post surfaces, 
 
 # XHS Account Research
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Legacy alias: `xhs-account-research`.
 
@@ -32,11 +32,11 @@ Default actor:
 - `rednote-xiaohongshu-user-posts-scraper`
 
 Do not default to `rednote-xiaohongshu-profile-scraper`.
-Treat it as non-default until it returns usable `profileData` on the released shell.
+Treat it as non-default until it returns usable `profileData` on the public skill surface.
 
-Before collection, tell the user that the released path is based on recent
-posts. Profile bio, follower count, and other profile-level fields are not
-available unless the validated dataset exposes them.
+Before collection, tell the user that profile bio, follower count, and other
+profile-level fields are not reliable on the released path. Results are based
+on recent posts unless the validated dataset exposes them.
 
 ## What this skill is for
 
@@ -60,7 +60,7 @@ available unless the validated dataset exposes them.
 - fail if account aggregation cannot produce any top note URL
 - report missing profile-level fields explicitly instead of inventing them
 
-## Release-Shell Execution Contract
+## Public Skill Execution Contract
 
 - keep account briefs, actor inputs, raw datasets, normalized datasets,
   rankings, and analysis outputs under
@@ -69,7 +69,7 @@ available unless the validated dataset exposes them.
   `.postplus/`
 - start with a bounded first pass, usually `1-3` accounts and `8-15` recent
   posts per account
-- if hosted capability is unavailable, unauthorized, or returns a stable
+- if PostPlus Cloud service is unavailable, unauthorized, or returns a stable
   network error, stop immediately instead of switching to ad hoc shell glue
 
 ## Main scripts
@@ -101,7 +101,7 @@ node ${CLAUDE_SKILL_DIR}/scripts/normalize_xhs_account_dataset.mjs \
 
 node ${CLAUDE_SKILL_DIR}/scripts/rank_xhs_accounts.mjs \
   --input <work-folder>/.postplus/xhs-account-normalized.json \
-  --theme "职场,打工人" \
+  --theme "workplace,office workers" \
   --output <work-folder>/.postplus/xhs-account-ranking.json
 
 node ${CLAUDE_SKILL_DIR}/scripts/analyze_xhs_accounts.mjs \

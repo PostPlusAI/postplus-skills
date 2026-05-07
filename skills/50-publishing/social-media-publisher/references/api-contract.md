@@ -27,7 +27,7 @@ Channel onboarding flow:
 6. PostPlus calls `PUT /integrations/:id/customer-name` to label the channel
    with the user's PostPlus account id
 
-## Hosted Boundary
+## PostPlus Cloud Boundary
 
 All Postiz API calls from skill scripts are proxied through the PostPlus hosted
 capability bridge. Scripts never hold a Postiz API key directly.
@@ -38,7 +38,7 @@ The skill contract assumes:
 - publishing capability is either available or it fast-fails clearly
 - user-facing skill docs do not ask for any Postiz credentials
 
-The optional `POSTIZ_API_URL` remains an implementation detail for repo-owned
+The optional `POSTIZ_API_URL` remains an implementation detail for PostPlus-provided
 scripts and local test doubles.
 
 ## Customer config

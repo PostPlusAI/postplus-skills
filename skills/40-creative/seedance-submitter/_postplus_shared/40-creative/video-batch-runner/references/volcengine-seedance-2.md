@@ -1,6 +1,6 @@
 # Volcengine Seedance 2.0 Notes
 
-This reference records the current Ark route for Seedance video generation on the released shell.
+This reference records the current Ark route for Seedance video generation on the public skill surface.
 
 ## Endpoints
 
@@ -15,7 +15,7 @@ This reference records the current Ark route for Seedance video generation on th
 
 Authentication is API key based at the raw provider edge.
 
-In product-shell runs, provider auth should stay server-owned. Treat any raw
+In PostPlus runtime runs, provider auth should stay server-owned. Treat any raw
 Ark credential only as provider-reference context, not as a user-facing local
 setup step.
 
@@ -48,7 +48,7 @@ The request layer should prefer concise but structured prompts:
 
 For multiple reference images, prefer explicit binding syntax:
 
-- `[图1]...，[图2]...，[图3]...`
+- `[image 1]...，[image 2]...，[image 3]...`
 
 This improves instruction following when multiple images play different roles.
 

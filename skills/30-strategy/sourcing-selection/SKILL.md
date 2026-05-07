@@ -5,19 +5,19 @@ description: Synthesize supply-side and demand-side evidence into a practical so
 
 # Sourcing Selection
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill when the user is not just asking for platform data, but for a real sourcing or product-selection judgment.
 
 Typical requests:
 
-- 这个产品值不值得找货源
-- 适合先上 Amazon 还是 TikTok Shop
-- 1688 上有货，但有没有需求侧证据支撑
-- 帮我把供给侧和需求侧拼起来做判断
-- 给我一个更接近真实决策的找货源结论
+- Whether this product is worth sourcing
+- Whether to start with Amazon or TikTok Shop
+- There is supply on 1688, but whether demand-side evidence supports it
+- Combine supply-side and demand-side evidence for a judgment
+- Give me a sourcing conclusion closer to a real decision
 
 This skill is an orchestration and synthesis layer.
 
@@ -97,8 +97,8 @@ Classify the request first:
 
 Use when the user asks:
 
-- 这个产品值不值得做
-- 这个方向能不能找货源来卖
+- Whether this product is worth pursuing
+- Whether this direction can be sourced and sold
 
 Default route:
 
@@ -110,9 +110,9 @@ Default route:
 
 Use when the user already has a supply-side signal:
 
-- 1688 上看到很多货
-- 某工厂或类目看起来很便宜
-- 已经有一批供应商候选
+- I see a lot of supply on 1688
+- A factory or category looks cheap
+- There is already a batch of candidate suppliers
 
 Default route:
 
@@ -125,9 +125,9 @@ Default route:
 
 Use when the user already has a demand-side signal:
 
-- Amazon 上卖得不错
-- TikTok Shop 上很多人在卖
-- 某类内容在 TikTok 很火
+- It sells well on Amazon
+- Many sellers are selling it on TikTok Shop
+- A type of content is hot on TikTok
 
 Default route:
 

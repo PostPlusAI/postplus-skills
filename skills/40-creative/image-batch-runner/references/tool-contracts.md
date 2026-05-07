@@ -81,7 +81,7 @@ Normalized response shape:
 
 Hosted execution mapping:
 
-- The CLI skill calls the PostPlus Cloud hosted image capability endpoint.
+- The CLI skill calls the PostPlus Cloud PostPlus Cloud image service endpoint.
 - The server selects the underlying provider and model.
 - Request body minimum: `{ "prompt": "..." }`
 - Response fields to preserve raw:

@@ -31,15 +31,32 @@ function topEntries(map, limit = 10) {
     .map(([value, count]) => ({ value, count }));
 }
 
+const BILINGUAL_ACCOUNT_TYPE_TERMS = Object.freeze({
+  merchant: ["shop", "store", "seller", "店"],
+  buyer: ["buyer", "curator", "good finds", "买手", "好物"],
+  brand: ["brand", "official", "旗舰", "品牌"],
+});
+
+const BILINGUAL_PRODUCT_CATEGORY_TERMS = Object.freeze({
+  outerwear: ["hardshell", "shell jacket", "冲锋衣"],
+  downwear: ["down", "puffer", "羽绒"],
+  bundle: ["set", "bundle", "kit", "套装"],
+  footwear: ["shoe", "shoes", "footwear", "鞋"],
+});
+
+function includesAny(text, terms) {
+  return terms.some((term) => text.includes(term));
+}
+
 function inferAccountType(profile, products) {
   const description = cleanString(profile.description)?.toLowerCase() || "";
-  if (products.length >= 8 || description.includes("店") || description.includes("shop")) {
+  if (products.length >= 8 || includesAny(description, BILINGUAL_ACCOUNT_TYPE_TERMS.merchant)) {
     return "merchant";
   }
-  if (products.length >= 3 || description.includes("买手") || description.includes("好物")) {
+  if (products.length >= 3 || includesAny(description, BILINGUAL_ACCOUNT_TYPE_TERMS.buyer)) {
     return "buyer";
   }
-  if (description.includes("品牌") || description.includes("旗舰")) {
+  if (includesAny(description, BILINGUAL_ACCOUNT_TYPE_TERMS.brand)) {
     return "brand";
   }
   return "creator";
@@ -76,16 +93,16 @@ function classifyProductTitle(text) {
   if (!lower) {
     return "general";
   }
-  if (lower.includes("冲锋衣")) {
+  if (includesAny(lower, BILINGUAL_PRODUCT_CATEGORY_TERMS.outerwear)) {
     return "outerwear";
   }
-  if (lower.includes("羽绒")) {
+  if (includesAny(lower, BILINGUAL_PRODUCT_CATEGORY_TERMS.downwear)) {
     return "downwear";
   }
-  if (lower.includes("套装")) {
+  if (includesAny(lower, BILINGUAL_PRODUCT_CATEGORY_TERMS.bundle)) {
     return "bundle";
   }
-  if (lower.includes("鞋")) {
+  if (includesAny(lower, BILINGUAL_PRODUCT_CATEGORY_TERMS.footwear)) {
     return "footwear";
   }
   return "general";

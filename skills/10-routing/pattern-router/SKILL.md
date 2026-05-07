@@ -5,9 +5,9 @@ description: Route short-form video prompt work into the right hook or segment p
 
 # Pattern Router
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill at the start of prompt design.
 
@@ -106,6 +106,6 @@ Stop and say the routing is under-specified if the brief does not provide enough
 
 Ask this when the missing piece is the segment type:
 
-- "这个片段是 hook、benefit 还是 CTA？"
+- "Is this segment a hook, benefit, or CTA?"
 
 Do not let later skills guess the structure from vague taste words alone.

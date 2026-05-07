@@ -17,7 +17,7 @@ Use this skill for TikTok metadata research:
 
 Follow shared routing and guidance rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 - `postplus-shared` research preferences
 
 Read these references before implementation:
@@ -62,13 +62,13 @@ Current bounded-first-pass rule:
 
 ## Prerequisites
 
-In the product-shell runtime, follow `postplus-shared` release-shell rules.
+In the PostPlus runtime, follow `postplus-shared` public skill rules.
 
 TikTok-specific runtime notes:
 
 - when this skill references its own scripts, references, or templates, use absolute paths anchored at `${CLAUDE_SKILL_DIR}`; do not rely on bare `scripts/...`, `references/...`, `templates/...`, or `skills/20-research/tiktok-research/...` paths that depend on the current working directory
 - when extracting creator handles from a normalized video dataset, use `.items[].authorUsername`
-- if hosted capability is unavailable, unauthorized, or returns a stable
+- if PostPlus Cloud service is unavailable, unauthorized, or returns a stable
   network error, stop immediately instead of switching to ad hoc shell glue
 
 Node 18+ is required. This workspace already has Node available.
@@ -88,9 +88,9 @@ Node 18+ is required. This workspace already has Node available.
 
 Treat these as defaults, not hard requirements.
 
-Release-shell note:
+PostPlus runtime note:
 
-- `tiktok-profile-scraper` (secondary provider) remains shelved for current product-shell
+- `tiktok-profile-scraper` (secondary provider) remains shelved for current PostPlus runtime
   runs. Do not route to it until billing adds and verifies a provider cost
   rule.
 
@@ -159,9 +159,9 @@ Bounded brief rule:
 2. only add explicit actor-size overrides such as `resultsPerPage`, `maxProfilesPerQuery`, `commentsPerPost`, or `scrapeRelatedVideos` when the current step truly needs them
 3. if the first pass is too thin, expand in a second pass instead of starting broad
 
-### Product-shell temp-file flow
+### PostPlus runtime temp-file flow
 
-Inside the product-shell runtime, prefer this order:
+Inside the PostPlus runtime, prefer this order:
 
 1. when possible, skip the temporary brief file and call `build_tiktok_actor_input.mjs` directly with repeated flags such as:
    - `--query`
@@ -192,7 +192,7 @@ Fallback only when the direct flag path is genuinely awkward:
 
 For a clear request like:
 
-- `帮我在 TikTok 上找 20 个适合卖护肤仪的 KOL，优先微中腰部账号，给我一个可继续筛选的 shortlist。`
+- `Find 20 TikTok KOLs suitable for selling skincare devices, prioritize micro and mid-tier accounts, and give me a shortlist for further filtering.`
 
 default to this first move:
 
@@ -422,7 +422,7 @@ Escalate to `skills/40-creative/video-analysis` when:
 
 When the request is broad, ask one short guiding question before running:
 
-- "你是想先看 TikTok 上哪些方向值得研究，还是已经有几条视频想让我直接拆内容结构？"
+- "Do you want to first inspect which TikTok directions are worth researching, or do you already have videos for direct content-structure breakdown?"
 
 Mention that this skill finds good samples first, and `video-analysis` can read the actual videos later.
 

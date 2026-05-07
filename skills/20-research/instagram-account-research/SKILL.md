@@ -5,9 +5,9 @@ description: Research Instagram accounts for creator discovery, competitor profi
 
 # Instagram Account Research
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill when the user wants to:
 
@@ -32,13 +32,18 @@ Read these references before implementation:
 ## Recommended Workflow
 
 1. collect a profile snapshot for each username
-2. collect a small recent-post sample for each shortlisted account
-3. normalize profile and post outputs
-4. rank accounts by audience size, engagement proxy, posting cadence, and relevance
-5. return a shortlist plus account notes
+2. decide which accounts deserve post collection from the profile results
+3. collect a small recent-post sample for shortlisted accounts only
+4. normalize profile and post outputs
+5. rank accounts by audience size, engagement proxy, posting cadence, and relevance
+6. return a shortlist plus account notes
 
-Run profile and post collection serially. Do not fire both broad actor paths at
-once; the profile result should decide which accounts deserve post collection.
+Run profile and post collection serially as one serial queue. Do not start
+`instagram-profiles` and `instagram-posts` in parallel, even if the user asks
+for both account profiles and recent content. Use the profile result to narrow
+the post batch before starting post collection. If a request would require a
+broad profile pass plus a broad post pass, stop before collection and ask the
+user to narrow the handle list or research theme.
 
 ## Cost Discipline
 
@@ -49,7 +54,7 @@ Start with:
 
 Do not start with broad market scraping.
 
-## Release-Shell Execution Contract
+## Public Skill Execution Contract
 
 - keep shortlist briefs, actor inputs, raw datasets, normalized datasets, and
   ranking caches under `<work-folder>/.postplus/instagram-account/`
@@ -57,7 +62,7 @@ Do not start with broad market scraping.
   `.postplus/`
 - compile the request into a small username or URL batch before the expensive
   collection step
-- if hosted capability is unavailable, unauthorized, or returns a stable
+- if PostPlus Cloud service is unavailable, unauthorized, or returns a stable
   network error, stop immediately instead of switching to ad hoc shell glue
 
 ## Good Output

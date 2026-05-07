@@ -1,13 +1,13 @@
 ---
 name: xiaohongshu-card-notes
-description: Turn an existing HTML page, landing page, oral script, memo draft, result table, or structured source material into a Xiaohongshu card-style image note. Use this when the user wants page-by-page card planning, cover copy, card text, or a design-ready Xiaohongshu图文 brief based on source material rather than writing a plain note from scratch. This skill is especially for 3:4 Xiaohongshu cards that may mix image-led pages with high-density memo pages, using strong information hierarchy and screenshot-worthy text density rather than generic sparse carousel copy.
+description: Turn an existing HTML page, landing page, oral script, memo draft, result table, or structured source material into a Xiaohongshu card-style image note. Use this when the user wants page-by-page card planning, cover copy, card text, or a design-ready Xiaohongshuimage-post brief based on source material rather than writing a plain note from scratch. This skill is especially for 3:4 Xiaohongshu cards that may mix image-led pages with high-density memo pages, using strong information hierarchy and screenshot-worthy text density rather than generic sparse carousel copy.
 ---
 
 # Xiaohongshu Card Notes
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill when the user wants to turn existing material into a Xiaohongshu card-style note.
 
@@ -152,8 +152,8 @@ For each page:
 - prefer short declarative lines
 - keep keywords strong and sparse
 - preserve the user's judgment and operator tone
-- avoid `不是……而是……` by default
-- avoid `也就是说` by default
+- avoid `not X, but Y` by default
+- avoid `in other words` by default
 - prefer direct statements over rhetorical contrast templates
 
 For dense memo pages:
@@ -191,19 +191,19 @@ Return the smallest useful output for the ask.
 
 Common shapes:
 
-- `图文结构`
-- `封面标题备选`
-- `逐页文案`
-- `设计备注`
-- `图文 brief`
+- `image-post structure`
+- `cover title options`
+- `page-by-page copy`
+- `design notes`
+- `image-post brief`
 
 For full card generation, default to this format:
 
-`封面`
+`cover`
 - title
 - subtitle or tag
 
-`第2页`
+`page 2`
 - headline
 - body
 - optional design note
@@ -269,7 +269,7 @@ Default preference:
 - mix high-density memo pages with visual proof pages
 - make the final output feel like a professional Xiaohongshu carousel, not a repackaged web page
 
-## Release-Shell Execution Contract
+## Public Skill Execution Contract
 
 - keep page plans, source extracts, and intermediate layout notes under
   `<work-folder>/.postplus/xiaohongshu-card-notes/`

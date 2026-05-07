@@ -26,3 +26,6 @@
 - For subtitle or edit-prep jobs, `enableTimestamps=true` should be the default.
 - Use `task=translate` only when the target output should be English text.
 - Persist `normalized-transcript.json` as the stable intermediate timeline object for downstream subtitle packaging.
+- The CLI script logs a pre-submission polling estimate. Inputs at or above 300
+  seconds are flagged as possibly exceeding the current 5-minute polling window;
+  timeout behavior is fail-fast, not an automatic fallback to a longer poller.

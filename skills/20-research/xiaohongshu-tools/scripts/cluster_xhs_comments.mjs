@@ -18,25 +18,29 @@ function usage() {
 const BUCKETS = [
   {
     key: "purchase-intent",
-    patterns: ["多少钱", "怎么买", "求链接", "想买", "有链接", "在哪买", "怎么买到", "链接"]
+    patterns: ["price", "how much", "where to buy", "buy link", "want to buy", "link", "多少钱", "怎么买", "求链接", "想买", "有链接", "在哪买", "怎么买到", "链接"]
   },
   {
     key: "objection",
-    patterns: ["太贵", "不值", "智商税", "一般", "避雷", "踩雷", "鸡肋", "假的"]
+    patterns: ["too expensive", "not worth it", "overpriced", "average", "avoid", "fake", "太贵", "不值", "智商税", "一般", "避雷", "踩雷", "鸡肋", "假的"]
   },
   {
     key: "question",
-    patterns: ["怎么", "为啥", "为什么", "吗", "?", "？"]
+    patterns: ["how", "why", "what", "?", "？", "怎么", "为啥", "为什么", "吗"]
   },
   {
     key: "request-for-details",
-    patterns: ["求教程", "求清单", "求型号", "求品牌", "求店铺", "细节", "链接 please"]
+    patterns: ["tutorial please", "list please", "model number", "brand", "store", "details", "link please", "求教程", "求清单", "求型号", "求品牌", "求店铺", "细节"]
   },
   {
     key: "praise",
-    patterns: ["种草", "好看", "喜欢", "绝了", "太香了", "不错", "高级", "厉害"]
+    patterns: ["love it", "looks good", "impressive", "nice", "premium", "want it", "种草", "好看", "喜欢", "绝了", "太香了", "不错", "高级", "厉害"]
   }
 ];
+
+const BILINGUAL_LOW_SIGNAL_COMMENTS = Object.freeze([
+  "lol", "haha", "here", "following", "哈哈", "笑死", "6", "来了", "蹲",
+]);
 
 function classifyComment(text) {
   const normalized = safeLower(text);
@@ -48,7 +52,7 @@ function classifyComment(text) {
       return bucket.key;
     }
   }
-  if (normalized.length < 4 || ["哈哈", "笑死", "6", "来了", "蹲"].includes(normalized)) {
+  if (normalized.length < 4 || BILINGUAL_LOW_SIGNAL_COMMENTS.includes(normalized)) {
     return "low-signal";
   }
   return "general-feedback";

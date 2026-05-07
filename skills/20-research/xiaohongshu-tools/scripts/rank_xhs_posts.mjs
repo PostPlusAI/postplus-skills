@@ -15,6 +15,12 @@ function usage() {
   );
 }
 
+const BILINGUAL_REVIEW_TERMS = Object.freeze(["review", "test", "测评", "评测"]);
+
+function includesAny(text, terms) {
+  return terms.some((term) => text.includes(term));
+}
+
 function parseKeywords(value) {
   return String(value || "")
     .split(",")
@@ -67,7 +73,7 @@ function main() {
         keywordHitCount: keywordHits(post, keywords)
       };
       row.shortlistScore = scorePost(post, keywords);
-      row.contentPillar = safeLower(post.description).includes("测评") ? "review" : "general";
+      row.contentPillar = includesAny(safeLower(post.description), BILINGUAL_REVIEW_TERMS) ? "review" : "general";
       return row;
     })
     .sort((left, right) => right.shortlistScore - left.shortlistScore);

@@ -5,9 +5,9 @@ description: Build creator lead lists for TikTok, Instagram, and X by turning no
 
 # Creator Outreach
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill when the user wants to:
 

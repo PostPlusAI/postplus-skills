@@ -12,8 +12,8 @@ export function buildXhsCardNotesPackage(input = {}) {
     Array.isArray(input.pages) && input.pages.length > 0
       ? input.pages
       : [
-          { pageRole: "cover", headline: "别再把这件事讲复杂了" },
-          { pageRole: "body", headline: "先把最贵的错误说清楚" },
+          { pageRole: "cover", headline: "Stop making this harder to explain" },
+          { pageRole: "body", headline: "Start with the most expensive mistake" },
         ];
 
   return {

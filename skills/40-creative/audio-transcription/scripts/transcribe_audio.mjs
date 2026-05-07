@@ -8,6 +8,7 @@ import {
   downloadProviderOutputs,
   extractTranscriptData,
   fetchJson,
+  logTranscriptionPollingPreflight,
   normalizeTranscriptionInput,
   parseArgs,
   pollPredictionResult,
@@ -33,6 +34,7 @@ async function main() {
   const paths = buildRequestPaths(request.localOutputDir);
 
   writeJson(paths.requestPath, request);
+  logTranscriptionPollingPreflight(request);
 
   const { data: rawResult } = await fetchJson(request.model, {
     method: "POST",

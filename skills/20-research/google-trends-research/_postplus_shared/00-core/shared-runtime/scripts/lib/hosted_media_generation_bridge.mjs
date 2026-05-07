@@ -5,7 +5,7 @@ import path from 'node:path';
 import {
   runHostedCapabilityEnvelopeRequest,
   runHostedCapabilityRequest,
-} from './hosted_capability_bridge.mjs';
+} from './postplus_cloud_client.mjs';
 import { requestBytes } from './network_runtime.mjs';
 
 export async function requestHostedMediaGenerationJson(

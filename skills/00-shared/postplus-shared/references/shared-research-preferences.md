@@ -23,11 +23,11 @@ Use web only when:
 
 Treat these as platform-data requests by default:
 
-- 调研某个平台的数据
-- 找博主 / 创作者 / KOC / KOL
-- 看最近什么内容在火
-- 看评论、互动、价格带、榜单、竞品
-- 找 benchmark 样本
+- research data from a specific platform
+- find bloggers / creators / KOCs / KOLs
+- see which content is currently taking off
+- inspect comments, engagement, price bands, rankings, and competitors
+- find benchmark samples
 
 Default execution order:
 
@@ -90,9 +90,9 @@ If the user intent is broad and the next step is ambiguous, ask one short questi
 
 Examples:
 
-- 你想先看账号 shortlist，还是先看内容 benchmark？
-- 你要平台数据盘点，还是拆具体内容结构？
-- 你是先扫市场，还是已经有一批样本要分析？
+- Do you want to inspect an account shortlist first, or start with content benchmarks?
+- Do you want a platform data scan, or a breakdown of specific content structures?
+- Are you scanning the market first, or do you already have samples to analyze?
 
 If the route is already clear, do not stop to ask.
 

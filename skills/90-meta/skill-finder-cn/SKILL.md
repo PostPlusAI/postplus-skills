@@ -1,13 +1,13 @@
 ---
 name: skill-finder-cn
-description: 帮中文用户从当前已发布的 PostPlus skill surface 里找到合适技能，并给出公开安装命令。适合“有什么技能可以做 X”“我该装哪个技能”“帮我解释当前已发布技能范围”的场景。
+description: Help users find suitable tools from the currently released PostPlus skill surface and provide public installation commands. Use this when the user asks which skill can do a task, which skill to install, or what the released skill surface covers.
 ---
 
 # Skill Finder CN
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill when the user wants to:
 
@@ -70,7 +70,7 @@ Return:
 
 If the user asks:
 
-- “有什么 skill 可以帮我做 TikTok 爆款研究？”
+- “What skill can help me research viral TikTok content?”
 
 Good response shape:
 
@@ -82,7 +82,7 @@ Good response shape:
 
 If the user asks:
 
-- “我想先找达人，再做外联”
+- “I want to find creators first, then do outreach”
 
 Good response shape:
 

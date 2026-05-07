@@ -15,7 +15,7 @@ Default actor:
 
 Why it is the default:
 
-- returned real post rows on the released shell
+- returned real post rows on the public skill surface
 - returned stable note URLs and note ids
 - returned enough benchmark fields for first-version ranking and analysis
 
@@ -56,16 +56,16 @@ Operational rule:
 Do not use these as the default route for this skill:
 
 - `easyapi/all-in-one-rednote-xiaohongshu-scraper`
-  - current search-mode validation returned zero items on the released shell
+  - current search-mode validation returned zero items on the public skill surface
 - `easyapi/rednote-xiaohongshu-profile-scraper`
   - current validation returned empty `profileData`
-- rented actors that are not already enabled on the released shell
+- rented actors that are not already enabled on the public skill surface
 
 ## Design rule
 
 This skill should not optimize for actor breadth.
 It should optimize for:
 
-1. real output on the released shell
+1. real output on the public skill surface
 2. stable note URL recovery
 3. enough post metadata for ranking and synthesis

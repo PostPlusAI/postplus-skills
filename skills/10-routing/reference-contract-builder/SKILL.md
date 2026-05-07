@@ -5,9 +5,9 @@ description: Build explicit learn/do-not-copy contracts for image and video gene
 
 # Reference Contract Builder
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill when references exist and the boundary between inspiration and copying must be explicit.
 
@@ -86,4 +86,4 @@ incomplete.
 
 Ask this when the boundary is missing:
 
-- "哪些是必须保留的品牌特征，哪些只是参考灵感？"
+- "Which brand traits must be preserved, and which are only reference inspiration?"

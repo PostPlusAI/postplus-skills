@@ -5,9 +5,9 @@ description: Generate and manage InfiniteTalk and Seedance 2.0 video renders for
 
 # Video Batch Runner
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill after image, script, voice, or prompt-planning work already exists.
 
@@ -130,13 +130,13 @@ Read [`references/volcengine-seedance-2.md`](references/volcengine-seedance-2.md
 
 If the project should keep related image, audio, and video files under one asset root, use the shared asset model in [`../image-batch-runner/references/unified-asset-contract-v1.md`](skills/40-creative/image-batch-runner/references/unified-asset-contract-v1.md).
 
-## Hosted Boundary Rule
+## PostPlus Cloud Rule
 
 - keep request files, raw provider responses, and polling state under
   `<work-folder>/.postplus/video-batch-runner/` when they are internal
   execution state
 - keep only final user-facing renders outside `.postplus/`
-- if hosted video capability is unavailable, unauthorized, or returns a stable
+- if PostPlus Cloud video service is unavailable, unauthorized, or returns a stable
   network error, stop immediately instead of switching to ad hoc shell glue
 
 ## Render Objects
@@ -217,7 +217,7 @@ Before calling any provider, write down:
 
 Tell the user:
 
-- "我会先锁定 video-batch-runner 的 render brief 和 request JSON，输出本地 render manifest；完成后可以交给 creative-qa、subtitle-packager 或 social-media-publisher。"
+- "I will first lock the video-batch-runner render brief and request JSON, then output a local render manifest. After completion, it can go to creative-qa, subtitle-packager, or social-media-publisher."
 
 ### 2. Produce a normalized request record
 
@@ -360,7 +360,7 @@ The adapter accepts `promptPlan` and turns it into one compact prompt string in 
 - continuity constraints
 - must-keep
 - must-avoid
-- reference bindings such as `[图1]...，[图2]...`
+- reference bindings such as `[image 1]...，[image 2]...`
 
 This is a better default than freehand adjective stacks.
 

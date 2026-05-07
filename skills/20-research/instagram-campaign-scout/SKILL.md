@@ -5,9 +5,9 @@ description: Scout Instagram hashtag opportunities, branded mentions, and campai
 
 # Instagram Campaign Scout
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill when the user wants to:
 
@@ -28,7 +28,7 @@ Read these references before implementation:
 - `instagram-search`
 - `instagram-posts`
 
-Current verified release-shell path:
+Current verified public skill path:
 
 - hashtag post collection via `instagram-hashtags`
 - branded keyword or account discovery via `instagram-search`
@@ -59,14 +59,14 @@ Start with:
 
 Avoid turning this into a full social-listening crawl on the first pass.
 
-## Release-Shell Execution Contract
+## Public Skill Execution Contract
 
 - keep scout briefs, actor inputs, raw datasets, normalized outputs, and
   watchlist caches under `<work-folder>/.postplus/instagram-campaign-scout/`
 - keep only final user-facing summaries or watchlists outside `.postplus/`
 - compile the campaign object into a small hashtag or username brief before the
   expensive collection step
-- if hosted capability is unavailable, unauthorized, or returns a stable
+- if PostPlus Cloud service is unavailable, unauthorized, or returns a stable
   network error, stop immediately instead of switching to ad hoc shell glue
 
 ## Good Output

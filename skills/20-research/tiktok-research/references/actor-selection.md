@@ -182,16 +182,16 @@ Important constraint:
 
 If the user wants:
 
-- "找某类博主" -> usually `tiktok-scraper` first, `tiktok-user-search-scraper` as account-search supplement
-- "看这个 topic 下哪些视频和创作者在跑" -> `tiktok-scraper`
-- "看这个 hashtag 面下具体有什么视频" -> `tiktok-hashtag-scraper`
-- "我已经有一批 handles，补 profile 和联系方式" -> `tiktok-profile-scraper`
-- "我已经有一批视频链接，补细节和作者信息" -> `tiktok-video-scraper`
-- "抓这些视频下面的评论" -> `tiktok-comments-scraper`
-- "低成本多 query 先试方向" -> `tiktok-scraper` or `tiktok-scraper-api`
-- "从一批命中的视频往外扩达人池" -> `tiktok-scraper` with `postURLs + scrapeRelatedVideos`
-- "看 TikTok 广告榜 / 创意中心广告" -> `tiktok-creative-center-top-ads`
-- "找 TikTok Shop 带货达人" -> `tiktok-shop-creators`
+- "Find creators in a category" -> usually `tiktok-scraper` first, `tiktok-user-search-scraper` as account-search supplement
+- "Inspect which videos and creators are active under this topic" -> `tiktok-scraper`
+- "Inspect specific videos under this hashtag" -> `tiktok-hashtag-scraper`
+- "I already have handles; enrich profiles and contact paths" -> `tiktok-profile-scraper`
+- "I already have video links; enrich details and author information" -> `tiktok-video-scraper`
+- "Collect comments under these videos" -> `tiktok-comments-scraper`
+- "Use low-cost multi-query exploration first" -> `tiktok-scraper` or `tiktok-scraper-api`
+- "Expand the creator pool from a batch of matched videos" -> `tiktok-scraper` with `postURLs + scrapeRelatedVideos`
+- "Inspect TikTok ad rankings / Creative Center ads" -> `tiktok-creative-center-top-ads`
+- "Find TikTok Shop affiliate creators" -> `tiktok-shop-creators`
 
 ## Cost and Fallback Guidance
 

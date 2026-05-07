@@ -5,18 +5,18 @@ description: Download TikTok video samples for selected music or sounds, extract
 
 # TikTok Music Archive Downloader
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill when TikTok music or sound candidates have already been selected and the user needs local files.
 
 Good fits:
 
-- "把这些 sound 的代表视频下下来"
-- "从 TikTok 视频里抽音频做参考"
-- "给这批 trending music 建本地素材库"
-- "下载样本并保留来源 manifest"
+- "Download representative videos for these sounds"
+- "Extract audio from TikTok videos as references"
+- "Build a local asset library for these trending music tracks"
+- "Download samples and keep a source manifest"
 
 Do not use this skill for:
 
@@ -124,7 +124,7 @@ Before reporting success:
 
 Treat downloaded TikTok music as research/reference material unless the user confirms rights or platform-licensed use. Do not present extracted audio as cleared for commercial reuse.
 
-## Release-Shell Execution Contract
+## Public Skill Execution Contract
 
 - keep download manifests, reports, extracted videos, and extracted audio under
   `<work-folder>/.postplus/tiktok-music-archive-downloader/`

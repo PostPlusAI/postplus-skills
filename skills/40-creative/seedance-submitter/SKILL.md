@@ -1,15 +1,15 @@
 ---
 name: seedance-submitter
-description: Use when preparing, submitting, polling, or debugging Seedance 2.0 video generation jobs from product images, storyboard images, UGC scripts, voiceover copy, or promptPlan request JSON. Use for splitting scripts into render segments, uploading references, creating request JSON, submitting jobs through the hosted capability, polling predictions, and handing off local render paths.
+description: Use when preparing, submitting, polling, or debugging Seedance 2.0 video generation jobs from product images, storyboard images, UGC scripts, voiceover copy, or promptPlan request JSON. Use for splitting scripts into render segments, uploading references, creating request JSON, submitting jobs through the PostPlus Cloud service, polling predictions, and handing off local render paths.
 ---
 
 # Seedance Submitter
 
-Use this skill for Seedance 2.0 generative video jobs routed through the hosted capability.
+Use this skill for Seedance 2.0 generative video jobs routed through the PostPlus Cloud service.
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 ## Workflow
 
@@ -44,7 +44,7 @@ Create `segment-01`, `segment-02`, and later request records instead.
 
 Tell the user:
 
-- "Seedance 2.0 只能稳定处理短窗口。我会先把这条脚本拆成独立 segment，逐段提交、轮询、下载；最后交付每段 render 路径和 prediction id。"
+- "Seedance 2.0 is only stable for short windows. I will first split this script into independent segments, submit, poll, and download each segment, then deliver every segment render path and prediction id."
 
 Each segment must be:
 
@@ -63,7 +63,7 @@ Each segment must be:
 - Each segment must be a complete request that can be submitted, polled, and downloaded independently.
 - Each segment should keep only its own dialogue and action scope.
 - Final request text must not rely on `continue from the previous segment`,
-  `same as previous`, `same character`, `content above`, `延续上一段`, or
+  `same as previous`, `same character`, `content above`, or equivalent
   equivalent shorthand. The validator rejects these forms.
 
 ## Reference Binding Rule
@@ -81,14 +81,14 @@ Say what each reference controls, such as:
 - camera motion
 - continuation from the prior segment
 
-For final Seedance prompts, prefer explicit bindings such as `[图1]`, `[图2]`, and `[视频1]` plus role descriptions.
+For final Seedance prompts, prefer explicit bindings such as `[image 1]`, `[image 2]`, and `[video 1]` plus role descriptions.
 
-## Hosted Boundary Rule
+## PostPlus Cloud Rule
 
 - Keep request files, raw provider responses, and polling state under `<work-folder>/.postplus/seedance-submitter/` when they are internal execution state.
 - Keep only final user-facing renders outside `.postplus/`.
-- If the hosted capability is unavailable, unauthorized, or returns a stable network error, stop immediately instead of switching to ad hoc shell glue.
-- If request validation fails, stop before calling the hosted capability. Do
+- If the PostPlus Cloud service is unavailable, unauthorized, or returns a stable network error, stop immediately instead of switching to ad hoc shell glue.
+- If request validation fails, stop before calling the PostPlus Cloud service. Do
   not submit an oversized or memory-dependent Seedance request.
 
 ## Debugging

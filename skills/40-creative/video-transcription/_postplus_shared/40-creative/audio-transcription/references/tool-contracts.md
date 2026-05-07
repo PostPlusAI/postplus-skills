@@ -32,3 +32,6 @@
   requests that omit it.
 - `enableTimestamps=true` should be the default when the downstream goal is subtitles or edit prep.
 - Use `transcription-whisper-turbo` only for rough or cost-sensitive first-pass jobs.
+- The CLI script logs a pre-submission polling estimate. Inputs at or above 300
+  seconds are flagged as possibly exceeding the current 5-minute polling window;
+  timeout behavior is fail-fast, not an automatic fallback to a longer poller.

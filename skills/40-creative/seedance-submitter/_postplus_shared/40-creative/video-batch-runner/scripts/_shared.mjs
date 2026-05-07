@@ -382,7 +382,7 @@ function buildSeedancePromptFromPlan(plan = {}, fallbackPrompt = null) {
     plan.color,
   ]);
   if (core.length > 0) {
-    sections.push(core.join('，'));
+    sections.push(core.join(', '));
   }
 
   const framing = dedupeStrings([
@@ -393,7 +393,7 @@ function buildSeedancePromptFromPlan(plan = {}, fallbackPrompt = null) {
     plan.pacing,
   ]);
   if (framing.length > 0) {
-    sections.push(`镜头与节奏：${framing.join('，')}`);
+    sections.push(`Shot and pacing: ${framing.join(', ')}`);
   }
 
   const environment = dedupeStrings([
@@ -403,53 +403,53 @@ function buildSeedancePromptFromPlan(plan = {}, fallbackPrompt = null) {
     plan.composition,
   ]);
   if (environment.length > 0) {
-    sections.push(`环境与构图：${environment.join('，')}`);
+    sections.push(`Environment and composition: ${environment.join(', ')}`);
   }
 
   const audio = dedupeStrings([
-    plan.dialogue ? `人物对白：${plan.dialogue}` : null,
+    plan.dialogue ? `Character dialogue: ${plan.dialogue}` : null,
     plan.audio,
     plan.music,
     plan.soundEffects,
   ]);
   if (audio.length > 0) {
-    sections.push(`声音：${audio.join('，')}`);
+    sections.push(`Audio: ${audio.join(', ')}`);
   }
 
   const continuity = dedupeStrings(plan.continuity || []);
   if (continuity.length > 0) {
-    sections.push(`连续性要求：${continuity.join('，')}`);
+    sections.push(`Continuity requirements: ${continuity.join(', ')}`);
   }
 
   const keep = dedupeStrings(plan.mustKeep || []);
   if (keep.length > 0) {
-    sections.push(`必须保留：${keep.join('，')}`);
+    sections.push(`Must keep: ${keep.join(', ')}`);
   }
 
   const avoid = dedupeStrings(plan.mustAvoid || []);
   if (avoid.length > 0) {
-    sections.push(`避免：${avoid.join('，')}`);
+    sections.push(`Avoid: ${avoid.join(', ')}`);
   }
 
   const referenceMap = Array.isArray(plan.referenceMap)
     ? plan.referenceMap
         .map((item, index) => {
           if (typeof item === 'string' && item.trim()) {
-            return `[图${index + 1}]${item.trim()}`;
+            return `[image ${index + 1}] ${item.trim()}`;
           }
           return null;
         })
         .filter(Boolean)
     : [];
   if (referenceMap.length > 0) {
-    sections.push(`参考绑定：${referenceMap.join('；')}`);
+    sections.push(`Reference bindings: ${referenceMap.join('; ')}`);
   }
 
   if (typeof fallbackPrompt === 'string' && fallbackPrompt.trim()) {
     sections.unshift(fallbackPrompt.trim());
   }
 
-  const prompt = sections.join('。').trim();
+  const prompt = sections.join('. ').trim();
   return prompt || null;
 }
 

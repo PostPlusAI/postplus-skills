@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { uploadHostedMediaFileReference } from "../../_postplus_shared/00-core/shared-runtime/scripts/lib/hosted_media_generation_bridge.mjs";
-import { runHostedCapabilityRequest } from "../../_postplus_shared/00-core/shared-runtime/scripts/lib/hosted_capability_bridge.mjs";
+import { runHostedCapabilityRequest } from "../../_postplus_shared/00-core/shared-runtime/scripts/lib/postplus_cloud_client.mjs";
 
 const SOCIAL_PUBLISHING_BASE_URL = "https://social-publishing.postplus.local";
 
@@ -89,7 +89,7 @@ export function assertAllowedIntegrationIds(customerConfig, integrationIds) {
 
 export async function postizJson(pathname, { method = "GET", body, headers = {} } = {}, options = {}) {
   if (Object.keys(headers).length > 0) {
-    throw new Error("Custom social-publishing headers are not part of the hosted capability contract.");
+    throw new Error("Custom social-publishing headers are not part of the PostPlus Cloud service contract.");
   }
 
   const operation = resolveSocialPublishingOperation(pathname, method);

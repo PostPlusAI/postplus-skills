@@ -10,7 +10,7 @@ import {
 import {
   HOSTED_CAPABILITY_JSON_PAYLOAD_BYTE_LIMIT,
   runHostedCapabilityRequest,
-} from "../_postplus_shared/00-core/shared-runtime/scripts/lib/hosted_capability_bridge.mjs";
+} from "../_postplus_shared/00-core/shared-runtime/scripts/lib/postplus_cloud_client.mjs";
 import { uploadHostedMediaFileReference } from "../_postplus_shared/00-core/shared-runtime/scripts/lib/hosted_media_generation_bridge.mjs";
 
 const INLINE_VIDEO_ENVELOPE_OVERHEAD_BYTES = 64 * 1024;
@@ -70,6 +70,19 @@ export function selectVideoInputMode(fileSizeBytes) {
   }
 
   return fileSizeBytes <= INLINE_VIDEO_BYTE_LIMIT ? "inline" : "file_reference";
+}
+
+export function buildVideoInputBoundary(fileSizeBytes) {
+  const inputMode = selectVideoInputMode(fileSizeBytes);
+  return {
+    fileSizeBytes,
+    inlineByteLimit: INLINE_VIDEO_BYTE_LIMIT,
+    inputMode,
+    transferBoundary:
+      inputMode === "inline"
+        ? "inline_data inside hosted JSON payload guard"
+        : "hosted file_reference via signed upload; no automatic compression or segmentation",
+  };
 }
 
 function detectVideoDurationSeconds(filePath) {
@@ -132,24 +145,24 @@ function buildPrompt(sourceUrl) {
     `Source URL: ${sourceUrl}`,
     "Required JSON fields:",
     "{",
-    '  "summaryZh": string,',
-    '  "hookZh": string,',
-    '  "contentPromiseZh": string,',
-    '  "structureTypeZh": string,',
-    '  "visualStyleZh": string,',
-    '  "ctaZh": string,',
-    '  "whyItWorksZh": string[],',
+    '  "summaryEn": string,',
+    '  "hookEn": string,',
+    '  "contentPromiseEn": string,',
+    '  "structureTypeEn": string,',
+    '  "visualStyleEn": string,',
+    '  "ctaEn": string,',
+    '  "whyItWorksEn": string[],',
     '  "openingLineExact": string,',
     '  "closingLineApprox": string,',
-    '  "spokenAudioFlowZh": string,',
-    '  "shots": [{"startTime":"MM:SS","endTime":"MM:SS","durationSeconds":number,"visual":"中文","audio":"原语言"}],',
-    '  "uncertaintiesZh": string[]',
+    '  "spokenAudioFlowEn": string,',
+    '  "shots": [{"startTime":"MM:SS","endTime":"MM:SS","durationSeconds":number,"visual":"English","audio":"original language"}],',
+    '  "uncertaintiesEn": string[]',
     "}",
     "Rules:",
     "- Keep shots to 4-8 segments unless the pacing genuinely requires more.",
     "- openingLineExact should capture the true opening spoken line as closely as possible.",
     "- closingLineApprox can be approximate if the ending is partially obscured.",
-    "- whyItWorksZh should be 3-5 concrete points, not generic praise.",
+    "- whyItWorksEn should be 3-5 concrete points, not generic praise.",
   ].join("\n");
 }
 
@@ -230,7 +243,11 @@ export async function analyzeOne({ item, model, outputDir, dependencies = {} }) 
     (typeof item.durationSeconds === "number" && Number.isFinite(item.durationSeconds)
       ? Math.ceil(item.durationSeconds)
       : 60);
-  const inputMode = selectVideoInputMode(stat.size);
+  const inputBoundary = buildVideoInputBoundary(stat.size);
+  const inputMode = inputBoundary.inputMode;
+  console.log(
+    `[video-analysis preflight] ${item.sourceId}: ${inputBoundary.fileSizeBytes} bytes -> ${inputBoundary.inputMode}; ${inputBoundary.transferBoundary}.`,
+  );
   let storageReference = null;
   let payload;
 
@@ -289,17 +306,17 @@ export async function analyzeOne({ item, model, outputDir, dependencies = {} }) 
     sourceUrl: item.sourceUrl,
     videoFilePath: item.filePath,
     model,
-    summaryZh: parsed.summaryZh || "",
-    hookZh: parsed.hookZh || "",
-    contentPromiseZh: parsed.contentPromiseZh || "",
-    structureTypeZh: parsed.structureTypeZh || "",
-    visualStyleZh: parsed.visualStyleZh || "",
-    ctaZh: parsed.ctaZh || "",
-    whyItWorksZh: Array.isArray(parsed.whyItWorksZh) ? parsed.whyItWorksZh : [],
+    summaryEn: parsed.summaryEn || "",
+    hookEn: parsed.hookEn || "",
+    contentPromiseEn: parsed.contentPromiseEn || "",
+    structureTypeEn: parsed.structureTypeEn || "",
+    visualStyleEn: parsed.visualStyleEn || "",
+    ctaEn: parsed.ctaEn || "",
+    whyItWorksEn: Array.isArray(parsed.whyItWorksEn) ? parsed.whyItWorksEn : [],
     openingLineExact: parsed.openingLineExact || "",
     closingLineApprox: parsed.closingLineApprox || "",
-    spokenAudioFlowZh: parsed.spokenAudioFlowZh || "",
-    shotTimelineZh: normalizeTimeline(
+    spokenAudioFlowEn: parsed.spokenAudioFlowEn || "",
+    shotTimelineEn: normalizeTimeline(
       shots.map((shot) => ({
         ...shot,
         startTime: shot.startTime || formatSeconds(shot.startTimeSeconds),
@@ -307,7 +324,7 @@ export async function analyzeOne({ item, model, outputDir, dependencies = {} }) 
       }))
     ),
     shots,
-    uncertaintiesZh: Array.isArray(parsed.uncertaintiesZh) ? parsed.uncertaintiesZh : [],
+    uncertaintiesEn: Array.isArray(parsed.uncertaintiesEn) ? parsed.uncertaintiesEn : [],
     rawText: text,
   };
 
@@ -322,6 +339,7 @@ export async function analyzeOne({ item, model, outputDir, dependencies = {} }) 
       model,
       inputMode,
       inlineByteLimit: INLINE_VIDEO_BYTE_LIMIT,
+      inputBoundary,
       ...(storageReference ? { storageReference } : {}),
       analyzedAt: startedAt,
     },

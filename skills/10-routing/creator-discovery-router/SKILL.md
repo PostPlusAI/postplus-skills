@@ -23,14 +23,14 @@ It decides:
 - whether to start from handles, content, or creator graph expansion
 - when to hand off to `skills/50-publishing/creator-outreach`
 
-Follow shared release-shell and research rules in:
+Follow shared public skill and research rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 - `postplus-shared` research preferences
 
 ## Execution Rules
 
-Inside the product-shell runtime, keep this skill narrow and fast:
+Inside the PostPlus runtime, keep this skill narrow and fast:
 
 - this skill is route selection only, not a collection workflow
 - do not enter plan mode
@@ -70,8 +70,8 @@ When the request is about finding TikTok creators/KOLs with topical fit plus a f
 
 For requests like:
 
-- `找 20 个 TikTok 护肤仪 KOL，优先微中腰部账号`
-- `找 TikTok 上适合做合作的美妆仪器达人`
+- `Find 20 TikTok skincare device KOLs, prioritizing micro and mid-tier accounts`
+- `Find TikTok beauty device creators suitable for collaboration`
 
 do not pause after reading `brief-schema.md`. Route to `skills/20-research/tiktok-research` immediately unless a missing detail would genuinely change the route.
 Do not treat a missing local reference file as a reason to stop or fail this handoff.
@@ -90,16 +90,16 @@ Use business language that a marketer can understand.
 
 Good examples:
 
-- "我会先从最近真的在发这类内容的人里找，再补他们的主页和联系方式。"
-- "我会先从竞品已经合作过的人和相关内容里拉一批候选，再筛掉不适合联系的账号。"
-- "我会先用你现有的达人名单补资料，再按内容、互动和合作价值做一轮筛选。"
-- "如果平台后台已经有达人池，我会先用那个做第一轮过滤，再补公开资料。"
+- "I will start from creators who are recently posting this kind of content, then enrich their profiles and contact paths."
+- "I will first pull candidates from competitor collaborations and related content, then filter out accounts that are not suitable for outreach."
+- "I will first enrich your existing creator list, then filter it by content fit, engagement, and collaboration value."
+- "If the platform backend already has a creator pool, I will use that as the first filtering pass, then enrich public profile data."
 
 Avoid explanations like:
 
-- "我会先走 content-first"
-- "这次更适合 graph-first"
-- "我准备 mixed route"
+- "I will start with the content-first route"
+- "This is better suited to a graph-first route"
+- "I am preparing a mixed route"
 
 Internal route labels are for system reasoning, not for user-facing communication.
 
@@ -288,8 +288,8 @@ If the request is ambiguous in a way that changes the route, ask one short quest
 
 Examples:
 
-- `你是更希望我先从最近在发这类内容的人里找，还是先从你已有名单和竞品名单里找？`
-- `你这次更在意达人粉丝量级，还是更在意内容和目标受众的贴合度？`
+- `Would you rather start from people recently posting this kind of content, or from your existing lists and competitor lists?`
+- `Do you care more about creator follower tier, or content and audience fit?`
 
 ## Failure Pattern To Avoid
 
@@ -311,8 +311,8 @@ Better route:
 When telling the user this plan, translate it into plain language:
 
 - first find people who are already posting the right content
-- then补主页和公开资料
-- then按粉丝量、内容贴合度和账号类型筛 shortlist
+- then enrich profiles and public data
+- then filter the shortlist by follower tier, content fit, and account type
 
 ## Default Filtering Pattern
 

@@ -1,13 +1,13 @@
 ---
 name: facebook-research
-description: Research Facebook pages, public follower or following surfaces, and public posts using hosted collection capability. Use this when the user wants Facebook account research, follower-surface sampling, or public post metrics.
+description: Research Facebook pages, public follower or following surfaces, and public posts using PostPlus Cloud collection service. Use this when the user wants Facebook account research, follower-surface sampling, or public post metrics.
 ---
 
 # Facebook Research
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill when the request is about Facebook account or content research.
 
@@ -35,11 +35,11 @@ samples from exposed surfaces, not a complete follower export. If the user's
 goal requires private or exhaustive audience data, stop and ask for a different
 source of truth before collecting.
 
-## Hosted Capability Boundary
+## PostPlus Cloud Boundary
 
 This skill depends on host-managed collection capability for the corresponding collection paths.
 
-In the product shell:
+In the PostPlus runtime:
 
 - do not probe or print provider secrets
 - do not ask the user to export them inside chat
@@ -63,7 +63,7 @@ Use the hosted follower collection path by default:
     - `url`
     - `subtitle_text`
     - `image`
-  - this is the default hosted path for Facebook audience-surface research on the released shell
+  - this is the default hosted path for Facebook audience-surface research on the public skill surface
 
 ## Supported Facebook Targets
 
@@ -82,13 +82,13 @@ Use the hosted follower collection path by default:
 
 ## Recommended Workflow
 
-1. If the user wants account audience research, start with follower collection using the hosted collection capability.
+1. If the user wants account audience research, start with follower collection using the PostPlus Cloud collection service.
 2. If the user wants content research, use the hosted content collection scripts below.
 3. If the user wants both, collect follower or following items first, then collect post evidence from the same page or profile.
 
 Do not treat Facebook follower-surface results as a guaranteed full audience export.
 
-## Release-Shell Execution Contract
+## Public Skill Execution Contract
 
 - keep collection briefs, raw datasets, normalized outputs, and summary caches
   under `<work-folder>/.postplus/facebook-research/`

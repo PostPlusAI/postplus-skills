@@ -1,8 +1,8 @@
 # Hosted Generative Video Notes
 
-This reference records the hosted capability route for Seedance 2.0 generative video.
+This reference records the PostPlus Cloud service route for Seedance 2.0 generative video.
 
-In product-shell runs, provider auth stays server-owned. The hosted capability endpoint
+In PostPlus runtime runs, provider auth stays server-owned. The PostPlus Cloud service endpoint
 handles authentication. These notes describe the request shape and behavior, not
 user-facing credential setup.
 
@@ -74,7 +74,7 @@ Voice and dialogue notes:
 - Keep request records in the normalized video contract, then map to the provider's flat payload in the adapter.
 - Use `ratio` or `aspectRatio` locally; the adapter sends provider field `aspect_ratio`.
 - Use `lastImage`, `referenceImages`, `referenceVideos`, and `referenceAudios` locally; snake_case provider aliases are also accepted.
-- The hosted capability returns prediction-style responses with `id`, `status`, `urls`, and `outputs`.
+- The PostPlus Cloud service returns prediction-style responses with `id`, `status`, `urls`, and `outputs`.
 - Success status is `completed`; outputs should be downloaded into the local `renders/` directory.
 
 ## Quality Guideline

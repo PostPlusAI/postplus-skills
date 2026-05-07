@@ -2,9 +2,9 @@
 
 ## Route
 
-- Seedance 2.0 jobs run through the hosted capability endpoint.
+- Seedance 2.0 jobs run through the PostPlus Cloud service endpoint.
 - Do not call the provider API directly.
-- If the hosted capability is unavailable or returns a stable error, stop immediately.
+- If the PostPlus Cloud service is unavailable or returns a stable error, stop immediately.
 
 ## Model And Duration
 
@@ -38,14 +38,14 @@
   - product images: product shape, color, packaging, texture, component details
 - If planning notes use handles such as `@storyboard`, `@product-detail`, or `@ref-video-1`, convert them into explicit bindings before submission.
 - Do not say only `use the attached references`.
-- In the final prompt, prefer explicit bindings such as `[图1]`, `[图2]`, and `[视频1]` plus role descriptions.
-- Always include `字幕`, `屏幕文字`, and `水印` in `promptPlan.mustAvoid` unless the user explicitly wants on-screen text.
+- In the final prompt, prefer explicit bindings such as `[image 1]`, `[image 2]`, and `[video 1]` plus role descriptions.
+- Always include `subtitles`, `on-screen text`, and `watermark` in `promptPlan.mustAvoid` unless the user explicitly wants on-screen text.
 
 ## PromptPlan Mapping
 
-- `主角` -> `promptPlan.subject`
-- `动作流程` -> `promptPlan.action`
-- `风格` -> `promptPlan.style`
+- subject / main character -> `promptPlan.subject`
+- action flow -> `promptPlan.action`
+- style -> `promptPlan.style`
 - scene, environment, lighting -> `promptPlan.scene`
 - camera, handheld feel, transition rhythm -> `promptPlan.camera`
 - exact voiceover -> `promptPlan.dialogue`
@@ -66,10 +66,10 @@
 - Each segment should still be usable as a standalone clip, not just as a middle fragment.
 - Final request text must not depend on previous-segment memory through
   shorthand such as `continue from the previous segment`, `same as previous`,
-  `same character`, `content above`, or `延续上一段`.
+  `same character`, or `content above`.
 
 ## User Output Preference
 
 - If the user asks to review the submission plan, show natural-language segment content first.
-- If the user says `提交`, `并行提交`, or clearly asks to send it out, create request JSON and submit.
+- If the user clearly asks to submit or submit in parallel, create request JSON and submit.
 - For completed jobs, report prediction id, status, and local render path.

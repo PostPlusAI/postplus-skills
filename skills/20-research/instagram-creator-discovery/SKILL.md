@@ -5,9 +5,9 @@ description: Discover Instagram creators through search, hashtags, tagged mentio
 
 # Instagram Creator Discovery
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill when the user wants to:
 

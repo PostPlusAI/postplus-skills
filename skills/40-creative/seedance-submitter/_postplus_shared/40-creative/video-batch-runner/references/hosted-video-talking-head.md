@@ -1,6 +1,6 @@
 # Hosted Talking-Head Video Notes
 
-This file records the hosted capability direction for image-plus-audio talking avatar video renders on the released shell.
+This file records the PostPlus Cloud service direction for image-plus-audio talking avatar video renders on the public skill surface.
 
 ## Use Case
 
@@ -70,7 +70,7 @@ Use `480p` only when:
 ## Suggested First Adapter Behavior
 
 1. read normalized local request
-2. map fields to the hosted capability payload
+2. map fields to the PostPlus Cloud service payload
 3. submit the prediction
 4. save the raw response
 5. if `status` is `completed`, download outputs immediately

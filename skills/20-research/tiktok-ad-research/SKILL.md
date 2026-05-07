@@ -5,18 +5,18 @@ description: Research TikTok Creative Center or ad-library style datasets for wi
 
 # TikTok Ad Research
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill when the user wants paid TikTok ad intelligence, not organic creator or content discovery.
 
 Typical requests:
 
-- 找 TikTok 上跑得好的广告素材
-- 看某个类目 / 国家 / objective 的 top ads
-- 研究竞品广告怎么做 hook、卖点、CTA
-- 从 Creative Center 数据里提炼 ad brief
+- Find TikTok ad creatives that are performing well
+- Inspect top ads for a category, country, or objective
+- Study how competitor ads handle hooks, selling points, and CTAs
+- Extract ad briefs from Creative Center data
 
 Read first:
 
@@ -65,14 +65,14 @@ Use these pieces in combination:
 - analyze:
   - `${CLAUDE_SKILL_DIR}/scripts/analyze_tiktok_ads_dataset.mjs`
 
-## Release-Shell Execution Contract
+## Public Skill Execution Contract
 
 - keep actor input JSON, raw datasets, normalized datasets, and analysis caches
   under `<work-folder>/.postplus/tiktok-ads/`
 - keep only final user-facing summaries or shortlisted exports outside
   `.postplus/`
 - start with a bounded first pass before broader ad pulls
-- if hosted capability is unavailable, unauthorized, or returns a stable
+- if PostPlus Cloud service is unavailable, unauthorized, or returns a stable
   network error, stop immediately instead of switching to ad hoc shell glue
 
 ## Recommended Workflow

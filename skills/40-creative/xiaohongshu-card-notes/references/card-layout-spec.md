@@ -7,7 +7,7 @@ Use these defaults unless the user explicitly overrides them.
 - Aspect ratio: `3:4`
 - Recommended size: `1242 x 1656`
 
-This is the default production target for Xiaohongshu card notes on the released shell.
+This is the default production target for Xiaohongshu card notes on the public skill surface.
 
 ## Type Scale
 

@@ -1,6 +1,6 @@
 ---
 name: postplus-shared
-description: Shared rules, routing preferences, execution boundaries, and workflow references for released PostPlus skills. Use this before any PostPlus skill that mentions shared release-shell rules, research preferences, product-selection preferences, TikTok music workflow, or ads workflow.
+description: Shared rules, routing preferences, execution boundaries, and workflow references for released PostPlus skills. Use this before any PostPlus skill that mentions shared public skill rules, research preferences, product-selection preferences, TikTok music workflow, or ads workflow.
 ---
 
 # PostPlus Shared
@@ -14,7 +14,7 @@ business skill's `_postplus_shared/` directory.
 
 ## References
 
-- [`shared-release-shell-rules.md`](references/shared-release-shell-rules.md)
+- [`shared-public-skill-rules.md`](references/shared-public-skill-rules.md)
 - [`shared-research-preferences.md`](references/shared-research-preferences.md)
 - [`shared-product-selection-preferences.md`](references/shared-product-selection-preferences.md)
 - [`shared-tiktok-music-workflow.md`](references/shared-tiktok-music-workflow.md)

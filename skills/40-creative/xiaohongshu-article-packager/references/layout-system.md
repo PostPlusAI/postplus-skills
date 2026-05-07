@@ -1,6 +1,6 @@
 # Layout System
 
-Use this reference when the user wants the visual direction inspired by the referenced "排版专家" PDF.
+Use this reference when the user wants the visual direction inspired by the referenced "layout expert" PDF.
 
 This is not a strict renderer spec.
 It is a stable visual brief for downstream HTML, image, or design generation.

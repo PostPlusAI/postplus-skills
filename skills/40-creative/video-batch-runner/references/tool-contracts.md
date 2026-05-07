@@ -4,7 +4,7 @@
 > examples below are structural placeholders. They illustrate the expected
 > shape; no real customer or campaign data appears here.
 
-This file defines the normalized local contract for the video render adapters on the released shell.
+This file defines the normalized local contract for the video render adapters on the public skill surface.
 
 ## 1. `generate_video_from_image_audio`
 
@@ -44,7 +44,7 @@ Use when:
 
 Hosted execution mapping:
 
-- The CLI skill calls the PostPlus Cloud hosted video capability endpoint.
+- The CLI skill calls the PostPlus Cloud PostPlus Cloud video service endpoint.
 - The server selects the underlying provider and model.
 - Request body minimum: `{ "image": "...", "audio": "..." }`
 - Response fields to preserve raw:
@@ -110,7 +110,7 @@ Use when:
   - `videos[]`
   - `audios[]`
   - `draftTaskId`
-- `promptPlan.referenceMap` is converted into `[图1]...，[图2]...` style prompt text to better match reference-image guidance.
+- `promptPlan.referenceMap` is converted into `[image 1]...，[image 2]...` style prompt text to better match reference-image guidance.
 - `promptPlan.camera`, `promptPlan.shotType`, and `promptPlan.motion` are prompt-planning text only.
 - Camera trajectory, object trajectory, motion brush, and brush mask fields are not supported by the current runner and must fail before provider submission.
 

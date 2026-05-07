@@ -15,16 +15,26 @@ function usage() {
   );
 }
 
+const BILINGUAL_PRODUCT_ROLE_TERMS = Object.freeze({
+  sales: ["sold", "sales", "已售", "销量"],
+  bundle: ["set", "bundle", "kit", "套装", "组合"],
+  accessory: ["accessory", "replacement", "refill", "配件", "替换"],
+});
+
+function includesAny(text, terms) {
+  return terms.some((term) => text.includes(term));
+}
+
 function inferProductRole(item) {
   const salesText = safeLower(item.salesText);
   const title = safeLower(item.title);
-  if (salesText.includes("已售") || salesText.includes("销量")) {
+  if (includesAny(salesText, BILINGUAL_PRODUCT_ROLE_TERMS.sales)) {
     return "hero-sku-candidate";
   }
-  if (title.includes("套装") || title.includes("组合")) {
+  if (includesAny(title, BILINGUAL_PRODUCT_ROLE_TERMS.bundle)) {
     return "bundle";
   }
-  if (title.includes("配件") || title.includes("替换")) {
+  if (includesAny(title, BILINGUAL_PRODUCT_ROLE_TERMS.accessory)) {
     return "accessory";
   }
   return "catalog";

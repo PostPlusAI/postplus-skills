@@ -49,6 +49,10 @@ export function safeLower(value) {
   return cleanString(value)?.toLowerCase() || "";
 }
 
+function includesAny(value, terms) {
+  return terms.some((term) => value.includes(term));
+}
+
 export function toArray(value) {
   if (Array.isArray(value)) {
     return value.filter((entry) => entry !== null && entry !== undefined);
@@ -356,19 +360,26 @@ export function classifyTitlePattern(title) {
   if (!value) {
     return "unknown";
   }
-  if (/^\d+/.test(value) || /盘点|合集|推荐|总结/.test(value)) {
+  const bilingualTitleLexicon = {
+    listicle: ["list", "roundup", "collection", "recommendation", "summary", "盘点", "合集", "推荐", "总结"],
+    contrast: ["contrast", "comparison", "compare", "vs", "difference", "差距", "对比", "有多"],
+    advice: ["how to", "how", "tips", "advice", "avoid", "must", "should", "怎么", "如何", "建议", "不要", "别", "一定", "必须"],
+    relatableWorklife: ["workplace", "office workers", "office", "boss", "coworker", "daily work", "打工人", "职场", "上班", "老板", "同事", "办公室", "年底", "过年", "每天"],
+    emotion: ["breakdown", "awkward", "painful", "hilarious", "angry", "too real", "崩溃", "心酸", "尴尬", "笑死", "气死", "破防"],
+  };
+  if (/^\d+/.test(value) || includesAny(value, bilingualTitleLexicon.listicle)) {
     return "listicle";
   }
-  if (/差距|对比|vs|有多/.test(value)) {
+  if (includesAny(value, bilingualTitleLexicon.contrast)) {
     return "contrast";
   }
-  if (/怎么|如何|建议|不要|别|一定|必须/.test(value)) {
+  if (includesAny(value, bilingualTitleLexicon.advice)) {
     return "advice";
   }
-  if (/打工人|职场|上班|老板|同事|办公室|年底|过年|每天/.test(value)) {
+  if (includesAny(value, bilingualTitleLexicon.relatableWorklife)) {
     return "relatable-worklife";
   }
-  if (/崩溃|心酸|尴尬|笑死|气死|破防/.test(value)) {
+  if (includesAny(value, bilingualTitleLexicon.emotion)) {
     return "emotion";
   }
   return "general";
@@ -431,13 +442,13 @@ function buildCardSuggestions(patternCounts) {
   const suggestions = [];
   for (const { key } of topEntries(patternCounts, 3)) {
     if (key === "relatable-worklife") {
-      suggestions.push("把高频职场/打工人标题改成 4-6 页观察型图文卡片。");
+      suggestions.push("Turn frequent workplace or office-worker titles into 4-6 page observational image-post cards.");
     } else if (key === "contrast") {
-      suggestions.push("把高频对比类标题改成 before/after 或 A/B 差异卡片。");
+      suggestions.push("Turn frequent contrast titles into before/after or A/B difference cards.");
     } else if (key === "listicle") {
-      suggestions.push("把高频盘点/推荐类标题改成多页清单式卡片。");
+      suggestions.push("Turn frequent roundup or recommendation titles into multi-page checklist cards.");
     } else if (key === "advice") {
-      suggestions.push("把高频建议类标题改成问题-建议-行动三段式卡片。");
+      suggestions.push("Turn frequent advice titles into problem-advice-action card sequences.");
     }
   }
   return uniqueStrings(suggestions);

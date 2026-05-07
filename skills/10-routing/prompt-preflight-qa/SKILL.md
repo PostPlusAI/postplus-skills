@@ -5,9 +5,9 @@ description: Review storyboard prompts and video-request prompts before generati
 
 # Prompt Preflight QA
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill immediately before image or video generation.
 

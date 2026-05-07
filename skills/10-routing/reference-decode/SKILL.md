@@ -5,9 +5,9 @@ description: Decode benchmark videos, contact sheets, frames, or rough ideas int
 
 # Reference Decode
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill before prompt writing when any source material or rough concept exists.
 
@@ -105,6 +105,6 @@ Stop and say the decode is under-specified if there is no way to determine:
 
 Ask this when the visual anchor is missing:
 
-- "参考视频的首帧最吸引人的画面是什么？"
+- "What is the most compelling visual in the first frame of the reference video?"
 
 Do not move to storyboard writing with only mood words.

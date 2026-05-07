@@ -5,9 +5,9 @@ description: Local execution tools for X/Twitter hosted collection workflows, in
 
 # X Tools
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill when implementing or running the local execution layer for the X skill family.
 
@@ -39,7 +39,7 @@ Prefer:
 
 This skill should stay focused on local contracts after raw data has been collected.
 
-## Release-Shell Execution Contract
+## Public Skill Execution Contract
 
 - keep actor inputs, raw datasets, normalized outputs, ranking files, and graph
   caches under `<work-folder>/.postplus/x-tools/`
@@ -48,5 +48,5 @@ This skill should stay focused on local contracts after raw data has been collec
 - start with a bounded first pass before broadening the crawl
 - use PostPlus-supported scripts plus the shared collection runner only; do not switch to
   ad hoc shell glue
-- if hosted capability is unavailable, unauthorized, or returns a stable
+- if PostPlus Cloud service is unavailable, unauthorized, or returns a stable
   network error, stop immediately instead of switching to ad hoc shell glue

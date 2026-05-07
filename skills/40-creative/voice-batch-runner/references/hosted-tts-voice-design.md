@@ -1,6 +1,6 @@
 # Hosted TTS Voice Design Notes
 
-This file records the hosted capability direction for voice design on the released shell.
+This file records the PostPlus Cloud service direction for voice design on the public skill surface.
 
 ## Current Role
 
@@ -17,7 +17,7 @@ The capability direction is suitable when the workflow starts from:
 - voice description
 - persona traits
 
-This matches the current stage of the released shell, where personas exist but durable voice identities have not been captured yet.
+This matches the current stage of the public skill surface, where personas exist but durable voice identities have not been captured yet.
 
 ## Documented Inputs
 
@@ -65,11 +65,11 @@ Interpretation for the adapter:
 
 ## Boundary
 
-This hosted capability path should be treated as:
+This PostPlus Cloud service path should be treated as:
 
 - good for designing or approximating a voice
 - not necessarily the final long-term timbre-preservation backend
 
-Later, a second hosted capability may be introduced to lock a voice identity more tightly while scripts change.
+Later, a second PostPlus Cloud service may be introduced to lock a voice identity more tightly while scripts change.
 
 The outer workflow should not need to change when that happens.

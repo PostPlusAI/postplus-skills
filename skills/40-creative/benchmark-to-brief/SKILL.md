@@ -5,9 +5,9 @@ description: Turn validated benchmark research into campaign briefs and concept 
 
 # Benchmark To Brief
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill after research already exists.
 

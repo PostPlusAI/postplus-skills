@@ -5,9 +5,9 @@ description: Run fact-grounded image generation batches for short-form video pro
 
 # Image Batch Runner
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill after persona and concept work already exists.
 
@@ -95,13 +95,13 @@ These scripts take normalized request JSON files and write:
 - downloaded image assets under `images/candidates/`
 - asset-level records such as `asset.json` and `index.json`
 
-## Hosted Boundary Rule
+## PostPlus Cloud Rule
 
 - keep request files, raw provider responses, and polling state under
   `<work-folder>/.postplus/image-batch-runner/` when they are internal
   execution state
 - keep only final user-facing assets outside `.postplus/`
-- if hosted image capability is unavailable, unauthorized, or returns a stable
+- if PostPlus Cloud image service is unavailable, unauthorized, or returns a stable
   network error, stop immediately instead of switching to ad hoc shell glue
 
 ## Default Workflow

@@ -39,9 +39,9 @@ Why those references are excluded:
 
 Good:
 
-- `[图1]: main character identity, hair, face, and overall appearance should stay consistent`
-- `[图2]: product shape, color, and material should stay consistent`
-- `[音频1]: female voice identity and speaking tone should stay consistent`
+- `[image 1]: main character identity, hair, face, and overall appearance should stay consistent`
+- `[image 2]: product shape, color, and material should stay consistent`
+- `[audio 1]: female voice identity and speaking tone should stay consistent`
 - `handheld selfie rhythm`
 - `payoff-first cadence`
 - `board-level wobble and water drift`

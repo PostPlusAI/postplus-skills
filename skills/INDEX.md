@@ -6,7 +6,7 @@ This file lists the skills currently available through PostPlus.
 
 - `postplus-shared`
   - Path: `skills/00-shared/postplus-shared/SKILL.md`
-  - Contains shared release-shell rules, research preferences, product-selection
+  - Contains shared public skill rules, research preferences, product-selection
     preferences, TikTok music workflow, and ads workflow.
 
 ## Released Skills

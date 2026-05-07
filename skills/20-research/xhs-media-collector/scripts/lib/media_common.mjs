@@ -143,6 +143,9 @@ export async function downloadAsset(asset, outputDir) {
   if (cleanString(asset.assetType) === "video") {
     throw new Error(`Video asset downloads are not validated for ${asset.assetId}.`);
   }
+  if (cleanString(asset.assetRole) !== "cover") {
+    throw new Error(`Only cover image downloads are validated for ${asset.assetId}.`);
+  }
   const remoteUrl = cleanString(asset.remoteUrl);
   if (!remoteUrl) {
     throw new Error(`Asset ${asset.assetId} is missing remoteUrl.`);

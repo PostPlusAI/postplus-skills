@@ -5,19 +5,19 @@ description: Research Amazon platform data for competitive products, pricing ban
 
 # Amazon Research
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill for Amazon platform-data work.
 
 Default use cases:
 
-- 看 Amazon 竞品
-- 查价格带
-- 抓评论和差评
-- 看 best sellers / new releases
-- 判断某个产品在 Amazon 上怎么打
+- Inspect Amazon competitors
+- Check price bands
+- Collect reviews and negative reviews
+- Inspect best sellers / new releases
+- Judge how to position a product on Amazon
 
 Do not default to web search for these when this skill can cover them.
 Use web only for external facts or supplemental context.
@@ -64,9 +64,9 @@ Prefer:
 
 Tell the user:
 
-- "我会先用少量关键词或 ASIN 做第一轮 Amazon 采集，输出排名表、详情表、评论摘要或榜单；如果信号够强，再交给 sourcing-selection 做跨证据判断。"
+- "I will first use a small set of keywords or ASINs for the first Amazon collection pass and output ranking tables, detail tables, review summaries, or lists; if the signal is strong enough, I will pass it to sourcing-selection for cross-evidence judgment."
 
-## Release-Shell Execution Contract
+## Public Skill Execution Contract
 
 - keep request files, raw datasets, normalized datasets, and analysis caches
   under `<work-folder>/.postplus/amazon/`
@@ -78,7 +78,7 @@ Tell the user:
   - one keyword set
   - one ASIN batch
   - one bestseller page
-- if hosted capability is unavailable, unauthorized, or returns a stable
+- if PostPlus Cloud service is unavailable, unauthorized, or returns a stable
   network error, stop immediately instead of switching to ad hoc shell glue
 
 Normalized schema:
@@ -95,10 +95,10 @@ Main scripts:
 
 If the user asks strategic Amazon questions like:
 
-- 最像的竞品有哪些
-- 价格锚点是什么
-- 评论里最常见的问题是什么
-- 我们要怎么打
+- Which competitors are closest
+- What the price anchors are
+- What problems appear most often in reviews
+- How we should position against them
 
 Treat them as Amazon platform-data questions first, not generic strategy questions.
 

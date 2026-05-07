@@ -14,7 +14,7 @@ const SHARED_MARKDOWN_PATH_PATTERN =
   /\$\{CLAUDE_SKILL_DIR\}\/_postplus_shared\/shared-[^`) \n]+\.md/g;
 const CLAUDE_SKILL_PATH_PATTERN = /\$\{CLAUDE_SKILL_DIR\}\/([^\s`)]+)/g;
 const SHARED_PRINCIPLE_PATTERN =
-  /release-shell rules|research preferences|product-selection preferences|TikTok music workflow|ads workflow/i;
+  /public skill rules|research preferences|product-selection preferences|TikTok music workflow|ads workflow/i;
 
 function walkFiles(root, predicate) {
   const files = [];
@@ -111,7 +111,7 @@ for (const filePath of vendoredSharedMarkdown) {
 }
 
 const requiredSharedReferences = [
-  "shared-release-shell-rules.md",
+  "shared-public-skill-rules.md",
   "shared-research-preferences.md",
   "shared-product-selection-preferences.md",
   "shared-tiktok-music-workflow.md",

@@ -19,8 +19,8 @@ export function routeCreatorDiscovery(brief = {}) {
   return {
     explanation:
       platform === "tiktok"
-        ? "先从真实相关内容里找候选，再补主页和筛选。"
-        : "先从相关内容和作者里收一轮，再补账号资料做筛选。",
+        ? "Start from genuinely relevant content, then enrich profiles and filter candidates."
+        : "Collect an initial pass from related content and authors, then enrich account data for filtering.",
     handoffReady: true,
     platform,
     primarySkill:

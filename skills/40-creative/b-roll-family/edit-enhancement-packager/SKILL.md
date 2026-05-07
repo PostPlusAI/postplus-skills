@@ -5,9 +5,9 @@ description: Package beat-level edit enhancement instructions from a B-roll plan
 
 # Edit Enhancement Packager
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill after B-roll matching exists.
 
@@ -38,11 +38,11 @@ Optional supporting outputs:
 
 Use this skill when the user asks for things like:
 
-- 把 B-roll plan 变成编辑方案
-- 加关键词强化和微动画提示
-- 哪些地方留脸，哪些地方切 B-roll
-- 生成 editor-ready edit package
-- 把字幕、B-roll、关键词动效一起打包
+- Turn the B-roll plan into an edit plan
+- Add keyword emphasis and micro-animation notes
+- Where to keep the face and where to cut to B-roll
+- Generate an editor-ready edit package
+- Package subtitles, B-roll, and keyword motion effects together
 
 Do not use this skill when the user still lacks:
 
@@ -185,7 +185,7 @@ node ${CLAUDE_SKILL_DIR}/scripts/run_package_edit_enhancements.mjs \
   --style-profile basic
 ```
 
-## Release-Shell Execution Contract
+## Public Skill Execution Contract
 
 - keep enhancement inputs, beat-level working files, and intermediate edit
   packaging outputs under `<work-folder>/.postplus/edit-enhancement-packager/`

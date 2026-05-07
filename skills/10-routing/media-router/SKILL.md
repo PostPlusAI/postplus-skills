@@ -5,9 +5,9 @@ description: Route audio, video, transcript, subtitle, and edit-prep requests in
 
 # Media Router
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill when the user wants to do something with:
 

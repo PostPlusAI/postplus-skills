@@ -5,16 +5,16 @@ description: Lay out an existing draft or script into a Xiaohongshu image-post o
 
 # Xiaohongshu Article Packager
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill when the user wants:
 
-- 一篇原稿变成可发的小红书图文
-- 口播稿改成图文分页
-- 给一段观点内容做分页、层级、配图和可渲染页面
-- 产出适合后续排版或渲染的结构化内容包，但保留原文
+- turn a source draft into a publishable Xiaohongshu image post
+- turn a spoken script into paginated image-post content
+- turn an opinion piece into pages, hierarchy, image direction, and renderable pages
+- produce a structured content package suitable for layout or rendering while preserving the source text
 
 This skill is for `layout packaging`.
 It is not for:
@@ -216,9 +216,9 @@ A common use case is:
 
 For example:
 
-- `口播稿 -> 小红书图文分页`
-- `观点长文 -> 封面 + 标题 + 8 页图文`
-- `创始人表达 -> 更适合图文阅读的版本`
+- `Spoken script -> Xiaohongshu image-post pagination`
+- `Long opinion piece -> cover + title + 8 image-post pages`
+- `Founder message -> version better suited to image-post reading`
 
 ## Default File Placement
 
@@ -230,7 +230,7 @@ If the user asks you to write outputs to disk, prefer creating a sibling folder 
 
 Store the package files there using the default filenames from the output contract.
 
-## Release-Shell Execution Contract
+## Public Skill Execution Contract
 
 - keep page planning notes, source extracts, and intermediate packaging files
   under `<work-folder>/.postplus/xiaohongshu-article-packager/`

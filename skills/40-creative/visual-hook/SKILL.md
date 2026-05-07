@@ -5,9 +5,9 @@ description: Design and critique TikTok/Reels visual hooks for short-form slides
 
 # Visual Hook
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill when the task is about making a short-form visual opening stronger.
 

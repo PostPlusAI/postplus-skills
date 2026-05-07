@@ -4,7 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { runHostedCapabilityRequest } from "../../../../_postplus_shared/00-core/shared-runtime/scripts/lib/hosted_capability_bridge.mjs";
+import { runHostedCapabilityRequest } from "../../../../_postplus_shared/00-core/shared-runtime/scripts/lib/postplus_cloud_client.mjs";
 
 export const SOURCE_IDS = {
   linkedinPosts: "gd_lyy3tktm25m4avu764",
@@ -207,17 +207,36 @@ export function classifyPlatformFromUrl(url) {
   return null;
 }
 
+const BILINGUAL_SUPPORTED_PLATFORM_TERMS = Object.freeze({
+  linkedin: ["linkedin", "领英"],
+  youtube: ["youtube", "油管"],
+  facebook: ["facebook", "脸书"],
+});
+
+const BILINGUAL_UNSUPPORTED_PLATFORM_TERMS = Object.freeze({
+  tiktok: ["tiktok", "tik tok", "抖音"],
+  instagram: ["instagram", "ig", "ins", "xiaohongshu", "小红书"],
+  x: ["twitter", "x", "推特"],
+});
+
+const BILINGUAL_COUNT_UNITS = Object.freeze(["result", "results", "post", "posts", "video", "videos", "item", "items", "条", "个"]);
+
+function includesBilingualTerm(value, terms) {
+  return terms.some((term) => {
+    if (/^[a-z ]+$/.test(term)) {
+      return new RegExp(`(^|[^a-z])${term.replace(/ /g, "\\s+")}([^a-z]|$)`).test(value);
+    }
+    return value.includes(term);
+  });
+}
+
 export function detectPlatforms(text) {
   const value = String(text || "").toLowerCase();
   const platforms = [];
-  if (/(^|[^a-z])linkedin([^a-z]|$)|领英/.test(value)) {
-    platforms.push("linkedin");
-  }
-  if (/(^|[^a-z])youtube([^a-z]|$)|油管/.test(value)) {
-    platforms.push("youtube");
-  }
-  if (/(^|[^a-z])facebook([^a-z]|$)|脸书/.test(value)) {
-    platforms.push("facebook");
+  for (const [platform, terms] of Object.entries(BILINGUAL_SUPPORTED_PLATFORM_TERMS)) {
+    if (includesBilingualTerm(value, terms)) {
+      platforms.push(platform);
+    }
   }
   return platforms;
 }
@@ -225,27 +244,24 @@ export function detectPlatforms(text) {
 export function detectUnsupportedPlatforms(text) {
   const value = String(text || "").toLowerCase();
   const unsupported = [];
-  if (/(^|[^a-z])(tiktok|tik tok)([^a-z]|$)|抖音/.test(value)) {
-    unsupported.push("tiktok");
-  }
-  if (/(^|[^a-z])(instagram|ig)([^a-z]|$)|小红书|ins/.test(value)) {
-    unsupported.push("instagram");
-  }
-  if (/(^|[^a-z])(twitter|x)([^a-z]|$)|推特/.test(value)) {
-    unsupported.push("x");
+  for (const [platform, terms] of Object.entries(BILINGUAL_UNSUPPORTED_PLATFORM_TERMS)) {
+    if (includesBilingualTerm(value, terms)) {
+      unsupported.push(platform);
+    }
   }
   return Array.from(new Set(unsupported));
 }
 
 export function parseRequestedCount(text, fallback = 50) {
   const value = String(text || "");
-  const directMatch = value.match(/(\d+)\s*(条|个|results?|posts?|videos?)/i);
+  const countUnitPattern = BILINGUAL_COUNT_UNITS.join("|");
+  const directMatch = value.match(new RegExp(`(\\d+)\\s*(${countUnitPattern})`, "i"));
   if (directMatch) {
     const parsed = Number(directMatch[1]);
     if (Number.isFinite(parsed) && parsed > 0) return parsed;
   }
 
-  const looseMatch = value.match(/(\d+)[^\d]{0,20}(条|个|results?|posts?|videos?)/i);
+  const looseMatch = value.match(new RegExp(`(\\d+)[^\\d]{0,20}(${countUnitPattern})`, "i"));
   if (looseMatch) {
     const parsed = Number(looseMatch[1]);
     if (Number.isFinite(parsed) && parsed > 0) return parsed;

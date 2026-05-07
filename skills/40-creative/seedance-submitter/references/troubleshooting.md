@@ -17,7 +17,7 @@ If a job stays in `processing` for unusually long:
 2. If clearly stuck, create a new rerun directory.
 3. Resubmit the same segment without overwriting the old result.
 4. Keep the old prediction id in notes but use the completed rerun as the best output.
-5. If the hosted capability itself is unavailable, stop and report the error — do not attempt direct provider calls.
+5. If the PostPlus Cloud service itself is unavailable, stop and report the error — do not attempt direct provider calls.
 
 ## Reference Image Problems
 
@@ -31,9 +31,9 @@ If a job stays in `processing` for unusually long:
 - If a later segment resets character, product state, or scene, add continuity language to `promptPlan.subject`, `promptPlan.action`, and `mustKeep`.
 - If an action crosses segments, restate the visible state inside the later segment request.
 - Reuse the same reference images across related segments.
-- Do not write `延续上一段`, `same as previous`, or similar shorthand. The
+- Do not write `continue from the previous segment`, `same as previous`, or similar shorthand. The
   validator rejects request text that depends on previous-segment memory.
 
 ## Wrong Provider Field
 
-If a request has `provider` set to a direct supplier name, change it to `hosted-media` and use one of the released `video-seedance-2-*` model keys. The hosted capability handles provider routing server-side.
+If a request has `provider` set to a direct supplier name, change it to `hosted-media` and use one of the released `video-seedance-2-*` model keys. The PostPlus Cloud service handles provider routing server-side.

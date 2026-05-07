@@ -5,19 +5,19 @@ description: Research Google Trends search-intent signals for topic discovery, k
 
 # Google Trends Research
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill for Google Trends platform-data work.
 
 Typical requests:
 
-- 看最近哪些关键词或话题在变热
-- 比较几个关键词的搜索趋势
-- 看某个主题在哪些国家或地区更热
-- 找 rising queries 或 related topics
-- 给内容研究、选品研究、campaign planning 提供 search-intent signals
+- See which keywords or topics are heating up
+- Compare search trends across several keywords
+- See which countries or regions are warmer for a topic
+- Find rising queries or related topics
+- Provide search-intent signals for content research, product-selection research, and campaign planning
 
 Read first:
 
@@ -53,9 +53,9 @@ Classify the request first:
 
 Use when the user asks:
 
-- 最近 Google 上什么在热
-- 某个国家今天 / 这几天的热点搜索是什么
-- 先给我一批实时热点主题
+- What is trending on Google recently
+- What hot searches a country has today or in the past few days
+- Give me an initial set of real-time trending topics
 
 Preferred hosted collection key:
 
@@ -65,9 +65,9 @@ Preferred hosted collection key:
 
 Use when the user asks:
 
-- 这个关键词最近有没有变热
-- 比较几个词的趋势变化
-- 看过去几个月 / 一年里的搜索热度
+- Whether this keyword has heated up recently
+- Compare trend changes across several terms
+- Inspect search interest over the past months or year
 
 Preferred hosted collection keys:
 
@@ -77,9 +77,9 @@ Preferred hosted collection keys:
 
 Use when the user asks:
 
-- 哪些国家 / 地区对这个主题更敏感
-- 这个词在不同市场哪里更热
-- 想做 geo priority 判断
+- Which countries or regions are more responsive to this topic
+- Where this term is warmer across markets
+- Need a geographic priority judgment
 
 Preferred hosted collection key:
 
@@ -89,9 +89,9 @@ Preferred hosted collection key:
 
 Use when the user asks:
 
-- 这个主题还有哪些相关搜索词
-- 有没有 rising queries 可当 seed
-- 帮我扩一组关键词池
+- Which related search terms this topic has
+- Whether there are rising queries usable as seeds
+- Expand a keyword pool for me
 
 Preferred hosted collection key:
 
@@ -119,39 +119,19 @@ Use `google-trends-fast` by default when the task needs:
 
 ### `google-trends-fast`
 
-Keyword analysis input:
+The skill compiles user requests into one of two internal input shapes:
 
-```json
-{
-  "enableTrendingSearches": false,
-  "keyword": "led skincare device",
-  "predefinedTimeframe": "today 12-m",
-  "geo": "US",
-  "fetchRegionalData": false
-}
-```
+- keyword analysis: keyword, timeframe, geo, optional regional data
+- trending-search scan: country, lookback window, max item count
 
-`google-trends-fast` defaults to trending-search mode in its hosted input
-schema. For keyword analysis, `enableTrendingSearches` must be explicitly
-`false`; otherwise keyword fields are ignored by the actor.
+The hosted actor's mode switch is an internal implementation detail. Do not
+ask the user to choose or edit provider fields. Classify the request, compile
+the correct actor input, and keep implementation field names inside logs or
+developer errors only.
 
-This is an internal actor contract. Do not ask the user about
-`enableTrendingSearches`; classify the request and set it in the compiled input.
+## PostPlus-Provided Runner
 
-Trending-search input:
-
-```json
-{
-  "enableTrendingSearches": true,
-  "trendingSearchesCountry": "US",
-  "trendingSearchesTimeframe": "24",
-  "trendingSearchesMaxItems": 50
-}
-```
-
-## Repo-Owned Runner
-
-For product-shell execution, use the repo-owned collection runner:
+For PostPlus runtime execution, use the PostPlus-provided collection runner:
 
 ```bash
 node skills/20-research/google-trends-research/scripts/collection_actor_run.mjs \
@@ -170,7 +150,7 @@ Use the lightest valid chain:
 4. separate observation from inference
 5. hand off to other skills if deeper evidence is needed
 
-## Release-Shell Execution Contract
+## Public Skill Execution Contract
 
 - keep query briefs, raw trend payloads, normalized outputs, and watchlist
   caches under `<work-folder>/.postplus/google-trends/`
@@ -181,7 +161,7 @@ Use the lightest valid chain:
   - one topic cluster
   - one geo scope
   - one timeframe comparison
-- if hosted capability is unavailable, unauthorized, or returns a stable
+- if PostPlus Cloud service is unavailable, unauthorized, or returns a stable
   network error, stop immediately instead of switching to ad hoc shell glue
 
 ## Good Output

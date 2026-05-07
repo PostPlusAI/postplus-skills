@@ -1,6 +1,6 @@
 # Request JSON
 
-Use this shape for Seedance 2.0 request records on the released shell.
+Use this shape for Seedance 2.0 request records on the public skill surface.
 
 ## Required Top-Level Fields
 
@@ -58,9 +58,9 @@ Recommended context fields:
     "audio": "",
     "mustKeep": [],
     "mustAvoid": [
-      "字幕",
-      "屏幕文字",
-      "水印"
+      "subtitles",
+      "on-screen text",
+      "watermark"
     ],
     "referenceMap": []
   }

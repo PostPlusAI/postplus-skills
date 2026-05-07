@@ -193,9 +193,9 @@ Bad:
 
 Better:
 
-- `[图1] controls shot order and camera flow`
-- `[图2] controls product color and texture`
-- `[视频1] controls pacing and continuity targets that must be restated in this request`
+- `[image 1] controls shot order and camera flow`
+- `[image 2] controls product color and texture`
+- `[video 1] controls pacing and continuity targets that must be restated in this request`
 
 For multi-segment work, each segment's final provider-ready payload must repeat
 the full binding lines for every reference it uses.

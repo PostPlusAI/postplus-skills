@@ -5,9 +5,9 @@ description: Match spoken edit beats to candidate B-roll assets using a normaliz
 
 # B-roll Match Engine
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill when the user wants to map a talking-head edit to candidate B-roll coverage.
 
@@ -35,11 +35,11 @@ Optional supporting outputs:
 
 Use this skill when the user asks for things like:
 
-- 这些口播句子该配哪些 B-roll
-- 帮我匹配素材
-- 哪些地方应该切屏幕或证明画面
-- 这条 talking head 怎么上 B-roll 更合理
-- 给我一个 B-roll plan
+- Which B-roll should match these spoken lines
+- Match assets for me
+- Where to cut to screen footage or proof visuals
+- How to add B-roll to this talking-head video more reasonably
+- Give me a B-roll plan
 
 Do not use this skill when the user still lacks a usable B-roll inventory.
 
@@ -171,7 +171,7 @@ node ${CLAUDE_SKILL_DIR}/scripts/run_match_broll_plan.mjs \
   --output <work-folder>/broll-plan.json
 ```
 
-## Release-Shell Execution Contract
+## Public Skill Execution Contract
 
 - keep beat chunks, candidate rankings, and intermediate match plans under
   `<work-folder>/.postplus/broll-match-engine/`

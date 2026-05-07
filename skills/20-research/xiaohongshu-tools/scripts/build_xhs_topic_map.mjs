@@ -29,18 +29,29 @@ function topEntries(map, limit = 20) {
     .map(([value, count]) => ({ value, count }));
 }
 
+const BILINGUAL_CONTENT_PILLAR_TERMS = Object.freeze({
+  review: ["review", "test", "测评", "评测"],
+  tutorial: ["tutorial", "guide", "how to", "教程", "攻略"],
+  recommendation: ["recommendation", "recommended", "must-have", "种草", "推荐"],
+  lifestyle: ["vlog", "daily", "routine", "日常"],
+});
+
+function includesAny(text, terms) {
+  return terms.some((term) => text.includes(term));
+}
+
 function inferContentPillar(post) {
   const text = safeLower([post.title, post.description, ...(post.hashtags || [])].filter(Boolean).join(" "));
-  if (text.includes("测评") || text.includes("评测")) {
+  if (includesAny(text, BILINGUAL_CONTENT_PILLAR_TERMS.review)) {
     return "review";
   }
-  if (text.includes("教程") || text.includes("攻略")) {
+  if (includesAny(text, BILINGUAL_CONTENT_PILLAR_TERMS.tutorial)) {
     return "tutorial";
   }
-  if (text.includes("推荐") || text.includes("种草")) {
+  if (includesAny(text, BILINGUAL_CONTENT_PILLAR_TERMS.recommendation)) {
     return "recommendation";
   }
-  if (text.includes("vlog") || text.includes("日常")) {
+  if (includesAny(text, BILINGUAL_CONTENT_PILLAR_TERMS.lifestyle)) {
     return "lifestyle";
   }
   return "general";

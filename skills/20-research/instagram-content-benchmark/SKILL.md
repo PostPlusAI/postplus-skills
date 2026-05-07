@@ -5,9 +5,9 @@ description: Benchmark Instagram posts and Reels to discover winning content pat
 
 # Instagram Content Benchmark
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill when the user wants to:
 
@@ -34,7 +34,7 @@ Read these references before implementation:
    - post URLs
    - Reel URLs
    - hashtags
-2. scrape a small candidate pool
+2. scrape the first candidate pool at 10-15 posts or reels per theme
 3. normalize posts and Reel-like results into one comparable dataset
 4. rank by engagement, relevance, recency, and format fit
 5. produce a shortlist of benchmark content
@@ -52,17 +52,20 @@ Start with:
 - one or two themes at a time
 - comments only after a shortlist exists
 
-Do not ask the user to choose a broad crawl range up front. Expand only after
-the first shortlist proves the seed quality.
+Treat `10-15` posts or reels per theme as the first-pass boundary, not a
+preference. Do not ask the user to choose a broad crawl range up front and do
+not compile a wider first actor input from broad wording like "as many as
+possible" or "scan the whole niche." Expand only after the first shortlist
+proves seed quality and the user approves a second pass.
 
-## Release-Shell Execution Contract
+## Public Skill Execution Contract
 
 - keep benchmark briefs, actor inputs, raw datasets, normalized datasets, and
   shortlist caches under `<work-folder>/.postplus/instagram-benchmark/`
 - keep only final user-facing summaries or shortlist exports outside
   `.postplus/`
 - compile a small benchmark brief before the expensive collection step
-- if hosted capability is unavailable, unauthorized, or returns a stable
+- if PostPlus Cloud service is unavailable, unauthorized, or returns a stable
   network error, stop immediately instead of switching to ad hoc shell glue
 
 ## Good Output

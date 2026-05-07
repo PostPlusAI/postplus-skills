@@ -5,9 +5,9 @@ description: Mine Instagram comments to extract audience language, pain points, 
 
 # Instagram Audience Voice
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill when the user wants to:
 
@@ -44,7 +44,7 @@ Prefer one of these first:
 4. separate high-signal language from low-signal reactions
 5. summarize actionable audience voice
 
-## Release-Shell Execution Contract
+## Public Skill Execution Contract
 
 - keep shortlisted post inputs, raw comment datasets, normalized outputs, and
   clustering caches under `<work-folder>/.postplus/instagram-audience-voice/`
@@ -54,7 +54,7 @@ Prefer one of these first:
   - a small shortlist of posts
   - one or two themes
   - comments only after the shortlist exists
-- if hosted capability is unavailable, unauthorized, or returns a stable
+- if PostPlus Cloud service is unavailable, unauthorized, or returns a stable
   network error, stop immediately instead of switching to ad hoc shell glue
 
 ## Good Output

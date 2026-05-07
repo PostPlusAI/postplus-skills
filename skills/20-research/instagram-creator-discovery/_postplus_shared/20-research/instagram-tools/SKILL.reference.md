@@ -5,9 +5,9 @@ description: Local execution tools for Instagram hosted collection workflows, in
 
 # Instagram Tools
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill when implementing or running the local execution layer for the Instagram skill family.
 
@@ -25,16 +25,31 @@ Main scripts:
 
 ## Script To Skill Map
 
-Use these script groups through the owning business skill instead of presenting
-technical script names as the user-facing workflow:
+Use these scripts through the owning business skill instead of presenting
+technical script names as the user-facing workflow. When a script is shared,
+the business skill chooses the collection key and dataset type.
 
-| Business skill | Script group |
+| Script | Owning business skills |
 |---|---|
-| `instagram-account-research` | build actor input, run hosted actor, normalize dataset, rank accounts |
-| `instagram-creator-discovery` | build actor input, run hosted actor, extract candidate usernames, enrich profiles, rank creators |
-| `instagram-content-benchmark` | build actor input, run hosted actor, normalize dataset, rank posts |
-| `instagram-audience-voice` | build actor input, run hosted actor, normalize comments, cluster comments |
-| `instagram-campaign-scout` | build actor input, run hosted actor, normalize tagged or hashtag posts, build watchlist |
+| `build_instagram_actor_input.mjs` | `instagram-account-research`, `instagram-creator-discovery`, `instagram-content-benchmark`, `instagram-audience-voice`, `instagram-campaign-scout` |
+| `run_instagram_actor.mjs` | `instagram-account-research`, `instagram-creator-discovery`, `instagram-content-benchmark`, `instagram-audience-voice`, `instagram-campaign-scout` |
+| `normalize_instagram_dataset.mjs` | `instagram-account-research`, `instagram-creator-discovery`, `instagram-content-benchmark`, `instagram-audience-voice`, `instagram-campaign-scout` |
+| `extract_instagram_candidate_usernames.mjs` | `instagram-creator-discovery`, `instagram-campaign-scout` |
+| `rank_instagram_creators.mjs` | `instagram-creator-discovery` |
+| `rank_instagram_accounts.mjs` | `instagram-account-research` |
+| `rank_instagram_posts.mjs` | `instagram-content-benchmark`, `instagram-campaign-scout` |
+| `cluster_instagram_comments.mjs` | `instagram-audience-voice` |
+| `build_instagram_watchlist.mjs` | `instagram-campaign-scout` |
+
+Business workflows:
+
+| Business skill | Execution shape |
+|---|---|
+| `instagram-account-research` | profile input -> hosted profile run -> profile normalization -> narrowed post input -> hosted post run -> post normalization -> account ranking |
+| `instagram-creator-discovery` | discovery input -> hosted search or post run -> normalization -> candidate username extraction -> hosted profile enrichment -> creator ranking |
+| `instagram-content-benchmark` | benchmark input -> hosted post or hashtag run -> normalization -> post ranking |
+| `instagram-audience-voice` | comment input -> hosted comment run -> comment normalization -> comment clustering |
+| `instagram-campaign-scout` | hashtag or tagged input -> hosted run -> normalization -> post ranking -> watchlist build |
 
 Tell the user which business skill is running. Keep the script names in the
 artifact log and failure copy.
@@ -48,7 +63,7 @@ Reference contracts:
 - `../instagram-references/tool-contracts.md`
 - `../instagram-references/normalized-schema.md`
 
-## Release-Shell Execution Contract
+## Public Skill Execution Contract
 
 - keep actor inputs, raw datasets, normalized outputs, candidate lists,
   ranking files, and watchlist caches under `<work-folder>/.postplus/instagram-tools/`
@@ -59,5 +74,5 @@ Reference contracts:
 - start with a bounded first pass before broadening the crawl
 - use PostPlus-supported scripts plus the shared collection runner only; do not switch to
   ad hoc shell glue
-- if hosted capability is unavailable, unauthorized, or returns a stable
+- if PostPlus Cloud service is unavailable, unauthorized, or returns a stable
   network error, stop immediately instead of switching to ad hoc shell glue

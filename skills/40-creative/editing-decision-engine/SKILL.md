@@ -5,9 +5,9 @@ description: Plan short-form post-edit decisions from A-roll, B-roll, scripts, a
 
 # Editing Decision Engine
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill when the user wants a strong short-form edit plan, not just a script rewrite or a generic video breakdown.
 
@@ -40,12 +40,12 @@ First-version goal:
 
 Use this skill when the user asks for things like:
 
-- 这条怎么剪
-- 根据 A-roll 和 B-roll 设计剪法
-- 参考某条视频的剪辑逻辑
-- 按脚本和素材做 post-edit plan
-- 逐句决定哪里贴屏幕、哪里留脸
-- 给我一个时间轴级别的剪辑方案
+- How to edit this video
+- Design the edit based on A-roll and B-roll
+- Use the editing logic of a reference video
+- Create a post-edit plan from the script and assets
+- Decide line by line where to place screen footage and where to keep face footage
+- Give me a timeline-level edit plan
 
 Do not use this skill when the user only needs:
 
@@ -186,7 +186,7 @@ Default output should include:
 - time-ordered edit decisions
 - risks and missing assets
 
-## Release-Shell Execution Contract
+## Public Skill Execution Contract
 
 - keep edit theses, beat maps, asset notes, and intermediate decision packages
   under `<work-folder>/.postplus/editing-decision-engine/`

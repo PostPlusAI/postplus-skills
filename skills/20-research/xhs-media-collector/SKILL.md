@@ -5,9 +5,9 @@ description: Collect validated Xiaohongshu image assets from normalized XHS data
 
 # XHS Media Collector
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Legacy alias: `xhs-media-collector`.
 
@@ -15,7 +15,7 @@ Use this skill when the user wants to:
 
 - download Xiaohongshu cover images from validated datasets
 - turn normalized XHS research output into a local media manifest
-- prepare local image assets for XHS card composition or downstream review
+- prepare local cover-image assets for XHS card composition or downstream review
 
 Read these references before implementation:
 
@@ -32,33 +32,36 @@ Supported by default:
 
 Not supported by default:
 
+- non-cover image extraction from note pages
 - direct Xiaohongshu video downloader output
 
 Do not pretend video collection works when the validated downloader returns `404 Not found data`.
 Before accepting a media request, tell the user that the released path supports
-validated cover or image URLs from upstream datasets, not direct Xiaohongshu
-video downloads.
+validated cover images from upstream datasets only. It does not support
+Xiaohongshu video downloads. The supported path is cover-image collection, not direct Xiaohongshu video downloads.
 
 ## What this skill is for
 
 - building a local manifest from normalized XHS datasets
-- downloading cover or image assets from remote URLs
+- downloading cover images from remote URLs already present in normalized data
 - verifying that downloaded files exist and are non-empty
 
 ## What this skill is not for
 
 - discovering note URLs
 - extracting post metadata
+- extracting arbitrary note images
 - downloading videos from note URLs by default
 
 ## Failure posture
 
-- fail if the input dataset contains no downloadable remote image URLs
+- fail if the input dataset contains no downloadable `coverUrl` image URLs
 - fail if the requested asset type is `video`
+- fail if the requested asset role is not `cover`
 - fail if a download returns a non-2xx response
 - keep the manifest as the single source of truth for downloaded assets
 
-## Release-Shell Execution Contract
+## Public Skill Execution Contract
 
 - keep media manifests, download reports, and intermediate verification files
   under `<work-folder>/.postplus/xiaohongshu-media-collector/`

@@ -5,9 +5,9 @@ description: Benchmark Xiaohongshu posts from validated public account surfaces 
 
 # XHS Content Benchmark
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Legacy alias: `xhs-content-benchmark`.
 
@@ -114,7 +114,7 @@ Experimental keyword route:
 - do not hide that constraint
 - keep keyword batches narrow and specific
 
-## Release-Shell Execution Contract
+## Public Skill Execution Contract
 
 - keep benchmark briefs, actor inputs, raw datasets, normalized datasets,
   rankings, and analysis outputs under
@@ -124,7 +124,7 @@ Experimental keyword route:
 - start with a bounded first pass:
   - `1-3` profiles for the validated account route
   - narrow keyword batches only when the user explicitly requests search
-- if hosted capability is unavailable, unauthorized, or returns a stable
+- if PostPlus Cloud service is unavailable, unauthorized, or returns a stable
   network error, stop immediately instead of switching to ad hoc shell glue
 
 ## Main scripts
@@ -168,7 +168,7 @@ node ${CLAUDE_SKILL_DIR}/scripts/normalize_xhs_benchmark_dataset.mjs \
 
 node ${CLAUDE_SKILL_DIR}/scripts/rank_xhs_benchmark_posts.mjs \
   --input <work-folder>/.postplus/xhs-benchmark-normalized.json \
-  --theme "职场,打工人,办公室" \
+  --theme "workplace,office workers,office" \
   --output <work-folder>/.postplus/xhs-benchmark-ranking.json
 
 node ${CLAUDE_SKILL_DIR}/scripts/analyze_xhs_benchmark_dataset.mjs \

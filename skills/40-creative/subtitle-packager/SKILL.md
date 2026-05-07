@@ -5,9 +5,9 @@ description: Convert normalized timed transcript data into subtitle artifacts su
 
 # Subtitle Packager
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill when the transcript already exists and the next problem is:
 
@@ -43,7 +43,7 @@ Do not fake subtitle timing unless the user explicitly asks for heuristic timing
 - `references/chunk-modes.md`
 - `references/output-shape.md`
 
-## Release-Shell Execution Contract
+## Public Skill Execution Contract
 
 - keep chunking inputs, intermediate subtitle JSON, and render artifacts under
   `<work-folder>/.postplus/subtitle-packager/`

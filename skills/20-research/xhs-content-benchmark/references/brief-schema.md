@@ -11,7 +11,7 @@ Use one small brief JSON before building actor input.
     "https://www.xiaohongshu.com/user/profile/639946a0000000002702b173"
   ],
   "limit": 12,
-  "themeKeywords": ["职场", "打工人"]
+  "themeKeywords": ["workplace", "office workers"]
 }
 ```
 
@@ -38,7 +38,7 @@ Use one small brief JSON before building actor input.
   "task": "benchmark a competitor's recent post output",
   "profileIds": ["639946a0000000002702b173"],
   "limit": 10,
-  "themeKeywords": ["职场", "办公室", "打工人"]
+  "themeKeywords": ["workplace", "office", "office workers"]
 }
 ```
 
@@ -47,8 +47,8 @@ Use one small brief JSON before building actor input.
 ```json
 {
   "task": "benchmark keyword-level Xiaohongshu content around skincare",
-  "keywords": ["护肤"],
+  "keywords": ["skincare"],
   "limit": 100,
-  "themeKeywords": ["成分", "护肤流程", "避坑"]
+  "themeKeywords": ["ingredients", "skincare routine", "mistakes to avoid"]
 }
 ```

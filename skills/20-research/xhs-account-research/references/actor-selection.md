@@ -21,7 +21,7 @@ Do not use:
 
 - `easyapi/rednote-xiaohongshu-profile-scraper`
 
-Observed behavior on the released shell:
+Observed behavior on the public skill surface:
 
 - request succeeds
 - `itemCount = 1`

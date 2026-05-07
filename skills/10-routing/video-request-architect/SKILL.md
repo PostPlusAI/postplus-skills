@@ -5,9 +5,9 @@ description: Turn approved storyboard logic, beat sheets, or prompt plans into p
 
 # Video Request Architect
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill after the scene logic already exists.
 
@@ -74,7 +74,7 @@ Use these blocks in order:
 If the approved script is longer than one model-supported generation window, do not force everything into one request.
 
 For Seedance 2.0 work, any script longer than 15 seconds must be converted into a multi-segment plan before provider mapping.
-Use the repo-owned builder to make that boundary explicit:
+Use the PostPlus-provided builder to make that boundary explicit:
 
 ```bash
 node skills/10-routing/video-request-architect/scripts/build_video_request_architecture.mjs \
@@ -90,7 +90,7 @@ plain prose.
 
 Tell the user:
 
-- "脚本超过 15 秒了，我会先自动切成可独立生成的短 segment，再分别写 provider-ready request，这样比把整段塞进一次生成更稳定。"
+- "The script is longer than 15 seconds, so I will first split it into independently generatable short segments, then write provider-ready requests for each one. This is more stable than forcing the whole script into one generation."
 
 Each segment must:
 
@@ -175,7 +175,7 @@ State what each reference controls, such as:
 - camera motion
 - continuity targets that must be restated in the same request
 
-For Seedance final requests, prefer explicit bindings such as `[图1]`, `[图2]`, and `[视频1]` plus role descriptions.
+For Seedance final requests, prefer explicit bindings such as `[image 1]`, `[image 2]`, and `[video 1]` plus role descriptions.
 
 Unless the user explicitly says a reference is inspiration-only, benchmark-only,
 or weak guidance, treat user-provided persona, product, and audio references as

@@ -5,9 +5,9 @@ description: High-level entry point for cross-platform public social data extrac
 
 # Social Media Data Extraction
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill only as a high-level entry point when the user asks for cross-platform public data extraction and has not named a platform-specific workflow yet.
 
@@ -36,23 +36,23 @@ Instead:
 2. route into the dedicated platform skill
 3. let that skill choose the actor, input shape, normalization, and analysis flow
 
-## Product-Shell Rule
+## PostPlus Runtime Rule
 
 This skill is for deciding the first research path, not for staying as a permanent execution layer.
 Once the route is clear, move into the narrowest useful platform skill and keep the work there.
 
-In the product shell, downstream platform access follows
-`postplus-shared` release-shell rules.
+In the PostPlus runtime, downstream platform access follows
+`postplus-shared` public skill rules.
 
 ## When This Skill Is Appropriate
 
 Use it when the user says things like:
 
-- "帮我抓社媒数据做趋势分析"
-- "做一个跨平台内容研究"
-- "把 TikTok、Instagram、X 都看一遍"
-- "先帮我判断这个题目更该看哪个平台"
-- "我想知道这个品牌在不同社媒上分别是什么状态"
+- "Collect social media data for trend analysis"
+- "Do a cross-platform content study"
+- "Inspect TikTok, Instagram, and X"
+- "First help me decide which platform fits this topic best"
+- "I want to understand this brand's status across different social platforms"
 
 ## When This Skill Is Not Appropriate
 

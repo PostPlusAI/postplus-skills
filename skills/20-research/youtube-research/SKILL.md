@@ -1,13 +1,13 @@
 ---
 name: youtube-research
-description: Research YouTube channel summaries, audience comment samples, downloadable video records, and public videos using hosted collection capability. Use this when the user wants YouTube account research or public video metrics.
+description: Research YouTube channel summaries, audience comment samples, downloadable video records, and public videos using PostPlus Cloud collection service. Use this when the user wants YouTube account research or public video metrics.
 ---
 
 # YouTube Research
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill when the request is about YouTube channels, audience proxies, or public videos.
 
@@ -35,11 +35,11 @@ identities through the released collection surface. Use channel metadata and
 comments as public proxies, and do not present comment authors as the
 subscriber base.
 
-## Hosted Capability Boundary
+## PostPlus Cloud Boundary
 
 This skill depends on host-managed collection capability for the corresponding collection keys.
 
-In the product shell:
+In the PostPlus runtime:
 
 - do not probe or print provider secrets
 - do not ask the user to export them inside chat
@@ -103,7 +103,7 @@ Use comments as an audience proxy when subscriber identities are not public.
 
 Do not present comment authors as a full subscriber list.
 
-## Release-Shell Execution Contract
+## Public Skill Execution Contract
 
 - keep collection briefs, raw datasets, normalized outputs, and summary caches
   under `<work-folder>/.postplus/youtube-research/`

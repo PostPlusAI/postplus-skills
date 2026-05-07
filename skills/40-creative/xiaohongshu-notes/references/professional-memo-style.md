@@ -35,9 +35,9 @@ It opens with:
 
 Examples of opening energy:
 
-- "为什么越优化结果反而越来越难看"
-- "我已经累了，真的累了。"
-- "做了这么久，我才知道自己一直在看假数据"
+- "Why optimization can make the result look worse"
+- "I am tired, genuinely tired."
+- "After doing this for so long, I realized I had been reading fake data."
 
 ### 2. Lived experience is visible
 
@@ -45,10 +45,10 @@ The authority comes from repeated exposure, not from title-dropping.
 
 Useful language patterns:
 
-- "我见过太多次"
-- "每次打开一个新账户"
-- "说实话"
-- "第一反应是..."
+- "I have seen this too many times"
+- "Every time I open a new account"
+- "Honestly"
+- "My first reaction is..."
 
 ### 3. Consequences are concrete
 
@@ -90,8 +90,8 @@ When drafting in this style:
 - prefer real operator language over platform jargon for its own sake
 - use jargon only when it changes meaning
 - let one sharp line carry a paragraph when possible
-- avoid overused contrast templates like `不是……而是……`
-- avoid bridge fillers like `也就是说`
+- avoid overused contrast templates like `not X, but Y`
+- avoid bridge fillers like `in other words`
 
 ## Trust Signals To Preserve
 

@@ -5,9 +5,9 @@ description: Transcribe video files directly into timed transcripts and subtitle
 
 # Video Transcription
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill when the input is video and the main problem is:
 
@@ -35,6 +35,12 @@ until status is `completed` or `failed`. Default poll window: **150 attempts × 
 Real speech video typically completes within 30–60 s. Silent or very short videos may
 complete in under 10 s. If a job exceeds 5 minutes, the hosted provider is likely overloaded — retry
 rather than increasing the timeout further.
+
+Before submission, the script logs a polling preflight line from
+`durationSeconds`. Video at or above 300 seconds is marked as possibly exceeding
+the current polling window. The script does not silently increase the timeout or
+switch tools; the current contract remains a 5-minute poll followed by a timeout
+failure if the provider has not completed.
 
 ## Preflight Boundary
 
@@ -73,7 +79,7 @@ Polling support is shared with:
 - `references/tool-contracts.md`
 - `references/normalized-transcript-schema.md`
 
-## Release-Shell Execution Contract
+## Public Skill Execution Contract
 
 - keep transcription requests, provider responses, normalized transcripts, and
   downloaded subtitle artifacts under

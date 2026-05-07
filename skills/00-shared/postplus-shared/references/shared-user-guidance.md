@@ -14,7 +14,7 @@ Keep it to one sentence. Don't run in silence.
 
 ## Execution Expectation
 
-Before running a skill that will collect data, call a hosted capability, or
+Before running a skill that will collect data, call a PostPlus Cloud service, or
 write durable local artifacts, say what will happen in one compact sentence:
 
 - the first action
@@ -25,8 +25,8 @@ Use the concrete skill names, not abstract workflow labels.
 
 Good shape:
 
-- "我会先用 tiktok-research 采一小批公开样本，输出 shortlist；通过后再交给 video-analysis 拆 hook 和镜头。"
-- "我会先把 persona lock 和 source basis 写进 image-batch-runner 请求，输出本地 asset manifest；下一步可交给 creative-qa 或 video-batch-runner。"
+- "I will first use tiktok-research to collect a small public sample and output a shortlist; after approval, I will pass it to video-analysis for hook and shot breakdown."
+- "I will first put the persona lock and source basis into the image-batch-runner request and output a local asset manifest; the next step can go to creative-qa or video-batch-runner."
 
 Do not promise hosted, provider, file-reference, account-connection, or
 publishing behavior unless the current skill contract and registry release
@@ -92,10 +92,10 @@ immediately instead of saying "I can't do that" or attempting a fallback.
 
 ## Failure Copy
 
-When a supported script or hosted capability fails with a stable error, stop
+When a supported script or PostPlus Cloud service fails with a stable error, stop
 and report the blocker directly. The user-facing failure message must include:
 
-- the skill and script or hosted capability that failed
+- the skill and script or PostPlus Cloud service that failed
 - the exact boundary that blocked execution
 - the missing input, dependency, account connection, hosted endpoint, or file
   contract when known
@@ -106,7 +106,7 @@ artifact exists and the skill contract defines that recovery path.
 
 Good shapes:
 
-- "video-analysis stopped before upload: the current released runner only supports inline video payloads up to 20MB. The real unblocker is Gemini Files API or a file-reference hosted capability."
+- "video-analysis stopped before upload: the current released runner only supports inline video payloads up to 20MB. The real unblocker is Gemini Files API or a file-reference PostPlus Cloud service."
 - "image-batch-runner cannot use image-gpt-image-2-text in this release: the skill runner and registry only expose hosted endpoints already present in the PostPlus media-generation catalog."
 - "social-media-publisher preview succeeded, but publishing is still approval-gated; no post was sent."
 

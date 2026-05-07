@@ -60,7 +60,7 @@ Common pattern:
 Choose `content-first` if:
 
 - the request includes follower band plus niche
-- the user asks for "合适的博主" rather than specific handles
+- the user asks for "suitable creators" rather than specific handles
 
 Choose `handle-first` if:
 

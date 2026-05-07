@@ -5,9 +5,9 @@ description: Build fact-grounded short-form video personas and visual consistenc
 
 # Persona Pack
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill when a production workflow needs:
 

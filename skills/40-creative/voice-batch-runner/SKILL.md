@@ -5,9 +5,9 @@ description: Generate and manage persona-aware voice assets for short-form video
 
 # Voice Batch Runner
 
-Follow shared release-shell rules in:
+Follow shared public skill rules in:
 
-- `postplus-shared` release-shell rules
+- `postplus-shared` public skill rules
 
 Use this skill after persona, concept, and script work already exists.
 
@@ -35,7 +35,7 @@ That means the system should separate:
 
 The script can change every time. The persona voice should remain stable.
 
-## Hosted Boundary Rule
+## PostPlus Cloud Rule
 
 - keep request files, raw provider responses, and run manifests under
   `<work-folder>/.postplus/voice-batch-runner/` when they are internal
