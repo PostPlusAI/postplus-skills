@@ -1,6 +1,10 @@
 ---
 name: xiaohongshu-content-benchmark
 description: Benchmark Xiaohongshu posts from validated public account surfaces first, then extract reusable title hooks, cover patterns, content-type splits, and candidate angles for future XHS card production.
+metadata:
+  postplus:
+    familyId: xiaohongshu
+    familyName: Xiaohongshu / Rednote
 ---
 
 # XHS Content Benchmark

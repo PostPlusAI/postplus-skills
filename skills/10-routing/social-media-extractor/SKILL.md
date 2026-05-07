@@ -1,6 +1,10 @@
 ---
 name: social-media-extractor
 description: High-level entry point for cross-platform public social data extraction when the user has not named a platform-specific workflow yet.
+metadata:
+  postplus:
+    familyId: routing-contracts
+    familyName: Routing & Contracts
 ---
 
 # Social Media Data Extraction

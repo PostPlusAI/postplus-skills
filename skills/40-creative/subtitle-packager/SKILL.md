@@ -1,6 +1,10 @@
 ---
 name: subtitle-packager
 description: Convert normalized timed transcript data into subtitle artifacts such as SRT and VTT. Use this when a stable normalized transcript JSON already exists and the main job is subtitle chunking, timing normalization, and export packaging.
+metadata:
+  postplus:
+    familyId: media-production
+    familyName: Media and Creative Production
 ---
 
 # Subtitle Packager

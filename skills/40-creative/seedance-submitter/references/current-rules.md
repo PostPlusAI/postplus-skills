@@ -40,6 +40,9 @@
 - Do not say only `use the attached references`.
 - In the final prompt, prefer explicit bindings such as `[image 1]`, `[image 2]`, and `[video 1]` plus role descriptions.
 - Always include `subtitles`, `on-screen text`, and `watermark` in `promptPlan.mustAvoid` unless the user explicitly wants on-screen text.
+- If continuity matters, add `continuityPolicy` and verify whether the request is
+  really `image-bound`, `audio-bound`, or only `text-only`.
+- Do not describe `text-only` continuity as locked or confirmed in user-facing copy.
 
 ## PromptPlan Mapping
 
@@ -66,7 +69,11 @@
 - Each segment should still be usable as a standalone clip, not just as a middle fragment.
 - Final request text must not depend on previous-segment memory through
   shorthand such as `continue from the previous segment`, `same as previous`,
-  `same character`, or `content above`.
+  `same character`, `content above`, or `延续上一段`.
+- Continuity claims should be evidence-backed:
+  - character / product / environment continuity usually needs image evidence
+  - voice continuity usually needs audio evidence
+  - without those inputs, continuity is only text-constrained
 
 ## User Output Preference
 

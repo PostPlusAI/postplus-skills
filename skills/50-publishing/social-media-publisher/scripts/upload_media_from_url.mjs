@@ -3,17 +3,17 @@
 import {
   isDirectRun,
   parseArgs,
-  postizJson,
+  socialPublishingJson,
   requireArg,
   writeJson
-} from "./lib/postiz_common.mjs";
+} from "./lib/social_publishing_common.mjs";
 
 export async function main(argv = process.argv.slice(2), io = console) {
   const args = parseArgs(argv);
   const url = requireArg(args, "url");
   const output = args.output;
 
-  const payload = await postizJson(
+  const payload = await socialPublishingJson(
     "/upload-from-url",
     {
       method: "POST",

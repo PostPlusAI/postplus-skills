@@ -1,6 +1,10 @@
 ---
 name: benchmark-to-brief
 description: Turn validated benchmark research into campaign briefs and concept candidates for short-form video production. Use this when you already have research artifacts such as reports, master tables, pattern tables, or comment analyses and need to produce fact-grounded briefs, concept lists, hook options, or test plans. This skill must stay anchored to real source data and should not invent angles, personas, or claims that are not supported by the available research.
+metadata:
+  postplus:
+    familyId: media-production
+    familyName: Media and Creative Production
 ---
 
 # Benchmark To Brief

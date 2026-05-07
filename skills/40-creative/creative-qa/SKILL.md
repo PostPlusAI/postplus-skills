@@ -1,6 +1,10 @@
 ---
 name: creative-qa
 description: Record human-in-the-loop quality judgments for generated images, voice takes, and videos in short-form production. Use this when a person has reviewed an asset and you need structured verdicts, reasons, issue categories, and rerun guidance without turning subjective approval into untracked chat history.
+metadata:
+  postplus:
+    familyId: media-production
+    familyName: Media and Creative Production
 ---
 
 # Creative QA

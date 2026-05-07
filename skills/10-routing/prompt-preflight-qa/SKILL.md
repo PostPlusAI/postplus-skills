@@ -1,6 +1,10 @@
 ---
 name: prompt-preflight-qa
 description: Review storyboard prompts and video-request prompts before generation. Use this when a prompt draft already exists and you need to catch weak first frames, drift risk, missing constraints, bad product timing, or generic ad-like language before spending model credits.
+metadata:
+  postplus:
+    familyId: routing-contracts
+    familyName: Routing & Contracts
 ---
 
 # Prompt Preflight QA

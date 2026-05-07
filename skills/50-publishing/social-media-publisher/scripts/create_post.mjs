@@ -4,14 +4,14 @@ import {
   assertAllowedIntegrationIds,
   isDirectRun,
   parseArgs,
-  postizJson,
+  socialPublishingJson,
   readCustomerConfig,
   readJson,
   requireArg,
   summarizeCreateResult,
-  toPostizCreatePayload,
+  toSocialPublishingCreatePayload,
   writeJson
-} from "./lib/postiz_common.mjs";
+} from "./lib/social_publishing_common.mjs";
 import {
   assertExecutionApproval,
   buildApprovalRequest,
@@ -30,7 +30,7 @@ export async function main(argv = process.argv.slice(2), io = console) {
   const integrationIds = request.posts.map((post) => String(post.integrationId));
   assertAllowedIntegrationIds(customerConfig, integrationIds);
 
-  const payload = toPostizCreatePayload(request);
+  const payload = toSocialPublishingCreatePayload(request);
   const approvalPayload = {
     customerConfigPath,
     payload,
@@ -67,7 +67,7 @@ export async function main(argv = process.argv.slice(2), io = console) {
     payload: approvalPayload,
   });
 
-  const result = await postizJson(
+  const result = await socialPublishingJson(
     "/posts",
     {
       method: "POST",

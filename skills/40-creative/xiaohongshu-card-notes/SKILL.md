@@ -1,6 +1,10 @@
 ---
 name: xiaohongshu-card-notes
 description: Turn an existing HTML page, landing page, oral script, memo draft, result table, or structured source material into a Xiaohongshu card-style image note. Use this when the user wants page-by-page card planning, cover copy, card text, or a design-ready Xiaohongshuimage-post brief based on source material rather than writing a plain note from scratch. This skill is especially for 3:4 Xiaohongshu cards that may mix image-led pages with high-density memo pages, using strong information hierarchy and screenshot-worthy text density rather than generic sparse carousel copy.
+metadata:
+  postplus:
+    familyId: media-production
+    familyName: Media and Creative Production
 ---
 
 # Xiaohongshu Card Notes

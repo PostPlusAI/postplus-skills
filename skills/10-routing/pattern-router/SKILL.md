@@ -1,6 +1,10 @@
 ---
 name: pattern-router
 description: Route short-form video prompt work into the right hook or segment pattern before writing storyboards or provider requests. Use when the user has a brief, a segment type such as hook/benefit/cta/creator, duration constraints, and optional references, and you need to choose the strongest narrative structure instead of freehand prompting.
+metadata:
+  postplus:
+    familyId: routing-contracts
+    familyName: Routing & Contracts
 ---
 
 # Pattern Router

@@ -1,6 +1,10 @@
 ---
 name: edit-enhancement-packager
 description: Package beat-level edit enhancement instructions from a B-roll plan, subtitle chunks, and optional style context. Use this when the goal is to turn B-roll matching into editor-ready guidance for keyword emphasis, micro-animation hints, A-roll stay-on-face logic, B-roll coverage style, and subtitle interaction.
+metadata:
+  postplus:
+    familyId: media-production
+    familyName: Media and Creative Production
 ---
 
 # Edit Enhancement Packager

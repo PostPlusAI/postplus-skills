@@ -1,6 +1,10 @@
 ---
 name: google-trends-research
 description: Research Google Trends search-intent signals for topic discovery, keyword momentum, regional interest, and rising queries without treating search trends as the same thing as platform content heat or marketplace demand.
+metadata:
+  postplus:
+    familyId: marketplace-sourcing
+    familyName: Marketplace, Sourcing, and Growth
 ---
 
 # Google Trends Research

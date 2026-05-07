@@ -63,7 +63,7 @@ export function writeText(filePath, value) {
 export function readCustomerConfig(configPath) {
   const payload = readJson(configPath);
   return {
-    postizWorkspace: payload.postizWorkspace ?? null,
+    socialPublishingWorkspace: payload.socialPublishingWorkspace ?? null,
     allowedIntegrationIds: Array.isArray(payload.allowedIntegrationIds)
       ? payload.allowedIntegrationIds.map(String)
       : [],
@@ -76,7 +76,7 @@ export function readCustomerConfig(configPath) {
 export function assertAllowedIntegrationIds(customerConfig, integrationIds) {
   const allowed = new Set(customerConfig.allowedIntegrationIds ?? []);
   if (!allowed.size) {
-    throw new Error("Customer Postiz config has no allowedIntegrationIds.");
+    throw new Error("Customer social publishing service config has no allowedIntegrationIds.");
   }
 
   const disallowed = integrationIds.filter((id) => !allowed.has(String(id)));
@@ -87,7 +87,7 @@ export function assertAllowedIntegrationIds(customerConfig, integrationIds) {
   }
 }
 
-export async function postizJson(pathname, { method = "GET", body, headers = {} } = {}, options = {}) {
+export async function socialPublishingJson(pathname, { method = "GET", body, headers = {} } = {}, options = {}) {
   if (Object.keys(headers).length > 0) {
     throw new Error("Custom social-publishing headers are not part of the PostPlus Cloud service contract.");
   }
@@ -104,7 +104,7 @@ export async function postizJson(pathname, { method = "GET", body, headers = {} 
   });
 }
 
-export async function postizUploadFile(localFilePath, options = {}) {
+export async function socialPublishingUploadFile(localFilePath, options = {}) {
   const absoluteInput = path.resolve(localFilePath);
   const mimeType = options.mimeType ?? "application/octet-stream";
   const { storageReference } = await uploadHostedMediaFileReference(
@@ -222,7 +222,7 @@ export function normalizeTags(tags) {
   }
   for (const tag of tags) {
     if (!tag || Array.isArray(tag) || typeof tag !== "object") {
-      throw new Error("Create request tags must contain objects that match the Postiz API schema.");
+      throw new Error("Create request tags must contain objects that match the social publishing service API schema.");
     }
   }
   return tags;
@@ -262,7 +262,7 @@ export function normalizeSettings(settings, integrationId) {
   return settings;
 }
 
-export function toPostizCreatePayload(request) {
+export function toSocialPublishingCreatePayload(request) {
   const type = request.type ?? "draft";
   const date = request.date ?? new Date().toISOString();
   const tags = normalizeTags(request.tags);

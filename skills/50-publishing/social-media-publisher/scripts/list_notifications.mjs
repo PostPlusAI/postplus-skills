@@ -3,9 +3,9 @@
 import {
   isDirectRun,
   parseArgs,
-  postizJson,
+  socialPublishingJson,
   writeJson
-} from "./lib/postiz_common.mjs";
+} from "./lib/social_publishing_common.mjs";
 
 export async function main(argv = process.argv.slice(2), io = console) {
   const args = parseArgs(argv);
@@ -19,7 +19,7 @@ export async function main(argv = process.argv.slice(2), io = console) {
     page: String(page)
   });
 
-  const payload = await postizJson(`/notifications?${searchParams.toString()}`, {}, { args });
+  const payload = await socialPublishingJson(`/notifications?${searchParams.toString()}`, {}, { args });
 
   if (output) {
     writeJson(output, payload);

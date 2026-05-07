@@ -77,7 +77,7 @@ A skill can tell the agent:
 
 - when to use a workflow
 - what evidence to collect first
-- which tool or provider to call
+- which PostPlus capability to use
 - how to normalize raw data
 - how to decide whether the result is good enough
 - what artifact to produce at the end
@@ -92,7 +92,7 @@ PostPlus is designed to reduce the risky parts of agent-based marketing work:
 - It separates routing, collection, synthesis, production, and publishing so each step has a clear job.
 - It keeps reusable rules in shared files instead of relying on one-off prompt memory.
 - It produces artifacts that can be inspected, reused, or handed to a teammate or client.
-- It makes external dependencies visible when a workflow needs a provider key, account, permission, or publishing destination.
+- It makes external dependencies visible when a workflow needs an account, permission, local dependency, or publishing destination.
 
 The result should feel less like asking an agent to "do marketing" and more like giving a skilled operator a repeatable playbook.
 
@@ -323,7 +323,7 @@ Examples: transcription, subtitles, storyboard grids, reference decoding, B-roll
 
 For moving work into tools, reports, calendars, sheets, docs, social systems, or outreach channels.
 
-Examples: Feishu, Google Docs, Google Sheets, Postiz, Gmail outreach, customer folders, campaign reports.
+Examples: Feishu, Google Docs, Google Sheets, social publishing, Gmail outreach, customer folders, campaign reports.
 
 ### 6. Grow and Optimize
 
@@ -347,10 +347,10 @@ This is not a full catalog. It is a practical map of the problems PostPlus is me
 | Find creators or KOL/KOC partners | Creator discovery, profile enrichment, content-fit scoring, shortlist building, contact signal extraction, outreach prep | TikTok creators, Instagram creators, Xiaohongshu accounts, X accounts, creator graph, follower bands, engagement proxy |
 | Decide whether a product is worth testing | Product selection, marketplace comparison, channel fit, price bands, review analysis, supply-side checks, sourcing judgment | Amazon, 1688, Google Trends, Xiaohongshu commerce, supplier ranking, SKU, MOQ, margin risk |
 | Turn references into creative direction | Reference decoding, hook analysis, visual grammar, benchmark-to-brief, persona packs, storyboard planning, prompt QA | TikTok videos, Reels, Xiaohongshu notes, short-form hooks, UGC, product demo, lifestyle, testimonial |
-| Produce media assets | Transcription, subtitles, frame extraction, B-roll planning, image generation, video generation, voice generation, edit packaging | Whisper, SRT/VTT/ASS, B-roll, storyboard grid, hosted media generation, image prompts, video requests |
+| Produce media assets | Transcription, subtitles, frame extraction, B-roll planning, image generation, video generation, voice generation, edit packaging | Speech-to-text, SRT/VTT/ASS, B-roll, storyboard grid, hosted media generation, image prompts, video requests |
 | Plan content and messaging | Positioning, content strategy, copywriting, social content, email sequences, SEO, AI search, launch planning | Blog, landing page, LinkedIn, X, Xiaohongshu, cold email, content pillars, hooks, objections, offers |
 | Improve conversion or growth | CRO, signup flow, onboarding, paid creative, analytics, A/B tests, pricing, referrals, churn prevention, revenue operations | Landing page, signup, funnel, Google Ads, paid social, GA4, experiments, pricing page, lifecycle |
-| Package and hand off work | Client reports, campaign folders, Feishu docs, Google Sheets, social scheduling, Gmail outreach, publishing records | Feishu/Lark, Google Docs, Google Sheets, Postiz, Gmail, customer workspace, campaign report |
+| Package and hand off work | Client reports, campaign folders, Feishu docs, Google Sheets, social scheduling, Gmail outreach, publishing records | Feishu/Lark, Google Docs, Google Sheets, social publishing, Gmail, customer workspace, campaign report |
 
 Most workflows combine two or three rows. For example, a creator campaign may start with TikTok research, move into creator discovery, produce an outreach shortlist, then publish the result into Feishu or Google Sheets.
 

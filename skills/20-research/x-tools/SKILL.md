@@ -1,6 +1,10 @@
 ---
 name: x-tools
 description: Local execution tools for X/Twitter hosted collection workflows, including actor runs, dataset normalization, tweet ranking, account ranking, audience graph construction, and language clustering.
+metadata:
+  postplus:
+    familyId: x
+    familyName: X / Twitter
 ---
 
 # X Tools

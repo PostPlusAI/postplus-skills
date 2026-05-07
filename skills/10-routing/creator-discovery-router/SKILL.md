@@ -1,6 +1,10 @@
 ---
 name: creator-discovery-router
 description: Route creator discovery requests into the right collection strategy before platform execution. Use this when the user wants to find creators, KOLs, KOCs, influencers, or partnership candidates and the request includes constraints such as follower range, niche, audience, geography, language, or collaboration fit. This skill decides whether to use handle-first, content-first, graph-first, or mixed discovery, then hands off to TikTok, Instagram, X, and creator-outreach skills.
+metadata:
+  postplus:
+    familyId: routing-contracts
+    familyName: Routing & Contracts
 ---
 
 # Creator Discovery Router

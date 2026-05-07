@@ -1,6 +1,10 @@
 ---
 name: tiktok-ad-research
 description: Research TikTok Creative Center or ad-library style datasets for winning ad patterns, regions, objectives, hook language, and creative signals without mixing paid ads with organic creator discovery.
+metadata:
+  postplus:
+    familyId: tiktok
+    familyName: TikTok
 ---
 
 # TikTok Ad Research
