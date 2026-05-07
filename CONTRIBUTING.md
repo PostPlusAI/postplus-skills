@@ -28,4 +28,4 @@ PostPlus skills repository.
 ## License
 
 By submitting a contribution you agree that your contribution will be licensed
-under the Apache License, Version 2.0 (the same license as this project).
+under the PolyForm Shield License 1.0.0 (the same license as this project).

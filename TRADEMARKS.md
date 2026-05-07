@@ -23,9 +23,8 @@ Referenced platforms include but are not limited to:
 Use of these names in skill descriptions and reference materials does not
 imply endorsement, sponsorship, or affiliation with PostPlus.
 
-## Apache License 2.0 and Trademarks
+## License and Trademarks
 
-The Apache License 2.0 governing this software does not grant permission to
-use the trade names, trademarks, service marks, or product names of the
-Licensor, except as required for reasonable and customary use in describing
-the origin of the work.
+The license governing this software does not grant permission to use the trade
+names, trademarks, service marks, or product names of the licensor, except as
+required for reasonable and customary use in describing the origin of the work.
