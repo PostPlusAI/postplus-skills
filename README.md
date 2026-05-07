@@ -392,3 +392,19 @@ The best first prompt includes:
 - the target platform if you already know it
 - any reference links, files, accounts, or assets
 - the artifact you want at the end
+
+## License
+
+PostPlus CLI and PostPlus Skills are source-available under the PolyForm Shield
+License 1.0.0.
+
+You may use PostPlus, including for commercial work, to create your own
+marketing research, strategy, media, reports, outreach lists, and other
+deliverables.
+
+You may not sell, host, distribute, repackage, rename, or provide PostPlus or a
+competing product or service as a substitute for PostPlus.
+
+Every copy or distribution must include the license terms and the Required
+Notice lines provided with this repository. Contact RealProductStudio for a
+separate commercial license if you need rights outside the public license.
