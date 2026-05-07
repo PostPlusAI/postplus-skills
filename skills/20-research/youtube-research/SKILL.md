@@ -28,6 +28,13 @@ This skill is not for:
 - publishing, deleting, or scheduling posts
 - promising a subscriber list that YouTube does not expose publicly
 
+## Before Collection Boundary
+
+Before audience research, tell the user that YouTube does not expose subscriber
+identities through the released collection surface. Use channel metadata and
+comments as public proxies, and do not present comment authors as the
+subscriber base.
+
 ## Hosted Capability Boundary
 
 This skill depends on host-managed collection capability for the corresponding collection keys.

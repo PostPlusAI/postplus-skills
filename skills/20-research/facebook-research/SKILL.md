@@ -28,6 +28,13 @@ This skill is not for:
 - publishing, deleting, or scheduling posts
 - guaranteeing a complete private follower list when Facebook does not expose it publicly
 
+## Before Collection Boundary
+
+Before running collection, tell the user that Facebook results are public
+samples from exposed surfaces, not a complete follower export. If the user's
+goal requires private or exhaustive audience data, stop and ask for a different
+source of truth before collecting.
+
 ## Hosted Capability Boundary
 
 This skill depends on host-managed collection capability for the corresponding collection paths.

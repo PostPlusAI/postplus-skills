@@ -36,6 +36,21 @@ Real speech video typically completes within 30–60 s. Silent or very short vid
 complete in under 10 s. If a job exceeds 5 minutes, the hosted provider is likely overloaded — retry
 rather than increasing the timeout further.
 
+## Preflight Boundary
+
+Before submission:
+
+- read or derive `durationSeconds` from the source video
+- include `durationSeconds` in the request JSON
+- tell the user when the source is long enough that transcription may exceed
+  the 5-minute polling window
+- run one source file first before larger batches
+
+If the request needs guaranteed processing beyond the current polling window,
+stop before submission and say that the released transcription contract does not
+guarantee that path. Do not silently increase the timeout or switch to an
+unsupported transcription tool.
+
 ## Output Contract
 
 Persist:

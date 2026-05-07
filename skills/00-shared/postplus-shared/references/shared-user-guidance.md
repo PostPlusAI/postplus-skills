@@ -32,6 +32,23 @@ Do not promise hosted, provider, file-reference, account-connection, or
 publishing behavior unless the current skill contract and registry release
 requirements already support that path.
 
+## Technical Boundary Orientation
+
+Before an expensive collection, media generation, transcription, publishing, or
+large local processing step, inspect the skill's own boundary section and
+`registry.json` release requirements. If the request crosses a known limit, do
+one of these before execution:
+
+- internalize the boundary into the request shape, such as bounded first passes,
+  segment contracts, capped frame counts, or compiled hosted inputs
+- ask one short scope question when the skill cannot choose safely
+- stop with a direct blocker when the released contract does not support the
+  requested path
+
+Do not ask the user to understand provider limits, endpoint names, actor fields,
+polling internals, or local implementation details unless that detail is the
+real unblocker. Use the business meaning of the limit instead.
+
 ## Brief Decomposition
 
 When the user gives a fuzzy business goal ("help me promote this product", "make

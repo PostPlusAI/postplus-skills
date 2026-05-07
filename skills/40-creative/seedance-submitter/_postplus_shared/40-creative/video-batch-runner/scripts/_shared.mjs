@@ -21,7 +21,7 @@ export const HOSTED_VIDEO_MODELS = {
     supportsSeed: true,
   },
   'video-kling-v2-6-pro-motion-control': {
-    modelGroup: 'kling-motion-control',
+    modelGroup: 'kling-reference-motion-transfer',
     endpointKey: 'video-kling-v2-6-pro-motion-control',
     requiredFields: ['image', 'motionVideo', 'characterOrientation'],
     supportsSeed: false,
@@ -518,6 +518,37 @@ const UNSUPPORTED_HOSTED_STRUCTURED_MOTION_CONTROL_PATHS = [
   'promptPlan.brushMask',
 ];
 
+const UNSUPPORTED_STRUCTURED_MOTION_CONTROL_PATHS = [
+  'camera_trajectory',
+  'cameraTrajectory',
+  'camera_trajectories',
+  'cameraTrajectories',
+  'object_trajectory',
+  'objectTrajectory',
+  'object_trajectories',
+  'objectTrajectories',
+  'motion_brush',
+  'motionBrush',
+  'motion_brushes',
+  'motionBrushes',
+  'brush_mask',
+  'brushMask',
+  'promptPlan.camera_trajectory',
+  'promptPlan.cameraTrajectory',
+  'promptPlan.camera_trajectories',
+  'promptPlan.cameraTrajectories',
+  'promptPlan.object_trajectory',
+  'promptPlan.objectTrajectory',
+  'promptPlan.object_trajectories',
+  'promptPlan.objectTrajectories',
+  'promptPlan.motion_brush',
+  'promptPlan.motionBrush',
+  'promptPlan.motion_brushes',
+  'promptPlan.motionBrushes',
+  'promptPlan.brush_mask',
+  'promptPlan.brushMask',
+];
+
 function hasOwnPath(input, dottedPath) {
   const parts = dottedPath.split('.');
   let current = input;
@@ -533,18 +564,37 @@ function hasOwnPath(input, dottedPath) {
   return true;
 }
 
-function assertNoUnsupportedHostedStructuredMotionControls(input, model) {
-  const unsupportedPaths =
-    UNSUPPORTED_HOSTED_STRUCTURED_MOTION_CONTROL_PATHS.filter((fieldPath) =>
-      hasOwnPath(input, fieldPath),
-    );
+function collectExistingPaths(input, fieldPaths) {
+  return fieldPaths.filter((fieldPath) => hasOwnPath(input, fieldPath));
+}
+
+function assertNoUnsupportedStructuredMotionControls(input) {
+  const unsupportedPaths = collectExistingPaths(
+    input,
+    UNSUPPORTED_STRUCTURED_MOTION_CONTROL_PATHS,
+  );
 
   if (unsupportedPaths.length === 0) {
     return;
   }
 
   throw new Error(
-    `Hosted video model ${model} does not support provider-native structured motion controls: ${unsupportedPaths.join(', ')}. The current hosted motion-control endpoint only supports reference-motion transfer with image, motionVideo, characterOrientation, and optional prompt/negativePrompt/keepOriginalSound.`,
+    `video-batch-runner does not support provider-native structured motion controls: ${unsupportedPaths.join(', ')}. The current implementation only supports reference-motion transfer with video-kling-v2-6-pro-motion-control.`,
+  );
+}
+
+function assertNoUnsupportedHostedStructuredMotionControls(input, model) {
+  const unsupportedPaths = collectExistingPaths(
+    input,
+    UNSUPPORTED_HOSTED_STRUCTURED_MOTION_CONTROL_PATHS,
+  );
+
+  if (unsupportedPaths.length === 0) {
+    return;
+  }
+
+  throw new Error(
+    `Hosted video model ${model} does not support provider-native structured motion controls: ${unsupportedPaths.join(', ')}. The current hosted reference-motion transfer endpoint only supports image, motionVideo, characterOrientation, and optional prompt/negativePrompt/keepOriginalSound.`,
   );
 }
 
@@ -653,6 +703,8 @@ export function normalizeRenderInput(input) {
         throw new Error(`Hosted video model ${model} requires request.${field}.`);
       }
     }
+  } else {
+    assertNoUnsupportedStructuredMotionControls(input);
   }
 
   const normalized = {
@@ -890,7 +942,7 @@ export async function toProviderPayload(normalized, { paths } = {}) {
     return payload;
   }
 
-  if (hostedModelConfig.modelGroup === 'kling-motion-control') {
+  if (hostedModelConfig.modelGroup === 'kling-reference-motion-transfer') {
     const payload = {
       image: await resolveProviderMediaInput(normalized.image, paths),
       video: await resolveProviderMediaInput(normalized.motionVideo, paths),

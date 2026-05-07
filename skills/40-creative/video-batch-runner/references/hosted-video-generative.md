@@ -14,9 +14,9 @@ user-facing credential setup.
 - `video-seedance-2-text-turbo`
 - `video-kling-v2-6-pro-motion-control`
 
-## Motion-Control Boundary
+## Reference-Motion Boundary
 
-The hosted catalog exposes one motion-control endpoint:
+The hosted catalog exposes one reference-motion transfer endpoint:
 
 - `video-kling-v2-6-pro-motion-control`: reference image plus reference motion
   video to generated video.
@@ -26,6 +26,10 @@ text only. Hosted requests must fast-fail explicit provider-native structured
 motion controls such as `cameraTrajectory`, `objectTrajectory`, `motionBrush`,
 or `camera_fixed` because the current hosted endpoint does not expose those
 parameters.
+
+The local runner also rejects camera/object trajectory and motion-brush fields
+for non-hosted routes. Do not accept these fields unless a provider-native API
+schema has been verified and the adapter maps them to real provider parameters.
 
 ## Request Mapping
 
@@ -42,7 +46,7 @@ Image-to-video fields:
 - `image` is required.
 - `last_image` is optional for first/last-frame continuation.
 
-Kling motion-control fields:
+Kling reference-motion transfer fields:
 
 - `image` is required and should be an uploaded subject/reference image URL.
 - `motionVideo` or `video` is required and should be an uploaded motion

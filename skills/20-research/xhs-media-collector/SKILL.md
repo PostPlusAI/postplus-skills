@@ -35,6 +35,9 @@ Not supported by default:
 - direct Xiaohongshu video downloader output
 
 Do not pretend video collection works when the validated downloader returns `404 Not found data`.
+Before accepting a media request, tell the user that the released path supports
+validated cover or image URLs from upstream datasets, not direct Xiaohongshu
+video downloads.
 
 ## What this skill is for
 

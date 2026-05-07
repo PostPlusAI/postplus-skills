@@ -111,6 +111,50 @@ Use when:
   - `audios[]`
   - `draftTaskId`
 - `promptPlan.referenceMap` is converted into `[图1]...，[图2]...` style prompt text to better match reference-image guidance.
+- `promptPlan.camera`, `promptPlan.shotType`, and `promptPlan.motion` are prompt-planning text only.
+- Camera trajectory, object trajectory, motion brush, and brush mask fields are not supported by the current runner and must fail before provider submission.
+
+## 3. `generate_video` reference-motion transfer
+
+Use when:
+
+- the goal is reference image plus reference motion video transfer
+- the request can target `video-kling-v2-6-pro-motion-control`
+
+### Normalized request shape
+
+```json
+{
+  "jobId": "example-co-2026-04-kling-motion-001",
+  "campaignId": "example-co-outreach-2026-04",
+  "conceptId": "ugc-hook-v3",
+  "assetPurpose": "reference_motion_transfer",
+  "provider": "hosted-media",
+  "model": "video-kling-v2-6-pro-motion-control",
+  "image": "customers/<customer-id>/campaigns/<campaign-id>/images/subject.png",
+  "motionVideo": "customers/<customer-id>/campaigns/<campaign-id>/videos/reference-motion.mp4",
+  "characterOrientation": "image",
+  "prompt": "preserve the subject identity and transfer the broad body motion",
+  "keepOriginalSound": false,
+  "localOutputDir": "customers/<customer-id>/campaigns/<campaign-id>/videos/example-co-2026-04-kling-motion-001",
+  "sourceBasis": [],
+  "mustKeep": [],
+  "canVary": [],
+  "feedback": []
+}
+```
+
+Provider mapping:
+
+- `image` maps to provider `image`.
+- `motionVideo` maps to provider `video`.
+- `characterOrientation` maps to provider `character_orientation`.
+- `keepOriginalSound` maps to provider `keep_original_sound`.
+
+This is not provider-native structured motion control. Do not add
+`cameraTrajectory`, `objectTrajectory`, `motionBrush`, or brush-mask fields to
+this contract until a real provider schema exists and the adapter maps those
+fields directly.
 
 ### Normalized manifest shape
 
@@ -148,7 +192,7 @@ Use when:
 }
 ```
 
-## 3. `poll_prediction`
+## 4. `poll_prediction`
 
 Use when:
 

@@ -34,6 +34,10 @@ Default actor:
 Do not default to `rednote-xiaohongshu-profile-scraper`.
 Treat it as non-default until it returns usable `profileData` on the released shell.
 
+Before collection, tell the user that the released path is based on recent
+posts. Profile bio, follower count, and other profile-level fields are not
+available unless the validated dataset exposes them.
+
 ## What this skill is for
 
 - recent-post sampling from known profile URLs

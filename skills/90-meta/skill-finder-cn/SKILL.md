@@ -28,13 +28,15 @@ Do not:
 
 ## Source Of Truth
 
-Use the released surface exposed by the public PostPlus skills repository:
+Use the released surface exposed by the public PostPlus skills repository and
+the local PostPlus CLI catalog:
 
-- `npx -y skills add PostPlusAI/postplus-skills --list`
-- `npx -y skills add PostPlusAI/postplus-skills --full-depth --skill '*' --agent claude-code codex cursor github-copilot windsurf trae trae-cn --yes`
 - `postplus list`
+- `npx -y skills add PostPlusAI/postplus-skills --global --list`
+- `npx -y skills add PostPlusAI/postplus-skills --global --full-depth --skill '*' --agent claude-code codex cursor github-copilot windsurf trae trae-cn --yes`
 
 If the current released surface does not contain a suitable skill, say that directly.
+Do not route from private `candidate` or `shelved` authoring skills.
 
 ## Default Workflow
 
@@ -45,7 +47,7 @@ If the current released surface does not contain a suitable skill, say that dire
 5. hand the user the official install path:
    - `npm install -g @postplus/cli@latest`
    - `postplus auth login`
-   - `npx -y skills add PostPlusAI/postplus-skills --full-depth --skill '*' --agent claude-code codex cursor github-copilot windsurf trae trae-cn --yes`
+   - `npx -y skills add PostPlusAI/postplus-skills --global --full-depth --skill '*' --agent claude-code codex cursor github-copilot windsurf trae trae-cn --yes`
 
 ## Recommendation Rules
 
@@ -76,7 +78,7 @@ Good response shape:
 2. if the user only wants installation guidance, point to:
    - `npm install -g @postplus/cli@latest`
    - `postplus auth login`
-   - `npx -y skills add PostPlusAI/postplus-skills --full-depth --skill '*' --agent claude-code codex cursor github-copilot windsurf trae trae-cn --yes`
+   - `npx -y skills add PostPlusAI/postplus-skills --global --full-depth --skill '*' --agent claude-code codex cursor github-copilot windsurf trae trae-cn --yes`
 
 If the user asks:
 
