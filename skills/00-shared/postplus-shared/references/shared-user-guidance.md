@@ -106,7 +106,7 @@ artifact exists and the skill contract defines that recovery path.
 
 Good shapes:
 
-- "video-analysis stopped before upload: the current released runner only supports inline video payloads up to 20MB. The real unblocker is Gemini Files API or a file-reference PostPlus Cloud service."
+- "video-analysis stopped before provider analysis: the upload reached Gemini Files API, but the file never became ACTIVE within the hosted wait window. The real unblocker is provider file activation, not another local retry."
 - "image-batch-runner cannot use image-gpt-image-2-text in this release: the skill runner and registry only expose hosted endpoints already present in the PostPlus media-generation catalog."
 - "social-media-publisher preview succeeded, but publishing is still approval-gated; no post was sent."
 
