@@ -1,6 +1,10 @@
 ---
 name: broll-match-engine
 description: Match spoken edit beats to candidate B-roll assets using a normalized transcript, subtitle chunking, optional A-roll analysis, and a reusable B-roll catalog. Use this when the goal is to decide what B-roll should support each beat, not just to list assets or describe the video.
+metadata:
+  postplus:
+    familyId: media-production
+    familyName: Media and Creative Production
 ---
 
 # B-roll Match Engine

@@ -1,6 +1,10 @@
 ---
 name: xiaohongshu-tools
 description: Local execution tools for Xiaohongshu/Rednote hosted collection workflows, including actor runs, dataset normalization, account and post ranking, comment clustering, product-pool ranking, and topic-map building.
+metadata:
+  postplus:
+    familyId: xiaohongshu
+    familyName: Xiaohongshu / Rednote
 ---
 
 # Xiaohongshu Tools

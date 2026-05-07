@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-1-d7434374378712cb",
+  "releaseId": "skills-1-dd7a652ab8cce9e9",
   "source": "PostPlusAI/postplus-skills",
   "primaryIndex": "skills/INDEX.md",
   "skills": [
@@ -714,7 +714,7 @@
       "path": "skills/50-publishing/social-media-publisher/SKILL.md",
       "requirements": {
         "accountConnections": [
-          "postiz-workspace"
+          "social-publishing-workspace"
         ],
         "collectionKeys": [],
         "endpointKeys": [],

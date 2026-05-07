@@ -7,10 +7,10 @@ import { formatCliError } from "../_postplus_shared/00-core/shared-runtime/scrip
 import {
   isDirectRun,
   parseArgs,
-  postizUploadFile,
+  socialPublishingUploadFile,
   requireArg,
   writeJson
-} from "./lib/postiz_common.mjs";
+} from "./lib/social_publishing_common.mjs";
 
 export async function main(argv = process.argv.slice(2), io = console) {
   const args = parseArgs(argv);
@@ -22,7 +22,7 @@ export async function main(argv = process.argv.slice(2), io = console) {
     throw new Error(`Upload file input does not exist: ${absoluteInput}`);
   }
 
-  const payload = await postizUploadFile(absoluteInput, { args });
+  const payload = await socialPublishingUploadFile(absoluteInput, { args });
 
   if (output) {
     writeJson(output, payload);

@@ -1,6 +1,7 @@
 # Social Media Publisher Contract
 
-This workspace wraps the Postiz Public API instead of shelling out to the Postiz CLI.
+This workspace wraps the PostPlus social publishing capability instead of
+shelling out to a third-party CLI.
 
 Why:
 
@@ -10,48 +11,47 @@ Why:
 
 ## Ownership model
 
-PostPlus holds one platform-owned Postiz org and API key.
-End users do not need Postiz accounts.
+PostPlus holds one platform-owned social publishing workspace.
+End users do not need separate publishing-service accounts.
 
 Channel onboarding flow:
 
 1. PostPlus backend calls `GET /public/v1/social/{integration}` with the
-   PostPlus Postiz API key
-2. Postiz returns a social-platform OAuth URL (e.g. Instagram consent screen)
-   and stores a `state → org` mapping in Redis for 1 hour
+   PostPlus social publishing service
+2. PostPlus returns a social-platform OAuth URL (e.g. Instagram consent screen)
 3. PostPlus delivers the URL to the end user via product UI or CLI
 4. End user clicks the link and authorizes their social account on the
-   platform's own consent screen — no Postiz account required
-5. Postiz callback receives the code, resolves the org via `state`, and saves
-   the channel token into the PostPlus Postiz org
+   platform's own consent screen
+5. PostPlus saves the resulting channel token into the social publishing
+   workspace
 6. PostPlus calls `PUT /integrations/:id/customer-name` to label the channel
    with the user's PostPlus account id
 
 ## PostPlus Cloud Boundary
 
-All Postiz API calls from skill scripts are proxied through the PostPlus hosted
-capability bridge. Scripts never hold a Postiz API key directly.
+All remote publishing calls from skill scripts are proxied through the PostPlus
+hosted capability bridge. Scripts never hold publishing credentials directly.
 
 The skill contract assumes:
 
 - channel allowlists are enforced server-side and in local request shaping
 - publishing capability is either available or it fast-fails clearly
-- user-facing skill docs do not ask for any Postiz credentials
+- user-facing skill docs do not ask for third-party publishing-service credentials
 
-The optional `POSTIZ_API_URL` remains an implementation detail for PostPlus-provided
-scripts and local test doubles.
+The optional local test URL remains an implementation detail for
+PostPlus-provided scripts and local test doubles.
 
 ## Customer config
 
 Path:
 
-- `customers/<customer-id>/assets/social/postiz.config.json`
+- `customers/<customer-id>/assets/social/social-publishing.config.json`
 
 Shape:
 
 ```json
 {
-  "postizWorkspace": "postplus-platform",
+  "socialPublishingWorkspace": "postplus-platform",
   "allowedIntegrationIds": [],
   "defaultPlatforms": []
 }
@@ -105,7 +105,7 @@ Wrapper request shape:
 }
 ```
 
-Mapped Postiz request shape:
+Mapped remote request shape:
 
 ```json
 {
@@ -137,9 +137,9 @@ Mapped Postiz request shape:
 Notes:
 
 - `settings.__type` must be included explicitly according to the official provider docs
-- `mediaUrls` are mapped to Postiz `image` objects
+- `mediaUrls` are mapped to remote `image` objects
 - every request must already know the exact integration id
-- `tags` must use the official Postiz API object shape; do not send string arrays
+- `tags` must use the official publishing API object shape; do not send string arrays
 
 Provider note for Facebook Pages:
 
@@ -153,7 +153,7 @@ Provider note for Instagram:
 - use the connected Instagram integration id from `GET /integrations`
 - set `settings.__type` to `instagram` for Facebook Business-linked Instagram accounts
 - set `settings.__type` to `instagram-standalone` for standalone Instagram accounts
-- set `settings.post_type` explicitly; Postiz documents `post` and `story`
+- set `settings.post_type` explicitly; supported values include `post` and `story`
 - optional: `settings.collaborators` must be an array of `{ "label": "<username>" }` objects
 - optional: `settings.is_trial_reel` and `settings.graduation_strategy` are supported for trial-reel flows
 - upload images or videos first, then reference the returned uploaded URLs in `mediaUrls`
@@ -185,7 +185,7 @@ Provider note for Instagram:
 - fail fast on disallowed integration ids
 - fail fast on missing `settings.__type`
 - fail fast on invalid `tags`
-- fail fast on non-2xx Postiz responses
+- fail fast on non-2xx remote publishing responses
 - always persist raw response bodies for debugging when the caller provides an output path
 
 ## Create post response shape

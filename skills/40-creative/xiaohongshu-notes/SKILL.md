@@ -1,6 +1,10 @@
 ---
 name: xiaohongshu-notes
 description: Develop Xiaohongshu note ideas and drafts from rough thoughts, lived experience, or existing source material. Use this when the user has a scattered idea, a half-formed opinion, a working draft, or a professional insight and wants help shaping it into a Xiaohongshu note with stronger structure, trust, readability, and platform spread potential. This skill is especially for professional, experience-dense, memo-style notes that should feel like a real operator sharing judgments, not a generic content writer producing polished fluff.
+metadata:
+  postplus:
+    familyId: xiaohongshu
+    familyName: Xiaohongshu / Rednote
 ---
 
 # Xiaohongshu Notes

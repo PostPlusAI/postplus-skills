@@ -1,6 +1,10 @@
 ---
 name: amazon-research
 description: Research Amazon platform data for competitive products, pricing bands, reviews, best sellers, and related sourcing analysis.
+metadata:
+  postplus:
+    familyId: marketplace-sourcing
+    familyName: Marketplace, Sourcing, and Growth
 ---
 
 # Amazon Research

@@ -1,6 +1,10 @@
 ---
 name: image-batch-runner
 description: Run fact-grounded image generation batches for short-form video production, especially persona images, first-frame candidates, and light consistency edits. Use this when persona and concept inputs already exist and you need local image assets, prompt records, and reusable model-call metadata. This skill should stay anchored to benchmark-backed persona locks and should save both raw provider responses and normalized local asset manifests.
+metadata:
+  postplus:
+    familyId: media-production
+    familyName: Media and Creative Production
 ---
 
 # Image Batch Runner

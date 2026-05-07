@@ -1,6 +1,10 @@
 ---
 name: instagram-campaign-scout
 description: Scout Instagram hashtag opportunities, branded mentions, and campaign spread to monitor public UGC and creator participation.
+metadata:
+  postplus:
+    familyId: instagram
+    familyName: Instagram
 ---
 
 # Instagram Campaign Scout

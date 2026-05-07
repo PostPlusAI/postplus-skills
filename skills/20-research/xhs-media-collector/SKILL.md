@@ -1,6 +1,10 @@
 ---
 name: xiaohongshu-media-collector
 description: Collect validated Xiaohongshu image assets from normalized XHS datasets into local manifests and downloaded files. Use this when you need reproducible local media artifacts from note covers or other already-exposed remote asset URLs.
+metadata:
+  postplus:
+    familyId: xiaohongshu
+    familyName: Xiaohongshu / Rednote
 ---
 
 # XHS Media Collector

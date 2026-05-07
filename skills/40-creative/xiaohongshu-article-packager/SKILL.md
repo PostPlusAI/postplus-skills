@@ -1,6 +1,10 @@
 ---
 name: xiaohongshu-article-packager
 description: Lay out an existing draft or script into a Xiaohongshu image-post or long-image package without rewriting the source. Use this when the user wants pagination, hierarchy, image placement, and renderable HTML/CSS while preserving the original wording, information density, and voice of the source text.
+metadata:
+  postplus:
+    familyId: media-production
+    familyName: Media and Creative Production
 ---
 
 # Xiaohongshu Article Packager

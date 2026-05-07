@@ -1,6 +1,10 @@
 ---
 name: broll-catalog-builder
 description: Build a semantic inventory of local B-roll assets for edit planning. Use this when the goal is not yet to decide the final cut, but to understand what B-roll exists, what each asset proves, which ranges are usable, and how the asset library should be packaged for downstream matching.
+metadata:
+  postplus:
+    familyId: media-production
+    familyName: Media and Creative Production
 ---
 
 # B-roll Catalog Builder

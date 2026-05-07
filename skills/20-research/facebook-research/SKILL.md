@@ -1,6 +1,10 @@
 ---
 name: facebook-research
 description: Research Facebook pages, public follower or following surfaces, and public posts using PostPlus Cloud collection service. Use this when the user wants Facebook account research, follower-surface sampling, or public post metrics.
+metadata:
+  postplus:
+    familyId: platform-research
+    familyName: LinkedIn, Facebook, and YouTube
 ---
 
 # Facebook Research

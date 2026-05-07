@@ -1,6 +1,10 @@
 ---
 name: instagram-tools
 description: Local execution tools for Instagram hosted collection workflows, including actor runs, dataset normalization, ranking, comment clustering, and watchlist construction.
+metadata:
+  postplus:
+    familyId: instagram
+    familyName: Instagram
 ---
 
 # Instagram Tools

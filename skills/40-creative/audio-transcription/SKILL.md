@@ -1,6 +1,10 @@
 ---
 name: audio-transcription
 description: Transcribe local or remote audio into durable text and timestamp artifacts using hosted Whisper models. Use this when the job is speech-to-text from audio files and you need request/response persistence, optional timestamps, and subtitle-ready outputs.
+metadata:
+  postplus:
+    familyId: media-production
+    familyName: Media and Creative Production
 ---
 
 # Audio Transcription

@@ -1,6 +1,10 @@
 ---
 name: visual-hook
 description: Design and critique TikTok/Reels visual hooks for short-form slideshow or video production. Use this when discussing how to make the first image, first frame, opening shot, visual sequence, slideshow cover, or first 1-3 seconds strong enough to stop the scroll, especially for generated image/video workflows and UGC-style ads.
+metadata:
+  postplus:
+    familyId: media-production
+    familyName: Media and Creative Production
 ---
 
 # Visual Hook

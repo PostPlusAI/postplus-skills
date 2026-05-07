@@ -30,6 +30,8 @@ Recommended context fields:
 - `sourceBasis`
 - `feedback`
 - `segmentContract`
+- `continuityPolicy`
+- `continuityReport`
 
 ## Defaults
 
@@ -96,6 +98,87 @@ Before submission, validate the request:
 node skills/40-creative/seedance-submitter/scripts/validate_seedance_request_contract.mjs \
   --input path/to/request.seed.json
 ```
+
+## Continuity Policy
+
+Use `continuityPolicy` when the request claims cross-segment consistency for
+character, voice, product, or environment.
+
+The main purpose is not to make the provider remember previous segments. The
+purpose is to make the request explicit about what continuity is being claimed
+and what evidence actually supports that claim in this one request.
+
+Suggested shape:
+
+```json
+{
+  "continuityPolicy": {
+    "character": {
+      "target": "same electronics shop owner",
+      "targetType": "character",
+      "evidenceMode": "image-bound",
+      "requiredRefs": [
+        "persona-front"
+      ]
+    },
+    "voice": {
+      "target": "same owner voice",
+      "targetType": "voice",
+      "evidenceMode": "audio-bound",
+      "requiredRefs": [
+        "voice-take-v1"
+      ]
+    },
+    "product": {
+      "target": "same Qmove app and brand identity",
+      "targetType": "product",
+      "evidenceMode": "image-bound",
+      "requiredRefs": [
+        "logo-ref",
+        "app-ui-ref"
+      ]
+    },
+    "environment": {
+      "target": "same cramped electronics shop",
+      "targetType": "environment",
+      "evidenceMode": "image-bound",
+      "requiredRefs": [
+        "shop-env-ref"
+      ]
+    }
+  }
+}
+```
+
+Expected `evidenceMode` values:
+
+- `text-only`
+- `image-bound`
+- `audio-bound`
+- `multimodal-bound`
+
+Use `text-only` only when you are being honest that the request is constrained
+by description alone.
+
+## Continuity Report
+
+The validator now returns a `continuityReport` block.
+
+Interpret it conservatively:
+
+- `text-only`: do not say the continuity is locked
+- `image-bound`: visual continuity has real support
+- `audio-bound`: voice continuity has real support
+- `multimodal-bound`: stronger continuity support across image and audio
+
+If the report contains warnings, user-facing copy should prefer wording such as:
+
+- `已约束，未锁定`
+- `建议补一张人物图`
+- `建议补一个 voice take`
+
+Do not say `same owner locked` or equivalent when the report is only
+`text-only`.
 
 ## Dialogue Rule
 

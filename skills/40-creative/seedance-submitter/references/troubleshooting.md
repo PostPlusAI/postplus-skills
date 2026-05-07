@@ -33,6 +33,10 @@ If a job stays in `processing` for unusually long:
 - Reuse the same reference images across related segments.
 - Do not write `continue from the previous segment`, `same as previous`, or similar shorthand. The
   validator rejects request text that depends on previous-segment memory.
+- If the request claims `same owner`, `same product`, `same environment`, or
+  `same voice`, check whether `continuityReport` is only `text-only`.
+- If continuity is `text-only`, do not say it is locked. Add the missing image
+  or audio evidence, or tell the user the current request is only constrained by description.
 
 ## Wrong Provider Field
 

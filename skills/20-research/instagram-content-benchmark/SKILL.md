@@ -1,6 +1,10 @@
 ---
 name: instagram-content-benchmark
 description: Benchmark Instagram posts and Reels to discover winning content patterns, shortlist high-value examples, and extract reusable hooks and formats.
+metadata:
+  postplus:
+    familyId: instagram
+    familyName: Instagram
 ---
 
 # Instagram Content Benchmark

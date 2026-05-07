@@ -1,6 +1,10 @@
 ---
 name: video-request-architect
 description: Turn approved storyboard logic, beat sheets, or prompt plans into provider-ready short-form video requests. Use this when the segment structure is already known and you need a model-agnostic request architecture that can later map cleanly into Seedance or other video generators.
+metadata:
+  postplus:
+    familyId: routing-contracts
+    familyName: Routing & Contracts
 ---
 
 # Video Request Architect

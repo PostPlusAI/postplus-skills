@@ -3,17 +3,17 @@
 import {
   isDirectRun,
   parseArgs,
-  postizJson,
+  socialPublishingJson,
   requireArg,
   writeJson
-} from "./lib/postiz_common.mjs";
+} from "./lib/social_publishing_common.mjs";
 
 export async function main(argv = process.argv.slice(2), io = console) {
   const args = parseArgs(argv);
   const integrationId = requireArg(args, "integration-id");
   const output = args.output;
 
-  const payload = await postizJson(`/integration-settings/${integrationId}`, {}, { args });
+  const payload = await socialPublishingJson(`/integration-settings/${integrationId}`, {}, { args });
 
   if (output) {
     writeJson(output, payload);

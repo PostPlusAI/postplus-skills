@@ -1,6 +1,10 @@
 ---
 name: tiktok-music-archive-downloader
 description: Download TikTok video samples for selected music or sounds, extract local audio references, and preserve manifests for reproducible music research archives.
+metadata:
+  postplus:
+    familyId: tiktok
+    familyName: TikTok
 ---
 
 # TikTok Music Archive Downloader
