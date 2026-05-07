@@ -3,10 +3,10 @@
 import {
   isDirectRun,
   parseArgs,
-  postizJson,
+  socialPublishingJson,
   requireArg,
   writeJson,
-} from "./lib/postiz_common.mjs";
+} from "./lib/social_publishing_common.mjs";
 import {
   assertExecutionApproval,
   buildApprovalRequest,
@@ -56,7 +56,7 @@ export async function main(argv = process.argv.slice(2), io = console) {
     payload: approvalPayload,
   });
 
-  const result = await postizJson(`/posts/${postId}/status`, {
+  const result = await socialPublishingJson(`/posts/${postId}/status`, {
     method: "PUT",
     body: { status },
   });

@@ -1,6 +1,10 @@
 ---
 name: skill-finder-cn
 description: Help users find suitable tools from the currently released PostPlus skill surface and provide public installation commands. Use this when the user asks which skill can do a task, which skill to install, or what the released skill surface covers.
+metadata:
+  postplus:
+    familyId: workspace-publishing
+    familyName: Workspace, Publishing, and Meta
 ---
 
 # Skill Finder CN

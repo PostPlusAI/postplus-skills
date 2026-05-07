@@ -788,6 +788,14 @@ export function normalizeRenderInput(input) {
     mustKeep: Array.isArray(input.mustKeep) ? input.mustKeep : [],
     canVary: Array.isArray(input.canVary) ? input.canVary : [],
     feedback: Array.isArray(input.feedback) ? input.feedback : [],
+    continuityPolicy:
+      input.continuityPolicy && typeof input.continuityPolicy === 'object'
+        ? input.continuityPolicy
+        : null,
+    continuityReport:
+      input.continuityReport && typeof input.continuityReport === 'object'
+        ? input.continuityReport
+        : null,
     upstreamRefs: {
       image: input.upstreamRefs?.image || null,
       audio: input.upstreamRefs?.audio || null,
@@ -821,6 +829,8 @@ export function createRenderManifestBase(normalized, paths) {
     responsePath: paths.responsePath,
     createdAt: nowIso(),
     sourceBasis: normalized.sourceBasis,
+    continuityPolicy: normalized.continuityPolicy,
+    continuityReport: normalized.continuityReport,
     upstreamRefs: normalized.upstreamRefs,
     prompt: normalized.prompt,
     resolution: normalized.resolution,

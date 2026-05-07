@@ -1,6 +1,10 @@
 ---
 name: creator-outreach
 description: Build creator lead lists for TikTok, Instagram, and X by turning normalized platform datasets into outreach-ready leads with contact signals, shortlist logic, and draft outreach messages. Use this when the user wants creator discovery, contact extraction, shortlist building, or outreach prep.
+metadata:
+  postplus:
+    familyId: routing-contracts
+    familyName: Routing & Contracts
 ---
 
 # Creator Outreach

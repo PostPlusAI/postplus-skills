@@ -1,6 +1,10 @@
 ---
 name: media-router
 description: Route audio, video, transcript, subtitle, and edit-prep requests into the right media-understanding workflow before execution. Use this when the user wants transcription, subtitle generation, beat mapping, B-roll planning, or edit-ready outputs and the first question is which skill and model chain should run.
+metadata:
+  postplus:
+    familyId: routing-contracts
+    familyName: Routing & Contracts
 ---
 
 # Media Router

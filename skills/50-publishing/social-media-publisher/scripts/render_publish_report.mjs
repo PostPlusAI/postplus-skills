@@ -7,12 +7,12 @@ import {
   readJson,
   requireArg,
   writeText
-} from "./lib/postiz_common.mjs";
+} from "./lib/social_publishing_common.mjs";
 
 function formatPostLines(resultEnvelope) {
   const posts = Array.isArray(resultEnvelope?.result) ? resultEnvelope.result : [];
   if (!posts.length) {
-    return "- No posts returned by Postiz.";
+    return "- No posts returned by social publishing service.";
   }
 
   return posts

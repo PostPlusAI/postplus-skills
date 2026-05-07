@@ -1,6 +1,10 @@
 ---
 name: xiaohongshu-account-research
 description: Research Xiaohongshu accounts from validated recent-post surfaces, then aggregate account-level content signals without pretending follower or bio metrics are available when the validated profile actor is empty.
+metadata:
+  postplus:
+    familyId: xiaohongshu
+    familyName: Xiaohongshu / Rednote
 ---
 
 # XHS Account Research

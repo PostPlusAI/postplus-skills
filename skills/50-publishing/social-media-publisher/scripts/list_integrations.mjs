@@ -3,9 +3,9 @@
 import {
   isDirectRun,
   parseArgs,
-  postizJson,
+  socialPublishingJson,
   writeJson
-} from "./lib/postiz_common.mjs";
+} from "./lib/social_publishing_common.mjs";
 
 export async function main(argv = process.argv.slice(2), io = console) {
   const args = parseArgs(argv);
@@ -13,7 +13,7 @@ export async function main(argv = process.argv.slice(2), io = console) {
   const includeDisabled = args["include-disabled"] === "true";
   const output = args.output;
 
-  let integrations = await postizJson("/integrations", {}, { args });
+  let integrations = await socialPublishingJson("/integrations", {}, { args });
 
   if (!includeDisabled) {
     integrations = integrations.filter((integration) => !integration.disabled);

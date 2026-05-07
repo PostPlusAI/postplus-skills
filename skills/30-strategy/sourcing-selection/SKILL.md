@@ -1,6 +1,10 @@
 ---
 name: sourcing-selection
 description: Synthesize supply-side and demand-side evidence into a practical sourcing judgment for a product, niche, or shortlist without collapsing platform data collection and business judgment into one step.
+metadata:
+  postplus:
+    familyId: marketplace-sourcing
+    familyName: Marketplace, Sourcing, and Growth
 ---
 
 # Sourcing Selection

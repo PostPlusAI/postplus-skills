@@ -1,6 +1,10 @@
 ---
 name: instagram-audience-voice
 description: Mine Instagram comments to extract audience language, pain points, objections, FAQs, and purchase-intent signals from shortlisted posts or Reels.
+metadata:
+  postplus:
+    familyId: instagram
+    familyName: Instagram
 ---
 
 # Instagram Audience Voice

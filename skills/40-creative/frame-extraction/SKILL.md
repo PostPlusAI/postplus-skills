@@ -1,6 +1,10 @@
 ---
 name: frame-extraction
 description: Extract useful frames from local video files based on task intent, such as persona research, shot breakdown, product visibility, UI walkthroughs, visual-style review, or CTA/compliance checks. Use this when the goal is not generic video analysis, but selecting the right still frames and contact sheets for a specific downstream need.
+metadata:
+  postplus:
+    familyId: media-production
+    familyName: Media and Creative Production
 ---
 
 # Frame Extraction

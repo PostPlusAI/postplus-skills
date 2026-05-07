@@ -1,6 +1,10 @@
 ---
 name: reference-contract-builder
 description: Build explicit learn/do-not-copy contracts for image and video generation references. Use this when a prompt uses benchmark videos, contact sheets, frames, or product images and you need to state exactly what the model should learn, what identity elements must change, and which references should be excluded from the first test.
+metadata:
+  postplus:
+    familyId: routing-contracts
+    familyName: Routing & Contracts
 ---
 
 # Reference Contract Builder

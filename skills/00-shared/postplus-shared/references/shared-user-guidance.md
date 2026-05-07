@@ -110,6 +110,21 @@ Good shapes:
 - "image-batch-runner cannot use image-gpt-image-2-text in this release: the skill runner and registry only expose hosted endpoints already present in the PostPlus media-generation catalog."
 - "social-media-publisher preview succeeded, but publishing is still approval-gated; no post was sent."
 
+## Continuity Copy
+
+When a generation request claims continuity across segments, say whether that
+continuity is text-only or actually bound by image or audio evidence.
+
+Prefer short, honest wording:
+
+- "人物连续性这次还是文字约束；如果你愿意补一张人物图，会更稳。"
+- "商品和 App UI 已有图片绑定，这部分会比人物更稳。"
+- "声音这次还没锁；如果你在意角色连续性，我建议先固定一个 voice take。"
+- "这版可以直接跑，但更准确地说是已约束，不是已锁定。"
+
+Do not tell the user continuity is `locked`, `confirmed`, or `guaranteed` when
+the request is only text-constrained.
+
 ## Keep It Brief
 
 All of the above must fit in 1-2 sentences per interaction point. Proactive

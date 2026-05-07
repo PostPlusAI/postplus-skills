@@ -1,6 +1,10 @@
 ---
 name: tiktok-research
 description: Research TikTok metadata, creators, comments, trends, and benchmark data for organic platform analysis.
+metadata:
+  postplus:
+    familyId: tiktok
+    familyName: TikTok
 ---
 
 # TikTok Research Skill

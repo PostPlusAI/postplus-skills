@@ -60,6 +60,10 @@ export function shouldBypassProxy(urlString, noProxy = getNoProxy()) {
 }
 
 export function formatCliError(error) {
+  if (error instanceof Error && typeof error.productErrorCode === "string") {
+    return `${error.productErrorCode}: ${error.message}`;
+  }
+
   if (error instanceof Error && typeof error.code === "string") {
     return `${error.code}: ${error.message}`;
   }
@@ -339,6 +343,7 @@ function buildHttpError(statusCode, bodyText, transport) {
       buildClientUpgradeRequiredMessage(productError),
       undefined,
       {
+        ...pickProductErrorFields(productError),
         status: statusCode,
         upstreamBodyText: preview,
       },
@@ -354,6 +359,52 @@ function buildHttpError(statusCode, bodyText, transport) {
       buildCloudReleaseInProgressMessage(productError),
       undefined,
       {
+        ...pickProductErrorFields(productError),
+        status: statusCode,
+        upstreamBodyText: preview,
+      },
+    );
+  }
+
+  if (statusCode === 401 && productError?.code) {
+    return createHardError(
+      `${transport.codePrefix}_unauthorized`,
+      buildPostPlusProductErrorMessage(productError, transport, statusCode),
+      undefined,
+      {
+        ...pickProductErrorFields(productError),
+        status: statusCode,
+        upstreamBodyText: preview,
+      },
+    );
+  }
+
+  if (
+    statusCode === 503 &&
+    productError?.code === "postplus_cli_hosted_capability_unavailable"
+  ) {
+    return createHardError(
+      `${transport.codePrefix}_capability_unavailable`,
+      buildPostPlusProductErrorMessage(productError, transport, statusCode),
+      undefined,
+      {
+        ...pickProductErrorFields(productError),
+        status: statusCode,
+        upstreamBodyText: preview,
+      },
+    );
+  }
+
+  if (
+    productError?.code &&
+    /^postplus_(?:cli|client)_/.test(productError.code)
+  ) {
+    return createHardError(
+      productError.code,
+      buildPostPlusProductErrorMessage(productError, transport, statusCode),
+      undefined,
+      {
+        ...pickProductErrorFields(productError),
         status: statusCode,
         upstreamBodyText: preview,
       },
@@ -434,6 +485,39 @@ function buildCloudReleaseInProgressMessage(payload) {
   return typeof payload.error === "string" && payload.error.trim()
     ? payload.error.trim()
     : "PostPlus Cloud is updating. Please retry in about one minute.";
+}
+
+function buildPostPlusProductErrorMessage(payload, transport, statusCode) {
+  const message =
+    typeof payload.message === "string" && payload.message.trim()
+      ? payload.message.trim()
+      : typeof payload.error === "string" && payload.error.trim()
+        ? payload.error.trim()
+        : "";
+
+  return (
+    message || `${transport.providerName} request failed with ${statusCode}.`
+  );
+}
+
+function pickProductErrorFields(payload) {
+  const fields = {
+    productErrorCode: payload.code,
+  };
+
+  for (const key of [
+    "capabilityDisplayName",
+    "layer",
+    "operationId",
+    "providerDisplayName",
+    "userMessageRule",
+  ]) {
+    if (payload[key] !== undefined) {
+      fields[key] = payload[key];
+    }
+  }
+
+  return fields;
 }
 
 function shouldUseLowLevelTransport(urlString, options = {}) {

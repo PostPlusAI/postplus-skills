@@ -1,6 +1,10 @@
 ---
 name: social-media-publisher
-description: Prepare and, after explicit approval, publish social posts through the PostPlus platform-owned Postiz workspace.
+description: Prepare and, after explicit approval, publish social posts through the PostPlus platform-owned social publishing workspace.
+metadata:
+  postplus:
+    familyId: workspace-publishing
+    familyName: Workspace, Publishing, and Meta
 ---
 
 # Social Media Publisher
@@ -9,31 +13,30 @@ Follow shared public skill rules in:
 
 - `postplus-shared` public skill rules
 
-Use this skill when the user wants to operate social publishing through the PostPlus-managed Postiz workspace.
+Use this skill when the user wants to operate social publishing through the PostPlus-managed social publishing workspace.
 
 This skill is for:
 
 - guiding users through the invite-link channel onboarding flow
-- listing integrations available on the PostPlus Postiz workspace
+- listing integrations available on the PostPlus social publishing workspace
 - preparing a local publish request draft
-- creating a Postiz draft or schedule only after explicit approval
-- promoting an existing Postiz draft into the queue only after a second approval
+- creating a social post draft or schedule only after explicit approval
+- promoting an existing social post draft into the queue only after a second approval
 
 ## Ownership model
 
-PostPlus holds one platform-owned Postiz org and API key.
-End users do **not** need their own Postiz accounts.
+PostPlus holds one platform-owned social publishing workspace.
+End users do **not** need separate publishing-service accounts.
 
-Channel onboarding uses the Postiz invite-link mechanism:
+Channel onboarding uses the PostPlus invite-link mechanism:
 
 1. the product calls `GET /public/v1/social/{integration}` with the PostPlus
-   Postiz API key
-2. Postiz returns a social-platform OAuth URL (e.g. Instagram, TikTok) and
-   stores a state → PostPlus org mapping in Redis for 1 hour
+   social publishing service
+2. PostPlus returns a social-platform OAuth URL (e.g. Instagram, TikTok)
 3. the product delivers that URL to the end user (via UI or CLI)
 4. the user clicks the link and authorizes their social account on the
-   platform's own OAuth consent screen — no Postiz registration required
-5. the resulting channel token lands in the PostPlus Postiz org
+   platform's own OAuth consent screen
+5. the resulting channel token lands in the PostPlus social publishing workspace
 6. the product labels the channel with the user's PostPlus account id via
    `PUT /integrations/:id/customer-name`
 
@@ -47,7 +50,7 @@ Without `--execute`, it:
 - enforces the integration allowlist
 - writes a local preview envelope
 - emits an `approvalRequest`
-- does not call Postiz
+- does not call the remote publishing service
 
 Actual remote mutation requires:
 
@@ -55,7 +58,7 @@ Actual remote mutation requires:
 - `--approval-file <approved.json>`
 - a channel that has been onboarded via the invite-link flow above
 
-Use `change_post_status.mjs` to move a real Postiz draft from `draft` to
+Use `change_post_status.mjs` to move a real social post draft from `draft` to
 `schedule` after a second explicit approval.
 
 ## Authentication
@@ -64,10 +67,10 @@ Read `references/api-contract.md`.
 
 Release workflow rules:
 
-- PostPlus backend holds the Postiz API key server-side; scripts never receive
-  it directly
-- all Postiz API calls are proxied through the PostPlus Cloud service
-- do not ask users for Postiz credentials of any kind
+- PostPlus backend holds publishing credentials server-side; scripts never
+  receive them directly
+- all remote publishing calls are proxied through the PostPlus Cloud service
+- do not ask users for third-party publishing-service credentials of any kind
 
 ## Default workflow
 
@@ -109,7 +112,7 @@ Prepare a publish request preview:
 ```bash
 node skills/50-publishing/social-media-publisher/scripts/create_post.mjs \
   --request "<request.json>" \
-  --customer-config "<postiz.config.json>" \
+  --customer-config "<social-publishing.config.json>" \
   --output "<create-post.preview.json>"
 ```
 
@@ -118,7 +121,7 @@ Execute the approved create:
 ```bash
 node skills/50-publishing/social-media-publisher/scripts/create_post.mjs \
   --request "<request.json>" \
-  --customer-config "<postiz.config.json>" \
+  --customer-config "<social-publishing.config.json>" \
   --output "<create-post.result.json>" \
   --execute \
   --approval-file "<approval.json>"

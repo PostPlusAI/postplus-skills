@@ -1,6 +1,10 @@
 ---
 name: postplus-shared
 description: Shared rules, routing preferences, execution boundaries, and workflow references for released PostPlus skills. Use this before any PostPlus skill that mentions shared public skill rules, research preferences, product-selection preferences, TikTok music workflow, or ads workflow.
+metadata:
+  postplus:
+    familyId: shared-rules
+    familyName: Shared Rules
 ---
 
 # PostPlus Shared

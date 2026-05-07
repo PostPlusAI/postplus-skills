@@ -1,6 +1,10 @@
 ---
 name: reference-decode
 description: Decode benchmark videos, contact sheets, frames, or rough ideas into reusable prompt structure. Use this when you need to extract hook essence, viewer question, must-copy visual grammar, and forbidden drift before writing storyboard or generation prompts.
+metadata:
+  postplus:
+    familyId: routing-contracts
+    familyName: Routing & Contracts
 ---
 
 # Reference Decode

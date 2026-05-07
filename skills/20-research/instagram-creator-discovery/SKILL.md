@@ -1,6 +1,10 @@
 ---
 name: instagram-creator-discovery
 description: Discover Instagram creators through search, hashtags, tagged mentions, posts, and Reels, then enrich and rank them into research pools and shortlists.
+metadata:
+  postplus:
+    familyId: instagram
+    familyName: Instagram
 ---
 
 # Instagram Creator Discovery

@@ -1,6 +1,10 @@
 ---
 name: youtube-research
 description: Research YouTube channel summaries, audience comment samples, downloadable video records, and public videos using PostPlus Cloud collection service. Use this when the user wants YouTube account research or public video metrics.
+metadata:
+  postplus:
+    familyId: platform-research
+    familyName: LinkedIn, Facebook, and YouTube
 ---
 
 # YouTube Research

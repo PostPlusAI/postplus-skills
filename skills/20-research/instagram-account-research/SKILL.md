@@ -1,6 +1,10 @@
 ---
 name: instagram-account-research
 description: Research Instagram accounts for creator discovery, competitor profiling, and account health snapshots using hosted profile and post collection.
+metadata:
+  postplus:
+    familyId: instagram
+    familyName: Instagram
 ---
 
 # Instagram Account Research

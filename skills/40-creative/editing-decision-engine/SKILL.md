@@ -1,6 +1,10 @@
 ---
 name: editing-decision-engine
 description: Plan short-form post-edit decisions from A-roll, B-roll, scripts, and reference videos. Use this when the goal is not generic video analysis or rendering, but deciding how to cut a social video beat by beat, including where to stay on face, where to insert proof B-roll, how to use reference patterns, and how to package an actionable edit plan for a human editor or downstream timeline tooling.
+metadata:
+  postplus:
+    familyId: media-production
+    familyName: Media and Creative Production
 ---
 
 # Editing Decision Engine

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Skill search script
+# Search the public PostPlus skills repository listing.
 
 QUERY="$1"
 LIMIT="${2:-10}"
@@ -9,7 +9,9 @@ if [ -z "$QUERY" ]; then
     exit 1
 fi
 
-echo "🔍 Search: $QUERY"
+echo "Search: $QUERY"
 echo "================================"
 
-clawhub search "$QUERY" --limit "$LIMIT"
+npx -y skills add PostPlusAI/postplus-skills --global --list \
+    | grep -i -- "$QUERY" \
+    | head -n "$LIMIT"

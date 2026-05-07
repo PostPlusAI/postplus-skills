@@ -350,6 +350,49 @@ export async function analyzeOne({ item, model, outputDir, dependencies = {} }) 
   return { sourceId: item.sourceId, outputPath, normalized };
 }
 
+export function serializeBatchFailure(error) {
+  const message = error instanceof Error ? error.message : String(error);
+
+  if (!error || typeof error !== "object") {
+    return {
+      error: message,
+      message,
+    };
+  }
+
+  return {
+    code:
+      typeof error.productErrorCode === "string"
+        ? error.productErrorCode
+        : typeof error.code === "string"
+          ? error.code
+          : undefined,
+    error: message,
+    layer: typeof error.layer === "string" ? error.layer : undefined,
+    message,
+    operationId:
+      typeof error.operationId === "string" ? error.operationId : undefined,
+    providerDisplayName:
+      typeof error.providerDisplayName === "string"
+        ? error.providerDisplayName
+        : undefined,
+    status: typeof error.status === "number" ? error.status : undefined,
+    userMessageRule:
+      typeof error.userMessageRule === "string"
+        ? error.userMessageRule
+        : undefined,
+  };
+}
+
+function buildBatchFailure({ item, error }) {
+  return {
+    sourceId: item.sourceId,
+    sourceUrl: item.sourceUrl,
+    filePath: item.filePath,
+    ...serializeBatchFailure(error),
+  };
+}
+
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   if (!args["download-report"] || !args["output-dir"]) {
@@ -380,12 +423,7 @@ async function main() {
         successes.push(result);
         console.log(`Analyzed ${item.sourceId}`);
       } catch (error) {
-        failures.push({
-          sourceId: item.sourceId,
-          sourceUrl: item.sourceUrl,
-          filePath: item.filePath,
-          error: error instanceof Error ? error.message : String(error),
-        });
+        failures.push(buildBatchFailure({ item, error }));
         console.error(`Failed ${item.sourceId}: ${failures[failures.length - 1].error}`);
       }
     }

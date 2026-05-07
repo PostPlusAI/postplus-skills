@@ -1,6 +1,10 @@
 ---
 name: persona-pack
 description: Build fact-grounded short-form video personas and visual consistency packs from validated benchmark research. Use this when you need to define a repeatable creator archetype, image prompt pack, or persona lock for batch video production. This skill must derive personas from real benchmark evidence such as creator types, protagonist descriptions, visual styles, hooks, and audience language. Do not invent personas or visual traits without source support.
+metadata:
+  postplus:
+    familyId: media-production
+    familyName: Media and Creative Production
 ---
 
 # Persona Pack

@@ -4,9 +4,9 @@ import {
   buildDateRange,
   isDirectRun,
   parseArgs,
-  postizJson,
+  socialPublishingJson,
   writeJson
-} from "./lib/postiz_common.mjs";
+} from "./lib/social_publishing_common.mjs";
 
 export async function main(argv = process.argv.slice(2), io = console) {
   const args = parseArgs(argv);
@@ -26,7 +26,7 @@ export async function main(argv = process.argv.slice(2), io = console) {
     searchParams.set("customer", String(args.customer));
   }
 
-  const payload = await postizJson(`/posts?${searchParams.toString()}`, {}, { args });
+  const payload = await socialPublishingJson(`/posts?${searchParams.toString()}`, {}, { args });
 
   if (output) {
     writeJson(output, payload);

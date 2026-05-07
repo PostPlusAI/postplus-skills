@@ -1,6 +1,10 @@
 ---
 name: video-analysis
 description: Analyze local or downloaded social video files with the official Gemini API, especially for TikTok/Reels benchmark breakdowns, script decomposition, and structured JSON outputs. Use this when you need video-level analysis beyond metadata, including uploading video files, prompting Gemini 3.1 Pro Preview, and linking results back to source metadata.
+metadata:
+  postplus:
+    familyId: media-production
+    familyName: Media and Creative Production
 ---
 
 # Video Analysis
