@@ -10,6 +10,7 @@ import {
 } from '../../../00-core/shared-runtime/scripts/lib/hosted_media_generation_bridge.mjs';
 
 export const DEFAULT_PROVIDER = 'hosted-media';
+export const DEFAULT_MODEL = 'image-nano-banana-2-text';
 export const DEFAULT_OUTPUT_FORMAT = 'png';
 export const DEFAULT_RESOLUTION = '4k';
 export const DEFAULT_ASPECT_RATIO = '9:16';
@@ -282,14 +283,9 @@ export function normalizeGenerationInput(input, mode) {
   if (!input?.prompt) {
     throw new Error('request.prompt is required.');
   }
-  if (!input?.model) {
-    throw new Error(
-      `request.model is required. Supported image models: ${Object.keys(HOSTED_IMAGE_MODELS).join(', ')}.`,
-    );
-  }
   return {
     provider: input.provider || DEFAULT_PROVIDER,
-    model: input.model,
+    model: input.model || DEFAULT_MODEL,
     mode,
     assetId,
     runId,

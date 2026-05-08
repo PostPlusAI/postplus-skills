@@ -10,6 +10,7 @@ import {
 
 export const ARK_API_BASE = 'https://ark.cn-beijing.volces.com/api/v3';
 export const DEFAULT_PROVIDER = 'hosted-media';
+export const DEFAULT_MODEL = 'video-infinitetalk';
 export const DEFAULT_RESOLUTION = '720p';
 
 export const HOSTED_VIDEO_MODELS = {
@@ -681,12 +682,7 @@ export function normalizeRenderInput(input) {
   }
 
   const provider = input.provider || DEFAULT_PROVIDER;
-  if (!input.model) {
-    throw new Error(
-      `request.model is required. Supported hosted video models: ${Object.keys(HOSTED_VIDEO_MODELS).join(', ')}.`,
-    );
-  }
-  const model = input.model;
+  const model = input.model || DEFAULT_MODEL;
   const hostedModelConfig =
     provider === 'hosted-media' ? getHostedVideoModelConfig(model) : null;
   const prompt = buildSeedancePromptFromPlan(
