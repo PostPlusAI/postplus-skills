@@ -43,6 +43,29 @@ Prefer:
 
 This skill should stay focused on local contracts after raw data has been collected.
 
+## Supported Collection Keys
+
+This support skill may run only these PostPlus public collection keys:
+
+- `x-posts`
+- `x-profiles`
+
+Minimal runner examples:
+
+```bash
+node ${CLAUDE_SKILL_DIR}/scripts/run_x_actor.mjs \
+  --collection-key x-posts \
+  --input <work-folder>/.postplus/x-tools/x-posts-input.json \
+  --output <work-folder>/.postplus/x-tools/x-posts-raw.json
+
+node ${CLAUDE_SKILL_DIR}/scripts/run_x_actor.mjs \
+  --collection-key x-profiles \
+  --input <work-folder>/.postplus/x-tools/x-profiles-input.json \
+  --output <work-folder>/.postplus/x-tools/x-profiles-raw.json
+```
+
+Do not pass provider-specific collection names or unpublished keys.
+
 ## Public Skill Execution Contract
 
 - keep actor inputs, raw datasets, normalized outputs, ranking files, and graph

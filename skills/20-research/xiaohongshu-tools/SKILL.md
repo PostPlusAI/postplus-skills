@@ -47,6 +47,29 @@ Prefer:
 
 This skill should stay focused on stable local contracts after raw data has been collected.
 
+## Supported Collection Keys
+
+This support skill may run only these PostPlus public collection keys:
+
+- `xhs-account-posts`
+- `xhs-search`
+
+Minimal runner examples:
+
+```bash
+node ${CLAUDE_SKILL_DIR}/scripts/run_xhs_actor.mjs \
+  --collection-key xhs-account-posts \
+  --input <work-folder>/.postplus/xiaohongshu-tools/xhs-account-posts-input.json \
+  --output <work-folder>/.postplus/xiaohongshu-tools/xhs-account-posts-raw.json
+
+node ${CLAUDE_SKILL_DIR}/scripts/run_xhs_actor.mjs \
+  --collection-key xhs-search \
+  --input <work-folder>/.postplus/xiaohongshu-tools/xhs-search-input.json \
+  --output <work-folder>/.postplus/xiaohongshu-tools/xhs-search-raw.json
+```
+
+Do not pass provider-specific collection names or unpublished keys.
+
 ## Public Skill Execution Contract
 
 - keep actor inputs, raw datasets, normalized datasets, ranking outputs,
