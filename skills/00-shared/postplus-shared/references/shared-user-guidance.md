@@ -12,6 +12,21 @@ short confirmation.
 
 Keep it to one sentence. Don't run in silence.
 
+## Audience Language
+
+Assume the user is a marketing operator, not an engineer. Use everyday business
+language in user-facing messages.
+
+- Prefer "image file", "saved file", "upload", "account connection", "service
+  limit", and "next step" over implementation terms when the technical detail is
+  not the real unblocker.
+- Avoid unnecessary provider, API, schema, endpoint, payload, base64, runtime,
+  attachment handle, or storage internals in normal user-facing copy.
+- If a technical term is the real blocker, translate it into what the user can
+  do next in the same sentence.
+- Keep detailed technical evidence in local artifacts, logs, or task summaries
+  unless the user asks for implementation details.
+
 ## Execution Expectation
 
 Before running a skill that will collect data, call a PostPlus Cloud service, or
@@ -104,11 +119,19 @@ and report the blocker directly. The user-facing failure message must include:
 Do not say a task is queued, partially completed, or recoverable unless a real
 artifact exists and the skill contract defines that recovery path.
 
+For images or other media pasted into a local AI agent conversation, be explicit
+about whether the agent has access to the original asset bytes or only visual
+model context. If the host runtime does not expose a readable path, attachment
+handle, clipboard bytes, or binary source, do not claim that the original media
+was saved or uploaded. Tell the user to provide a local path or save the asset
+to disk before continuing.
+
 Good shapes:
 
 - "video-analysis stopped before provider analysis: the upload reached Gemini Files API, but the file never became ACTIVE within the hosted wait window. The real unblocker is provider file activation, not another local retry."
 - "image-batch-runner cannot use image-gpt-image-2-text in this release: the skill runner and registry only expose hosted endpoints already present in the PostPlus media-generation catalog."
 - "social-media-publisher preview succeeded, but publishing is still approval-gated; no post was sent."
+- "I can see the pasted image in this conversation, but this Codex session has not exposed the original image bytes or a local file path to tools. Please save the image locally or provide its path, then I can upload that real file."
 
 ## Continuity Copy
 

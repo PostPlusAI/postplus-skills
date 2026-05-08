@@ -33,6 +33,8 @@
 - `referenceVideos` triggers the provider's reference-video billing tier;
   `referenceImages` and `referenceAudios` do not.
 - Upload local product and storyboard images before submission and replace local paths with uploaded URLs.
+- For one object identity, default to one image reference; for one voice identity, default to one audio reference.
+- Do not add many near-duplicate references by default; more references can make video generation less stable.
 - Use `promptPlan.referenceMap` to explain each image:
   - storyboard image: character, shot order, camera, motion flow
   - product images: product shape, color, packaging, texture, component details

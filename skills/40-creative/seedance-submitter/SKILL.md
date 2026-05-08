@@ -74,6 +74,10 @@ Each segment must be:
 
 When reference images or reference videos are present, bind them explicitly.
 
+For one object identity, default to one image reference. For one voice identity,
+default to one audio reference. Do not add many near-duplicate references by
+default; that often makes video generation less stable.
+
 Working handles such as `@storyboard`, `@product-front`, or `@ref-video-1` are acceptable in planning notes, but the final request must convert them into explicit reference bindings.
 
 Do not say only `use the attached references`.

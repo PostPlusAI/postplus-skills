@@ -42,6 +42,22 @@ artifacts, or a compile step before provider execution.
 - If the input must be synthesized first, write it as a real file under
   `.postplus/` instead of passing inline JSON text.
 
+## Conversation Media Rule
+
+- When the user shares images, videos, or other media inside a local AI agent
+  conversation, only save or upload the media if the agent can access a real
+  local file path, attachment handle, clipboard bytes, or other actual binary
+  source exposed by the host runtime.
+- If the agent can only see the media as model context and cannot access the
+  original bytes, do not recreate, screenshot, summarize, or generate a
+  substitute file and present it as the original asset.
+- On that path, stop and tell the user the honest unblocker: provide a local
+  path, attach the file through a host mode that exposes a path, or save the
+  media to disk before continuing.
+- Do not send conversation media to PostPlus Cloud through inline base64 in the
+  hosted JSON request. Use the supported local file upload path when a real
+  file or binary source exists.
+
 ## Compile-Step Rule
 
 - For complex collection families, compile the user brief into provider-ready
