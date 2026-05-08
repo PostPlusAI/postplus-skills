@@ -12,14 +12,13 @@ import {
   resolvePostPlusHostedSessionAuth,
 } from '../../../shared-runtime/scripts/lib/postplus_cli_config.mjs';
 
-const HOSTED_COLLECTION_POLL_INTERVAL_MS = readPositiveIntegerEnv(
-  'POSTPLUS_HOSTED_COLLECTION_POLL_INTERVAL_MS',
-  2_000,
-);
-const HOSTED_COLLECTION_POLL_TIMEOUT_MS = readPositiveIntegerEnv(
-  'POSTPLUS_HOSTED_COLLECTION_POLL_TIMEOUT_MS',
-  180_000,
-);
+const DEFAULT_HOSTED_COLLECTION_POLL_INTERVAL_MS = 2_000;
+const DEFAULT_HOSTED_COLLECTION_POLL_TIMEOUT_MS = 180_000;
+const TERMINAL_HOSTED_COLLECTION_STATUSES = new Set([
+  'completed',
+  'failed',
+  'canceled',
+]);
 
 function createHardError(code, message, cause, extra = {}) {
   const error = new Error(message);
@@ -41,6 +40,19 @@ function readPositiveIntegerEnv(name, fallback) {
   const parsed = Number.parseInt(raw, 10);
 
   return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function resolveHostedCollectionPollConfig() {
+  return {
+    pollIntervalMs: readPositiveIntegerEnv(
+      'POSTPLUS_HOSTED_COLLECTION_POLL_INTERVAL_MS',
+      DEFAULT_HOSTED_COLLECTION_POLL_INTERVAL_MS,
+    ),
+    pollTimeoutMs: readPositiveIntegerEnv(
+      'POSTPLUS_HOSTED_COLLECTION_POLL_TIMEOUT_MS',
+      DEFAULT_HOSTED_COLLECTION_POLL_TIMEOUT_MS,
+    ),
+  };
 }
 
 function resolveHostedCollectionBridgeConfig() {
@@ -92,8 +104,25 @@ export function hasHostedCollectionBridge() {
   }
 }
 
+export function isHostedCollectionPendingResult(value) {
+  return (
+    value &&
+    typeof value === 'object' &&
+    !Array.isArray(value) &&
+    value.status === 'pending' &&
+    value.pending === true &&
+    typeof value.runHandle === 'string' &&
+    value.runHandle.trim().length > 0
+  );
+}
+
 export async function runHostedCollection(input) {
   const config = resolveHostedCollectionBridgeConfig();
+  const pollConfig = resolveHostedCollectionPollConfig();
+  const runHandle =
+    typeof input.runHandle === 'string' && input.runHandle.trim().length > 0
+      ? input.runHandle.trim()
+      : null;
 
   const operationId =
     typeof input.operationId === 'string' && input.operationId.trim().length > 0
@@ -109,6 +138,7 @@ export async function runHostedCollection(input) {
           ? { socketPath: config.socketPath }
           : { apiBaseUrl: config.apiBaseUrl }),
         operationId,
+        runHandle,
         skillName: input.skillName,
         collectionKey: input.collectionKey,
       }),
@@ -116,31 +146,52 @@ export async function runHostedCollection(input) {
   }
 
   const response =
-    config.transport === 'socket'
-      ? await requestHostedBridgeJson(config.socketPath, '/collection', {
-          accountId: config.accountId,
-          conversationId: config.conversationId,
-          client: resolvePostPlusClientMetadata({
-            skillName: input.skillName,
-          }),
-          sessionId: config.sessionId,
-          operationId,
+    runHandle !== null
+      ? await requestHostedCollectionStatus(config, {
+          runHandle,
           skillName: input.skillName,
-          collectionKey: input.collectionKey,
-          input: input.input,
         })
-      : await requestHostedCollectionApiJsonWithRefresh(config, {
-          operationId,
-          skillName: input.skillName,
-          collectionKey: input.collectionKey,
-          input: input.input,
-        });
+      : config.transport === 'socket'
+        ? await requestHostedBridgeJson(config.socketPath, '/collection', {
+            accountId: config.accountId,
+            conversationId: config.conversationId,
+            client: resolvePostPlusClientMetadata({
+              skillName: input.skillName,
+            }),
+            sessionId: config.sessionId,
+            operationId,
+            skillName: input.skillName,
+            collectionKey: input.collectionKey,
+            input: input.input,
+          })
+        : await requestHostedCollectionApiJsonWithRefresh(config, {
+            operationId,
+            skillName: input.skillName,
+            collectionKey: input.collectionKey,
+            input: input.input,
+          });
 
   const run = readHostedCollectionRunResult(response?.data);
   let latestBilling = run.billing;
 
   if (run.payload) {
     return attachHostedCollectionBilling(run.payload, latestBilling);
+  }
+
+  if (run.status === 'failed' || run.status === 'canceled') {
+    throw buildHostedCollectionRunFailure(run);
+  }
+
+  if (run.status === 'completed') {
+    throw createHardError(
+      'skill_server_collection_invalid_response',
+      'Hosted collection bridge returned a completed run without a payload.',
+      undefined,
+      {
+        runHandle: run.runHandle,
+        runStatus: run.status,
+      },
+    );
   }
 
   if (!run.runHandle) {
@@ -150,33 +201,34 @@ export async function runHostedCollection(input) {
     );
   }
 
-  const waitUntil = Date.now() + HOSTED_COLLECTION_POLL_TIMEOUT_MS;
+  const waitUntil = Date.now() + pollConfig.pollTimeoutMs;
   let latestRun = run;
 
-  while (
-    latestRun.status !== 'completed' &&
-    latestRun.status !== 'failed' &&
-    latestRun.status !== 'canceled'
-  ) {
+  while (!TERMINAL_HOSTED_COLLECTION_STATUSES.has(latestRun.status)) {
     if (Date.now() > waitUntil) {
+      return buildHostedCollectionPendingResult({
+        billing: latestBilling,
+        pollTimeoutMs: pollConfig.pollTimeoutMs,
+        resumeCommand: input.resumeCommand,
+        run: latestRun,
+      });
+    }
+
+    if (!latestRun.runHandle) {
       throw createHardError(
-        'skill_server_collection_timeout',
-        'Hosted skill collection task did not complete before the local poll timeout.',
+        'skill_server_collection_invalid_response',
+        'Hosted collection bridge returned an invalid run handle.',
       );
     }
 
     await new Promise((resolve) =>
-      setTimeout(resolve, HOSTED_COLLECTION_POLL_INTERVAL_MS),
+      setTimeout(resolve, pollConfig.pollIntervalMs),
     );
 
-    const statusResponse =
-      config.transport === 'socket'
-        ? await requestHostedBridgeJson(config.socketPath, '/collection', {
-            runHandle: latestRun.runHandle,
-          })
-        : await requestHostedCollectionApiJsonWithRefresh(config, {
-            runHandle: latestRun.runHandle,
-          });
+    const statusResponse = await requestHostedCollectionStatus(config, {
+      runHandle: latestRun.runHandle,
+      skillName: input.skillName,
+    });
 
     latestRun = readHostedCollectionRunResult(statusResponse?.data);
     latestBilling = latestRun.billing ?? latestBilling;
@@ -189,7 +241,19 @@ export async function runHostedCollection(input) {
   return attachHostedCollectionBilling(latestRun.payload, latestBilling);
 }
 
-async function requestHostedCollectionApiJson(config, payload) {
+async function requestHostedCollectionStatus(config, input) {
+  return config.transport === 'socket'
+    ? await requestHostedBridgeJson(config.socketPath, '/collection', {
+        runHandle: input.runHandle,
+      })
+    : await requestHostedCollectionApiJsonWithRefresh(
+        config,
+        { runHandle: input.runHandle },
+        { skillName: input.skillName },
+      );
+}
+
+async function requestHostedCollectionApiJson(config, payload, metadata = {}) {
   return await requestJson(
     `${config.apiBaseUrl}/api/postplus-cli/hosted/collection`,
     {
@@ -199,7 +263,7 @@ async function requestHostedCollectionApiJson(config, payload) {
       headers: {
         authorization: `Bearer ${config.cliSessionToken}`,
         ...buildPostPlusClientCompatibilityHeaders({
-          skillName: payload.skillName,
+          skillName: payload.skillName ?? metadata.skillName,
         }),
         'content-type': 'application/json',
       },
@@ -209,7 +273,11 @@ async function requestHostedCollectionApiJson(config, payload) {
   );
 }
 
-async function requestHostedCollectionApiJsonWithRefresh(config, payload) {
+async function requestHostedCollectionApiJsonWithRefresh(
+  config,
+  payload,
+  metadata = {},
+) {
   const refreshedConfig = await refreshPostPlusHostedSessionAuthIfNeeded();
   const resolvedAuth = resolvePostPlusHostedSessionAuth();
   const initialConfig = refreshedConfig ?? {
@@ -219,7 +287,7 @@ async function requestHostedCollectionApiJsonWithRefresh(config, payload) {
   };
 
   try {
-    return await requestHostedCollectionApiJson(initialConfig, payload);
+    return await requestHostedCollectionApiJson(initialConfig, payload, metadata);
   } catch (error) {
     if (
       !error ||
@@ -241,6 +309,7 @@ async function requestHostedCollectionApiJsonWithRefresh(config, payload) {
         cliSessionToken: refreshed.cliSessionToken,
       },
       payload,
+      metadata,
     );
   }
 }
@@ -381,6 +450,29 @@ function attachHostedCollectionBilling(payload, billing) {
     ...payload,
     billing: payload.billing ?? billing,
   };
+}
+
+function buildHostedCollectionPendingResult({
+  billing,
+  pollTimeoutMs,
+  resumeCommand,
+  run,
+}) {
+  const pending = {
+    status: 'pending',
+    pending: true,
+    message:
+      'Hosted skill collection task is still running after the local poll timeout.',
+    runHandle: run.runHandle,
+    runStatus: run.status,
+    pollTimeoutMs,
+  };
+
+  if (typeof resumeCommand === 'string' && resumeCommand.trim().length > 0) {
+    pending.resumeCommand = resumeCommand.trim();
+  }
+
+  return attachHostedCollectionBilling(pending, billing);
 }
 
 function buildHostedCollectionRunFailure(run) {

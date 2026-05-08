@@ -1,7 +1,11 @@
 #!/usr/bin/env node
 import { randomUUID } from 'node:crypto';
+import path from 'node:path';
 
-import { runHostedCollection } from '../../../00-core/shared-collection/scripts/lib/hosted_collection_bridge.mjs';
+import {
+  isHostedCollectionPendingResult,
+  runHostedCollection,
+} from '../../../00-core/shared-collection/scripts/lib/hosted_collection_bridge.mjs';
 import { formatCliError } from '../../../00-core/shared-runtime/scripts/lib/network_runtime.mjs';
 import {
   normalizeDataset,
@@ -67,6 +71,16 @@ async function main() {
     skillName: 'tiktok-research',
   });
   writeJson(tempOutput, hostedPayload);
+
+  if (isHostedCollectionPendingResult(hostedPayload)) {
+    writeJson(outputPath, {
+      ...hostedPayload,
+      artifactPath: path.resolve(outputPath),
+      sourceVideos: topVideos,
+    });
+    console.log(`Saved pending collection state to ${path.resolve(outputPath)}`);
+    return;
+  }
 
   const normalized = normalizeDataset(readJson(tempOutput), {
     sourceId,

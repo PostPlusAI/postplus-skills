@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-1-dd7a652ab8cce9e9",
+  "releaseId": "skills-1-bcf38eb1fe3e9dbb",
   "source": "PostPlusAI/postplus-skills",
   "primaryIndex": "skills/INDEX.md",
   "skills": [
@@ -839,6 +839,7 @@
         "collectionKeys": [],
         "endpointKeys": [],
         "hostedCapabilities": [
+          "media-file",
           "video-analysis"
         ],
         "localDependencies": [

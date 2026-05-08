@@ -13,13 +13,8 @@ import {
 } from "../_postplus_shared/00-core/shared-runtime/scripts/lib/postplus_cloud_client.mjs";
 import { uploadHostedMediaFileReference } from "../_postplus_shared/00-core/shared-runtime/scripts/lib/hosted_media_generation_bridge.mjs";
 
-const INLINE_VIDEO_ENVELOPE_OVERHEAD_BYTES = 64 * 1024;
-export const INLINE_VIDEO_BYTE_LIMIT = Math.floor(
-  ((HOSTED_CAPABILITY_JSON_PAYLOAD_BYTE_LIMIT -
-    INLINE_VIDEO_ENVELOPE_OVERHEAD_BYTES) *
-    3) /
-    4,
-);
+export const VIDEO_ANALYSIS_JSON_PAYLOAD_BYTE_LIMIT =
+  HOSTED_CAPABILITY_JSON_PAYLOAD_BYTE_LIMIT;
 
 function parseArgs(argv) {
   const args = {};
@@ -69,19 +64,17 @@ export function selectVideoInputMode(fileSizeBytes) {
     throw new Error("video_file_size_invalid: file size must be a non-negative number.");
   }
 
-  return fileSizeBytes <= INLINE_VIDEO_BYTE_LIMIT ? "inline" : "file_reference";
+  return "file_reference";
 }
 
 export function buildVideoInputBoundary(fileSizeBytes) {
   const inputMode = selectVideoInputMode(fileSizeBytes);
   return {
     fileSizeBytes,
-    inlineByteLimit: INLINE_VIDEO_BYTE_LIMIT,
+    jsonPayloadByteLimit: VIDEO_ANALYSIS_JSON_PAYLOAD_BYTE_LIMIT,
     inputMode,
     transferBoundary:
-      inputMode === "inline"
-        ? "inline_data inside hosted JSON payload guard"
-        : "hosted file_reference via signed upload; no automatic compression or segmentation",
+      "hosted file_reference via signed upload; media bytes are not embedded in the hosted JSON payload; no automatic compression or segmentation",
   };
 }
 
@@ -181,29 +174,6 @@ function buildEstimatedUsage({ prompt, videoSeconds }) {
   };
 }
 
-export function toGeminiInlinePayload({ prompt, mimeType, base64Data }) {
-  return {
-    contents: [
-      {
-        role: "user",
-        parts: [
-          { text: prompt },
-          {
-            inline_data: {
-              mime_type: mimeType,
-              data: base64Data,
-            },
-          },
-        ],
-      },
-    ],
-    generationConfig: {
-      temperature: 0.2,
-      responseMimeType: "application/json",
-    },
-  };
-}
-
 export function toGeminiFileReferencePayload({ prompt, storageReference }) {
   return {
     contents: [
@@ -249,33 +219,22 @@ export async function analyzeOne({ item, model, outputDir, dependencies = {} }) 
     `[video-analysis preflight] ${item.sourceId}: ${inputBoundary.fileSizeBytes} bytes -> ${inputBoundary.inputMode}; ${inputBoundary.transferBoundary}.`,
   );
   let storageReference = null;
-  let payload;
 
-  if (inputMode === "file_reference") {
-    const uploadResult = await (
-      dependencies.uploadHostedMediaFileReference ?? uploadHostedMediaFileReference
-    )(absoluteFilePath, mimeType);
+  const uploadResult = await (
+    dependencies.uploadHostedMediaFileReference ?? uploadHostedMediaFileReference
+  )(absoluteFilePath, mimeType);
 
-    if (!uploadResult?.storageReference) {
-      throw new Error(
-        `upload_failed: no storage reference returned for ${item.sourceId}`,
-      );
-    }
-
-    storageReference = uploadResult.storageReference;
-    payload = toGeminiFileReferencePayload({
-      prompt,
-      storageReference,
-    });
-  } else {
-    const fileBuffer = fs.readFileSync(absoluteFilePath);
-    const base64Data = fileBuffer.toString("base64");
-    payload = toGeminiInlinePayload({
-      prompt,
-      mimeType,
-      base64Data,
-    });
+  if (!uploadResult?.storageReference) {
+    throw new Error(
+      `upload_failed: no storage reference returned for ${item.sourceId}`,
+    );
   }
+
+  storageReference = uploadResult.storageReference;
+  const payload = toGeminiFileReferencePayload({
+    prompt,
+    storageReference,
+  });
 
   const startedAt = new Date().toISOString();
   const raw = await (dependencies.runHostedCapabilityRequest ?? runHostedCapabilityRequest)({
@@ -338,7 +297,7 @@ export async function analyzeOne({ item, model, outputDir, dependencies = {} }) 
     gemini: {
       model,
       inputMode,
-      inlineByteLimit: INLINE_VIDEO_BYTE_LIMIT,
+      jsonPayloadByteLimit: VIDEO_ANALYSIS_JSON_PAYLOAD_BYTE_LIMIT,
       inputBoundary,
       ...(storageReference ? { storageReference } : {}),
       analyzedAt: startedAt,

@@ -2,7 +2,10 @@
 import { randomUUID } from 'node:crypto';
 import path from 'node:path';
 
-import { runHostedCollection } from '../../../00-core/shared-collection/scripts/lib/hosted_collection_bridge.mjs';
+import {
+  isHostedCollectionPendingResult,
+  runHostedCollection,
+} from '../../../00-core/shared-collection/scripts/lib/hosted_collection_bridge.mjs';
 import { formatCliError } from '../../../00-core/shared-runtime/scripts/lib/network_runtime.mjs';
 import {
   normalizeDataset,
@@ -80,6 +83,22 @@ async function main() {
     operationId: `skill-collection:${randomUUID()}`,
     skillName: 'tiktok-research',
   });
+
+  if (isHostedCollectionPendingResult(hostedPayload)) {
+    writeJson(args.output, {
+      ...hostedPayload,
+      artifactPath: path.resolve(args.output),
+      seedVideos: seedVideos.map((item) => ({
+        videoId: item.videoId,
+        videoUrl: item.videoUrl,
+        authorUsername: item.authorUsername,
+        score: scoreVideo(item),
+      })),
+    });
+    console.log(`Saved pending collection state to ${path.resolve(args.output)}`);
+    return;
+  }
+
   writeJson(args.output, {
     ...hostedPayload,
     seedVideos: seedVideos.map((item) => ({

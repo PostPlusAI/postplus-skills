@@ -40,17 +40,15 @@ Current script behavior:
 - supported local formats: `.mp4`, `.m4v`, `.mov`, `.webm`
 - before each item, the runner checks the local file size and logs the selected
   transfer boundary
-- tiny videos stay on the inline path while they fit inside the shared hosted
-  JSON payload guard
-- larger videos use `media-file/create-upload-url`, upload the local file to
-  the signed upload URL, and send Gemini a `file_reference`
-- Gemini input is single-source: each request uses either `inline_data` or
-  `file_reference`, never both
+- all videos use `media-file/create-upload-url`, upload the local file to the
+  signed upload URL, and send Gemini a `file_reference`
+- Gemini input is single-source: each request uses `file_reference`; the runtime
+  does not embed local video bytes as `inline_data`
 - no automatic compression, segmentation, resumable upload, or file URI reuse is
   claimed in this release
 
 If signed upload or hosted `file_reference` analysis fails, stop on that error.
-Do not retry by base64 inlining the same large video.
+Do not retry by base64 inlining the same video.
 
 ## Trigger Signals
 
@@ -160,13 +158,13 @@ When scaling to many videos:
 
 - keep provider calls concurrent but bounded
 - start with concurrency 2-4
-- small files may use `inline`; larger files use hosted `file_reference`
+- all files use hosted `file_reference`
 - persist one JSON result per source video
 - include source ids and source URLs in every result
 
-## Larger Files
+## File Transfer
 
-Larger local files use the hosted file-reference path:
+Local files use the hosted file-reference path:
 
 1. request `media-file/create-upload-url`
 2. upload the video bytes to the returned signed URL

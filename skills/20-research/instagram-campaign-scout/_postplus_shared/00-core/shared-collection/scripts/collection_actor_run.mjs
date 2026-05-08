@@ -6,7 +6,10 @@ import {
   createSkillBoundary,
   logSkillEvent,
 } from '../../shared-runtime/scripts/lib/skill_runtime.mjs';
-import { runHostedCollection } from './lib/hosted_collection_bridge.mjs';
+import {
+  isHostedCollectionPendingResult,
+  runHostedCollection,
+} from './lib/hosted_collection_bridge.mjs';
 
 export function parseArgs(argv) {
   const args = {};
@@ -40,7 +43,7 @@ export function writeJson(filePath, value) {
 
 function usage(commandName = 'collection_actor_run.mjs') {
   console.error(
-    `Usage: node ${commandName} --collection-key <collection-key> --input <input.json> [--output <output.json>] [--skill-name <skill-id>]`,
+    `Usage: node ${commandName} --collection-key <collection-key> --input <input.json> [--output <output.json>] [--skill-name <skill-id>]\n       node ${commandName} --run-handle <handle> [--output <output.json>] [--skill-name <skill-id>]`,
   );
 }
 
@@ -65,6 +68,48 @@ function inferActionName(commandName = 'collection_actor_run.mjs') {
   return path.basename(commandName, path.extname(commandName));
 }
 
+function shellQuote(value) {
+  const text = String(value);
+  if (/^[A-Za-z0-9_./:=@-]+$/.test(text)) {
+    return text;
+  }
+
+  return `'${text.replaceAll("'", "'\\''")}'`;
+}
+
+function buildResumeCommand({ commandName, outputPath, runHandle }) {
+  const parts = ['node', commandName, '--run-handle', runHandle];
+
+  if (outputPath) {
+    parts.push('--output', path.resolve(outputPath));
+  }
+
+  return parts.map(shellQuote).join(' ');
+}
+
+function attachPendingArtifact(payload, { commandName, outputPath }) {
+  if (!isHostedCollectionPendingResult(payload)) {
+    return payload;
+  }
+
+  const pending = {
+    ...payload,
+    resumeCommand:
+      payload.resumeCommand ||
+      buildResumeCommand({
+        commandName,
+        outputPath,
+        runHandle: payload.runHandle,
+      }),
+  };
+
+  if (outputPath) {
+    pending.artifactPath = path.resolve(outputPath);
+  }
+
+  return pending;
+}
+
 export async function runCollectionActor(argv, options = {}) {
   const args = parseArgs(argv);
   const commandName = options.commandName || 'collection_actor_run.mjs';
@@ -77,31 +122,44 @@ export async function runCollectionActor(argv, options = {}) {
     skillName: explicitSkillName ?? options.skillName,
     actionName: options.actionName,
   });
+  const runHandle =
+    typeof args['run-handle'] === 'string' && args['run-handle'].trim().length > 0
+      ? args['run-handle'].trim()
+      : null;
+  const isResume = runHandle !== null;
 
-  if (args.help || !args['collection-key'] || !args.input) {
+  if (
+    args.help ||
+    (!isResume && (!args['collection-key'] || !args.input)) ||
+    (isResume && (args['collection-key'] || args.input))
+  ) {
     usage(commandName);
     process.exitCode = args.help ? 0 : 1;
     return;
   }
 
-  const collectionKey = String(args['collection-key']).trim();
+  const collectionKey = args['collection-key']
+    ? String(args['collection-key']).trim()
+    : null;
 
-  let input;
-  try {
-    input = readJson(args.input);
-  } catch (error) {
-    logSkillEvent(boundary, {
-      eventType: 'script_failed',
-      phase: 'input',
-      status: 'failed',
-      errorCode: 'invalid_input_json',
-      errorMessage: error instanceof Error ? error.message : String(error),
-      inputPath: path.resolve(args.input),
-    });
-    console.error(`Failed to read input JSON: ${path.resolve(args.input)}`);
-    console.error(error instanceof Error ? error.message : String(error));
-    process.exitCode = 1;
-    return;
+  let input = null;
+  if (!isResume) {
+    try {
+      input = readJson(args.input);
+    } catch (error) {
+      logSkillEvent(boundary, {
+        eventType: 'script_failed',
+        phase: 'input',
+        status: 'failed',
+        errorCode: 'invalid_input_json',
+        errorMessage: error instanceof Error ? error.message : String(error),
+        inputPath: path.resolve(args.input),
+      });
+      console.error(`Failed to read input JSON: ${path.resolve(args.input)}`);
+      console.error(error instanceof Error ? error.message : String(error));
+      process.exitCode = 1;
+      return;
+    }
   }
 
   logSkillEvent(boundary, {
@@ -109,8 +167,9 @@ export async function runCollectionActor(argv, options = {}) {
     phase: 'executing',
     status: 'started',
     collectionKey,
-    inputPath: path.resolve(args.input),
+    inputPath: args.input ? path.resolve(args.input) : null,
     outputPath: args.output ? path.resolve(args.output) : null,
+    runHandle,
     commandName,
   });
 
@@ -118,27 +177,40 @@ export async function runCollectionActor(argv, options = {}) {
     const payload = await runHostedCollection({
       collectionKey,
       input,
-      operationId: `skill-collection:${boundary.runId}`,
+      operationId: isResume ? undefined : `skill-collection:${boundary.runId}`,
+      runHandle,
       skillName: boundary.skillName,
+    });
+    const outputPayload = attachPendingArtifact(payload, {
+      commandName,
+      outputPath: args.output,
     });
 
     if (args.output) {
-      writeJson(args.output, payload);
+      writeJson(args.output, outputPayload);
       logSkillEvent(boundary, {
         eventType: 'artifact_written',
         phase: 'output',
-        status: 'completed',
+        status: isHostedCollectionPendingResult(outputPayload)
+          ? 'pending'
+          : 'completed',
         collectionKey,
         outputPath: path.resolve(args.output),
-        itemCount: payload.itemCount,
+        itemCount: outputPayload.itemCount,
+        runHandle: outputPayload.runHandle ?? null,
       });
-      console.log(
-        `Saved ${payload.itemCount} items to ${path.resolve(args.output)}`,
-      );
+      if (isHostedCollectionPendingResult(outputPayload)) {
+        console.log(`Saved pending collection state to ${path.resolve(args.output)}`);
+        console.log(`Resume with: ${outputPayload.resumeCommand}`);
+      } else {
+        console.log(
+          `Saved ${outputPayload.itemCount} items to ${path.resolve(args.output)}`,
+        );
+      }
       return;
     }
 
-    console.log(JSON.stringify(payload, null, 2));
+    console.log(JSON.stringify(outputPayload, null, 2));
   } catch (error) {
     logSkillEvent(boundary, {
       eventType: 'script_failed',
