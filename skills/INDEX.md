@@ -127,6 +127,8 @@ Transcription, video analysis, B-roll planning, prompt architecture, generation,
   - Path: `skills/40-creative/persona-pack/SKILL.md`
 - `visual-hook`
   - Path: `skills/40-creative/visual-hook/SKILL.md`
+- `script-generator`
+  - Path: `skills/40-creative/script-generator/SKILL.md`
 - `image-batch-runner`
   - Path: `skills/40-creative/image-batch-runner/SKILL.md`
   - Supported models: Nano Banana 2 Edit, Nano Banana 2 Text To Image, Nano Banana Pro Edit, Nano Banana Pro Edit, Nano Banana Pro Edit, Nano Banana Pro Text To Image, Nano Banana Pro Text To Image, Nano Banana Pro Text To Image, Openai Gpt Image 2 Edit, Openai Gpt Image 2 Text To Image, Seedream v5.0 Lite, Seedream v5.0 Lite Edit, Seedream v5.0 Lite Edit Sequential, Seedream v5.0 Lite Sequential

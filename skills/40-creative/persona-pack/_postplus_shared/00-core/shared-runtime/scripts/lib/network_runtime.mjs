@@ -510,6 +510,7 @@ function pickProductErrorFields(payload) {
     "layer",
     "operationId",
     "providerDisplayName",
+    "quoteConfirmation",
     "userMessageRule",
   ]) {
     if (payload[key] !== undefined) {

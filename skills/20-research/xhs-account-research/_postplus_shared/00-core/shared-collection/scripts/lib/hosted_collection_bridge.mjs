@@ -3,12 +3,13 @@ import { randomUUID } from 'node:crypto';
 import http from 'node:http';
 
 import { normalizeHostedBillingSummary } from '../../../shared-runtime/scripts/lib/hosted_billing_summary.mjs';
+import { resolveLargeCreditQuoteConfirmation } from '../../../shared-runtime/scripts/lib/large_credit_confirmation.mjs';
 import { requestJson } from '../../../shared-runtime/scripts/lib/network_runtime.mjs';
 import {
   buildPostPlusClientCompatibilityHeaders,
-  resolvePostPlusClientMetadata,
   refreshPostPlusHostedSessionAuth,
   refreshPostPlusHostedSessionAuthIfNeeded,
+  resolvePostPlusClientMetadata,
   resolvePostPlusHostedSessionAuth,
 } from '../../../shared-runtime/scripts/lib/postplus_cli_config.mjs';
 
@@ -164,7 +165,7 @@ export async function runHostedCollection(input) {
             collectionKey: input.collectionKey,
             input: input.input,
           })
-        : await requestHostedCollectionApiJsonWithRefresh(config, {
+        : await requestHostedCollectionStartApiJsonWithRefresh(config, {
             operationId,
             skillName: input.skillName,
             collectionKey: input.collectionKey,
@@ -287,7 +288,11 @@ async function requestHostedCollectionApiJsonWithRefresh(
   };
 
   try {
-    return await requestHostedCollectionApiJson(initialConfig, payload, metadata);
+    return await requestHostedCollectionApiJson(
+      initialConfig,
+      payload,
+      metadata,
+    );
   } catch (error) {
     if (
       !error ||
@@ -311,6 +316,23 @@ async function requestHostedCollectionApiJsonWithRefresh(
       payload,
       metadata,
     );
+  }
+}
+
+async function requestHostedCollectionStartApiJsonWithRefresh(config, payload) {
+  try {
+    return await requestHostedCollectionApiJsonWithRefresh(config, payload);
+  } catch (error) {
+    const confirmation = await resolveLargeCreditQuoteConfirmation(error);
+
+    if (confirmation && !payload.quoteConfirmationToken) {
+      return await requestHostedCollectionApiJsonWithRefresh(config, {
+        ...payload,
+        quoteConfirmationToken: confirmation.token,
+      });
+    }
+
+    throw error;
   }
 }
 

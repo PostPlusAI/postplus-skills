@@ -222,6 +222,20 @@ function readBooleanWithDefault(value, fallback) {
   return parsed === null ? fallback : parsed;
 }
 
+function normalizeSourceIdForInput(sourceId) {
+  const actor = String(sourceId || "").toLowerCase();
+
+  if (actor === "tiktok-scraper") {
+    return "clockworks/tiktok-scraper";
+  }
+
+  if (actor === "tiktok-scraper-api") {
+    return "apidojo/tiktok-scraper-api";
+  }
+
+  return actor;
+}
+
 function shouldUseGraphExpansion(task, brief) {
   if (parseBoolean(brief.scrapeRelatedVideos) === true) {
     return true;
@@ -277,7 +291,7 @@ function passthroughFields(brief) {
 }
 
 export function buildInput(brief, sourceId) {
-  const actor = String(sourceId || "").toLowerCase();
+  const actor = normalizeSourceIdForInput(sourceId);
   const task = cleanString(brief.task) || "video-discovery";
   const costMode = readCostMode(brief);
   const rawQueries = normalizeStringArray(brief.queries || brief.searchQueries || brief.keywords);
