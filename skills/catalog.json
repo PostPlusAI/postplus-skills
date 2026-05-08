@@ -373,6 +373,23 @@
       ]
     },
     {
+  "familyId": "media-production",
+  "familyName": "Media and Creative Production",
+  "name": "narrative-design",
+  "path": "skills/40-creative/narrative-design/SKILL.md",
+  "requirements": {
+    "accountConnections": [],
+    "collectionKeys": [],
+    "endpointKeys": [],
+    "hostedCapabilities": [],
+    "localDependencies": [],
+    "modelKeys": [],
+    "sourceKeys": []
+  },
+  "status": "released",
+  "supportedModels": []
+},
+    {
       "familyId": "instagram",
       "familyName": "Instagram",
       "name": "instagram-account-research",
