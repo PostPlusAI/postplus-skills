@@ -3,11 +3,12 @@ import { randomUUID } from 'node:crypto';
 import http from 'node:http';
 
 import { normalizeHostedBillingSummary } from './hosted_billing_summary.mjs';
+import { resolveLargeCreditQuoteConfirmation } from './large_credit_confirmation.mjs';
 import { requestJson } from './network_runtime.mjs';
 import {
   buildPostPlusClientCompatibilityHeaders,
-  resolvePostPlusClientMetadata,
   refreshPostPlusHostedSessionAuth,
+  resolvePostPlusClientMetadata,
   resolvePostPlusHostedSessionAuth,
 } from './postplus_cli_config.mjs';
 
@@ -182,6 +183,15 @@ async function requestHostedCapabilityApiJsonWithRefresh(config, request) {
   try {
     return await requestHostedCapabilityApiJson(config, request);
   } catch (error) {
+    const confirmation = await resolveLargeCreditQuoteConfirmation(error);
+
+    if (confirmation && !request.quoteConfirmationToken) {
+      return await requestHostedCapabilityApiJson(config, {
+        ...request,
+        quoteConfirmationToken: confirmation.token,
+      });
+    }
+
     if (
       !error ||
       typeof error !== 'object' ||

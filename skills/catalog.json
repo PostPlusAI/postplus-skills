@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-1-d8110f76b69a85a",
+  "releaseId": "skills-1-68b7fde5c9b6bf76",
   "source": "PostPlusAI/postplus-skills",
   "primaryIndex": "skills/INDEX.md",
   "skills": [
@@ -625,6 +625,23 @@
         "sourceKeys": []
       },
       "status": "released/support",
+      "supportedModels": []
+    },
+    {
+      "familyId": "media-production",
+      "familyName": "Media and Creative Production",
+      "name": "script-generator",
+      "path": "skills/40-creative/script-generator/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [],
+        "hostedCapabilities": [],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released",
       "supportedModels": []
     },
     {
