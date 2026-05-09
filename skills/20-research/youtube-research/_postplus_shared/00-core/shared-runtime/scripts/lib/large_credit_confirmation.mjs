@@ -1,10 +1,8 @@
 #!/usr/bin/env node
-import readline from 'node:readline/promises';
-
-import {
-  readPostPlusCliConfig,
-  updatePostPlusCliConfig,
-} from './postplus_cli_config.mjs';
+import { spawn } from 'node:child_process';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 
 const PRODUCT_ERROR_CODE = 'postplus_cli_quote_confirmation_required';
 
@@ -49,128 +47,97 @@ export async function resolveLargeCreditQuoteConfirmation(error, options = {}) {
     return null;
   }
 
-  const acknowledgedTierMillicredits =
-    readAcknowledgedTierMillicredits(challenge);
+  const confirmation = await (
+    options.confirmWithPostPlusCli ?? confirmLargeCreditQuoteWithPostPlusCli
+  )(challenge, options);
 
-  if (acknowledgedTierMillicredits < challenge.requiredTierMillicredits) {
-    await (options.confirm ?? confirmLargeCreditQuote)(challenge);
-    writeAcknowledgedTierMillicredits(challenge);
+  if (!confirmation || typeof confirmation.token !== 'string') {
+    throw createHardError(
+      'skill_server_large_credit_confirmation_invalid_cli_response',
+      'PostPlus CLI returned an invalid large credit confirmation response.',
+      undefined,
+      { confirmation },
+    );
   }
 
   return {
-    token: challenge.token,
+    token: confirmation.token,
   };
 }
 
-export async function confirmLargeCreditQuote(challenge) {
-  const message = buildLargeCreditConfirmationPrompt(challenge);
-  const terminal = readline.createInterface({
-    input: process.stdin,
-    output: process.stderr,
+export async function confirmLargeCreditQuoteWithPostPlusCli(
+  challenge,
+  options = {},
+) {
+  const command =
+    options.postplusCommand ?? process.env.POSTPLUS_CLI_BIN?.trim() ?? 'postplus';
+  const tempDir = fs.mkdtempSync(
+    path.join(os.tmpdir(), 'postplus-quote-confirmation-'),
+  );
+  const challengePath = path.join(tempDir, 'challenge.json');
+  fs.writeFileSync(challengePath, JSON.stringify(challenge), {
+    encoding: 'utf8',
+    mode: 0o600,
   });
-
-  try {
-    const answer = await terminal.question(message);
-
-    if (answer.trim() !== 'CONFIRM') {
-      throw createHardError(
-        'skill_server_large_credit_confirmation_declined',
-        'Large credit charge was not confirmed.',
-      );
-    }
-  } finally {
-    terminal.close();
-  }
-}
-
-export function buildLargeCreditConfirmationPrompt(challenge) {
-  const lines = [
-    '',
-    'PostPlus large credit warning',
-    `This request crosses the ${formatCredits(
-      challenge.requiredTierMillicredits,
-    )}-credit warning tier.`,
-    `Estimated charge: ${formatCredits(
-      challenge.estimatedMillicredits,
-    )} credits${challenge.estimatedOnly ? ' (estimate)' : ''}.`,
-    `Reserved before execution: ${formatCredits(
-      challenge.reservedMillicredits,
-    )} credits.`,
-    `Capability: ${formatText(challenge.featureLabel)} / ${formatText(
-      challenge.action,
-    )}.`,
-    `Service: ${formatText(challenge.serviceLabel)}.`,
+  const args = [
+    'quote',
+    'confirm',
+    '--json',
+    '--challenge-file',
+    challengePath,
   ];
 
-  const drivers = Array.isArray(challenge.drivers)
-    ? challenge.drivers.filter((driver) => {
-        return (
-          driver &&
-          typeof driver === 'object' &&
-          typeof driver.label === 'string' &&
-          driver.value !== undefined &&
-          driver.value !== null
+  return await new Promise((resolve, reject) => {
+    const child = spawn(command, args, {
+      stdio: ['inherit', 'pipe', 'inherit'],
+    });
+    const stdout = [];
+
+    child.stdout.setEncoding('utf8');
+    child.stdout.on('data', (chunk) => {
+      stdout.push(chunk);
+    });
+
+    child.once('error', (error) => {
+      cleanupTempDir(tempDir);
+      reject(
+        createHardError(
+          'skill_server_large_credit_confirmation_cli_unavailable',
+          'PostPlus CLI is required to confirm large credit charges. Run `npm install -g @postplus/cli@latest` and retry.',
+          error,
+        ),
+      );
+    });
+
+    child.once('close', (code) => {
+      cleanupTempDir(tempDir);
+      if (code !== 0) {
+        reject(
+          createHardError(
+            'skill_server_large_credit_confirmation_declined',
+            'Large credit charge was not confirmed by PostPlus CLI.',
+            undefined,
+            { exitCode: code },
+          ),
         );
-      })
-    : [];
+        return;
+      }
 
-  if (drivers.length > 0) {
-    lines.push('High-credit drivers:');
-    for (const driver of drivers.slice(0, 8)) {
-      lines.push(`- ${driver.label}: ${String(driver.value)}`);
-    }
-  }
-
-  lines.push(
-    'PostPlus will warn again only when a future request crosses a higher tier.',
-    'Type CONFIRM to continue: ',
-  );
-
-  return `${lines.join('\n')}`;
-}
-
-function readAcknowledgedTierMillicredits(challenge) {
-  const config = readPostPlusCliConfig() ?? {};
-  const tiers =
-    config.largeCreditConfirmation?.acknowledgedTierMillicreditsByAccountId;
-  const tier = tiers?.[challenge.accountId];
-
-  return Number.isSafeInteger(tier) && tier > 0 ? tier : 0;
-}
-
-function writeAcknowledgedTierMillicredits(challenge) {
-  updatePostPlusCliConfig((config) => {
-    const current = config.largeCreditConfirmation ?? {};
-    const tiers = {
-      ...(current.acknowledgedTierMillicreditsByAccountId ?? {}),
-      [challenge.accountId]: Math.max(
-        readAcknowledgedTierMillicredits(challenge),
-        challenge.requiredTierMillicredits,
-      ),
-    };
-
-    return {
-      ...config,
-      largeCreditConfirmation: {
-        ...current,
-        acknowledgedTierMillicreditsByAccountId: tiers,
-      },
-    };
+      try {
+        resolve(JSON.parse(stdout.join('')));
+      } catch (error) {
+        reject(
+          createHardError(
+            'skill_server_large_credit_confirmation_invalid_cli_json',
+            'PostPlus CLI returned invalid large credit confirmation JSON.',
+            error,
+          ),
+        );
+      }
+    });
   });
 }
 
-function formatText(value) {
-  return typeof value === 'string' && value.trim() ? value : 'unknown';
-}
-
-function formatCredits(millicredits) {
-  const credits = Number(millicredits) / 1_000;
-
-  if (!Number.isFinite(credits)) {
-    return 'unknown';
-  }
-
-  return Number.isInteger(credits)
-    ? String(credits)
-    : credits.toFixed(3).replace(/0+$/, '').replace(/\.$/, '');
+function cleanupTempDir(tempDir) {
+  fs.rmSync(tempDir, { recursive: true, force: true });
 }
