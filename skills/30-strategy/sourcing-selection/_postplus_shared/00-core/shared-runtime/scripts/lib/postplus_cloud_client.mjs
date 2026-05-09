@@ -2,8 +2,11 @@
 import { randomUUID } from 'node:crypto';
 import http from 'node:http';
 
+import {
+  applyProcessHostedExecutionFields,
+  createQuoteConfirmationRequiredError,
+} from './hosted_execution_protocol.mjs';
 import { normalizeHostedBillingSummary } from './hosted_billing_summary.mjs';
-import { resolveLargeCreditQuoteConfirmation } from './large_credit_confirmation.mjs';
 import { requestJson } from './network_runtime.mjs';
 import {
   buildPostPlusClientCompatibilityHeaders,
@@ -81,23 +84,39 @@ export async function runHostedCapabilityRequest(request) {
 
 export async function runHostedCapabilityEnvelopeRequest(request) {
   const config = resolveHostedCapabilityBridgeConfig();
-  const normalizedRequest = withHostedOperationId(request);
+  const normalizedRequest = withHostedOperationId(
+    applyProcessHostedExecutionFields(request),
+  );
 
-  const response =
-    config.transport === 'socket'
-      ? await requestHostedCapabilityBridgeJson(config.socketPath, {
-          accountId: config.accountId,
-          conversationId: config.conversationId,
-          client: resolvePostPlusClientMetadata({
-            skillName: normalizedRequest.skillName,
-          }),
-          sessionId: config.sessionId,
-          request: normalizedRequest,
-        })
-      : await requestHostedCapabilityApiJsonWithRefresh(
-          config,
-          normalizedRequest,
-        );
+  let response;
+
+  try {
+    response =
+      config.transport === 'socket'
+        ? await requestHostedCapabilityBridgeJson(config.socketPath, {
+            accountId: config.accountId,
+            conversationId: config.conversationId,
+            client: resolvePostPlusClientMetadata({
+              skillName: normalizedRequest.skillName,
+            }),
+            sessionId: config.sessionId,
+            request: normalizedRequest,
+          })
+        : await requestHostedCapabilityApiJsonWithRefresh(
+            config,
+            normalizedRequest,
+          );
+  } catch (error) {
+    if (!normalizedRequest.quoteConfirmationToken) {
+      const confirmationError = createQuoteConfirmationRequiredError(error);
+
+      if (confirmationError) {
+        throw confirmationError;
+      }
+    }
+
+    throw error;
+  }
 
   const output = response?.data?.output;
 
@@ -183,13 +202,12 @@ async function requestHostedCapabilityApiJsonWithRefresh(config, request) {
   try {
     return await requestHostedCapabilityApiJson(config, request);
   } catch (error) {
-    const confirmation = await resolveLargeCreditQuoteConfirmation(error);
+    if (!request.quoteConfirmationToken) {
+      const confirmationError = createQuoteConfirmationRequiredError(error);
 
-    if (confirmation && !request.quoteConfirmationToken) {
-      return await requestHostedCapabilityApiJson(config, {
-        ...request,
-        quoteConfirmationToken: confirmation.token,
-      });
+      if (confirmationError) {
+        throw confirmationError;
+      }
     }
 
     if (
@@ -246,6 +264,25 @@ async function requestHostedCapabilityBridgeJson(socketPath, payload) {
           const statusCode = incoming.statusCode ?? 0;
 
           if (statusCode < 200 || statusCode >= 300) {
+            const productError = parseProductErrorPayload(bodyText);
+            if (productError?.code) {
+              reject(
+                createHardError(
+                  productError.code,
+                  readProductErrorMessage(productError) ||
+                    `PostPlus Cloud client request failed with ${statusCode}.`,
+                  undefined,
+                  {
+                    productErrorCode: productError.code,
+                    quoteConfirmation: productError.quoteConfirmation,
+                    status: statusCode,
+                    upstreamBodyText: bodyText,
+                  },
+                ),
+              );
+              return;
+            }
+
             reject(
               createHardError(
                 'skill_server_capability_request_failed',
@@ -331,4 +368,27 @@ function normalizeHostedRequestField(value) {
   return typeof value === 'string' && value.trim().length > 0
     ? value.trim()
     : 'unknown';
+}
+
+function parseProductErrorPayload(bodyText) {
+  if (!bodyText) {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(bodyText);
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+      ? parsed
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+function readProductErrorMessage(payload) {
+  return typeof payload.message === 'string' && payload.message.trim()
+    ? payload.message.trim()
+    : typeof payload.error === 'string' && payload.error.trim()
+      ? payload.error.trim()
+      : null;
 }

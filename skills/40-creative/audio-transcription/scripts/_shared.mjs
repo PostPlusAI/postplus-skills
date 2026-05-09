@@ -6,6 +6,7 @@ import {
   requestHostedMediaGenerationJson,
   uploadHostedMediaFile,
 } from '../_postplus_shared/00-core/shared-runtime/scripts/lib/hosted_media_generation_bridge.mjs';
+import { readSkillExecutionInput } from '../_postplus_shared/00-core/shared-runtime/scripts/lib/hosted_execution_protocol.mjs';
 
 export const DEFAULT_PROVIDER = 'hosted-media';
 export const DEFAULT_AUDIO_MODEL = 'transcription-whisper';
@@ -38,7 +39,9 @@ export function parseArgs(argv) {
 }
 
 export function readJson(filePath) {
-  return JSON.parse(fs.readFileSync(path.resolve(filePath), 'utf8'));
+  return readSkillExecutionInput(
+    JSON.parse(fs.readFileSync(path.resolve(filePath), 'utf8')),
+  );
 }
 
 export function ensureDir(targetPath) {
