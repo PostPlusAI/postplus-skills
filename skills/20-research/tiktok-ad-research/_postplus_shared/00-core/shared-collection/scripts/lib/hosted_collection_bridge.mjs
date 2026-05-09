@@ -3,7 +3,11 @@ import { randomUUID } from 'node:crypto';
 import http from 'node:http';
 
 import { normalizeHostedBillingSummary } from '../../../shared-runtime/scripts/lib/hosted_billing_summary.mjs';
-import { resolveLargeCreditQuoteConfirmation } from '../../../shared-runtime/scripts/lib/large_credit_confirmation.mjs';
+import {
+  applyProcessHostedExecutionFields,
+  createQuoteConfirmationRequiredError,
+  normalizeQuoteConfirmationToken,
+} from '../../../shared-runtime/scripts/lib/hosted_execution_protocol.mjs';
 import { requestJson } from '../../../shared-runtime/scripts/lib/network_runtime.mjs';
 import {
   buildPostPlusClientCompatibilityHeaders,
@@ -118,16 +122,22 @@ export function isHostedCollectionPendingResult(value) {
 }
 
 export async function runHostedCollection(input) {
+  const normalizedInput = applyProcessHostedExecutionFields(input);
   const config = resolveHostedCollectionBridgeConfig();
   const pollConfig = resolveHostedCollectionPollConfig();
   const runHandle =
-    typeof input.runHandle === 'string' && input.runHandle.trim().length > 0
-      ? input.runHandle.trim()
+    typeof normalizedInput.runHandle === 'string' &&
+    normalizedInput.runHandle.trim().length > 0
+      ? normalizedInput.runHandle.trim()
       : null;
+  const quoteConfirmationToken = normalizeQuoteConfirmationToken(
+    normalizedInput.quoteConfirmationToken,
+  );
 
   const operationId =
-    typeof input.operationId === 'string' && input.operationId.trim().length > 0
-      ? input.operationId.trim()
+    typeof normalizedInput.operationId === 'string' &&
+    normalizedInput.operationId.trim().length > 0
+      ? normalizedInput.operationId.trim()
       : `skill-collection:${randomUUID()}`;
 
   if (process.env.POSTPLUS_DEBUG_SKILL_BILLING === '1') {
@@ -140,37 +150,61 @@ export async function runHostedCollection(input) {
           : { apiBaseUrl: config.apiBaseUrl }),
         operationId,
         runHandle,
-        skillName: input.skillName,
-        collectionKey: input.collectionKey,
+        skillName: normalizedInput.skillName,
+        collectionKey: normalizedInput.collectionKey,
       }),
     );
   }
 
-  const response =
-    runHandle !== null
-      ? await requestHostedCollectionStatus(config, {
-          runHandle,
-          skillName: input.skillName,
-        })
-      : config.transport === 'socket'
-        ? await requestHostedBridgeJson(config.socketPath, '/collection', {
+  let response;
+
+  try {
+    response =
+      runHandle !== null
+        ? await requestHostedCollectionStatus(config, {
+            runHandle,
+            skillName: normalizedInput.skillName,
+          })
+        : config.transport === 'socket'
+          ? await requestHostedBridgeJson(config.socketPath, '/collection', {
             accountId: config.accountId,
             conversationId: config.conversationId,
             client: resolvePostPlusClientMetadata({
-              skillName: input.skillName,
+              skillName: normalizedInput.skillName,
             }),
             sessionId: config.sessionId,
             operationId,
-            skillName: input.skillName,
-            collectionKey: input.collectionKey,
-            input: input.input,
+            skillName: normalizedInput.skillName,
+            collectionKey: normalizedInput.collectionKey,
+            input: normalizedInput.input,
+            ...(quoteConfirmationToken ? { quoteConfirmationToken } : {}),
           })
-        : await requestHostedCollectionStartApiJsonWithRefresh(config, {
-            operationId,
-            skillName: input.skillName,
-            collectionKey: input.collectionKey,
-            input: input.input,
-          });
+          : await requestHostedCollectionStartApiJsonWithRefresh(
+              config,
+              {
+                collectionKey: normalizedInput.collectionKey,
+                input: normalizedInput.input,
+                operationId,
+                skillName: normalizedInput.skillName,
+                ...(quoteConfirmationToken ? { quoteConfirmationToken } : {}),
+              },
+              {
+                retryCommand: normalizedInput.retryCommand,
+              },
+            );
+  } catch (error) {
+    if (!quoteConfirmationToken) {
+      const confirmationError = createQuoteConfirmationRequiredError(error, {
+        retryCommand: normalizedInput.retryCommand,
+      });
+
+      if (confirmationError) {
+        throw confirmationError;
+      }
+    }
+
+    throw error;
+  }
 
   const run = readHostedCollectionRunResult(response?.data);
   let latestBilling = run.billing;
@@ -210,7 +244,7 @@ export async function runHostedCollection(input) {
       return buildHostedCollectionPendingResult({
         billing: latestBilling,
         pollTimeoutMs: pollConfig.pollTimeoutMs,
-        resumeCommand: input.resumeCommand,
+        resumeCommand: normalizedInput.resumeCommand,
         run: latestRun,
       });
     }
@@ -228,7 +262,7 @@ export async function runHostedCollection(input) {
 
     const statusResponse = await requestHostedCollectionStatus(config, {
       runHandle: latestRun.runHandle,
-      skillName: input.skillName,
+      skillName: normalizedInput.skillName,
     });
 
     latestRun = readHostedCollectionRunResult(statusResponse?.data);
@@ -319,17 +353,22 @@ async function requestHostedCollectionApiJsonWithRefresh(
   }
 }
 
-async function requestHostedCollectionStartApiJsonWithRefresh(config, payload) {
+async function requestHostedCollectionStartApiJsonWithRefresh(
+  config,
+  payload,
+  options = {},
+) {
   try {
     return await requestHostedCollectionApiJsonWithRefresh(config, payload);
   } catch (error) {
-    const confirmation = await resolveLargeCreditQuoteConfirmation(error);
-
-    if (confirmation && !payload.quoteConfirmationToken) {
-      return await requestHostedCollectionApiJsonWithRefresh(config, {
-        ...payload,
-        quoteConfirmationToken: confirmation.token,
+    if (!payload.quoteConfirmationToken) {
+      const confirmationError = createQuoteConfirmationRequiredError(error, {
+        retryCommand: options.retryCommand,
       });
+
+      if (confirmationError) {
+        throw confirmationError;
+      }
     }
 
     throw error;
@@ -361,6 +400,25 @@ async function requestHostedBridgeJson(socketPath, routePath, payload) {
           const statusCode = incoming.statusCode ?? 0;
 
           if (statusCode < 200 || statusCode >= 300) {
+            const productError = parseProductErrorPayload(bodyText);
+            if (productError?.code) {
+              reject(
+                createHardError(
+                  productError.code,
+                  readProductErrorMessage(productError) ||
+                    `Hosted skill collection bridge request failed with ${statusCode}.`,
+                  undefined,
+                  {
+                    productErrorCode: productError.code,
+                    quoteConfirmation: productError.quoteConfirmation,
+                    status: statusCode,
+                    upstreamBodyText: bodyText,
+                  },
+                ),
+              );
+              return;
+            }
+
             reject(
               createHardError(
                 'skill_server_collection_request_failed',
@@ -416,6 +474,29 @@ async function requestHostedBridgeJson(socketPath, routePath, payload) {
     request.write(body);
     request.end();
   });
+}
+
+function parseProductErrorPayload(bodyText) {
+  if (!bodyText) {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(bodyText);
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+      ? parsed
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+function readProductErrorMessage(payload) {
+  return typeof payload.message === 'string' && payload.message.trim()
+    ? payload.message.trim()
+    : typeof payload.error === 'string' && payload.error.trim()
+      ? payload.error.trim()
+      : null;
 }
 
 function readHostedCollectionRunResult(data) {
