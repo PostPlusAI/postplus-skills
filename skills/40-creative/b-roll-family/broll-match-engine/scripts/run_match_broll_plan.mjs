@@ -1,18 +1,19 @@
 #!/usr/bin/env node
+import fs from 'node:fs';
+import path from 'node:path';
 
-import fs from "node:fs";
-import path from "node:path";
+import { formatCliError } from '../_postplus_shared/00-core/shared-runtime/scripts/lib/network_runtime.mjs';
 
 function parseArgs(argv) {
   const args = {};
   for (let index = 0; index < argv.length; index += 1) {
     const current = argv[index];
-    if (!current.startsWith("--")) {
+    if (!current.startsWith('--')) {
       continue;
     }
     const key = current.slice(2);
     const next = argv[index + 1];
-    if (!next || next.startsWith("--")) {
+    if (!next || next.startsWith('--')) {
       args[key] = true;
       continue;
     }
@@ -27,12 +28,15 @@ function ensureDir(targetPath) {
 }
 
 function readJson(filePath) {
-  return JSON.parse(fs.readFileSync(path.resolve(filePath), "utf8"));
+  return JSON.parse(fs.readFileSync(path.resolve(filePath), 'utf8'));
 }
 
 function writeJson(filePath, payload) {
   ensureDir(path.dirname(path.resolve(filePath)));
-  fs.writeFileSync(path.resolve(filePath), `${JSON.stringify(payload, null, 2)}\n`);
+  fs.writeFileSync(
+    path.resolve(filePath),
+    `${JSON.stringify(payload, null, 2)}\n`,
+  );
 }
 
 function nowIso() {
@@ -41,81 +45,108 @@ function nowIso() {
 
 function usage() {
   console.error(
-    "Usage: node run_match_broll_plan.mjs --chunks <chunked-basic.json> --catalog <broll-catalog.json> [--output <broll-plan.json>]"
+    'Usage: node run_match_broll_plan.mjs --chunks <chunked-basic.json> --catalog <broll-catalog.json> [--output <broll-plan.json>]',
   );
 }
 
 function slugify(value) {
-  return String(value || "")
+  return String(value || '')
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
     .slice(0, 120);
 }
 
 function tokenize(text) {
-  return String(text || "")
+  return String(text || '')
     .toLowerCase()
-    .replace(/[^\p{L}\p{N}\s]+/gu, " ")
+    .replace(/[^\p{L}\p{N}\s]+/gu, ' ')
     .split(/\s+/)
     .filter(Boolean);
 }
 
 function asSet(values) {
-  return new Set(Array.isArray(values) ? values.map((value) => String(value).toLowerCase()) : []);
+  return new Set(
+    Array.isArray(values)
+      ? values.map((value) => String(value).toLowerCase())
+      : [],
+  );
 }
 
 function inferBeatRoleAndVisualNeed(text) {
-  const lowered = String(text || "").toLowerCase();
+  const lowered = String(text || '').toLowerCase();
 
   const rules = [
     {
-      beatRole: "tool-discovery",
-      visualNeed: "ui-demo",
-      keywords: ["google", "search", "homepage", "found this tool", "product reveal", "website proof"]
+      beatRole: 'tool-discovery',
+      visualNeed: 'ui-demo',
+      keywords: [
+        'google',
+        'search',
+        'homepage',
+        'found this tool',
+        'product reveal',
+        'website proof',
+      ],
     },
     {
-      beatRole: "workflow-problem",
-      visualNeed: "comparison",
-      keywords: ["leave gmail", "another ai tool", "come back", "extra tab", "separate ai project", "paste the thread"]
+      beatRole: 'workflow-problem',
+      visualNeed: 'comparison',
+      keywords: [
+        'leave gmail',
+        'another ai tool',
+        'come back',
+        'extra tab',
+        'separate ai project',
+        'paste the thread',
+      ],
     },
     {
-      beatRole: "product-proof",
-      visualNeed: "proof",
-      keywords: ["reply box", "draft", "response", "tone", "shorten", "clean up", "warmer", "shortcut"]
+      beatRole: 'product-proof',
+      visualNeed: 'proof',
+      keywords: [
+        'reply box',
+        'draft',
+        'response',
+        'tone',
+        'shorten',
+        'clean up',
+        'warmer',
+        'shortcut',
+      ],
     },
     {
-      beatRole: "workflow-proof",
-      visualNeed: "workflow-bridge",
-      keywords: ["workflow", "thread", "reply", "inbox", "email", "gmail"]
+      beatRole: 'workflow-proof',
+      visualNeed: 'workflow-bridge',
+      keywords: ['workflow', 'thread', 'reply', 'inbox', 'email', 'gmail'],
     },
     {
-      beatRole: "pain-point",
-      visualNeed: "keyword-emphasis",
-      keywords: ["issue", "annoying", "hard", "worse", "bigger"]
-    }
+      beatRole: 'pain-point',
+      visualNeed: 'keyword-emphasis',
+      keywords: ['issue', 'annoying', 'hard', 'worse', 'bigger'],
+    },
   ];
 
   for (const rule of rules) {
     if (rule.keywords.some((keyword) => lowered.includes(keyword))) {
       return {
         beatRole: rule.beatRole,
-        visualNeed: rule.visualNeed
+        visualNeed: rule.visualNeed,
       };
     }
   }
 
   return {
-    beatRole: "narrative-bridge",
-    visualNeed: "stay-on-face"
+    beatRole: 'narrative-bridge',
+    visualNeed: 'stay-on-face',
   };
 }
 
 function shouldUseBrollForNeed(visualNeed, text) {
-  if (visualNeed === "stay-on-face") {
+  if (visualNeed === 'stay-on-face') {
     return false;
   }
-  if (visualNeed === "keyword-emphasis") {
+  if (visualNeed === 'keyword-emphasis') {
     return /\b(inbox|workflow|reply|tab|gmail)\b/i.test(text);
   }
   return true;
@@ -123,40 +154,40 @@ function shouldUseBrollForNeed(visualNeed, text) {
 
 function inferCoverageStyle(visualNeed) {
   const mapping = {
-    "ui-demo": "full-cutaway",
-    "proof": "full-cutaway",
-    "workflow-bridge": "overlay-support",
-    "comparison": "overlay-support",
-    "transition-cover": "overlay-support",
-    "keyword-emphasis": "stay-on-face",
-    "stay-on-face": "stay-on-face"
+    'ui-demo': 'full-cutaway',
+    proof: 'full-cutaway',
+    'workflow-bridge': 'overlay-support',
+    comparison: 'overlay-support',
+    'transition-cover': 'overlay-support',
+    'keyword-emphasis': 'stay-on-face',
+    'stay-on-face': 'stay-on-face',
   };
-  return mapping[visualNeed] || "stay-on-face";
+  return mapping[visualNeed] || 'stay-on-face';
 }
 
 function inferMotionHint(visualNeed) {
   const mapping = {
-    "ui-demo": "gentle-push-in",
-    "proof": "hold-clean",
-    "workflow-bridge": "soft-slide",
-    "comparison": "quick-cut-contrast",
-    "transition-cover": "soft-fade",
-    "keyword-emphasis": "keyword-pop"
+    'ui-demo': 'gentle-push-in',
+    proof: 'hold-clean',
+    'workflow-bridge': 'soft-slide',
+    comparison: 'quick-cut-contrast',
+    'transition-cover': 'soft-fade',
+    'keyword-emphasis': 'keyword-pop',
   };
-  return mapping[visualNeed] || "none";
+  return mapping[visualNeed] || 'none';
 }
 
 function inferKeywordOverlay(text) {
   const keywords = [
-    "gmail",
-    "workflow",
-    "reply",
-    "response",
-    "draft",
-    "thread",
-    "inbox",
-    "tab",
-    "tone"
+    'gmail',
+    'workflow',
+    'reply',
+    'response',
+    'draft',
+    'thread',
+    'inbox',
+    'tab',
+    'tone',
   ];
   const lowered = text.toLowerCase();
   return keywords.filter((keyword) => lowered.includes(keyword));
@@ -164,18 +195,18 @@ function inferKeywordOverlay(text) {
 
 function inferDesiredRoles(visualNeed) {
   const mapping = {
-    "ui-demo": ["ui-demo", "proof"],
-    "proof": ["proof", "ui-demo"],
-    "workflow-bridge": ["workflow-bridge", "proof"],
-    "comparison": ["workflow-bridge", "proof", "transition-cover"],
-    "transition-cover": ["transition-cover", "ui-demo"],
-    "keyword-emphasis": ["proof", "workflow-bridge"]
+    'ui-demo': ['ui-demo', 'proof'],
+    proof: ['proof', 'ui-demo'],
+    'workflow-bridge': ['workflow-bridge', 'proof'],
+    comparison: ['workflow-bridge', 'proof', 'transition-cover'],
+    'transition-cover': ['transition-cover', 'ui-demo'],
+    'keyword-emphasis': ['proof', 'workflow-bridge'],
   };
   return mapping[visualNeed] || [];
 }
 
 function scoreAssetForBeat(beat, asset) {
-  const beatText = String(beat.text || "").toLowerCase();
+  const beatText = String(beat.text || '').toLowerCase();
   const beatTokens = new Set(tokenize(beat.text));
   const assetTags = asSet(asset.semanticTags);
   const assetRoles = asSet(asset.supportRoles);
@@ -192,69 +223,86 @@ function scoreAssetForBeat(beat, asset) {
   }
 
   const lexicalRules = [
-    ["gmail", ["gmail", "email", "inbox"]],
-    ["product", ["shortcut", "in-app"]],
-    ["workflow", ["workflow", "thread", "tab"]],
-    ["reply", ["reply", "response", "draft"]],
-    ["search", ["google", "search", "homepage"]],
-    ["rewrite", ["rewrite", "tone", "shorten", "clean"]],
-    ["chatgpt", ["another ai tool", "ai tool", "paste", "come back", "separate ai project"]]
+    ['gmail', ['gmail', 'email', 'inbox']],
+    ['product', ['shortcut', 'in-app']],
+    ['workflow', ['workflow', 'thread', 'tab']],
+    ['reply', ['reply', 'response', 'draft']],
+    ['search', ['google', 'search', 'homepage']],
+    ['rewrite', ['rewrite', 'tone', 'shorten', 'clean']],
+    [
+      'chatgpt',
+      [
+        'another ai tool',
+        'ai tool',
+        'paste',
+        'come back',
+        'separate ai project',
+      ],
+    ],
   ];
 
   for (const [assetTag, beatKeywords] of lexicalRules) {
-    if (assetTags.has(assetTag) && beatKeywords.some((keyword) => beatText.includes(keyword))) {
+    if (
+      assetTags.has(assetTag) &&
+      beatKeywords.some((keyword) => beatText.includes(keyword))
+    ) {
       score += 0.18;
       reasons.push(`matches ${assetTag} concept`);
     }
   }
 
-  if (beat.visualNeed === "comparison" && assetTags.has("comparison")) {
+  if (beat.visualNeed === 'comparison' && assetTags.has('comparison')) {
     score += 0.16;
-    reasons.push("supports old-vs-new workflow contrast");
+    reasons.push('supports old-vs-new workflow contrast');
   }
 
-  if (beat.visualNeed === "ui-demo" && assetTags.has("ui-demo")) {
+  if (beat.visualNeed === 'ui-demo' && assetTags.has('ui-demo')) {
     score += 0.16;
-    reasons.push("gives direct UI proof");
+    reasons.push('gives direct UI proof');
   }
 
-  if (beat.visualNeed === "proof" && assetTags.has("product")) {
+  if (beat.visualNeed === 'proof' && assetTags.has('product')) {
     score += 0.14;
-    reasons.push("shows in-product proof");
+    reasons.push('shows in-product proof');
   }
 
-  if (beat.visualNeed === "comparison" && assetTags.has("chatgpt")) {
+  if (beat.visualNeed === 'comparison' && assetTags.has('chatgpt')) {
     score += 0.14;
-    reasons.push("shows extra-tool detour");
+    reasons.push('shows extra-tool detour');
   }
 
   if (
-    beat.visualNeed === "comparison" &&
-    /(leave gmail|another ai tool|come back|paste the thread|extra tab|separate ai project)/i.test(beat.text || "") &&
-    (assetTags.has("comparison") || assetTags.has("chatgpt"))
+    beat.visualNeed === 'comparison' &&
+    /(leave gmail|another ai tool|come back|paste the thread|extra tab|separate ai project)/i.test(
+      beat.text || '',
+    ) &&
+    (assetTags.has('comparison') || assetTags.has('chatgpt'))
   ) {
     score += 0.18;
-    reasons.push("fits off-platform workflow detour");
+    reasons.push('fits off-platform workflow detour');
   }
 
-  if (asset.visualRisks?.includes("small text") && beat.visualNeed !== "ui-demo") {
+  if (
+    asset.visualRisks?.includes('small text') &&
+    beat.visualNeed !== 'ui-demo'
+  ) {
     score -= 0.05;
   }
 
-  if (asset.visualRisks?.includes("landscape crop risk for 9:16")) {
+  if (asset.visualRisks?.includes('landscape crop risk for 9:16')) {
     score -= 0.04;
   }
 
-  if (beatTokens.has("google") && assetTags.has("google")) {
+  if (beatTokens.has('google') && assetTags.has('google')) {
     score += 0.12;
   }
-  if (beatTokens.has("thread") && assetTags.has("workflow")) {
+  if (beatTokens.has('thread') && assetTags.has('workflow')) {
     score += 0.08;
   }
 
   return {
     score: Number(Math.max(score, 0).toFixed(3)),
-    reasons
+    reasons,
   };
 }
 
@@ -262,9 +310,18 @@ function buildCandidate(asset, scoreResult) {
   return {
     assetId: asset.assetId,
     score: scoreResult.score,
-    reason: scoreResult.reasons.length > 0 ? scoreResult.reasons.join("; ") : "weak heuristic match",
-    supportRole: Array.isArray(asset.supportRoles) && asset.supportRoles.length > 0 ? asset.supportRoles[0] : null,
-    suggestedRange: Array.isArray(asset.usableRanges) && asset.usableRanges.length > 0 ? asset.usableRanges[0] : null
+    reason:
+      scoreResult.reasons.length > 0
+        ? scoreResult.reasons.join('; ')
+        : 'weak heuristic match',
+    supportRole:
+      Array.isArray(asset.supportRoles) && asset.supportRoles.length > 0
+        ? asset.supportRoles[0]
+        : null,
+    suggestedRange:
+      Array.isArray(asset.usableRanges) && asset.usableRanges.length > 0
+        ? asset.usableRanges[0]
+        : null,
   };
 }
 
@@ -274,7 +331,7 @@ function selectCandidates(beat, catalog) {
       const scoreResult = scoreAssetForBeat(beat, asset);
       return {
         asset,
-        scoreResult
+        scoreResult,
       };
     })
     .filter((entry) => entry.scoreResult.score >= 0.18)
@@ -287,26 +344,33 @@ function selectCandidates(beat, catalog) {
 
 function buildFallback(beat, candidates) {
   if (candidates.length === 0) {
-    return "stay on A-roll with keyword emphasis";
+    return 'stay on A-roll with keyword emphasis';
   }
-  if (beat.visualNeed === "keyword-emphasis") {
-    return "stay on A-roll unless the selected B-roll clearly improves the point";
+  if (beat.visualNeed === 'keyword-emphasis') {
+    return 'stay on A-roll unless the selected B-roll clearly improves the point';
   }
-  return "use top candidate only if it improves clarity over staying on face";
+  return 'use top candidate only if it improves clarity over staying on face';
 }
 
 function buildPlan({ chunksPath, catalogPath, outputPath }) {
   const chunkPayload = readJson(chunksPath);
   const catalog = readJson(catalogPath);
-  const beats = Array.isArray(chunkPayload.segments) ? chunkPayload.segments : [];
+  const beats = Array.isArray(chunkPayload.segments)
+    ? chunkPayload.segments
+    : [];
 
   const planBeats = beats.map((beat, index) => {
     const roleAndNeed = inferBeatRoleAndVisualNeed(beat.text);
-    const shouldUseBroll = shouldUseBrollForNeed(roleAndNeed.visualNeed, beat.text);
-    const candidates = shouldUseBroll ? selectCandidates({ ...beat, ...roleAndNeed }, catalog) : [];
+    const shouldUseBroll = shouldUseBrollForNeed(
+      roleAndNeed.visualNeed,
+      beat.text,
+    );
+    const candidates = shouldUseBroll
+      ? selectCandidates({ ...beat, ...roleAndNeed }, catalog)
+      : [];
 
     return {
-      beatId: beat.id || `beat-${String(index + 1).padStart(3, "0")}`,
+      beatId: beat.id || `beat-${String(index + 1).padStart(3, '0')}`,
       start: beat.start,
       end: beat.end,
       spokenText: beat.text,
@@ -317,24 +381,27 @@ function buildPlan({ chunksPath, catalogPath, outputPath }) {
       keywordOverlay: inferKeywordOverlay(beat.text),
       motionHint: inferMotionHint(roleAndNeed.visualNeed),
       candidates,
-      fallback: buildFallback(roleAndNeed, candidates)
+      fallback: buildFallback(roleAndNeed, candidates),
     };
   });
 
   return {
-    schemaVersion: "broll-plan/v1",
-    planId: slugify(`${chunkPayload.jobId || "video"}-broll-plan`) || "broll-plan",
+    schemaVersion: 'broll-plan/v1',
+    planId:
+      slugify(`${chunkPayload.jobId || 'video'}-broll-plan`) || 'broll-plan',
     sourceTranscriptPath: chunkPayload.meta?.normalizedTranscriptPath || null,
     sourceChunkPath: path.resolve(chunksPath),
     sourceCatalogPath: path.resolve(catalogPath),
     beats: planBeats,
     meta: {
       createdAt: nowIso(),
-      generator: "skills/40-creative/b-roll-family/broll-match-engine/scripts/run_match_broll_plan.mjs",
+      generator:
+        'skills/40-creative/b-roll-family/broll-match-engine/scripts/run_match_broll_plan.mjs',
       outputPath: path.resolve(outputPath),
       chunkCount: planBeats.length,
-      matchedBeatCount: planBeats.filter((beat) => beat.candidates.length > 0).length
-    }
+      matchedBeatCount: planBeats.filter((beat) => beat.candidates.length > 0)
+        .length,
+    },
   };
 }
 
@@ -349,13 +416,13 @@ async function main() {
   const chunksPath = path.resolve(args.chunks);
   const catalogPath = path.resolve(args.catalog);
   const outputPath = path.resolve(
-    args.output || path.join(path.dirname(chunksPath), "broll-plan.json")
+    args.output || path.join(path.dirname(chunksPath), 'broll-plan.json'),
   );
 
   const plan = buildPlan({
     chunksPath,
     catalogPath,
-    outputPath
+    outputPath,
   });
 
   writeJson(outputPath, plan);
@@ -364,15 +431,15 @@ async function main() {
       {
         outputPath,
         beatCount: plan.meta.chunkCount,
-        matchedBeatCount: plan.meta.matchedBeatCount
+        matchedBeatCount: plan.meta.matchedBeatCount,
       },
       null,
-      2
-    )
+      2,
+    ),
   );
 }
 
 main().catch((error) => {
-  console.error(error.message);
+  console.error(formatCliError(error));
   process.exitCode = 1;
 });

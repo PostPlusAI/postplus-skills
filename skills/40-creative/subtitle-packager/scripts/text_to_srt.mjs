@@ -1,18 +1,19 @@
 #!/usr/bin/env node
+import fs from 'node:fs';
+import path from 'node:path';
 
-import fs from "node:fs";
-import path from "node:path";
+import { formatCliError } from '../_postplus_shared/00-core/shared-runtime/scripts/lib/network_runtime.mjs';
 
 function parseArgs(argv) {
   const args = {};
   for (let index = 0; index < argv.length; index += 1) {
     const current = argv[index];
-    if (!current.startsWith("--")) {
+    if (!current.startsWith('--')) {
       continue;
     }
     const key = current.slice(2);
     const next = argv[index + 1];
-    if (!next || next.startsWith("--")) {
+    if (!next || next.startsWith('--')) {
       args[key] = true;
       continue;
     }
@@ -23,11 +24,13 @@ function parseArgs(argv) {
 }
 
 function usage() {
-  console.error("Usage: node text_to_srt.mjs --input <notes.md> --output <draft.srt> [--chars-per-second 4.5] [--min-duration 1.2] [--max-duration 6]");
+  console.error(
+    'Usage: node text_to_srt.mjs --input <notes.md> --output <draft.srt> [--chars-per-second 4.5] [--min-duration 1.2] [--max-duration 6]',
+  );
 }
 
 function readText(filePath) {
-  return fs.readFileSync(path.resolve(filePath), "utf8");
+  return fs.readFileSync(path.resolve(filePath), 'utf8');
 }
 
 function ensureDir(targetPath) {
@@ -40,7 +43,7 @@ function writeText(filePath, text) {
 }
 
 function pad(value, size = 2) {
-  return String(value).padStart(size, "0");
+  return String(value).padStart(size, '0');
 }
 
 function formatSrtTime(seconds) {
@@ -54,12 +57,12 @@ function formatSrtTime(seconds) {
 
 function cleanMarkdownLine(line) {
   return line
-    .replace(/^\s{0,3}#{1,6}\s+/u, "")
-    .replace(/^\s*[-*+]\s+/u, "")
-    .replace(/^\s*\d+[.)、]\s+/u, "")
-    .replace(/`+/gu, "")
-    .replace(/\*\*/gu, "")
-    .replace(/\s+/gu, " ")
+    .replace(/^\s{0,3}#{1,6}\s+/u, '')
+    .replace(/^\s*[-*+]\s+/u, '')
+    .replace(/^\s*\d+[.)、]\s+/u, '')
+    .replace(/`+/gu, '')
+    .replace(/\*\*/gu, '')
+    .replace(/\s+/gu, ' ')
     .trim();
 }
 
@@ -71,7 +74,7 @@ function splitLongLine(line, maxChars = 28) {
   const parts = [];
   let rest = line;
   while (rest.length > maxChars) {
-    let cutIndex = rest.lastIndexOf(" ", maxChars);
+    let cutIndex = rest.lastIndexOf(' ', maxChars);
     if (cutIndex < Math.floor(maxChars * 0.5)) {
       cutIndex = maxChars;
     }
@@ -98,11 +101,14 @@ function textToSegments(text, options = {}) {
 
   let cursor = 0;
   return lines.map((line) => {
-    const duration = Math.min(maxDuration, Math.max(minDuration, line.length / charsPerSecond));
+    const duration = Math.min(
+      maxDuration,
+      Math.max(minDuration, line.length / charsPerSecond),
+    );
     const segment = {
       start: cursor,
       end: cursor + duration,
-      text: line
+      text: line,
     };
     cursor = segment.end + gap;
     return segment;
@@ -110,14 +116,16 @@ function textToSegments(text, options = {}) {
 }
 
 function buildSrt(segments) {
-  return `${segments.map((segment, index) => {
-    return [
-      String(index + 1),
-      `${formatSrtTime(segment.start)} --> ${formatSrtTime(segment.end)}`,
-      segment.text,
-      ""
-    ].join("\n");
-  }).join("\n")}\n`;
+  return `${segments
+    .map((segment, index) => {
+      return [
+        String(index + 1),
+        `${formatSrtTime(segment.start)} --> ${formatSrtTime(segment.end)}`,
+        segment.text,
+        '',
+      ].join('\n');
+    })
+    .join('\n')}\n`;
 }
 
 async function main() {
@@ -131,18 +139,24 @@ async function main() {
   const text = readText(args.input);
   const segments = textToSegments(text, args);
   if (segments.length === 0) {
-    throw new Error("No usable lines found in input text.");
+    throw new Error('No usable lines found in input text.');
   }
 
   writeText(args.output, buildSrt(segments));
-  console.log(JSON.stringify({
-    input: path.resolve(args.input),
-    output: path.resolve(args.output),
-    segmentCount: segments.length
-  }, null, 2));
+  console.log(
+    JSON.stringify(
+      {
+        input: path.resolve(args.input),
+        output: path.resolve(args.output),
+        segmentCount: segments.length,
+      },
+      null,
+      2,
+    ),
+  );
 }
 
 main().catch((error) => {
-  console.error(error.message);
+  console.error(formatCliError(error));
   process.exitCode = 1;
 });

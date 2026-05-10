@@ -7,7 +7,7 @@ import {
   ensureDir,
   isDirectRun,
   parseArgs,
-  readJson,
+  readHostedJson,
   requireArg,
   summarizePlatformItems,
   writeJson
@@ -57,7 +57,7 @@ export async function main(argv = process.argv.slice(2), io = console, fetchImpl
   const args = parseArgs(argv);
   const planPath = requireArg(args, "plan");
   const outputDir = requireArg(args, "output-dir");
-  const plan = readJson(planPath);
+  const plan = readHostedJson(planPath);
 
   ensureDir(outputDir);
   ensureDir(path.join(outputDir, "raw"));

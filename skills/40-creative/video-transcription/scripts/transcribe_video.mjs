@@ -1,10 +1,10 @@
 #!/usr/bin/env node
+import fs from 'node:fs';
 
-import fs from "node:fs";
-
+import { formatCliError } from '../_postplus_shared/00-core/shared-runtime/scripts/lib/network_runtime.mjs';
 import {
-  buildRequestPaths,
   buildNormalizedTranscript,
+  buildRequestPaths,
   createManifestBase,
   downloadProviderOutputs,
   extractTranscriptData,
@@ -16,11 +16,11 @@ import {
   readJson,
   toProviderPayload,
   unwrapProviderResult,
-  writeJson
-} from "../_postplus_shared/40-creative/audio-transcription/scripts/_shared.mjs";
+  writeJson,
+} from '../_postplus_shared/40-creative/audio-transcription/scripts/_shared.mjs';
 
 function usage() {
-  console.error("Usage: node transcribe_video.mjs --request <request.json>");
+  console.error('Usage: node transcribe_video.mjs --request <request.json>');
 }
 
 async function main() {
@@ -31,21 +31,21 @@ async function main() {
     return;
   }
 
-  const request = normalizeTranscriptionInput(readJson(args.request), "video");
+  const request = normalizeTranscriptionInput(readJson(args.request), 'video');
   const paths = buildRequestPaths(request.localOutputDir);
 
   writeJson(paths.requestPath, request);
   logTranscriptionPollingPreflight(request);
 
   const { data: rawResult } = await fetchJson(request.model, {
-    method: "POST",
-    body: JSON.stringify(await toProviderPayload(request, { paths }))
+    method: 'POST',
+    body: JSON.stringify(await toProviderPayload(request, { paths })),
   });
 
   writeJson(paths.responsePath, rawResult);
 
   let result = unwrapProviderResult(rawResult);
-  if (result?.status === "created" && result?.urls?.get) {
+  if (result?.status === 'created' && result?.urls?.get) {
     const polledRawResult = await pollPredictionResult(result.urls.get);
     writeJson(paths.responsePath, polledRawResult);
     result = unwrapProviderResult(polledRawResult);
@@ -54,8 +54,14 @@ async function main() {
   manifest.generationHandle = result?.id || null;
   manifest.providerStatus = result?.status || null;
   manifest.providerUrls = result?.urls || null;
-  manifest.mediaUploadRequestPath = fs.existsSync(paths.mediaUploadRequestPath) ? paths.mediaUploadRequestPath : null;
-  manifest.mediaUploadResponsePath = fs.existsSync(paths.mediaUploadResponsePath) ? paths.mediaUploadResponsePath : null;
+  manifest.mediaUploadRequestPath = fs.existsSync(paths.mediaUploadRequestPath)
+    ? paths.mediaUploadRequestPath
+    : null;
+  manifest.mediaUploadResponsePath = fs.existsSync(
+    paths.mediaUploadResponsePath,
+  )
+    ? paths.mediaUploadResponsePath
+    : null;
 
   const transcriptData = extractTranscriptData(result);
   manifest.transcriptText = transcriptData.transcriptText;
@@ -63,19 +69,19 @@ async function main() {
   manifest.wordCount = transcriptData.words.length;
   manifest.normalizedTranscriptPath = paths.normalizedTranscriptPath;
 
-  if (result?.status === "completed") {
+  if (result?.status === 'completed') {
     manifest.downloadedArtifacts = await downloadProviderOutputs(result, paths);
   }
 
   writeJson(paths.manifestPath, manifest);
   writeJson(
     paths.normalizedTranscriptPath,
-    buildNormalizedTranscript({ request, manifest, paths, transcriptData })
+    buildNormalizedTranscript({ request, manifest, paths, transcriptData }),
   );
   console.log(JSON.stringify(manifest, null, 2));
 }
 
 main().catch((error) => {
-  console.error(error.message);
+  console.error(formatCliError(error));
   process.exitCode = 1;
 });

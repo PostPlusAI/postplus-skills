@@ -1,19 +1,20 @@
 #!/usr/bin/env node
+import fs from 'node:fs';
+import path from 'node:path';
 
-import fs from "node:fs";
-import path from "node:path";
-import { chunkNormalizedTranscript } from "./_chunking.mjs";
+import { formatCliError } from '../_postplus_shared/00-core/shared-runtime/scripts/lib/network_runtime.mjs';
+import { chunkNormalizedTranscript } from './_chunking.mjs';
 
 function parseArgs(argv) {
   const args = {};
   for (let index = 0; index < argv.length; index += 1) {
     const current = argv[index];
-    if (!current.startsWith("--")) {
+    if (!current.startsWith('--')) {
       continue;
     }
     const key = current.slice(2);
     const next = argv[index + 1];
-    if (!next || next.startsWith("--")) {
+    if (!next || next.startsWith('--')) {
       args[key] = true;
       continue;
     }
@@ -24,11 +25,13 @@ function parseArgs(argv) {
 }
 
 function usage() {
-  console.error("Usage: node transcript_json_to_srt.mjs --input <normalized-transcript.json> --output <subtitles.srt> [--chunk-mode basic]");
+  console.error(
+    'Usage: node transcript_json_to_srt.mjs --input <normalized-transcript.json> --output <subtitles.srt> [--chunk-mode basic]',
+  );
 }
 
 function readJson(filePath) {
-  return JSON.parse(fs.readFileSync(path.resolve(filePath), "utf8"));
+  return JSON.parse(fs.readFileSync(path.resolve(filePath), 'utf8'));
 }
 
 function ensureDir(targetPath) {
@@ -41,7 +44,7 @@ function writeText(filePath, text) {
 }
 
 function pad(value, size = 2) {
-  return String(value).padStart(size, "0");
+  return String(value).padStart(size, '0');
 }
 
 function formatSrtTime(seconds) {
@@ -54,8 +57,10 @@ function formatSrtTime(seconds) {
 }
 
 function normalizeSegments(payload) {
-  if (payload?.schemaVersion !== "subtitle-normalized/v1") {
-    throw new Error("Input must be a normalized-transcript.json with schemaVersion subtitle-normalized/v1.");
+  if (payload?.schemaVersion !== 'subtitle-normalized/v1') {
+    throw new Error(
+      'Input must be a normalized-transcript.json with schemaVersion subtitle-normalized/v1.',
+    );
   }
 
   if (!Array.isArray(payload?.segments) || payload.segments.length === 0) {
@@ -66,20 +71,28 @@ function normalizeSegments(payload) {
     .map((segment) => ({
       start: Number(segment.start),
       end: Number(segment.end),
-      text: String(segment.text ?? "").trim()
+      text: String(segment.text ?? '').trim(),
     }))
-    .filter((segment) => segment.text && Number.isFinite(segment.start) && Number.isFinite(segment.end) && segment.end > segment.start);
+    .filter(
+      (segment) =>
+        segment.text &&
+        Number.isFinite(segment.start) &&
+        Number.isFinite(segment.end) &&
+        segment.end > segment.start,
+    );
 }
 
 function buildSrt(segments) {
-  return `${segments.map((segment, index) => {
-    return [
-      String(index + 1),
-      `${formatSrtTime(segment.start)} --> ${formatSrtTime(segment.end)}`,
-      segment.text,
-      ""
-    ].join("\n");
-  }).join("\n")}\n`;
+  return `${segments
+    .map((segment, index) => {
+      return [
+        String(index + 1),
+        `${formatSrtTime(segment.start)} --> ${formatSrtTime(segment.end)}`,
+        segment.text,
+        '',
+      ].join('\n');
+    })
+    .join('\n')}\n`;
 }
 
 async function main() {
@@ -92,25 +105,31 @@ async function main() {
 
   const payload = readJson(args.input);
   const chunkedPayload = chunkNormalizedTranscript(payload, {
-    chunkMode: args["chunk-mode"] || "basic",
-    maxCharsPerChunk: args["max-chars-per-chunk"],
-    maxWordsPerChunk: args["max-words-per-chunk"],
-    minDuration: args["min-duration"]
+    chunkMode: args['chunk-mode'] || 'basic',
+    maxCharsPerChunk: args['max-chars-per-chunk'],
+    maxWordsPerChunk: args['max-words-per-chunk'],
+    minDuration: args['min-duration'],
   });
   const segments = normalizeSegments(chunkedPayload);
   if (segments.length === 0) {
-    throw new Error("No timed segments found in input JSON.");
+    throw new Error('No timed segments found in input JSON.');
   }
 
   writeText(args.output, buildSrt(segments));
-  console.log(JSON.stringify({
-    output: path.resolve(args.output),
-    segmentCount: segments.length,
-    chunkMode: chunkedPayload.chunking?.mode || "basic"
-  }, null, 2));
+  console.log(
+    JSON.stringify(
+      {
+        output: path.resolve(args.output),
+        segmentCount: segments.length,
+        chunkMode: chunkedPayload.chunking?.mode || 'basic',
+      },
+      null,
+      2,
+    ),
+  );
 }
 
 main().catch((error) => {
-  console.error(error.message);
+  console.error(formatCliError(error));
   process.exitCode = 1;
 });

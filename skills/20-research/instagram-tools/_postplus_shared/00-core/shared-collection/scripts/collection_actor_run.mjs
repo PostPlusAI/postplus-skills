@@ -7,6 +7,10 @@ import {
   logSkillEvent,
 } from '../../shared-runtime/scripts/lib/skill_runtime.mjs';
 import {
+  readHostedSkillExecutionEnvelope,
+  normalizeQuoteConfirmationToken,
+} from '../../shared-runtime/scripts/lib/hosted_execution_protocol.mjs';
+import {
   isHostedCollectionPendingResult,
   runHostedCollection,
 } from './lib/hosted_collection_bridge.mjs';
@@ -43,7 +47,7 @@ export function writeJson(filePath, value) {
 
 function usage(commandName = 'collection_actor_run.mjs') {
   console.error(
-    `Usage: node ${commandName} --collection-key <collection-key> --input <input.json> [--output <output.json>] [--skill-name <skill-id>]\n       node ${commandName} --run-handle <handle> [--output <output.json>] [--skill-name <skill-id>]`,
+    `Usage: node ${commandName} --collection-key <collection-key> --input <input.json> [--output <output.json>] [--skill-name <skill-id>] [--hosted-operation-id <operation-id>] [--quote-confirmation-token <token>]\n       node ${commandName} --run-handle <handle> [--output <output.json>] [--skill-name <skill-id>]`,
   );
 }
 
@@ -83,6 +87,40 @@ function buildResumeCommand({ commandName, outputPath, runHandle }) {
   if (outputPath) {
     parts.push('--output', path.resolve(outputPath));
   }
+
+  return parts.map(shellQuote).join(' ');
+}
+
+function buildQuoteConfirmationRetryCommand({
+  collectionKey,
+  commandName,
+  inputPath,
+  operationId,
+  outputPath,
+  skillName,
+}) {
+  const parts = [
+    'node',
+    commandName,
+    '--collection-key',
+    collectionKey,
+    '--input',
+    path.resolve(inputPath),
+  ];
+
+  if (outputPath) {
+    parts.push('--output', path.resolve(outputPath));
+  }
+
+  if (skillName) {
+    parts.push('--skill-name', skillName);
+  }
+
+  parts.push('--hosted-operation-id', operationId);
+  parts.push(
+    '--quote-confirmation-token',
+    '<token-from-postplus-quote-confirm-json>',
+  );
 
   return parts.map(shellQuote).join(' ');
 }
@@ -143,9 +181,14 @@ export async function runCollectionActor(argv, options = {}) {
     : null;
 
   let input = null;
+  let envelopeQuoteConfirmationToken = null;
+  let envelopeOperationId = null;
   if (!isResume) {
     try {
-      input = readJson(args.input);
+      const envelope = readHostedSkillExecutionEnvelope(readJson(args.input));
+      input = envelope.input;
+      envelopeQuoteConfirmationToken = envelope.quoteConfirmationToken;
+      envelopeOperationId = envelope.operationId;
     } catch (error) {
       logSkillEvent(boundary, {
         eventType: 'script_failed',
@@ -162,6 +205,18 @@ export async function runCollectionActor(argv, options = {}) {
     }
   }
 
+  const quoteConfirmationToken =
+    normalizeQuoteConfirmationToken(args['quote-confirmation-token']) ??
+    envelopeQuoteConfirmationToken;
+  const operationId =
+    !isResume && typeof args['hosted-operation-id'] === 'string'
+      ? args['hosted-operation-id'].trim()
+      : !isResume && envelopeOperationId
+        ? envelopeOperationId
+        : !isResume
+          ? `skill-collection:${boundary.runId}`
+          : undefined;
+
   logSkillEvent(boundary, {
     eventType: 'script_started',
     phase: 'executing',
@@ -177,7 +232,19 @@ export async function runCollectionActor(argv, options = {}) {
     const payload = await runHostedCollection({
       collectionKey,
       input,
-      operationId: isResume ? undefined : `skill-collection:${boundary.runId}`,
+      operationId,
+      quoteConfirmationToken,
+      retryCommand:
+        !isResume && collectionKey && args.input
+          ? buildQuoteConfirmationRetryCommand({
+              collectionKey,
+              commandName,
+              inputPath: args.input,
+              operationId,
+              outputPath: args.output,
+              skillName: boundary.skillName,
+            })
+          : undefined,
       runHandle,
       skillName: boundary.skillName,
     });

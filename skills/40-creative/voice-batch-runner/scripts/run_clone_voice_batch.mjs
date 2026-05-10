@@ -9,6 +9,7 @@ import {
   inferAudioExtension,
   nowIso,
   parseArgs,
+  readHostedJson,
   readJson,
   sleep,
   unwrapProviderResult,
@@ -126,7 +127,7 @@ async function maybeDownloadFirstOutput(responsePayload, paths) {
 }
 
 async function submitOne(requestPath, uploadCache) {
-  const request = normalizeRequest(readJson(requestPath));
+  const request = normalizeRequest(readHostedJson(requestPath));
   const paths = buildRequestPaths(request.localOutputDir);
   writeJson(paths.requestPath, request);
 
@@ -181,7 +182,7 @@ async function submitOne(requestPath, uploadCache) {
 }
 
 async function pollOne(item) {
-  const request = normalizeRequest(readJson(item.requestPath));
+  const request = normalizeRequest(readHostedJson(item.requestPath));
   const paths = buildRequestPaths(request.localOutputDir);
   const priorResponse = readJson(paths.responsePath);
   const resultUrl = getResultUrl(priorResponse);
@@ -306,7 +307,7 @@ async function main() {
   }
 
   const finalItems = items.map((item) => {
-    const request = normalizeRequest(readJson(item.requestPath));
+    const request = normalizeRequest(readHostedJson(item.requestPath));
     const paths = buildRequestPaths(request.localOutputDir);
     const manifest = readJson(paths.manifestPath);
     return manifest;

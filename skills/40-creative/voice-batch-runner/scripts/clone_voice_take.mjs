@@ -12,6 +12,7 @@ import {
   nowIso,
   parseArgs,
   pollPredictionResult,
+  readHostedJson,
   readJson,
   unwrapProviderResult,
   uploadLocalMedia,
@@ -71,7 +72,7 @@ async function main() {
     return;
   }
 
-  const request = normalizeRequest(readJson(args.request));
+  const request = normalizeRequest(readHostedJson(args.request));
   const paths = buildRequestPaths(request.localOutputDir);
   writeJson(paths.requestPath, request);
 

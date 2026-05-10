@@ -10,6 +10,7 @@ import {
   fetchJson,
   finalizeImageRun,
   parseArgs,
+  readHostedJson,
   readJson,
   sha256,
   toAssetRelative,
@@ -90,7 +91,7 @@ async function main() {
     return;
   }
 
-  const rawRequest = readJson(args.request);
+  const rawRequest = readHostedJson(args.request);
   const request = normalizePollRequest(rawRequest);
 
   const paths = buildAssetPaths(request.localAssetDir, request.runId, "image");
