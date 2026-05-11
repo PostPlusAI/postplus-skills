@@ -1,21 +1,24 @@
 #!/usr/bin/env node
-
+import { formatCliError } from '../../../00-core/shared-runtime/scripts/lib/network_runtime.mjs';
 import {
-  buildRequestPaths,
   buildNormalizedTranscript,
+  buildRequestPaths,
   createManifestBase,
   downloadProviderOutputs,
   extractTranscriptData,
   normalizeTranscriptionInput,
   parseArgs,
   pollPredictionResult,
+  readHostedJson,
   readJson,
   unwrapProviderResult,
-  writeJson
-} from "./_shared.mjs";
+  writeJson,
+} from './_shared.mjs';
 
 function usage() {
-  console.error("Usage: node poll_transcription.mjs --request <request.json> [--result-url <url>]");
+  console.error(
+    'Usage: node poll_transcription.mjs --request <request.json> [--result-url <url>]',
+  );
 }
 
 function inferGetUrl(resultUrl, request, rawResponse) {
@@ -34,14 +37,19 @@ async function main() {
     return;
   }
 
-  const input = readJson(args.request);
-  const request = normalizeTranscriptionInput(input, input.video ? "video" : "audio");
+  const input = readHostedJson(args.request);
+  const request = normalizeTranscriptionInput(
+    input,
+    input.video ? 'video' : 'audio',
+  );
   const paths = buildRequestPaths(request.localOutputDir);
   const rawResponse = readJson(paths.responsePath);
-  const getUrl = inferGetUrl(args["result-url"], request, rawResponse);
+  const getUrl = inferGetUrl(args['result-url'], request, rawResponse);
 
   if (!getUrl) {
-    throw new Error("Could not infer result URL from response.json. Pass --result-url explicitly.");
+    throw new Error(
+      'Could not infer result URL from response.json. Pass --result-url explicitly.',
+    );
   }
 
   const rawResult = await pollPredictionResult(getUrl);
@@ -63,12 +71,12 @@ async function main() {
   writeJson(paths.manifestPath, manifest);
   writeJson(
     paths.normalizedTranscriptPath,
-    buildNormalizedTranscript({ request, manifest, paths, transcriptData })
+    buildNormalizedTranscript({ request, manifest, paths, transcriptData }),
   );
   console.log(JSON.stringify(manifest, null, 2));
 }
 
 main().catch((error) => {
-  console.error(error.message);
+  console.error(formatCliError(error));
   process.exitCode = 1;
 });

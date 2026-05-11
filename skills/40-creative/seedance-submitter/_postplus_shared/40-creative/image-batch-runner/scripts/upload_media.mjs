@@ -8,6 +8,7 @@ import {
   finalizeUploadRun,
   nowIso,
   parseArgs,
+  readHostedJson,
   readJson,
   toAssetRelative,
   uploadLocalMedia,
@@ -53,7 +54,7 @@ async function main() {
     return;
   }
 
-  const input = readJson(args.request);
+  const input = readHostedJson(args.request);
   const request = normalizeUploadRequest(input);
   const paths = buildAssetPaths(request.localAssetDir, request.runId, "upload");
   writeJson(paths.requestPath, request);

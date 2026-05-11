@@ -13,6 +13,7 @@ import {
   inferSeedreamSize,
   normalizeGenerationInput,
   parseArgs,
+  readHostedJson,
   readJson,
   resolveHostedImageOutputFormat,
   sha256,
@@ -109,7 +110,7 @@ async function main() {
     return;
   }
 
-  const input = readJson(args.request);
+  const input = readHostedJson(args.request);
   const request = normalizeEditRequest(input);
   const paths = buildAssetPaths(request.localAssetDir, request.runId, "image");
   writeJson(paths.requestPath, request);

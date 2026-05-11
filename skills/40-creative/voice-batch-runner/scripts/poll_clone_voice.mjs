@@ -9,6 +9,7 @@ import {
   inferAudioExtension,
   nowIso,
   parseArgs,
+  readHostedJson,
   readJson,
   unwrapProviderResult,
   writeJson
@@ -77,7 +78,7 @@ async function main() {
     return;
   }
 
-  const request = readJson(args.request);
+  const request = readHostedJson(args.request);
   const paths = buildRequestPaths(request.localOutputDir);
   const responsePayload =
     args.response

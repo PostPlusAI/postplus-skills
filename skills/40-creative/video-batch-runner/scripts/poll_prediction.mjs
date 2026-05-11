@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-
+import { formatCliError } from '../_postplus_shared/00-core/shared-runtime/scripts/lib/network_runtime.mjs';
 import {
   ARK_API_BASE,
   buildRequestPaths,
@@ -7,30 +7,33 @@ import {
   fetchJson,
   maybeDownloadOutputs,
   parseArgs,
+  readHostedJson,
   readJson,
   unwrapProviderResult,
-  writeJson
-} from "./_shared.mjs";
+  writeJson,
+} from './_shared.mjs';
 
 function usage() {
-  console.error("Usage: node poll_prediction.mjs --request <request.json> [--response <response.json>]");
+  console.error(
+    'Usage: node poll_prediction.mjs --request <request.json> [--response <response.json>]',
+  );
 }
 
 function inferResultUrl(request, responsePayload) {
   const payload = unwrapProviderResult(responsePayload);
-  if (request?.provider === "ark") {
+  if (request?.provider === 'ark') {
     const taskId = payload?.id || responsePayload?.id;
     if (taskId) {
       return `${ARK_API_BASE}/contents/generations/tasks/${taskId}`;
     }
   }
-  if (typeof payload?.urls?.get === "string" && payload.urls.get.length > 0) {
+  if (typeof payload?.urls?.get === 'string' && payload.urls.get.length > 0) {
     return payload.urls.get;
   }
-  if (payload?.id && request?.provider === "hosted-media") {
+  if (payload?.id && request?.provider === 'hosted-media') {
     return payload.id;
   }
-  throw new Error("Could not infer result URL from request/response.");
+  throw new Error('Could not infer result URL from request/response.');
 }
 
 async function main() {
@@ -41,13 +44,14 @@ async function main() {
     return;
   }
 
-  const request = readJson(args.request);
+  const request = readHostedJson(args.request);
   const priorResponse = args.response
     ? readJson(args.response)
     : readJson(buildRequestPaths(request.localOutputDir).responsePath);
 
   const paths = buildRequestPaths(request.localOutputDir);
-  const resultUrl = args["result-url"] || inferResultUrl(request, priorResponse);
+  const resultUrl =
+    args['result-url'] || inferResultUrl(request, priorResponse);
 
   const { data: rawResult } = await fetchJson(resultUrl);
 
@@ -57,17 +61,22 @@ async function main() {
 
   const manifest = createRenderManifestBase(request, paths);
   manifest.generationHandle =
-    request.provider === "hosted-media" ? result?.id || priorResponse?.id || null : null;
+    request.provider === 'hosted-media'
+      ? result?.id || priorResponse?.id || null
+      : null;
   manifest.providerTaskId =
-    request.provider === "ark" ? result?.id || priorResponse?.id || null : null;
+    request.provider === 'ark' ? result?.id || priorResponse?.id || null : null;
   manifest.providerStatus = result?.status || null;
   manifest.providerUrls = result?.urls || priorResponse?.urls || null;
-  manifest.hasNsfwContents = Array.isArray(result?.has_nsfw_contents) ? result.has_nsfw_contents : [];
+  manifest.hasNsfwContents = Array.isArray(result?.has_nsfw_contents)
+    ? result.has_nsfw_contents
+    : [];
   manifest.returnLastFrame = request.returnLastFrame;
   manifest.generateAudio = request.generateAudio;
   manifest.serviceTier = result?.service_tier || request.serviceTier || null;
   manifest.watermark = request.watermark;
-  manifest.content = request.provider === "ark" ? result?.content || null : undefined;
+  manifest.content =
+    request.provider === 'ark' ? result?.content || null : undefined;
   manifest.usage = result?.usage || null;
   manifest.error = result?.error || null;
 
@@ -78,6 +87,6 @@ async function main() {
 }
 
 main().catch((error) => {
-  console.error(error.message);
+  console.error(formatCliError(error));
   process.exitCode = 1;
 });

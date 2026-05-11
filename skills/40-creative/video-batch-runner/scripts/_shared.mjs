@@ -7,6 +7,10 @@ import {
   requestHostedMediaGenerationJson,
   uploadHostedMediaFile,
 } from '../_postplus_shared/00-core/shared-runtime/scripts/lib/hosted_media_generation_bridge.mjs';
+import {
+  readDomainSkillExecutionInput,
+  readHostedSkillExecutionInput,
+} from '../_postplus_shared/00-core/shared-runtime/scripts/lib/hosted_execution_protocol.mjs';
 
 export const ARK_API_BASE = 'https://ark.cn-beijing.volces.com/api/v3';
 export const DEFAULT_PROVIDER = 'hosted-media';
@@ -84,7 +88,15 @@ export function parseArgs(argv) {
 }
 
 export function readJson(filePath) {
-  return JSON.parse(fs.readFileSync(path.resolve(filePath), 'utf8'));
+  return readDomainSkillExecutionInput(
+    JSON.parse(fs.readFileSync(path.resolve(filePath), 'utf8')),
+  );
+}
+
+export function readHostedJson(filePath) {
+  return readHostedSkillExecutionInput(
+    JSON.parse(fs.readFileSync(path.resolve(filePath), 'utf8')),
+  );
 }
 
 export function ensureDir(targetPath) {

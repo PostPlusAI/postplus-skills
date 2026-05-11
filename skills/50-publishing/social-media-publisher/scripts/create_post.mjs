@@ -6,7 +6,7 @@ import {
   parseArgs,
   socialPublishingJson,
   readCustomerConfig,
-  readJson,
+  readHostedJson,
   requireArg,
   summarizeCreateResult,
   toSocialPublishingCreatePayload,
@@ -25,7 +25,7 @@ export async function main(argv = process.argv.slice(2), io = console) {
   const output = requireArg(args, "output");
   const execute = flagEnabled(args.execute);
 
-  const request = readJson(requestPath);
+  const request = readHostedJson(requestPath);
   const customerConfig = readCustomerConfig(customerConfigPath);
   const integrationIds = request.posts.map((post) => String(post.integrationId));
   assertAllowedIntegrationIds(customerConfig, integrationIds);
