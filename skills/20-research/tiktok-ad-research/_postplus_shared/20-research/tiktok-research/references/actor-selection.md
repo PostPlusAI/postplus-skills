@@ -164,19 +164,13 @@ Use for:
 
 Do not mix this actor into generic organic creator discovery. Treat it as ad intelligence.
 
-### `tiktok-shop-creators`
+### TikTok Shop Creator Scouting
 
-Use for:
+Status: unsupported in the current hosted release.
 
-- TikTok Shop creator discovery
-- creator-commerce scoring
-- GMV / units / product-led creator scouting
-
-Do not use this for generic content creator outreach.
-
-Important constraint:
-
-- currently documented as U.S.-only, so reject or reroute non-U.S. shop-creator requests early
+Do not route user requests to `tiktok-shop-creators`. PostPlus Cloud does not
+expose this as a hosted collection key, and the provider input contract is not a
+keyword-discovery surface.
 
 ## Routing Guidance
 
@@ -191,7 +185,7 @@ If the user wants:
 - "Use low-cost multi-query exploration first" -> `tiktok-scraper` or `tiktok-scraper-api`
 - "Expand the creator pool from a batch of matched videos" -> `tiktok-scraper` with `postURLs + scrapeRelatedVideos`
 - "Inspect TikTok ad rankings / Creative Center ads" -> `tiktok-creative-center-top-ads`
-- "Find TikTok Shop affiliate creators" -> `tiktok-shop-creators`
+- "Find TikTok Shop affiliate creators" -> unsupported in the current hosted release
 
 ## Cost and Fallback Guidance
 

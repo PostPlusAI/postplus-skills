@@ -88,7 +88,6 @@ Node 18+ is required. This workspace already has Node available.
 - comment collection default: `tiktok-comments-scraper`
 - low-cost search expansion fallback: `tiktok-scraper`
 - low-cost exploratory query fallback: `tiktok-scraper-api`
-- TikTok Shop creator discovery: `tiktok-shop-creators`
 
 Treat these as defaults, not hard requirements.
 
@@ -112,9 +111,11 @@ Start from the user's real collection surface, not from one favorite actor.
 - focused comments -> `tiktok-comments-scraper`
 - larger or cheaper comment runs -> `tiktok-comments-scraper`
 - region-aware low-cost discovery -> `tiktok-scraper`
-- shop creator analytics -> `tiktok-shop-creators`
+- shop creator analytics -> unsupported in the current hosted release
 
 Do not use TikTok Shop actors for generic creator discovery.
+Do not route to `tiktok-shop-creators`; it is not exposed as a hosted
+collection key in the current release.
 Do not use Creative Center ad actors as if they were organic creator data.
 If the user wants paid ad intelligence, route to `tiktok-ad-research`.
 If the user specifically wants TikTok music or sound discovery, route to:
