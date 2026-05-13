@@ -79,21 +79,43 @@ export function formatCliError(error) {
 
 function formatQuoteConfirmationError(error) {
   const lines = [`${error.productErrorCode}: ${error.message}`];
+  const agentAction = readQuoteConfirmationAgentAction(error.agentAction);
 
-  if (
-    typeof error.confirmationCommand === 'string' &&
-    error.confirmationCommand.trim() &&
-    !error.message.includes(error.confirmationCommand)
-  ) {
-    lines.push(`Confirm the charge with: ${error.confirmationCommand}`);
-  }
+  if (agentAction) {
+    const confirmationLine = `Agent confirmation command: ${agentAction.confirmationCommand}`;
+    if (!error.message.includes(confirmationLine)) {
+      lines.push(confirmationLine);
+    }
 
-  if (
-    typeof error.retryCommand === 'string' &&
-    error.retryCommand.trim() &&
-    !error.message.includes(error.retryCommand)
-  ) {
-    lines.push(`Retry with: ${error.retryCommand}`);
+    const retryLine = `Agent retry command: ${agentAction.retryCommandTemplate}`;
+    if (!error.message.includes(retryLine)) {
+      lines.push(retryLine);
+    }
+
+    const tokenLine = [
+      `Agent retry token: read JSON field "${agentAction.confirmationTokenJsonField}"`,
+      'from the confirmation command output and replace',
+      `${agentAction.quoteConfirmationTokenPlaceholder}.`,
+    ].join(' ');
+    if (!error.message.includes(tokenLine)) {
+      lines.push(tokenLine);
+    }
+  } else {
+    if (
+      typeof error.confirmationCommand === 'string' &&
+      error.confirmationCommand.trim() &&
+      !error.message.includes(error.confirmationCommand)
+    ) {
+      lines.push(`Confirm the charge with: ${error.confirmationCommand}`);
+    }
+
+    if (
+      typeof error.retryCommand === 'string' &&
+      error.retryCommand.trim() &&
+      !error.message.includes(error.retryCommand)
+    ) {
+      lines.push(`Retry with: ${error.retryCommand}`);
+    }
   }
 
   const challenge =
@@ -126,6 +148,32 @@ function formatQuoteConfirmationError(error) {
   }
 
   return lines.join('\n');
+}
+
+function readQuoteConfirmationAgentAction(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return null;
+  }
+
+  if (
+    typeof value.confirmationCommand !== 'string' ||
+    typeof value.retryCommandTemplate !== 'string'
+  ) {
+    return null;
+  }
+
+  return {
+    confirmationCommand: value.confirmationCommand,
+    confirmationTokenJsonField:
+      typeof value.confirmationTokenJsonField === 'string'
+        ? value.confirmationTokenJsonField
+        : 'token',
+    quoteConfirmationTokenPlaceholder:
+      typeof value.quoteConfirmationTokenPlaceholder === 'string'
+        ? value.quoteConfirmationTokenPlaceholder
+        : '<token-from-postplus-quote-confirm-json>',
+    retryCommandTemplate: value.retryCommandTemplate,
+  };
 }
 
 function isEnvTruthy(value) {

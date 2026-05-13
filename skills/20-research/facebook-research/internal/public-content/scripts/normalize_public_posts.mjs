@@ -119,13 +119,13 @@ export function normalizeFacebookItem(item) {
 
 export function normalizeRawPayloads(rawByPlatform) {
   const normalized = [];
-  for (const item of rawByPlatform.linkedin || []) {
+  for (const item of readRawPlatformItems(rawByPlatform, "linkedin")) {
     normalized.push(normalizeLinkedinItem(item));
   }
-  for (const item of rawByPlatform.youtube || []) {
+  for (const item of readRawPlatformItems(rawByPlatform, "youtube")) {
     normalized.push(normalizeYoutubeItem(item));
   }
-  for (const item of rawByPlatform.facebook || []) {
+  for (const item of readRawPlatformItems(rawByPlatform, "facebook")) {
     normalized.push(normalizeFacebookItem(item));
   }
   const deduped = [];
@@ -143,6 +143,11 @@ export function normalizeRawPayloads(rawByPlatform) {
       engagementScore: scoreEngagement(item.metrics)
     }))
     .sort((left, right) => right.engagementScore - left.engagementScore);
+}
+
+function readRawPlatformItems(rawByPlatform, platform) {
+  const value = rawByPlatform?.[platform];
+  return Array.isArray(value) ? value : [];
 }
 
 export async function main(argv = process.argv.slice(2), io = console) {

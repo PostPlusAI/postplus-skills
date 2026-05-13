@@ -203,8 +203,9 @@ default to this first move:
 
 1. skip the temporary brief JSON
 2. run `${CLAUDE_SKILL_DIR}/scripts/build_tiktok_actor_input.mjs` with `--query`, `--limit`, `--actor`, and `--output`
-3. place the output under the current work folder's `.postplus/`
-4. then run `${CLAUDE_SKILL_DIR}/scripts/collection_actor_run.mjs` against that output file
+3. place the domain actor input under the current work folder's `.postplus/`
+4. wrap that domain actor input as `schemaVersion: 1` + `input`
+5. then run `${CLAUDE_SKILL_DIR}/scripts/collection_actor_run.mjs` against the envelope file
 
 Do not start by reading or writing a new `.postplus/*.json` file when the direct actor-input path already fits.
 
@@ -233,6 +234,21 @@ jq -s 'map(.items) | add | sort_by(-.followersCount) | .[0:20]' file-a.json file
 
 ## Minimal Workflow
 
+`collection_actor_run.mjs` is a hosted collection entrypoint. Every file passed
+to its `--input` flag must be a hosted execution envelope:
+
+```json
+{
+  "schemaVersion": 1,
+  "input": {
+    "...": "compiled actor input"
+  }
+}
+```
+
+The compiled actor input is the envelope's `input` value. Bare actor input JSON
+is not an executable `collection_actor_run.mjs` input.
+
 ### Hashtag sampling
 
 Build input:
@@ -249,7 +265,7 @@ Run actor:
 ```bash
 node ${CLAUDE_SKILL_DIR}/scripts/collection_actor_run.mjs \
   --collection-key tiktok-videos \
-  --input <work-folder>/.postplus/hashtags-input.json \
+  --input <work-folder>/.postplus/hashtags-envelope.json \
   --output <work-folder>/.postplus/hashtags.json
 ```
 
@@ -282,7 +298,7 @@ Run actor:
 ```bash
 node ${CLAUDE_SKILL_DIR}/scripts/collection_actor_run.mjs \
   --collection-key tiktok-videos \
-  --input <work-folder>/.postplus/searches-input.json \
+  --input <work-folder>/.postplus/searches-envelope.json \
   --output <work-folder>/.postplus/searches.json
 ```
 
@@ -303,15 +319,18 @@ node ${CLAUDE_SKILL_DIR}/scripts/analyze_tiktok_dataset.mjs \
 
 ```json
 {
-  "profiles": ["grammarly", "notionhq", "raycastapp"],
-  "resultsPerPage": 10
+  "schemaVersion": 1,
+  "input": {
+    "profiles": ["grammarly", "notionhq", "raycastapp"],
+    "resultsPerPage": 10
+  }
 }
 ```
 
 ```bash
 node ${CLAUDE_SKILL_DIR}/scripts/collection_actor_run.mjs \
   --collection-key tiktok-profiles \
-  --input <work-folder>/.postplus/competitors.json \
+  --input <work-folder>/.postplus/competitors-envelope.json \
   --output <work-folder>/.postplus/competitors-results.json
 ```
 
@@ -332,15 +351,18 @@ node ${CLAUDE_SKILL_DIR}/scripts/rank_tiktok_accounts.mjs \
 
 ```json
 {
-  "searchQueries": ["ai tools", "productivity workflow", "gmail tips"],
-  "maxProfilesPerQuery": 8
+  "schemaVersion": 1,
+  "input": {
+    "searchQueries": ["ai tools", "productivity workflow", "gmail tips"],
+    "maxProfilesPerQuery": 8
+  }
 }
 ```
 
 ```bash
 node ${CLAUDE_SKILL_DIR}/scripts/collection_actor_run.mjs \
   --collection-key tiktok-users \
-  --input <work-folder>/.postplus/creator-search.json \
+  --input <work-folder>/.postplus/creator-search-envelope.json \
   --output <work-folder>/.postplus/creator-search-results.json
 
 node ${CLAUDE_SKILL_DIR}/scripts/normalize_tiktok_dataset.mjs \
@@ -360,7 +382,7 @@ Use this when the request cares about small creators, real topical activity, or 
 ```bash
 node ${CLAUDE_SKILL_DIR}/scripts/collection_actor_run.mjs \
   --collection-key tiktok-videos \
-  --input <work-folder>/.postplus/topic-video-search.json \
+  --input <work-folder>/.postplus/topic-video-search-envelope.json \
   --output <work-folder>/.postplus/topic-video-search-raw.json
 
 node ${CLAUDE_SKILL_DIR}/scripts/normalize_tiktok_dataset.mjs \
@@ -370,22 +392,29 @@ node ${CLAUDE_SKILL_DIR}/scripts/normalize_tiktok_dataset.mjs \
   --output <work-folder>/.postplus/topic-video-search-normalized.json
 
 node ${CLAUDE_SKILL_DIR}/scripts/expand_tiktok_creator_graph.mjs \
-  --input <work-folder>/.postplus/topic-video-search-normalized.json \
+  --input <work-folder>/.postplus/topic-video-search-normalized-envelope.json \
   --output <work-folder>/.postplus/topic-graph-raw.json \
   --top 10 \
   --results-per-seed 6
 ```
 
+`expand_tiktok_creator_graph.mjs` is also a hosted side-effecting entrypoint.
+Wrap the normalized video dataset under `input` before passing it to `--input`.
+
 ### Comment sampling
 
 ```bash
 node ${CLAUDE_SKILL_DIR}/scripts/collect_top_video_comments.mjs \
-  --input <work-folder>/.postplus/searches.json \
+  --input <work-folder>/.postplus/searches-normalized-envelope.json \
   --output <work-folder>/.postplus/comments.json \
   --collection-key tiktok-comments \
   --top 8 \
   --max-comments 40
 ```
+
+`collect_top_video_comments.mjs` is a hosted side-effecting entrypoint. Its
+`--input` file must be a `schemaVersion: 1` hosted execution envelope whose
+`input` value is the raw or normalized video dataset to sample.
 
 Then summarize:
 

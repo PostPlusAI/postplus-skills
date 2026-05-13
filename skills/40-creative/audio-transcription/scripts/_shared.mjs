@@ -18,9 +18,6 @@ export const DEFAULT_LANGUAGE = 'auto';
 export const DEFAULT_TASK = 'transcribe';
 export const DEFAULT_POLL_MAX_ATTEMPTS = 150;
 export const DEFAULT_POLL_INTERVAL_MS = 2000;
-export const TRANSCRIPTION_POLL_WINDOW_SECONDS = Math.floor(
-  (DEFAULT_POLL_MAX_ATTEMPTS * DEFAULT_POLL_INTERVAL_MS) / 1000,
-);
 
 export function parseArgs(argv) {
   const args = {};
@@ -82,20 +79,20 @@ export async function fetchJson(url, options = {}) {
   const mediaSeconds = Number(requestBody?.duration_seconds);
   const requestDimensions =
     method !== 'POST' ||
-	    ![
-	      'transcription-whisper',
-	      'transcription-whisper-turbo',
-	      'transcription-whisper-with-video',
-	    ].includes(url)
+    ![
+      'transcription-whisper',
+      'transcription-whisper-turbo',
+      'transcription-whisper-with-video',
+    ].includes(url)
       ? undefined
       : Number.isFinite(mediaSeconds) && mediaSeconds > 0
         ? {
             billableUnitCount: 1,
             mediaSeconds: Math.ceil(mediaSeconds),
-	            operationKey:
-	              requestBody?.enable_timestamps === true
-	                ? `${url}:timestamps`
-	                : url,
+            operationKey:
+              requestBody?.enable_timestamps === true
+                ? `${url}:timestamps`
+                : url,
             requestBytes: Buffer.byteLength(JSON.stringify(providerBody)),
           }
         : (() => {
@@ -163,34 +160,25 @@ export async function pollPredictionResult(
   throw new Error(`Timed out waiting for prediction result: ${getUrl}`);
 }
 
-export function buildTranscriptionPollingPreflight(request) {
+export function buildTranscriptionAsyncPreflight(request) {
   const durationSeconds = Number(request.durationSeconds);
   if (!Number.isFinite(durationSeconds) || durationSeconds <= 0) {
     throw new Error('request.durationSeconds is required.');
   }
 
   const normalizedDurationSeconds = Math.ceil(durationSeconds);
-  const mayExceedPollWindow =
-    normalizedDurationSeconds >= TRANSCRIPTION_POLL_WINDOW_SECONDS;
 
   return {
     durationSeconds: normalizedDurationSeconds,
     mediaType: request.mediaType,
-    mayExceedPollWindow,
-    pollWindowSeconds: TRANSCRIPTION_POLL_WINDOW_SECONDS,
-    message: mayExceedPollWindow
-      ? `transcription_polling_boundary: ${request.mediaType} duration is ${normalizedDurationSeconds}s, at or above the ${TRANSCRIPTION_POLL_WINDOW_SECONDS}s polling window. Submit only if a 5-minute poll timeout is acceptable; otherwise stop and split or use a supported longer-running path.`
-      : `transcription_polling_preflight: ${request.mediaType} duration is ${normalizedDurationSeconds}s; current polling window is ${TRANSCRIPTION_POLL_WINDOW_SECONDS}s.`,
+    message: `transcription_async_submission: ${request.mediaType} duration is ${normalizedDurationSeconds}s; submit returns provider status plus a stable generation handle. Use poll_transcription.mjs to resume until completed or failed.`,
+    requiresPolling: true,
   };
 }
 
-export function logTranscriptionPollingPreflight(request, { logger = console } = {}) {
-  const preflight = buildTranscriptionPollingPreflight(request);
-  if (preflight.mayExceedPollWindow) {
-    logger.warn(preflight.message);
-  } else {
-    logger.log(preflight.message);
-  }
+export function logTranscriptionAsyncPreflight(request, { logger = console } = {}) {
+  const preflight = buildTranscriptionAsyncPreflight(request);
+  logger.log(preflight.message);
   return preflight;
 }
 

@@ -248,6 +248,10 @@ Use `sourceBasis` to preserve original local paths:
 
 ## Submission Commands
 
+The request examples in this reference are Seedance domain payloads. The hosted
+scripts below require a `schemaVersion: 1` execution envelope and read the
+Seedance request from `input`.
+
 Upload images with:
 
 ```bash

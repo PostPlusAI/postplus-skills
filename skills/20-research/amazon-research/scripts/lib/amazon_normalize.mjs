@@ -122,6 +122,66 @@ function pickFirst(item, keys) {
   return null;
 }
 
+function cleanScalarString(value) {
+  if (value === null || value === undefined) {
+    return null;
+  }
+  if (typeof value === "object" || typeof value === "function") {
+    return null;
+  }
+  return cleanString(value);
+}
+
+function normalizeSellerFieldValue(value, keys) {
+  if (value && typeof value === "object") {
+    return cleanScalarString(pickFirst(value, keys));
+  }
+  return cleanScalarString(value);
+}
+
+function normalizeSellerName(item) {
+  const sellerKeys = ["sellerName", "seller", "soldBy", "merchantName"];
+  const objectNameKeys = [
+    "name",
+    "businessName",
+    "sellerName",
+    "displayName",
+    "storeName",
+    "merchantName",
+    "legalName"
+  ];
+
+  for (const key of sellerKeys) {
+    const value = item?.[key];
+    if (value === undefined || value === null || value === "") {
+      continue;
+    }
+    const sellerName = normalizeSellerFieldValue(value, objectNameKeys);
+    if (sellerName) {
+      return sellerName;
+    }
+  }
+  return null;
+}
+
+function normalizeSellerUrl(item) {
+  const sellerUrlKeys = ["sellerUrl", "merchantUrl", "storeUrl"];
+  const objectUrlKeys = ["url", "sellerUrl", "merchantUrl", "storeUrl"];
+
+  for (const key of sellerUrlKeys) {
+    const value = item?.[key];
+    if (value === undefined || value === null || value === "") {
+      continue;
+    }
+    const sellerUrl = normalizeSellerFieldValue(value, objectUrlKeys);
+    if (sellerUrl) {
+      return sellerUrl;
+    }
+  }
+
+  return normalizeSellerFieldValue(item?.seller, objectUrlKeys);
+}
+
 function deriveCurrency(...candidates) {
   for (const candidate of candidates) {
     const text = cleanString(candidate);
@@ -257,12 +317,8 @@ function normalizeProductItem(item, sourceId) {
       )
     },
     seller: {
-      sellerName: cleanString(
-        pickFirst(item, ["sellerName", "seller", "soldBy", "merchantName"])
-      ),
-      sellerUrl: cleanString(
-        pickFirst(item, ["sellerUrl", "merchantUrl", "storeUrl"])
-      ),
+      sellerName: normalizeSellerName(item),
+      sellerUrl: normalizeSellerUrl(item),
       fulfilledByAmazon: parseBoolean(
         pickFirst(item, ["fulfilledByAmazon", "isFulfilledByAmazon"])
       )

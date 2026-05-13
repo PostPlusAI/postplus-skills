@@ -6,6 +6,10 @@ import {
   printOrWriteJson,
   readJson,
 } from "../_postplus_shared/00-core/shared-runtime/scripts/lib/local_skill_cli.mjs";
+import {
+  buildCreativeOutputSpec,
+  resolveCreativeFormat,
+} from "../_postplus_shared/00-core/shared-runtime/scripts/lib/creative_format.mjs";
 
 export const SEEDANCE_SEGMENT_DURATION_LIMIT_SECONDS = 15;
 
@@ -79,6 +83,7 @@ export function buildSeedanceSegmentContract(input = {}) {
     input.targetDurationSeconds ?? input.duration ?? 8,
     "targetDurationSeconds",
   );
+  const creativeFormat = resolveCreativeFormat(input);
 
   if (targetDurationSeconds <= SEEDANCE_SEGMENT_DURATION_LIMIT_SECONDS) {
     return {
@@ -86,6 +91,7 @@ export function buildSeedanceSegmentContract(input = {}) {
       requiresSegmentation: false,
       totalDurationSeconds: targetDurationSeconds,
       segmentDurationLimitSeconds: SEEDANCE_SEGMENT_DURATION_LIMIT_SECONDS,
+      targetAspectRatio: creativeFormat.aspectRatio,
       segments: [],
     };
   }
@@ -126,9 +132,11 @@ export function buildSeedanceSegmentContract(input = {}) {
     requiresSegmentation: true,
     totalDurationSeconds: targetDurationSeconds,
     segmentDurationLimitSeconds: SEEDANCE_SEGMENT_DURATION_LIMIT_SECONDS,
+    targetAspectRatio: creativeFormat.aspectRatio,
     segments: segments.map((segment, index) => ({
       segmentId: `segment-${String(index + 1).padStart(2, "0")}`,
       targetDurationSeconds: segment.endSeconds - segment.startSeconds,
+      targetAspectRatio: creativeFormat.aspectRatio,
       segmentRole: index === 0 ? "opening" : index === segments.length - 1 ? "closing" : "middle",
       standalonePayoff:
         summarizeBeatField(segment.beats, "payoff") ||
@@ -150,13 +158,23 @@ export function buildSeedanceSegmentContract(input = {}) {
 
 export function buildVideoRequestArchitecture(input = {}) {
   const duration = input.duration || input.targetDurationSeconds || 8;
+  const creativeFormat = resolveCreativeFormat(input);
   const segmentContract = buildSeedanceSegmentContract({
     ...input,
+    ...(creativeFormat.id === "custom"
+      ? {}
+      : { creativeFormat: creativeFormat.id }),
+    targetAspectRatio: creativeFormat.aspectRatio,
     targetDurationSeconds: duration,
   });
 
   return {
     cameraGrammar: input.cameraGrammar || "handheld UGC close-medium coverage",
+    creativeFormat: {
+      id: creativeFormat.id,
+      label: creativeFormat.label,
+      targetAspectRatio: creativeFormat.aspectRatio,
+    },
     duration,
     hookLogic: input.hookLogic || "show the workflow pain before the fix",
     mainRisks: [
@@ -174,10 +192,12 @@ export function buildVideoRequestArchitecture(input = {}) {
     segmentContract,
     skeleton: {
       goal: input.goal || "hook replication",
-      outputSpec: "9:16 short-form social video",
+      outputSpec: buildCreativeOutputSpec(creativeFormat),
       role: "director brief",
+      targetAspectRatio: creativeFormat.aspectRatio,
       timecodedBeatSheet: true,
     },
+    targetAspectRatio: creativeFormat.aspectRatio,
     viewerQuestion:
       input.viewerQuestion ||
       "Why is this workflow better than the old one?",

@@ -2,11 +2,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { requestBytes } from './network_runtime.mjs';
 import {
   runHostedCapabilityEnvelopeRequest,
   runHostedCapabilityRequest,
 } from './postplus_cloud_client.mjs';
-import { requestBytes } from './network_runtime.mjs';
+
+const TERMINAL_HOSTED_MEDIA_STATUSES = new Set(['completed', 'failed']);
 
 export async function requestHostedMediaGenerationJson(
   endpointKey,
@@ -39,7 +41,7 @@ export async function requestHostedMediaGenerationJson(
     input: parsedBody ?? {},
     requestDimensions,
   });
-  const finalResult = await waitForHostedMediaGenerationResult(result);
+  const finalResult = await resolveHostedMediaGenerationResult(result);
 
   return {
     billing: finalResult.billing,
@@ -51,6 +53,18 @@ export async function requestHostedMediaGenerationJson(
       status: 200,
     },
   };
+}
+
+export function isHostedMediaGenerationPendingResult(value) {
+  const payload = unwrapProviderPayload(value);
+  const status =
+    typeof payload?.status === 'string' ? payload.status.toLowerCase() : null;
+
+  return Boolean(
+    status &&
+      !TERMINAL_HOSTED_MEDIA_STATUSES.has(status) &&
+      readPendingRunHandle(value),
+  );
 }
 
 export async function requestHostedMediaGenerationStatus(handle) {
@@ -78,12 +92,12 @@ export async function requestHostedMediaGenerationStatus(handle) {
   };
 }
 
-async function waitForHostedMediaGenerationResult(initialResult) {
+async function resolveHostedMediaGenerationResult(initialResult) {
   let current = initialResult;
   let handle = readPendingRunHandle(current.output);
   const timeoutMs = readNonNegativeIntegerEnv(
     'POSTPLUS_HOSTED_MEDIA_POLL_TIMEOUT_MS',
-    5 * 60 * 1_000,
+    0,
   );
   const intervalMs = readNonNegativeIntegerEnv(
     'POSTPLUS_HOSTED_MEDIA_POLL_INTERVAL_MS',
@@ -91,9 +105,11 @@ async function waitForHostedMediaGenerationResult(initialResult) {
   );
   const maxAttempts = readNonNegativeIntegerEnv(
     'POSTPLUS_HOSTED_MEDIA_POLL_ATTEMPTS',
-    intervalMs > 0 ? Math.max(1, Math.ceil(timeoutMs / intervalMs)) : 1,
+    timeoutMs > 0 && intervalMs > 0
+      ? Math.max(1, Math.ceil(timeoutMs / intervalMs))
+      : 0,
   );
-  const deadline = Date.now() + timeoutMs;
+  const deadline = timeoutMs > 0 ? Date.now() + timeoutMs : Date.now();
   let attempts = 0;
 
   while (handle && attempts < maxAttempts && Date.now() <= deadline) {
@@ -108,12 +124,6 @@ async function waitForHostedMediaGenerationResult(initialResult) {
       handle,
     });
     handle = readPendingRunHandle(current.output);
-  }
-
-  if (handle) {
-    throw new Error(
-      `Hosted media generation run ${handle} is still processing after ${attempts} status poll attempt(s).`,
-    );
   }
 
   return current;
@@ -234,7 +244,9 @@ export async function uploadHostedMediaFileReference(
   const stat = fs.statSync(absolutePath);
 
   if (!stat.isFile()) {
-    throw new Error(`Hosted media upload source is not a file: ${absolutePath}`);
+    throw new Error(
+      `Hosted media upload source is not a file: ${absolutePath}`,
+    );
   }
 
   const fileBuffer = fs.readFileSync(absolutePath);

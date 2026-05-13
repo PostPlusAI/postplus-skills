@@ -17,7 +17,7 @@ import {
 
 function usage() {
   console.error(
-    'Usage: node collect_top_video_comments.mjs --input <dataset.json> --output <comments.json> [--collection-key tiktok-comments] [--top 8] [--max-comments 40]',
+    'Usage: node collect_top_video_comments.mjs --input <dataset-envelope.json> --output <comments.json> [--collection-key tiktok-comments] [--top 8] [--max-comments 40]',
   );
 }
 
