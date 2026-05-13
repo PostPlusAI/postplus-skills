@@ -37,6 +37,16 @@ Default quality assumption:
 
 The selected resolution should always be persisted in the request and manifest.
 
+## Creative Format Rule
+
+Default to the PostPlus short-form vertical creative format with a `9:16`
+target aspect ratio.
+
+For Instagram Meta Ads production, set `creativeFormat: "instagram_meta_ads"`
+or an explicit `aspectRatio: "3:4"` in the normalized render request. The
+runner must preserve that selected target ratio into the request record,
+manifest, and supported generative video payloads.
+
 ## Core Idea
 
 The video layer should be organized around render objects, not around one provider endpoint.
@@ -159,6 +169,8 @@ Should include:
 - `voiceTakeId`
 - `imageAssetId`
 - `assetPurpose`
+- `creativeFormat`
+- `targetAspectRatio`
 - `provider`
 - `model`
 - `status`
@@ -230,6 +242,7 @@ The local request JSON should contain stable fields even if provider fields chan
 At minimum record:
 
 - provider route
+- PostPlus creative format
 - model
 - prompt or prompt plan
 - media refs used by the route
@@ -314,6 +327,11 @@ For Seedance, the same `generate_video_from_image_audio` script is used as the n
 
 The normalized request and manifest shapes live in [`references/tool-contracts.md`](references/tool-contracts.md).
 
+If a render is still pending, do not block the user's conversation just to
+poll. Save the checkpoint, tell the user the render is running, and continue
+independent QA planning, segment planning, caption prep, or handoff prep until
+the render is needed.
+
 ## Review Rule
 
 Before calling a video provider, verify:
@@ -368,6 +386,11 @@ The adapter accepts `promptPlan` and turns it into a timeline-first prompt in th
 
 This is a better default than freehand adjective stacks.
 
+The prompt plan may describe framing in natural language, but the selected
+PostPlus creative format must also be present in the normalized request as
+`creativeFormat` or `aspectRatio`. Do not rely on prompt wording alone to carry
+`3:4` Instagram Meta Ads output.
+
 Do not represent `promptPlan.motion` as provider-native motion control. If the
 user asks for motion brush, object trajectory, camera trajectory, or
 camera-control parameters, stop and say the current implementation only exposes
@@ -378,7 +401,22 @@ reference-motion transfer through `video-kling-v2-6-pro-motion-control`.
 - `scripts/generate_video_from_image_audio.mjs`
 - `scripts/poll_prediction.mjs`
 
-These scripts take normalized request JSON files and write:
+These scripts are hosted media entrypoints. The file passed to `--request`
+must be a hosted execution envelope:
+
+```json
+{
+  "schemaVersion": 1,
+  "input": {
+    "...": "normalized video request"
+  }
+}
+```
+
+The normalized video request is the envelope's `input` value. Bare normalized
+request JSON is not an executable script input.
+
+These scripts write:
 
 - `request.json`
 - `response.json`

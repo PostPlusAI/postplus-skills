@@ -75,6 +75,9 @@ Reference contracts:
   `.postplus/`
 - use `scripts/build_instagram_actor_input.mjs` or a small real input file
   before the expensive collection step
+- wrap any compiled actor input in a `schemaVersion: 1` hosted execution
+  envelope before passing it to `scripts/run_instagram_actor.mjs`; the builder's
+  raw actor-input output is not an executable runner input
 - start with a bounded first pass before broadening the crawl
 - use PostPlus-supported scripts plus the shared collection runner only; do not switch to
   ad hoc shell glue

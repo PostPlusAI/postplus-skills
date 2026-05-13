@@ -14,10 +14,13 @@ Input:
 ```json
 {
   "collectionKey": "instagram-profiles",
-  "inputPath": "tmp/input.json",
+  "inputPath": "tmp/envelope.json",
   "outputPath": "tmp/raw.json"
 }
 ```
+
+`inputPath` must point to a `schemaVersion: 1` hosted execution envelope. The
+compiled Instagram actor input belongs under the envelope's `input` field.
 
 Output:
 
@@ -35,6 +38,8 @@ Output:
 Purpose:
 
 - compile a brief-shaped discovery or enrichment request into hosted collection input JSON
+- produce a domain actor input that must be wrapped in the hosted execution
+  envelope before use as `run_instagram_actor` input
 
 Input:
 

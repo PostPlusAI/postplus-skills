@@ -247,14 +247,35 @@ See [`references/tool-contracts.md`](references/tool-contracts.md).
 
 - `scripts/design_voice.mjs`
 - `scripts/clone_voice_take.mjs`
+- `scripts/poll_clone_voice.mjs`
 
-These scripts take normalized request JSON files and write:
+These scripts are hosted media entrypoints. The file passed to `--request`
+must be a hosted execution envelope:
+
+```json
+{
+  "schemaVersion": 1,
+  "input": {
+    "...": "normalized voice request"
+  }
+}
+```
+
+The normalized voice request is the envelope's `input` value. Bare normalized
+request JSON is not an executable script input.
+
+These scripts write:
 
 - `request.json`
 - `response.json`
 - `manifest.json`
 - `review.json`
 - downloaded audio under `audio/`
+
+If a voice job is still pending, do not block the user's conversation just to
+poll. Save the checkpoint, tell the user the voice job is running, and continue
+independent script cleanup, review rubric, or downstream prep until the audio is
+needed.
 
 ## Current Provider Direction
 
@@ -312,14 +333,14 @@ When reviewing cloned voice output, also check:
 
 ## Example Commands
 
-Design an initial persona-aligned voice:
+Design an initial persona-aligned voice from a hosted envelope request file:
 
 ```bash
 node ${CLAUDE_SKILL_DIR}/scripts/design_voice.mjs \
   --request /path/to/request.json
 ```
 
-Generate a new take from approved reference audio:
+Generate a new take from approved reference audio from a hosted envelope request file:
 
 ```bash
 node ${CLAUDE_SKILL_DIR}/scripts/clone_voice_take.mjs \

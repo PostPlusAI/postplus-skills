@@ -101,6 +101,13 @@ async function assertPythonPillowAvailable() {
     proc.stderr.on('data', (data) => {
       stderr += data.toString();
     });
+    proc.on('error', (error) => {
+      reject(
+        new Error(
+          `Failed to start python3 for slideshow text compositing: ${error.message}`,
+        ),
+      );
+    });
     proc.on('close', (code) => {
       if (code === 0) {
         resolve();
@@ -137,6 +144,7 @@ async function compositeWithPil(inputPath, outputPath, opts) {
 
   const script = `
 import sys
+import os
 from PIL import Image, ImageDraw, ImageFont
 
 img = Image.open(${JSON.stringify(inputPath)}).convert("RGBA")
@@ -152,16 +160,25 @@ stroke_color = ${JSON.stringify(ts.strokeColor)}
 stroke_width = ${ts.strokeWidth}
 position = ${JSON.stringify(ts.position)}
 
-try:
-    font = ImageFont.truetype("/System/Library/Fonts/Helvetica.ttc", font_size, index=1)
-except Exception:
-    try:
-        font = ImageFont.truetype("/System/Library/Fonts/Helvetica.ttc", font_size, index=0)
-    except Exception:
+def find_font(size):
+    candidates = [
+        "/System/Library/Fonts/Helvetica.ttc",
+        "/System/Library/Fonts/Supplemental/Arial Bold.ttf",
+        "/Library/Fonts/Arial.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+        "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
+        "C:/Windows/Fonts/arial.ttf",
+    ]
+    for path in candidates:
+        if not os.path.exists(path):
+            continue
         try:
-            font = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial Bold.ttf", font_size)
+            return ImageFont.truetype(path, size)
         except Exception:
-            font = ImageFont.load_default()
+            continue
+    return ImageFont.load_default()
+
+font = find_font(font_size)
 
 draw = ImageDraw.Draw(img)
 words = text.split()
@@ -182,7 +199,7 @@ lines = lines[:2]
 margin = int(40 * scale)
 y_start = margin
 line_heights = []
-for l in lines:
+for i, l in enumerate(lines):
     bbox = draw.textbbox((0, 0), l, font=font)
     line_heights.append(bbox[3] - bbox[1])
 total_h = sum(line_heights) + (len(lines) - 1) * int(font_size * 0.3)
@@ -203,7 +220,7 @@ for l in lines:
                 continue
             draw.text((x + dx, y + dy), l, font=font, fill=stroke_color)
     draw.text((x, y), l, font=font, fill=color)
-    y += line_heights[lines.index(l)] + line_spacing
+    y += line_heights[i] + line_spacing
 ` : `
 # No text overlay
 `}
@@ -260,6 +277,13 @@ print("OK")
 
     proc.stdout.on('data', (d) => { stdout += d.toString(); });
     proc.stderr.on('data', (d) => { stderr += d.toString(); });
+    proc.on('error', (error) => {
+      reject(
+        new Error(
+          `Failed to start python3 for slideshow text compositing: ${error.message}`,
+        ),
+      );
+    });
 
     proc.on('close', (code) => {
       if (code === 0 && stdout.includes('OK')) {

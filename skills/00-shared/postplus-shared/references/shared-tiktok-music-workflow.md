@@ -41,9 +41,12 @@ Use the existing collection runner unless a skill has a more specific script:
 ```bash
 node <installed-skills-root>/tiktok-research/scripts/collection_actor_run.mjs \
   --collection-key <collection-key> \
-  --input <input.json> \
+  --input <envelope.json> \
   --output <raw-output.json>
 ```
+
+The `--input` file must be a `schemaVersion: 1` hosted execution envelope. Put
+the compiled collection request under the envelope's `input` field.
 
 ## Output Contracts
 

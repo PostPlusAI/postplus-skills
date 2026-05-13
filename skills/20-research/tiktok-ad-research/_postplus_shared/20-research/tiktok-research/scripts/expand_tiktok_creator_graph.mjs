@@ -17,7 +17,7 @@ import {
 
 function usage() {
   console.error(
-    'Usage: node expand_tiktok_creator_graph.mjs --input <normalized-videos.json> --output <raw.json> [--collection-key tiktok-related-videos] [--top 10] [--results-per-seed 6]',
+    'Usage: node expand_tiktok_creator_graph.mjs --input <normalized-videos-envelope.json> --output <raw.json> [--collection-key tiktok-related-videos] [--top 10] [--results-per-seed 6]',
   );
 }
 

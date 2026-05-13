@@ -25,6 +25,21 @@ artifacts, or a compile step before provider execution.
 - If a supported script returns a stable proxy, DNS, network, or
   infrastructure error, stop immediately and report that failure directly.
 
+## Async Provider Task Rule
+
+- When a supported script returns `pending`, `processing`, `generationHandle`,
+  `runHandle`, `providerUrls.get`, or a `collection-report.json`, treat that as
+  a real resumable checkpoint.
+- Do not block the user's conversation by looping on provider polling when the
+  next useful action does not depend on the finished artifact.
+- Tell the user the job is still running, name the durable checkpoint in
+  business terms, and continue with independent planning, review, or prep work
+  when useful.
+- Poll again only when the next step truly needs the finished result or when
+  the user explicitly asks to wait for completion.
+- If there is no useful parallel work, run one bounded poll pass, report the
+  current status, and keep the resume command or checkpoint available.
+
 ## Work Folder Rule
 
 - Temporary request files, actor-input files, raw datasets, index files, and
@@ -41,6 +56,27 @@ artifacts, or a compile step before provider execution.
   argument, provide a real file path.
 - If the input must be synthesized first, write it as a real file under
   `.postplus/` instead of passing inline JSON text.
+
+## Hosted Execution Envelope Rule
+
+- Hosted, billing, and side-effecting script entrypoints must receive a
+  `schemaVersion: 1` execution envelope in the file passed to `--input`,
+  `--request`, or the equivalent script flag.
+- The skill-specific normalized/domain request is the value of the envelope's
+  `input` field. Do not pass the bare normalized request object as the final
+  executable file for hosted entrypoints.
+- Minimum executable hosted input:
+
+```json
+{
+  "schemaVersion": 1,
+  "input": {}
+}
+```
+
+- When quote confirmation or hosted operation resume is needed, keep those
+  shared execution fields at the envelope level, not inside the skill-specific
+  `input` object.
 
 ## Conversation Media Rule
 

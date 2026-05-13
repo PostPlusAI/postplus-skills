@@ -33,18 +33,20 @@ Use `enableTimestamps=true` by default when the result will drive subtitles or e
 
 ## Poll Behavior
 
-Hosted video transcription is asynchronous. The script polls the prediction result URL
-until status is `completed` or `failed`. Default poll window: **150 attempts × 2 s = 5 minutes**.
+Hosted video transcription is asynchronous. `transcribe_video.mjs` submits the
+job, persists the provider response, and returns a stable `generationHandle`
+plus `providerUrls.get` when the provider is still processing. It does not
+block locally until the provider finishes.
 
-Real speech video typically completes within 30–60 s. Silent or very short videos may
-complete in under 10 s. If a job exceeds 5 minutes, the hosted provider is likely overloaded — retry
-rather than increasing the timeout further.
+Use `audio-transcription/scripts/poll_transcription.mjs` with the same request
+file to resume the provider status check. Repeat polling until status is
+`completed` or `failed`; completed runs write the normalized transcript and
+downloaded artifacts.
 
-Before submission, the script logs a polling preflight line from
-`durationSeconds`. Video at or above 300 seconds is marked as possibly exceeding
-the current polling window. The script does not silently increase the timeout or
-switch tools; the current contract remains a 5-minute poll followed by a timeout
-failure if the provider has not completed.
+Do not block the user's conversation while the provider is still processing.
+Tell the user the transcription is running from the saved checkpoint, then
+continue any independent edit planning, subtitle planning, or downstream prep.
+Poll again when the transcript is needed or when the user asks to wait.
 
 ## Preflight Boundary
 
@@ -52,14 +54,7 @@ Before submission:
 
 - read or derive `durationSeconds` from the source video
 - include `durationSeconds` in the request JSON
-- tell the user when the source is long enough that transcription may exceed
-  the 5-minute polling window
 - run one source file first before larger batches
-
-If the request needs guaranteed processing beyond the current polling window,
-stop before submission and say that the released transcription contract does not
-guarantee that path. Do not silently increase the timeout or switch to an
-unsupported transcription tool.
 
 ## Output Contract
 
@@ -89,6 +84,8 @@ Polling support is shared with:
   downloaded subtitle artifacts under
   `<work-folder>/.postplus/video-transcription/`
 - keep only final user-facing transcript exports outside `.postplus/`
+- pass `scripts/transcribe_video.mjs` a `schemaVersion: 1` hosted execution
+  envelope whose `input` field is the video transcription request
 - start with a bounded first pass, usually one source file before larger
   batches
 - if hosted transcription capability is unavailable, unauthorized, or returns a

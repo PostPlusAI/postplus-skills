@@ -73,11 +73,11 @@ export function validateSlideshowManifest(manifest, options = {}) {
       return;
     }
 
-    if (!slide.prompt) {
+    if (typeof slide.prompt !== 'string' || !slide.prompt.trim()) {
       errors.push(`${label}.prompt is required for generated slides.`);
     }
 
-    if (slide.localImagePath) {
+    if (slide.localImagePath != null) {
       errors.push(`${label}.localImagePath must be null for generated slides.`);
     }
 
@@ -89,7 +89,11 @@ export function validateSlideshowManifest(manifest, options = {}) {
     }
 
     for (const referencePath of referenceImagePaths) {
-      if (!path.isAbsolute(referencePath)) {
+      if (typeof referencePath !== 'string') {
+        errors.push(
+          `${label}.referenceImagePaths entries must be strings: ${typeof referencePath}`,
+        );
+      } else if (!path.isAbsolute(referencePath)) {
         errors.push(`${label}.referenceImagePaths must use absolute paths: ${referencePath}`);
       } else if (checkFiles && !existsSync(referencePath)) {
         errors.push(`${label}.referenceImagePaths file does not exist: ${referencePath}`);

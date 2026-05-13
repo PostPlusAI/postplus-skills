@@ -53,13 +53,20 @@ export async function main(
     };
   }
   const plan = buildCollectionPlan(workingBrief, { supportedPlatforms });
-  const { raw } = await collectFromPlan(plan, fetchImpl, io);
+  const { raw, summary: collectionSummary } = await collectFromPlan(
+    plan,
+    fetchImpl,
+    io,
+  );
   const normalizedItems = normalizeRawPayloads(raw);
   const normalized = {
     itemCount: normalizedItems.length,
     items: normalizedItems
   };
   const summary = renderSummary(normalized);
+  const pendingPlatforms = Object.entries(collectionSummary)
+    .filter(([, value]) => value?.status === "pending")
+    .map(([platform]) => platform);
 
   writeJson(path.join(rootDir, "brief.json"), workingBrief);
   writeJson(path.join(rootDir, "plan.json"), plan);
@@ -76,6 +83,12 @@ export async function main(
   for (const [platform, payload] of Object.entries(raw)) {
     writeJson(path.join(rootDir, "raw", `${platform}.json`), payload);
   }
+  writeJson(path.join(rootDir, "collection-report.json"), {
+    requestedAt: new Date().toISOString(),
+    outputDir: rootDir,
+    pendingPlatforms,
+    summary: collectionSummary
+  });
   writeJson(path.join(rootDir, "normalized", "posts.json"), normalized);
   writeText(path.join(rootDir, "analysis", "summary.md"), summary);
 
@@ -83,7 +96,10 @@ export async function main(
     JSON.stringify(
       {
         outputDir: rootDir,
-        itemCount: normalized.itemCount
+        itemCount: normalized.itemCount,
+        pending: pendingPlatforms.length,
+        pendingPlatforms,
+        summary: collectionSummary
       },
       null,
       2

@@ -16,6 +16,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const MAX_MANIFEST_BODY_BYTES = 5 * 1024 * 1024;
 
 function parseArgs() {
   const args = process.argv.slice(2);
@@ -23,6 +24,9 @@ function parseArgs() {
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--port' && args[i + 1]) {
       result.port = parseInt(args[i + 1], 10);
+      if (!Number.isInteger(result.port) || result.port < 1 || result.port > 65535) {
+        throw new Error(`Invalid --port value: ${args[i + 1]}`);
+      }
       i++;
     } else if (args[i] === '--manifest' && args[i + 1]) {
       result.manifest = path.resolve(args[i + 1]);
@@ -103,8 +107,23 @@ async function handleApi(req, res, config) {
       return;
     }
     let body = '';
-    req.on('data', (d) => { body += d; });
+    let bodyBytes = 0;
+    let bodyRejected = false;
+    req.on('data', (chunk) => {
+      bodyBytes += chunk.length;
+      if (bodyBytes > MAX_MANIFEST_BODY_BYTES) {
+        bodyRejected = true;
+        res.writeHead(413, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Manifest payload is too large.' }));
+        req.destroy();
+        return;
+      }
+      body += chunk;
+    });
     req.on('end', async () => {
+      if (bodyRejected) {
+        return;
+      }
       try {
         const data = JSON.parse(body);
         data.updatedAt = new Date().toISOString();
@@ -122,12 +141,13 @@ async function handleApi(req, res, config) {
   // GET /api/image?path=...
   if (method === 'GET' && url.pathname === '/api/image') {
     const imagePath = url.searchParams.get('path');
-    if (!imagePath || !existsSync(imagePath)) {
+    const allowedImagePath = resolveManifestImagePath(config.manifest, imagePath);
+    if (!allowedImagePath || !existsSync(allowedImagePath)) {
       res.writeHead(404);
       res.end('Image not found');
       return;
     }
-    await serveStatic(res, imagePath);
+    await serveStatic(res, allowedImagePath);
     return;
   }
 
@@ -143,6 +163,46 @@ async function handleApi(req, res, config) {
 
   res.writeHead(404, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({ error: 'Not found' }));
+}
+
+function resolveManifestImagePath(manifestPath, imagePath) {
+  if (!manifestPath || !imagePath) {
+    return null;
+  }
+
+  const manifest = readJsonFile(manifestPath);
+  const manifestDir = path.dirname(manifestPath);
+  const requestedPath = path.resolve(manifestDir, imagePath);
+
+  return collectManifestImagePaths(manifest, manifestDir).has(requestedPath)
+    ? requestedPath
+    : null;
+}
+
+function collectManifestImagePaths(manifest, manifestDir) {
+  const allowedPaths = new Set();
+
+  if (!manifest || !Array.isArray(manifest.slides)) {
+    return allowedPaths;
+  }
+
+  for (const slide of manifest.slides) {
+    addManifestImagePath(allowedPaths, manifestDir, slide?.generatedImagePath);
+    addManifestImagePath(allowedPaths, manifestDir, slide?.localImagePath);
+    for (const referencePath of Array.isArray(slide?.referenceImagePaths)
+      ? slide.referenceImagePaths
+      : []) {
+      addManifestImagePath(allowedPaths, manifestDir, referencePath);
+    }
+  }
+
+  return allowedPaths;
+}
+
+function addManifestImagePath(allowedPaths, manifestDir, imagePath) {
+  if (typeof imagePath === 'string' && imagePath.trim()) {
+    allowedPaths.add(path.resolve(manifestDir, imagePath));
+  }
 }
 
 const config = parseArgs();

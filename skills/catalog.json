@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-1-a7a70424c96fb942",
+  "releaseId": "skills-1-af2a65423f05145b",
   "source": "PostPlusAI/postplus-skills",
   "primaryIndex": "skills/INDEX.md",
   "skills": [
@@ -741,7 +741,7 @@
           "media-generation"
         ],
         "localDependencies": [
-          "python3:pillow"
+          "python3:PIL"
         ],
         "modelKeys": [],
         "sourceKeys": []

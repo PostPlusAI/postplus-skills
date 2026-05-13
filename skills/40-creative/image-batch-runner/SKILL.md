@@ -31,13 +31,20 @@ Default to GPT Image 2 across all situations unless the user explicitly override
 Default configuration:
 
 - **model**: `image-gpt-image-2-text` (or `image-gpt-image-2-edit` for edits)
+- **PostPlus creative format**: `short_form_vertical`
 - **aspect ratio**: `9:16` (portrait, short-form video standard)
 - **quality**: `medium`
 - **resolution**: `1K`
+- **execution**: async (`enableSyncMode: false`)
 
-This applies to all asset purposes: persona candidates, cover frames, shot support, and edit fixes. The 9:16 medium 1K default balances visual quality with cost and latency for short-form video production. Do not deviate from this default unless the user explicitly requests a different model, ratio, quality tier, or resolution.
+This applies to all asset purposes: persona candidates, cover frames, shot support, and edit fixes. The 9:16 medium 1K async default balances visual quality with cost and latency for short-form video production. Do not deviate from this default unless the user explicitly requests a different model, ratio, quality tier, resolution, or sync execution.
 
 Capture the chosen quality settings in the local request record so later QA can trace realism issues back to generation parameters.
+
+For Instagram Meta Ads production, set the PostPlus creative format to
+`instagram_meta_ads`. That format carries `aspectRatio: "3:4"` through the
+normalized image request instead of asking the user to hand-edit provider
+prompts.
 
 ## Fact Rule
 
@@ -96,7 +103,22 @@ If you need image and video outputs to live under one durable asset folder inste
 - `scripts/upload_media.mjs`
 - `scripts/edit_image.mjs`
 
-These scripts take normalized request JSON files and write:
+These scripts are hosted media entrypoints. The file passed to `--request`
+must be a hosted execution envelope:
+
+```json
+{
+  "schemaVersion": 1,
+  "input": {
+    "...": "normalized image request"
+  }
+}
+```
+
+The normalized image request is the envelope's `input` value. Bare normalized
+request JSON is not an executable script input.
+
+These scripts write:
 
 - run metadata under `runs/image/<run-id>/` or `runs/upload/<run-id>/`
 - downloaded image assets under `images/candidates/`
@@ -122,6 +144,8 @@ Before generating any image, write down:
 - `campaignId`
 - `personaId`
 - `conceptId` if relevant
+- `creativeFormat`
+- `targetAspectRatio`
 - `assetPurpose`
   - `persona_candidate`
   - `cover_frame`
@@ -140,6 +164,7 @@ For each generation job, create a local JSON request record containing:
 
 - asset id
 - run id
+- PostPlus creative format
 - prompt
 - negative prompt if supported upstream
 - model name
@@ -152,7 +177,13 @@ For each generation job, create a local JSON request record containing:
 
 When the provider exposes multiple quality tiers or resolutions, default to the configured default (GPT Image 2, 9:16, medium, 1K) unless the job is explicitly a cheap draft or the user requests different settings.
 
+If the request is for Instagram Meta Ads, use
+`creativeFormat: "instagram_meta_ads"` or `aspectRatio: "3:4"` in the
+normalized request. Do not bury that decision only inside the prompt text.
+
 This request record is the stable local truth even if provider parameters evolve.
+When executing a hosted image script, place this normalized request under the
+hosted envelope's `input` field.
 
 ### 3. Call the provider and save raw response
 
@@ -175,6 +206,11 @@ Current first-version execution path:
 2. `poll_prediction` if a high-quality or async image job returns before outputs are ready
 3. `upload_media` if an edit job starts from a local file
 4. `edit_image` using uploaded URLs
+
+If a generation is still pending, do not block the user's conversation just to
+poll. Save the checkpoint, tell the user the image job is running, and continue
+independent prompt review, QA rubric, or downstream prep until the asset is
+needed.
 
 ### 4. Normalize local outputs
 
@@ -265,8 +301,11 @@ For the current hosted integration:
 Model selection rule:
 
 - set `request.model` to one of the hosted image endpoint keys above
-- **default is `image-gpt-image-2-text`** (9:16, medium, 1K)
+- **default is `image-gpt-image-2-text`** with PostPlus `short_form_vertical`
+  format (9:16, medium, 1K)
 - for edits, default is `image-gpt-image-2-edit` (same ratio/quality/resolution defaults)
+- for Instagram Meta Ads creative production, set PostPlus
+  `instagram_meta_ads` format so the request carries 3:4 explicitly
 - only switch away from GPT Image 2 when the user explicitly requests a different model for a specific reason (cost, consistency, or provider constraint)
 - use Seedream sequential variants when cross-shot identity consistency matters more than single-image iteration speed
 - for Seedream models, prefer explicit `size`
@@ -304,7 +343,7 @@ Do not compensate for missing strategic inputs by inventing a style.
 
 ## Example Commands
 
-Generate from a normalized request file:
+Generate from a hosted envelope request file:
 
 ```bash
 node ${CLAUDE_SKILL_DIR}/scripts/generate_image.mjs \
@@ -318,14 +357,14 @@ node ${CLAUDE_SKILL_DIR}/scripts/poll_prediction.mjs \
   --request /path/to/request.json
 ```
 
-Upload a local file for later edit:
+Upload a local file for later edit from a hosted envelope request file:
 
 ```bash
 node ${CLAUDE_SKILL_DIR}/scripts/upload_media.mjs \
   --request /path/to/upload-request.json
 ```
 
-Run an edit job using uploaded URLs:
+Run an edit job using uploaded URLs from a hosted envelope request file:
 
 ```bash
 node ${CLAUDE_SKILL_DIR}/scripts/edit_image.mjs \

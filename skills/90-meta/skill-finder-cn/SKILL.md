@@ -37,7 +37,7 @@ the local PostPlus CLI catalog:
 
 - `postplus list`
 - `npx -y skills add PostPlusAI/postplus-skills --global --list`
-- `npx -y skills add PostPlusAI/postplus-skills --global --full-depth --skill '*' --agent claude-code codex cursor github-copilot windsurf trae trae-cn --yes`
+- `npx -y skills add PostPlusAI/postplus-skills --global --full-depth --skill '*' --agent claude-code codex cursor github-copilot windsurf trae trae-cn openclaw hermes-agent --yes`
 
 If the current released surface does not contain a suitable skill, say that directly.
 Do not route from private `candidate` or `shelved` authoring skills.
@@ -51,7 +51,7 @@ Do not route from private `candidate` or `shelved` authoring skills.
 5. hand the user the official install path:
    - `npm install -g @postplus/cli@latest`
    - `postplus auth login`
-   - `npx -y skills add PostPlusAI/postplus-skills --global --full-depth --skill '*' --agent claude-code codex cursor github-copilot windsurf trae trae-cn --yes`
+   - `npx -y skills add PostPlusAI/postplus-skills --global --full-depth --skill '*' --agent claude-code codex cursor github-copilot windsurf trae trae-cn openclaw hermes-agent --yes`
 
 ## Recommendation Rules
 
@@ -82,7 +82,7 @@ Good response shape:
 2. if the user only wants installation guidance, point to:
    - `npm install -g @postplus/cli@latest`
    - `postplus auth login`
-   - `npx -y skills add PostPlusAI/postplus-skills --global --full-depth --skill '*' --agent claude-code codex cursor github-copilot windsurf trae trae-cn --yes`
+   - `npx -y skills add PostPlusAI/postplus-skills --global --full-depth --skill '*' --agent claude-code codex cursor github-copilot windsurf trae trae-cn openclaw hermes-agent --yes`
 
 If the user asks:
 
