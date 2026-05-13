@@ -38,6 +38,11 @@ If a lower setting is used, record that decision explicitly in the request recor
 
 ## Known Request Shapes
 
+These are provider-side request fields inside the normalized image domain
+request. They are not the final executable `--request` file shape; hosted image
+scripts still require the `schemaVersion: 1` execution envelope described in
+`tool-contracts.md`.
+
 ### Text To Image
 
 Required:
@@ -104,6 +109,8 @@ Interpretation for first-version adapter design:
 Even if the PostPlus Cloud service evolves, the local request record should keep
 these normalized camelCase fields when available:
 
+- `creativeFormat`
+- `targetAspectRatio`
 - `prompt`
 - `aspectRatio`
 - `resolution`
@@ -118,5 +125,10 @@ these normalized camelCase fields when available:
 
 The adapter maps local camelCase fields to hosted provider snake_case fields at
 execution time.
+
+PostPlus creative format mapping should happen before provider execution:
+
+- `short_form_vertical` maps to `aspectRatio: "9:16"`.
+- `instagram_meta_ads` maps to `aspectRatio: "3:4"`.
 
 Do not make the whole workflow depend on one provider-specific response field.

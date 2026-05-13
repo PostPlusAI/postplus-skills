@@ -11,6 +11,9 @@ import {
   readDomainSkillExecutionInput,
   readHostedSkillExecutionInput,
 } from '../../../00-core/shared-runtime/scripts/lib/hosted_execution_protocol.mjs';
+import {
+  resolveCreativeFormat,
+} from '../../../00-core/shared-runtime/scripts/lib/creative_format.mjs';
 
 export const ARK_API_BASE = 'https://ark.cn-beijing.volces.com/api/v3';
 export const DEFAULT_PROVIDER = 'hosted-media';
@@ -284,12 +287,12 @@ async function resolveProviderMediaInput(value, paths) {
 
   const candidatePath = path.resolve(trimmed);
   if (!fs.existsSync(candidatePath)) {
-    return trimmed;
+    throw new Error(`Local media file does not exist: ${candidatePath}`);
   }
 
   const stat = fs.statSync(candidatePath);
   if (!stat.isFile()) {
-    return trimmed;
+    throw new Error(`Local media path is not a file: ${candidatePath}`);
   }
 
   return await uploadHostedMedia(candidatePath, paths);
@@ -802,6 +805,9 @@ export function normalizeRenderInput(input) {
   const model = input.model || DEFAULT_MODEL;
   const hostedModelConfig =
     provider === 'hosted-media' ? getHostedVideoModelConfig(model) : null;
+  const creativeFormat = resolveCreativeFormat(input);
+  const modelSupportsAspectRatio =
+    provider === 'ark' || hostedModelConfig?.supportsAspectRatio === true;
   const prompt = buildSeedancePromptFromPlan(
     input.promptPlan,
     input.prompt || input.text || null,
@@ -827,6 +833,9 @@ export function normalizeRenderInput(input) {
   const normalized = {
     provider,
     model,
+    creativeFormat: creativeFormat.id,
+    creativeFormatLabel: creativeFormat.label,
+    targetAspectRatio: creativeFormat.aspectRatio,
     jobId: input.jobId,
     campaignId: input.campaignId || null,
     personaId: input.personaId || null,
@@ -845,7 +854,7 @@ export function normalizeRenderInput(input) {
     resolution: input.resolution || DEFAULT_RESOLUTION,
     characterOrientation:
       input.characterOrientation || input.character_orientation || null,
-    ratio: input.ratio || input.aspect_ratio || input.aspectRatio || null,
+    ratio: modelSupportsAspectRatio ? creativeFormat.aspectRatio : null,
     duration: Number.isInteger(input.duration) ? input.duration : null,
     frames: Number.isInteger(input.frames) ? input.frames : null,
     seed: Number.isInteger(input.seed) ? input.seed : -1,
@@ -942,6 +951,9 @@ export function createRenderManifestBase(normalized, paths) {
     assetPurpose: normalized.assetPurpose,
     provider: normalized.provider,
     model: normalized.model,
+    creativeFormat: normalized.creativeFormat,
+    creativeFormatLabel: normalized.creativeFormatLabel,
+    targetAspectRatio: normalized.targetAspectRatio,
     requestPath: paths.requestPath,
     responsePath: paths.responsePath,
     createdAt: nowIso(),

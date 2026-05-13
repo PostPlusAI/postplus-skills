@@ -81,18 +81,28 @@ Workspace fit:
 ## Model Selection In Normalized Requests
 
 The public skill surface keeps one normalized request shape and maps endpoint-specific fields server-side.
+For executable hosted script calls, this normalized request is the
+`input` object inside the `schemaVersion: 1` hosted execution envelope.
 
 Shared fields:
 
 - `model`
+- `creativeFormat`
 - `prompt`
+- `aspectRatio`
 - `outputFormat`
 - `enableSyncMode`
 - `enableBase64Output`
 
+PostPlus creative format mapping:
+
+- `short_form_vertical` maps to `aspectRatio: "9:16"`.
+- `instagram_meta_ads` maps to `aspectRatio: "3:4"`.
+- an explicit `aspectRatio` or `targetAspectRatio` is allowed for custom
+  formats, but it must not conflict with a selected PostPlus creative format.
+
 Nano Banana oriented fields:
 
-- `aspectRatio`
 - `resolution`
 - `enableWebSearch`
 
@@ -103,6 +113,8 @@ Seedream oriented fields:
 
 Defaulting rule:
 
+- `enableSyncMode` defaults to `false`; hosted media generation should submit
+  async jobs and poll by prediction id when outputs are not immediately ready
 - if a Seedream request omits `size`, the adapter infers one from `aspectRatio` when possible
 - if a Nano Banana request omits `resolution`, the adapter uses the default public skill setting
 

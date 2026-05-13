@@ -83,10 +83,11 @@ Use these pieces in combination:
 
 1. classify the request into a paid-ad task shape
 2. write a small actor input JSON
-3. run the actor with a narrow scope first
-4. normalize into the local ad schema
-5. analyze repeated hooks, brands, objectives, regions, and CTA language
-6. only then turn it into a brief or recommendation
+3. wrap the actor input as a `schemaVersion: 1` hosted execution envelope
+4. run the actor with a narrow scope first
+5. normalize into the local ad schema
+6. analyze repeated hooks, brands, objectives, regions, and CTA language
+7. only then turn it into a brief or recommendation
 
 ## Example
 
@@ -95,9 +96,14 @@ Run the actor:
 ```bash
 node ${CLAUDE_SKILL_DIR}/scripts/collection_actor_run.mjs \
   --collection-key tiktok-ads-top \
-  --input ${CLAUDE_SKILL_DIR}/templates/top-ads-sample.json \
+  --input <work-folder>/.postplus/tiktok-top-ads-envelope.json \
   --output <work-folder>/.postplus/tiktok-top-ads-raw.json
 ```
+
+The `--input` file must be a `schemaVersion: 1` hosted execution envelope. Put
+the top-ads actor request under the envelope's `input` field. If starting from
+`${CLAUDE_SKILL_DIR}/templates/top-ads-sample.json`, copy that template payload
+under `input` instead of passing the template file directly.
 
 Normalize:
 

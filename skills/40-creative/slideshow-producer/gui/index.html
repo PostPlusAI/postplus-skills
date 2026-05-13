@@ -298,7 +298,8 @@ function render() {
       ? `/api/image?path=${encodeURIComponent(slide.generatedImagePath)}`
       : (slide.localImagePath ? `/api/image?path=${encodeURIComponent(slide.localImagePath)}` : null);
 
-    const statusClass = `status-${slide.status || 'pending'}`;
+    const statusText = slide.status || 'pending';
+    const statusClass = `status-${sanitizeForClass(statusText)}`;
     const isLocal = slide.imageSource === 'local';
     const generationMode = resolveGenerationMode(slide);
     slide.generationMode = generationMode;
@@ -342,7 +343,7 @@ function render() {
         </div>
         ${isLocal ? `<input type="text" class="local-path-input" data-field="localImagePath" data-idx="${idx}" value="${escapeHtml(slide.localImagePath || '')}" placeholder="/absolute/path/to/image.png">` : ''}
         <span class="mode-badge">${isLocal ? 'local' : generationMode}</span>
-        <span class="status-badge ${statusClass}">${slide.status || 'pending'}</span>
+        <span class="status-badge ${statusClass}">${escapeHtml(statusText)}</span>
       </div>
     `;
 
@@ -397,6 +398,11 @@ function render() {
 function escapeHtml(s) {
   if (!s) return '';
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function sanitizeForClass(value) {
+  const normalized = String(value || '').toLowerCase().replace(/[^a-z0-9_-]+/g, '-').replace(/^-+|-+$/g, '');
+  return normalized || 'pending';
 }
 
 function parseReferencePaths(value) {

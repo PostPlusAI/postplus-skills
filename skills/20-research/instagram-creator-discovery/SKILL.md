@@ -104,9 +104,13 @@ node ${CLAUDE_SKILL_DIR}/../instagram-tools/scripts/build_instagram_actor_input.
 ```bash
 node ${CLAUDE_SKILL_DIR}/../instagram-tools/scripts/run_instagram_actor.mjs \
   --collection-key instagram-search \
-  --input <work-folder>/.postplus/instagram-search-input.json \
+  --input <work-folder>/.postplus/instagram-search-envelope.json \
   --output <work-folder>/.postplus/instagram-search-raw.json
 ```
+
+The build step writes a bare actor input. Before this run step, wrap that actor
+input in a `schemaVersion: 1` hosted execution envelope and pass the envelope
+file to `--input`.
 
 ### 3. Normalize the dataset
 
@@ -132,7 +136,7 @@ node ${CLAUDE_SKILL_DIR}/../instagram-tools/scripts/extract_instagram_candidate_
 ```bash
 node ${CLAUDE_SKILL_DIR}/../instagram-tools/scripts/run_instagram_actor.mjs \
   --collection-key instagram-profiles \
-  --input <work-folder>/.postplus/instagram-profile-input.json \
+  --input <work-folder>/.postplus/instagram-profile-envelope.json \
   --output <work-folder>/.postplus/instagram-profiles-raw.json
 ```
 

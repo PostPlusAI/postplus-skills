@@ -169,11 +169,11 @@ Do not auto-generate. User must confirm.
 
 Local slides: copy the image into the output directory as-is.
 
-Generated slides without references: call image-batch-runner's `generate_image.mjs` per slide.
+Generated slides without references: call image-batch-runner's `generate_image.mjs` per slide with a hosted execution envelope whose `input` is the normalized image request.
 
-Generated slides with references: upload each local reference path with `upload_media.mjs`, then call `edit_image.mjs` with the uploaded URLs. Existing `referenceImageUrls` can be used directly if they are already HTTP(S) URLs.
+Generated slides with references: upload each local reference path with `upload_media.mjs`, then call `edit_image.mjs` with the uploaded URLs. Each hosted script request file must be a `schemaVersion: 1` envelope. Existing `referenceImageUrls` can be used directly if they are already HTTP(S) URLs.
 
-Save the normalized request JSON per slide so the run is reproducible.
+Save both the normalized image request and the hosted envelope request per slide so the run is reproducible.
 
 Default text-to-image request shape per slide:
 ```json

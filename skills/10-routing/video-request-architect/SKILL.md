@@ -41,6 +41,18 @@ Do not write final prompts as if the model remembers a previous segment, a
 prior request, or an earlier contract block that is not repeated in the same
 request.
 
+## Creative Format Rule
+
+Lock the PostPlus creative format before provider mapping.
+
+Default to `short_form_vertical` with target aspect ratio `9:16`. For
+Instagram Meta Ads production, use `instagram_meta_ads` with target aspect
+ratio `3:4`.
+
+The selected target ratio belongs in the provider-agnostic request architecture,
+the segment contract, and the final render request. Do not let video planning
+silently rewrite an Instagram `3:4` brief back to `9:16`.
+
 ## Method
 
 Read [`references/request-architecture.md`](references/request-architecture.md).
@@ -86,6 +98,13 @@ State what is being tested:
 
 Do not write the request as if every generation is a full ad.
 
+Also state:
+
+- PostPlus creative format
+- target aspect ratio
+- whether the output is a full-screen render or a storyboard/previsualization
+  board
+
 ### 2. Build the scene before the fields
 
 Before writing structured fields, answer these creative questions:
@@ -129,6 +148,17 @@ node skills/10-routing/video-request-architect/scripts/build_video_request_archi
   --input <brief.json> \
   --output <request-architecture.json>
 ```
+
+For Instagram Meta Ads work, include this in `<brief.json>`:
+
+```json
+{
+  "creativeFormat": "instagram_meta_ads"
+}
+```
+
+The builder will preserve `targetAspectRatio: "3:4"` in the generated request
+architecture and segment contract.
 
 For scripts above 15 seconds, `<brief.json>` must include a timecoded
 `beatSheet` with `startSeconds` and `endSeconds` for every beat. The builder
@@ -181,6 +211,8 @@ Hook logic:
 Viewer question:
 Reference policy:
 Duration:
+PostPlus creative format:
+Target aspect ratio:
 Camera grammar:
 Product policy:
 Main risks:

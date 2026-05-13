@@ -9,11 +9,10 @@ import {
   downloadProviderOutputs,
   extractTranscriptData,
   fetchJson,
-  logTranscriptionPollingPreflight,
+  logTranscriptionAsyncPreflight,
   normalizeTranscriptionInput,
   parseArgs,
-  pollPredictionResult,
-  readJson,
+  readHostedJson,
   toProviderPayload,
   unwrapProviderResult,
   writeJson,
@@ -31,11 +30,14 @@ async function main() {
     return;
   }
 
-  const request = normalizeTranscriptionInput(readJson(args.request), 'video');
+  const request = normalizeTranscriptionInput(
+    readHostedJson(args.request),
+    'video',
+  );
   const paths = buildRequestPaths(request.localOutputDir);
 
   writeJson(paths.requestPath, request);
-  logTranscriptionPollingPreflight(request);
+  logTranscriptionAsyncPreflight(request);
 
   const { data: rawResult } = await fetchJson(request.model, {
     method: 'POST',
@@ -44,12 +46,7 @@ async function main() {
 
   writeJson(paths.responsePath, rawResult);
 
-  let result = unwrapProviderResult(rawResult);
-  if (result?.status === 'created' && result?.urls?.get) {
-    const polledRawResult = await pollPredictionResult(result.urls.get);
-    writeJson(paths.responsePath, polledRawResult);
-    result = unwrapProviderResult(polledRawResult);
-  }
+  const result = unwrapProviderResult(rawResult);
   const manifest = createManifestBase(request, paths);
   manifest.generationHandle = result?.id || null;
   manifest.providerStatus = result?.status || null;

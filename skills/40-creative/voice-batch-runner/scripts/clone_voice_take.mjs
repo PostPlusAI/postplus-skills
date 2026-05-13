@@ -1,36 +1,38 @@
 #!/usr/bin/env node
+import path from 'node:path';
 
-import path from "node:path";
 import {
-  buildRequestPaths,
-  createReviewStub,
   DEFAULT_LANGUAGE,
   DEFAULT_PROVIDER,
+  buildRequestPaths,
+  createReviewStub,
   downloadFile,
   fetchJson,
   inferAudioExtension,
   nowIso,
   parseArgs,
-  pollPredictionResult,
   readHostedJson,
   readJson,
   unwrapProviderResult,
   uploadLocalMedia,
-  writeJson
-} from "./_shared.mjs";
+  writeJson,
+} from './_shared.mjs';
 
-const DEFAULT_MODEL = "voice-qwen3-clone";
+const DEFAULT_MODEL = 'voice-qwen3-clone';
 
 function usage() {
-  console.error("Usage: node clone_voice_take.mjs --request <request.json>");
+  console.error('Usage: node clone_voice_take.mjs --request <request.json>');
 }
 
 function normalizeRequest(input) {
-  if (!input?.jobId) throw new Error("request.jobId is required.");
-  if (!input?.text) throw new Error("request.text is required.");
-  if (!input?.localOutputDir) throw new Error("request.localOutputDir is required.");
+  if (!input?.jobId) throw new Error('request.jobId is required.');
+  if (!input?.text) throw new Error('request.text is required.');
+  if (!input?.localOutputDir)
+    throw new Error('request.localOutputDir is required.');
   if (!input?.referenceAudioUrl && !input?.referenceAudioPath) {
-    throw new Error("request.referenceAudioUrl or request.referenceAudioPath is required.");
+    throw new Error(
+      'request.referenceAudioUrl or request.referenceAudioPath is required.',
+    );
   }
   return {
     jobId: input.jobId,
@@ -40,7 +42,7 @@ function normalizeRequest(input) {
     voiceIdentityId: input.voiceIdentityId || null,
     provider: input.provider || DEFAULT_PROVIDER,
     model: input.model || DEFAULT_MODEL,
-    mode: input.mode || "voice_clone_take",
+    mode: input.mode || 'voice_clone_take',
     text: input.text,
     referenceAudioUrl: input.referenceAudioUrl || null,
     referenceAudioPath: input.referenceAudioPath || null,
@@ -48,7 +50,7 @@ function normalizeRequest(input) {
     language: input.language || DEFAULT_LANGUAGE,
     scriptSourcePath: input.scriptSourcePath || null,
     localOutputDir: input.localOutputDir,
-    sourceBasis: Array.isArray(input.sourceBasis) ? input.sourceBasis : []
+    sourceBasis: Array.isArray(input.sourceBasis) ? input.sourceBasis : [],
   };
 }
 
@@ -56,7 +58,7 @@ function buildProviderBody(request, referenceAudioUrl) {
   const payload = {
     audio: referenceAudioUrl,
     text: request.text,
-    language: request.language
+    language: request.language,
   };
   if (request.referenceText) {
     payload.reference_text = request.referenceText;
@@ -83,30 +85,25 @@ async function main() {
     uploadRecord = {
       uploadedUrl: uploaded.uploadedUrl,
       raw: uploaded.raw,
-      sourceLocalFilePath: path.resolve(request.referenceAudioPath)
+      sourceLocalFilePath: path.resolve(request.referenceAudioPath),
     };
     referenceAudioUrl = uploaded.uploadedUrl;
   }
 
-  const endpoint = "voice-qwen3-clone";
+  const endpoint = 'voice-qwen3-clone';
   const { data: submitData } = await fetchJson(endpoint, {
-    method: "POST",
-    body: JSON.stringify(buildProviderBody(request, referenceAudioUrl))
+    method: 'POST',
+    body: JSON.stringify(buildProviderBody(request, referenceAudioUrl)),
   });
 
-  let finalData = submitData;
-  let result = unwrapProviderResult(finalData);
-  const getUrl = result?.urls?.get || result?.id || null;
-  if (result?.status && result.status !== "completed" && getUrl) {
-    finalData = await pollPredictionResult(getUrl);
-    result = unwrapProviderResult(finalData);
-  }
+  const finalData = submitData;
+  const result = unwrapProviderResult(finalData);
 
   writeJson(paths.responsePath, finalData);
 
   const outputs = Array.isArray(result?.outputs) ? result.outputs : [];
   const firstOutput = outputs[0] || null;
-  const ext = firstOutput ? inferAudioExtension(firstOutput, "wav") : "wav";
+  const ext = firstOutput ? inferAudioExtension(firstOutput, 'wav') : 'wav';
   const audioPath = path.join(paths.audioDir, `take-001.${ext}`);
   if (firstOutput) {
     await downloadFile(firstOutput, audioPath);
@@ -133,7 +130,7 @@ async function main() {
     uploadRecord,
     createdAt: nowIso(),
     sourceBasis: request.sourceBasis,
-    reviewStatus: "pending_review"
+    reviewStatus: 'pending_review',
   };
 
   writeJson(paths.manifestPath, manifest);

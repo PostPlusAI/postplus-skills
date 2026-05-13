@@ -1,34 +1,35 @@
 #!/usr/bin/env node
+import path from 'node:path';
 
-import path from "node:path";
 import {
-  buildRequestPaths,
-  createReviewStub,
   DEFAULT_LANGUAGE,
   DEFAULT_PROVIDER,
+  buildRequestPaths,
+  createReviewStub,
   downloadFile,
   fetchJson,
   inferAudioExtension,
   nowIso,
   parseArgs,
-  pollPredictionResult,
   readHostedJson,
   readJson,
   unwrapProviderResult,
-  writeJson
-} from "./_shared.mjs";
+  writeJson,
+} from './_shared.mjs';
 
-const DEFAULT_MODEL = "voice-qwen3-design";
+const DEFAULT_MODEL = 'voice-qwen3-design';
 
 function usage() {
-  console.error("Usage: node design_voice.mjs --request <request.json>");
+  console.error('Usage: node design_voice.mjs --request <request.json>');
 }
 
 function normalizeRequest(input) {
-  if (!input?.jobId) throw new Error("request.jobId is required.");
-  if (!input?.text) throw new Error("request.text is required.");
-  if (!input?.voiceDescription) throw new Error("request.voiceDescription is required.");
-  if (!input?.localOutputDir) throw new Error("request.localOutputDir is required.");
+  if (!input?.jobId) throw new Error('request.jobId is required.');
+  if (!input?.text) throw new Error('request.text is required.');
+  if (!input?.voiceDescription)
+    throw new Error('request.voiceDescription is required.');
+  if (!input?.localOutputDir)
+    throw new Error('request.localOutputDir is required.');
   return {
     jobId: input.jobId,
     campaignId: input.campaignId || null,
@@ -36,12 +37,12 @@ function normalizeRequest(input) {
     voiceProfileId: input.voiceProfileId || null,
     provider: input.provider || DEFAULT_PROVIDER,
     model: input.model || DEFAULT_MODEL,
-    mode: input.mode || "voice_design",
+    mode: input.mode || 'voice_design',
     text: input.text,
     voiceDescription: input.voiceDescription,
     language: input.language || DEFAULT_LANGUAGE,
     localOutputDir: input.localOutputDir,
-    sourceBasis: Array.isArray(input.sourceBasis) ? input.sourceBasis : []
+    sourceBasis: Array.isArray(input.sourceBasis) ? input.sourceBasis : [],
   };
 }
 
@@ -49,7 +50,7 @@ function buildProviderBody(request) {
   return {
     text: request.text,
     voice_description: request.voiceDescription,
-    language: request.language
+    language: request.language,
   };
 }
 
@@ -65,25 +66,20 @@ async function main() {
   const paths = buildRequestPaths(request.localOutputDir);
   writeJson(paths.requestPath, request);
 
-  const endpoint = "voice-qwen3-design";
+  const endpoint = 'voice-qwen3-design';
   const { data: submitData } = await fetchJson(endpoint, {
-    method: "POST",
-    body: JSON.stringify(buildProviderBody(request))
+    method: 'POST',
+    body: JSON.stringify(buildProviderBody(request)),
   });
 
-  let finalData = submitData;
-  let result = unwrapProviderResult(finalData);
-  const getUrl = result?.urls?.get || result?.id || null;
-  if (result?.status && result.status !== "completed" && getUrl) {
-    finalData = await pollPredictionResult(getUrl);
-    result = unwrapProviderResult(finalData);
-  }
+  const finalData = submitData;
+  const result = unwrapProviderResult(finalData);
 
   writeJson(paths.responsePath, finalData);
 
   const outputs = Array.isArray(result?.outputs) ? result.outputs : [];
   const firstOutput = outputs[0] || null;
-  const ext = firstOutput ? inferAudioExtension(firstOutput, "wav") : "wav";
+  const ext = firstOutput ? inferAudioExtension(firstOutput, 'wav') : 'wav';
   const audioPath = path.join(paths.audioDir, `take-001.${ext}`);
   if (firstOutput) {
     await downloadFile(firstOutput, audioPath);
@@ -107,7 +103,7 @@ async function main() {
     providerUrls: result?.urls || null,
     createdAt: nowIso(),
     sourceBasis: request.sourceBasis,
-    reviewStatus: "pending_review"
+    reviewStatus: 'pending_review',
   };
 
   writeJson(paths.manifestPath, manifest);

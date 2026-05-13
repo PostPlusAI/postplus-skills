@@ -219,6 +219,9 @@ function inferSourceSurface(sourceId, input, item) {
   if (actor.includes("user-search")) return "search";
   if (actor.includes("hashtag")) return "hashtag";
 
+  if (toArray(input?.keywords).length || toArray(input?.searchQueries).length || toArray(input?.search).length) {
+    return "search";
+  }
   if (pickFirst(item, ["searchKeyword", "searchTerm", "keyword"])) return "search";
   if (pickFirst(item, ["hashtags", "challengeInfoList"])) return "hashtag";
   if (rawUrl?.includes("/tag/")) return "hashtag";
@@ -228,9 +231,6 @@ function inferSourceSurface(sourceId, input, item) {
   if (startUrls.some((url) => url.includes("/music/"))) return "music";
   if (startUrls.some((url) => url.includes("/video/"))) return "video";
   if (startUrls.some((url) => url.includes("/@"))) return "profile";
-  if (toArray(input?.keywords).length || toArray(input?.searchQueries).length || toArray(input?.search).length) {
-    return "search";
-  }
   return "unknown";
 }
 

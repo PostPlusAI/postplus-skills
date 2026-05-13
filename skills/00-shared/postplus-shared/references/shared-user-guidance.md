@@ -47,6 +47,23 @@ Do not promise hosted, provider, file-reference, account-connection, or
 publishing behavior unless the current skill contract and registry release
 requirements already support that path.
 
+## Async Task Copy
+
+When a long-running skill returns a pending generation, transcription, or
+collection checkpoint, tell the user two things in plain language:
+
+- the job is running and can be checked again from the saved checkpoint
+- the conversation does not need to pause while the provider finishes
+
+Good shapes:
+
+- "The render is running now. I saved the checkpoint, so I can keep preparing the QA checklist and check the render again when we need it."
+- "The collection is still processing. I can continue outlining the summary structure now, then poll the saved report before filling in metrics."
+
+Do not keep the chat idle just to poll. Poll immediately only when the user's
+next requested step depends on the completed artifact or the user explicitly
+asked to wait.
+
 ## Technical Boundary Orientation
 
 Before an expensive collection, media generation, transcription, publishing, or

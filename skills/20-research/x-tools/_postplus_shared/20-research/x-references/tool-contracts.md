@@ -13,11 +13,14 @@ Input:
 
 ```json
 {
-  "collectionPath": "tweet-scraper",
-  "inputPath": "tmp/input.json",
+  "collectionKey": "x-posts",
+  "inputPath": "tmp/envelope.json",
   "outputPath": "tmp/raw.json"
 }
 ```
+
+`inputPath` must point to a `schemaVersion: 1` hosted execution envelope. The
+compiled X collection request belongs under the envelope's `input` field.
 
 Output:
 

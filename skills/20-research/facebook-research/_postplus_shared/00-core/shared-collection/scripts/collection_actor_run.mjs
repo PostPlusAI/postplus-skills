@@ -47,7 +47,7 @@ export function writeJson(filePath, value) {
 
 function usage(commandName = 'collection_actor_run.mjs') {
   console.error(
-    `Usage: node ${commandName} --collection-key <collection-key> --input <input.json> [--output <output.json>] [--skill-name <skill-id>] [--hosted-operation-id <operation-id>] [--quote-confirmation-token <token>]\n       node ${commandName} --run-handle <handle> [--output <output.json>] [--skill-name <skill-id>]`,
+    `Usage: node ${commandName} --collection-key <collection-key> --input <envelope.json> [--output <output.json>] [--skill-name <skill-id>] [--hosted-operation-id <operation-id>] [--quote-confirmation-token <token>]\n       node ${commandName} --run-handle <handle> [--output <output.json>] [--skill-name <skill-id>]`,
   );
 }
 

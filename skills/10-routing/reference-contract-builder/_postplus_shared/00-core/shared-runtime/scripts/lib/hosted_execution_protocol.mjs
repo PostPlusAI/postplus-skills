@@ -8,6 +8,7 @@ const PRODUCT_ERROR_CODE = 'postplus_cli_quote_confirmation_required';
 const HOSTED_EXECUTION_ENVELOPE_ERROR_CODE =
   'postplus_hosted_skill_execution_envelope_required';
 const TOKEN_PLACEHOLDER = '<token-from-postplus-quote-confirm-json>';
+const TOKEN_JSON_FIELD = 'token';
 let envelopeQuoteConfirmationToken = null;
 let envelopeHostedOperationId = null;
 
@@ -234,20 +235,36 @@ export function createQuoteConfirmationRequiredError(error, options = {}) {
       hostedOperationId: challenge.operationId,
       tokenPlaceholder: TOKEN_PLACEHOLDER,
     });
+  const agentAction = {
+    schemaVersion: HOSTED_SKILL_EXECUTION_SCHEMA_VERSION,
+    type: 'postplus_quote_confirmation',
+    confirmationCommand: confirmCommand,
+    confirmationTokenJsonField: TOKEN_JSON_FIELD,
+    quoteConfirmationTokenPlaceholder: TOKEN_PLACEHOLDER,
+    retryCommandTemplate: retryCommand,
+  };
 
   return createHardError(
     PRODUCT_ERROR_CODE,
     [
-      'PostPlus Cloud requires explicit quote confirmation before this hosted request can continue.',
-      `Confirm the charge with: ${confirmCommand}`,
-      `Retry with: ${retryCommand}`,
+      'PostPlus Cloud requires user-confirmed quote confirmation before this hosted request can continue.',
+      `Agent confirmation command: ${confirmCommand}`,
+      `Agent retry command: ${retryCommand}`,
+      [
+        `Agent retry token: read JSON field "${TOKEN_JSON_FIELD}"`,
+        'from the confirmation command output and replace',
+        `${TOKEN_PLACEHOLDER}.`,
+      ].join(' '),
     ].join('\n'),
     error,
     {
+      agentAction,
       confirmationCommand: confirmCommand,
+      confirmationTokenJsonField: TOKEN_JSON_FIELD,
       productErrorCode: PRODUCT_ERROR_CODE,
       quoteConfirmation: challenge,
       quoteConfirmationChallengeFile: challengeFilePath,
+      quoteConfirmationTokenPlaceholder: TOKEN_PLACEHOLDER,
       retryCommand,
       schemaVersion: HOSTED_SKILL_EXECUTION_SCHEMA_VERSION,
       status: typeof error.status === 'number' ? error.status : 402,

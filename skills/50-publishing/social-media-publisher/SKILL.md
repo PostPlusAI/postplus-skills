@@ -79,7 +79,8 @@ Release workflow rules:
 3. User authorizes their social account via the platform OAuth screen.
 4. Product labels the new channel integration with the user's account id.
 5. List integrations to confirm the exact integration id for the user's channel.
-6. Build the local request JSON.
+6. Build the local request JSON as a `schemaVersion: 1` hosted execution
+   envelope; place the social publishing request under `input`.
 7. Run `create_post.mjs` without `--execute` to produce an approval artifact.
 8. After approval, re-run `create_post.mjs --execute --approval-file ...`.
 9. If the post should stay reviewable, keep it in `draft`.
@@ -107,7 +108,7 @@ Release workflow rules:
 
 ## Command examples
 
-Prepare a publish request preview:
+Prepare a publish request preview from a hosted envelope request file:
 
 ```bash
 node skills/50-publishing/social-media-publisher/scripts/create_post.mjs \
@@ -116,7 +117,7 @@ node skills/50-publishing/social-media-publisher/scripts/create_post.mjs \
   --output "<create-post.preview.json>"
 ```
 
-Execute the approved create:
+Execute the approved create from the same hosted envelope request file:
 
 ```bash
 node skills/50-publishing/social-media-publisher/scripts/create_post.mjs \
