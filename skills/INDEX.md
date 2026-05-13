@@ -109,6 +109,8 @@ Transcription, video analysis, B-roll planning, prompt architecture, generation,
   - Path: `skills/40-creative/editing-decision-engine/SKILL.md`
 - `benchmark-to-brief`
   - Path: `skills/40-creative/benchmark-to-brief/SKILL.md`
+- `narrative-design`
+  - Path: `skills/40-creative/narrative-design/SKILL.md`
 - `persona-pack`
   - Path: `skills/40-creative/persona-pack/SKILL.md`
 - `visual-hook`

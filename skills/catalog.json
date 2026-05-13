@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-1-85f21c65f477d0ac",
+  "releaseId": "skills-1-a7a70424c96fb942",
   "source": "PostPlusAI/postplus-skills",
   "primaryIndex": "skills/INDEX.md",
   "skills": [
@@ -523,6 +523,23 @@
         "sourceKeys": []
       },
       "status": "released/router",
+      "supportedModels": []
+    },
+    {
+      "familyId": "media-production",
+      "familyName": "Media and Creative Production",
+      "name": "narrative-design",
+      "path": "skills/40-creative/narrative-design/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [],
+        "hostedCapabilities": [],
+        "localDependencies": [],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released",
       "supportedModels": []
     },
     {
