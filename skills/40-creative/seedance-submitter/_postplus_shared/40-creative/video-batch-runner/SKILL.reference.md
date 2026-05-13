@@ -354,17 +354,17 @@ Do not compensate for missing upstream approvals by letting the render model imp
 
 For Seedance 2.0 work, prefer a structured prompt plan over a single dense paragraph.
 
-The adapter accepts `promptPlan` and turns it into one compact prompt string in this order:
+The adapter accepts `promptPlan` and turns it into a timeline-first prompt in this order:
 
-- subject + action
-- scene / environment
+- subject
+- storyboard timeline
+- scene / environment / style
 - camera / shot / motion
-- visual style / realism target
 - sound intent
 - continuity constraints
 - must-keep
 - must-avoid
-- reference bindings such as `[image 1]...，[image 2]...`
+- reference bindings such as `[image 1]...，[audio 1]...，[video 1]...`
 
 This is a better default than freehand adjective stacks.
 

@@ -105,7 +105,7 @@ export function readPostPlusCliConfig() {
   }
 }
 
-function writePostPlusCliConfig(config) {
+export function writePostPlusCliConfig(config) {
   const configPath = getPostPlusCliConfigPath();
   fs.mkdirSync(path.dirname(configPath), { recursive: true });
   fs.writeFileSync(
@@ -120,6 +120,24 @@ function writePostPlusCliConfig(config) {
     )}\n`,
     'utf8',
   );
+}
+
+export function updatePostPlusCliConfig(updater) {
+  const currentConfig = readPostPlusCliConfig() ?? {};
+  const nextConfig = updater(currentConfig);
+
+  if (
+    !nextConfig ||
+    typeof nextConfig !== 'object' ||
+    Array.isArray(nextConfig)
+  ) {
+    throw createHardError(
+      'postplus_cli_config_invalid_update',
+      'PostPlus CLI config update must return an object.',
+    );
+  }
+
+  writePostPlusCliConfig(nextConfig);
 }
 
 export function resolvePostPlusCliSessionToken() {

@@ -4,6 +4,7 @@ import { maybeRegisterCampaignReport } from "../_postplus_shared/scripts/lib/cam
 import {
   isDirectRun,
   parseArgs,
+  readHostedJson,
   readJson,
   requireArg,
   writeText
@@ -32,7 +33,7 @@ export async function main(argv = process.argv.slice(2), io = console) {
   const resultPath = requireArg(args, "result");
   const output = requireArg(args, "output");
 
-  const request = readJson(requestPath);
+  const request = readHostedJson(requestPath);
   const resultEnvelope = readJson(resultPath);
 
   const integrationIds = request.posts.map((post) => String(post.integrationId)).join(", ");

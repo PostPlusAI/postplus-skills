@@ -7,6 +7,10 @@ import {
   requestHostedMediaGenerationJson,
   uploadHostedMediaFile,
 } from '../_postplus_shared/00-core/shared-runtime/scripts/lib/hosted_media_generation_bridge.mjs';
+import {
+  readDomainSkillExecutionInput,
+  readHostedSkillExecutionInput,
+} from '../_postplus_shared/00-core/shared-runtime/scripts/lib/hosted_execution_protocol.mjs';
 
 export const ARK_API_BASE = 'https://ark.cn-beijing.volces.com/api/v3';
 export const DEFAULT_PROVIDER = 'hosted-media';
@@ -84,7 +88,15 @@ export function parseArgs(argv) {
 }
 
 export function readJson(filePath) {
-  return JSON.parse(fs.readFileSync(path.resolve(filePath), 'utf8'));
+  return readDomainSkillExecutionInput(
+    JSON.parse(fs.readFileSync(path.resolve(filePath), 'utf8')),
+  );
+}
+
+export function readHostedJson(filePath) {
+  return readHostedSkillExecutionInput(
+    JSON.parse(fs.readFileSync(path.resolve(filePath), 'utf8')),
+  );
 }
 
 export function ensureDir(targetPath) {
@@ -303,6 +315,72 @@ function dedupeStrings(values) {
   );
 }
 
+function normalizeStoryboardTimeline(timeline) {
+  if (!timeline) {
+    return null;
+  }
+
+  if (typeof timeline === 'string') {
+    const normalized = timeline.trim();
+    return normalized || null;
+  }
+
+  if (!Array.isArray(timeline)) {
+    return null;
+  }
+
+  const lines = timeline
+    .map((entry) => {
+      if (typeof entry === 'string') {
+        return entry.trim();
+      }
+      if (!entry || typeof entry !== 'object') {
+        return '';
+      }
+
+      const time =
+        typeof entry.time === 'string' && entry.time.trim()
+          ? entry.time.trim()
+          : formatTimelineRange(entry.startSeconds, entry.endSeconds);
+      const action =
+        typeof entry.action === 'string' && entry.action.trim()
+          ? entry.action.trim()
+          : typeof entry.visual === 'string' && entry.visual.trim()
+            ? entry.visual.trim()
+            : '';
+      const dialogue =
+        typeof entry.dialogue === 'string' && entry.dialogue.trim()
+          ? entry.dialogue.trim()
+          : '';
+
+      if (!time || !action) {
+        return '';
+      }
+
+      return dialogue
+        ? `${time}: ${action} Dialogue: "${dialogue}"`
+        : `${time}: ${action}`;
+    })
+    .filter(Boolean);
+
+  return lines.length > 0 ? lines.join('\n') : null;
+}
+
+function formatTimelineRange(startSeconds, endSeconds) {
+  const hasStart = Number.isFinite(Number(startSeconds));
+  const hasEnd = Number.isFinite(Number(endSeconds));
+  if (!hasStart && !hasEnd) {
+    return '';
+  }
+  if (hasStart && hasEnd) {
+    return `${Number(startSeconds).toFixed(1)}-${Number(endSeconds).toFixed(1)}s`;
+  }
+  if (hasStart) {
+    return `${Number(startSeconds).toFixed(1)}s`;
+  }
+  return `${Number(endSeconds).toFixed(1)}s`;
+}
+
 function normalizeContentItem(item) {
   if (!item || typeof item !== 'object' || !item.type) {
     throw new Error('Each request.content item must be an object with a type.');
@@ -370,10 +448,10 @@ function buildSeedancePromptFromPlan(plan = {}, fallbackPrompt = null) {
     return fallbackPrompt || null;
   }
 
+  const storyboardTimeline = normalizeStoryboardTimeline(plan.storyboardTimeline);
   const sections = [];
   const core = dedupeStrings([
     plan.subject,
-    plan.action,
     plan.scene,
     plan.style,
     plan.mood,
@@ -382,7 +460,11 @@ function buildSeedancePromptFromPlan(plan = {}, fallbackPrompt = null) {
     plan.color,
   ]);
   if (core.length > 0) {
-    sections.push(core.join(', '));
+    sections.push(core.join(' '));
+  }
+
+  if (storyboardTimeline) {
+    sections.push(storyboardTimeline);
   }
 
   const framing = dedupeStrings([
@@ -393,7 +475,7 @@ function buildSeedancePromptFromPlan(plan = {}, fallbackPrompt = null) {
     plan.pacing,
   ]);
   if (framing.length > 0) {
-    sections.push(`Shot and pacing: ${framing.join(', ')}`);
+    sections.push(framing.join(' '));
   }
 
   const environment = dedupeStrings([
@@ -403,54 +485,87 @@ function buildSeedancePromptFromPlan(plan = {}, fallbackPrompt = null) {
     plan.composition,
   ]);
   if (environment.length > 0) {
-    sections.push(`Environment and composition: ${environment.join(', ')}`);
+    sections.push(environment.join(' '));
   }
 
   const audio = dedupeStrings([
-    plan.dialogue ? `Character dialogue: ${plan.dialogue}` : null,
     plan.audio,
     plan.music,
     plan.soundEffects,
   ]);
   if (audio.length > 0) {
-    sections.push(`Audio: ${audio.join(', ')}`);
+    sections.push(audio.join(' '));
   }
 
   const continuity = dedupeStrings(plan.continuity || []);
   if (continuity.length > 0) {
-    sections.push(`Continuity requirements: ${continuity.join(', ')}`);
+    sections.push(continuity.join(' '));
   }
 
   const keep = dedupeStrings(plan.mustKeep || []);
   if (keep.length > 0) {
-    sections.push(`Must keep: ${keep.join(', ')}`);
+    sections.push(`Keep these true: ${keep.join(' ')}`);
   }
 
   const avoid = dedupeStrings(plan.mustAvoid || []);
   if (avoid.length > 0) {
-    sections.push(`Avoid: ${avoid.join(', ')}`);
+    sections.push(`Avoid ${avoid.join(', ')}.`);
   }
 
   const referenceMap = Array.isArray(plan.referenceMap)
     ? plan.referenceMap
         .map((item, index) => {
           if (typeof item === 'string' && item.trim()) {
-            return `[image ${index + 1}] ${item.trim()}`;
+            const trimmed = item.trim();
+            if (/^\[(image|video|audio)\s+\d+\]/i.test(trimmed)) {
+              return trimmed;
+            }
+            const lower = trimmed.toLowerCase();
+            if (lower.includes('[audio ')) {
+              return trimmed;
+            }
+            if (lower.includes('[video ')) {
+              return trimmed;
+            }
+            if (lower.includes('[image ')) {
+              return trimmed;
+            }
+            return `[image ${index + 1}] ${trimmed}`;
           }
           return null;
         })
         .filter(Boolean)
     : [];
   if (referenceMap.length > 0) {
-    sections.push(`Reference bindings: ${referenceMap.join('; ')}`);
+    sections.push(referenceMap.join(' '));
   }
 
   if (typeof fallbackPrompt === 'string' && fallbackPrompt.trim()) {
     sections.unshift(fallbackPrompt.trim());
   }
 
-  const prompt = sections.join('. ').trim();
+  const prompt = sections.join('\n\n').trim();
   return prompt || null;
+}
+
+function assertNoDeprecatedPromptPlanFields(plan) {
+  if (!plan || typeof plan !== 'object') {
+    return;
+  }
+
+  const deprecated = [];
+  if (typeof plan.action === 'string' && plan.action.trim()) {
+    deprecated.push('promptPlan.action');
+  }
+  if (typeof plan.dialogue === 'string' && plan.dialogue.trim()) {
+    deprecated.push('promptPlan.dialogue');
+  }
+
+  if (deprecated.length > 0) {
+    throw new Error(
+      `video-batch-runner no longer supports ${deprecated.join(', ')} for Seedance prompt assembly. Use promptPlan.storyboardTimeline instead so action and dialogue stay on the same timeline.`,
+    );
+  }
 }
 
 function stringList(values) {
@@ -680,6 +795,8 @@ export function normalizeRenderInput(input) {
   if (!input?.localOutputDir) {
     throw new Error('request.localOutputDir is required.');
   }
+
+  assertNoDeprecatedPromptPlanFields(input.promptPlan);
 
   const provider = input.provider || DEFAULT_PROVIDER;
   const model = input.model || DEFAULT_MODEL;

@@ -1,6 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
 
+import {
+  readDomainSkillExecutionInput,
+  readHostedSkillExecutionInput,
+} from "../../../../00-core/shared-runtime/scripts/lib/hosted_execution_protocol.mjs";
+
 export const SCHEMA_VERSION = "1.0.0";
 
 export function parseArgs(argv) {
@@ -23,7 +28,15 @@ export function parseArgs(argv) {
 }
 
 export function readJson(filePath) {
-  return JSON.parse(fs.readFileSync(path.resolve(filePath), "utf8"));
+  return readDomainSkillExecutionInput(
+    JSON.parse(fs.readFileSync(path.resolve(filePath), "utf8")),
+  );
+}
+
+export function readHostedJson(filePath) {
+  return readHostedSkillExecutionInput(
+    JSON.parse(fs.readFileSync(path.resolve(filePath), "utf8")),
+  );
 }
 
 export function writeJson(filePath, value) {

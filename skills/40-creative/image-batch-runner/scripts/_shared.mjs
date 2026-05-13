@@ -8,11 +8,15 @@ import {
   requestHostedMediaGenerationJson,
   uploadHostedMediaFile,
 } from '../_postplus_shared/00-core/shared-runtime/scripts/lib/hosted_media_generation_bridge.mjs';
+import {
+  readDomainSkillExecutionInput,
+  readHostedSkillExecutionInput,
+} from '../_postplus_shared/00-core/shared-runtime/scripts/lib/hosted_execution_protocol.mjs';
 
 export const DEFAULT_PROVIDER = 'hosted-media';
-export const DEFAULT_MODEL = 'image-nano-banana-2-text';
+export const DEFAULT_MODEL = 'image-gpt-image-2-text';
 export const DEFAULT_OUTPUT_FORMAT = 'png';
-export const DEFAULT_RESOLUTION = '4k';
+export const DEFAULT_RESOLUTION = '1k';
 export const DEFAULT_ASPECT_RATIO = '9:16';
 export const DEFAULT_SEEDREAM_SIZE = '1440*2560';
 
@@ -117,7 +121,15 @@ export function parseArgs(argv) {
 }
 
 export function readJson(filePath) {
-  return JSON.parse(fs.readFileSync(path.resolve(filePath), 'utf8'));
+  return readDomainSkillExecutionInput(
+    JSON.parse(fs.readFileSync(path.resolve(filePath), 'utf8')),
+  );
+}
+
+export function readHostedJson(filePath) {
+  return readHostedSkillExecutionInput(
+    JSON.parse(fs.readFileSync(path.resolve(filePath), 'utf8')),
+  );
 }
 
 export function ensureDir(targetPath) {
@@ -302,7 +314,7 @@ export function normalizeGenerationInput(input, mode) {
     size: input.size || null,
     maxImages: Number.isInteger(input.maxImages) ? input.maxImages : null,
     outputFormat: input.outputFormat || DEFAULT_OUTPUT_FORMAT,
-    enableSyncMode: input.enableSyncMode !== false,
+    enableSyncMode: input.enableSyncMode === true,
     enableBase64Output: input.enableBase64Output === true,
     enableWebSearch: input.enableWebSearch === true,
     localAssetDir,

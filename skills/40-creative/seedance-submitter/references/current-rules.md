@@ -20,7 +20,7 @@
 
 ## Dialogue And Audio
 
-- Exact spoken copy must go in `promptPlan.dialogue`.
+- Timecoded action and exact spoken copy must live together inside `promptPlan.storyboardTimeline`.
 - Do not rely on `feedback` for spoken copy; it is local-only and not sent to the provider.
 - Do not put exact spoken copy only inside `promptPlan.audio`.
 - `promptPlan.audio` is for voice style, BGM, SFX, subtitle rules, watermark rules, and environmental sound constraints.
@@ -49,11 +49,10 @@
 ## PromptPlan Mapping
 
 - subject / main character -> `promptPlan.subject`
-- action flow -> `promptPlan.action`
+- storyboard action plus spoken lines -> `promptPlan.storyboardTimeline`
 - style -> `promptPlan.style`
 - scene, environment, lighting -> `promptPlan.scene`
 - camera, handheld feel, transition rhythm -> `promptPlan.camera`
-- exact voiceover -> `promptPlan.dialogue`
 - voice/BGM/SFX/subtitle constraints -> `promptPlan.audio`
 - must preserve -> `promptPlan.mustKeep`
 - forbidden issues -> `promptPlan.mustAvoid`
@@ -66,7 +65,7 @@
 - If an action crosses two segments, the second request must restate the needed
   character, product, scene, and action state inside its own prompt fields.
 - Shared references can be reused across segments.
-- Each segment must include only its own `promptPlan.action` and dialogue.
+- Each segment must include only its own `promptPlan.storyboardTimeline`.
 - Each segment must be independently submit-ready.
 - Each segment should still be usable as a standalone clip, not just as a middle fragment.
 - Final request text must not depend on previous-segment memory through

@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Slideshow Producer</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #fafafa;
+    --card-bg: #ffffff;
+    --border: #e5e5e5;
+    --text: #1a1a1a;
+    --text-secondary: #666;
+    --accent: #1a1a1a;
+    --accent-hover: #333;
+    --danger: #d32f2f;
+    --success: #2e7d32;
+    --pending: #999;
+    --generating: #1565c0;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08);
+    --shadow-hover: 0 2px 8px rgba(0,0,0,0.12);
+    --radius: 8px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1a1a1a;
+      --card-bg: #252525;
+      --border: #333;
+      --text: #e0e0e0;
+      --text-secondary: #999;
+      --accent: #e0e0e0;
+      --accent-hover: #fff;
+      --shadow: 0 1px 3px rgba(0,0,0,0.3);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.5);
+    }
+  }
+
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  header h1 { font-size: 16px; font-weight: 600; }
+  .header-left { display: flex; align-items: center; gap: 16px; }
+  .header-right { display: flex; align-items: center; gap: 8px; }
+  .platform-badge {
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    padding: 2px 8px; border-radius: 4px;
+    background: var(--accent); color: var(--card-bg);
+  }
+  button {
+    font-family: inherit; font-size: 13px; font-weight: 500;
+    padding: 6px 14px; border: 1px solid var(--border);
+    border-radius: 6px; cursor: pointer;
+    background: var(--card-bg); color: var(--text);
+    transition: all 0.15s;
+  }
+  button:hover { border-color: var(--text-secondary); }
+  button.primary {
+    background: var(--accent); color: var(--card-bg);
+    border-color: var(--accent);
+  }
+  button.primary:hover { background: var(--accent-hover); }
+  button.danger { color: var(--danger); border-color: var(--danger); }
+
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .meta-bar {
+    display: flex; gap: 24px;
+    font-size: 13px; color: var(--text-secondary);
+  }
+  .meta-bar span { display: flex; align-items: center; gap: 4px; }
+
+  .slide-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    display: grid;
+    grid-template-columns: 32px 180px 1fr 200px;
+    gap: 16px;
+    align-items: start;
+    transition: box-shadow 0.15s;
+  }
+  .slide-card:hover { box-shadow: var(--shadow-hover); }
+  .slide-card.dragging { opacity: 0.5; }
+  .slide-card.drag-over { border-color: var(--generating); border-width: 2px; }
+
+  .slide-pos {
+    font-size: 14px; font-weight: 700; color: var(--text-secondary);
+    text-align: center; padding-top: 8px;
+  }
+
+  .slide-preview {
+    width: 180px; height: 320px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .slide-preview img {
+    width: 100%; height: 100%; object-fit: cover;
+  }
+  .slide-preview .placeholder {
+    font-size: 12px; color: var(--text-secondary);
+    text-align: center; padding: 16px;
+  }
+
+  .slide-fields {
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .field-label {
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    color: var(--text-secondary); letter-spacing: 0.5px;
+  }
+  .field-row { display: flex; flex-direction: column; gap: 4px; }
+  textarea, input[type=text] {
+    font-family: inherit; font-size: 13px;
+    padding: 8px 10px; border: 1px solid var(--border);
+    border-radius: 4px; background: var(--bg); color: var(--text);
+    resize: vertical; line-height: 1.4;
+  }
+  textarea:focus, input:focus {
+    outline: none; border-color: var(--text-secondary);
+  }
+  textarea.prompt-field { height: 56px; }
+  textarea.overlay-field { height: 40px; }
+  textarea.reference-field { height: 52px; }
+
+  .slide-actions {
+    display: flex; flex-direction: column; gap: 8px;
+    align-items: flex-end;
+  }
+  .source-toggle {
+    display: flex; gap: 0; border: 1px solid var(--border);
+    border-radius: 4px; overflow: hidden;
+  }
+  .source-toggle label {
+    font-size: 11px; padding: 4px 10px; cursor: pointer;
+    background: var(--bg); color: var(--text-secondary);
+    transition: all 0.15s;
+  }
+  .source-toggle input { display: none; }
+  .source-toggle input:checked + label {
+    background: var(--accent); color: var(--card-bg);
+  }
+  .local-path-input {
+    font-size: 12px; width: 100%;
+    margin-top: 4px;
+  }
+  .status-badge {
+    font-size: 11px; font-weight: 600;
+    padding: 2px 8px; border-radius: 4px;
+  }
+  .status-pending { background: #f0f0f0; color: var(--pending); }
+  .status-generating { background: #e3f2fd; color: var(--generating); }
+  .status-generated { background: #e8f5e9; color: var(--success); }
+  .status-rejected { background: #ffebee; color: var(--danger); }
+  .status-approved { background: #e8f5e9; color: var(--success); }
+  .mode-badge {
+    font-size: 11px; font-weight: 600;
+    padding: 2px 8px; border-radius: 4px;
+    background: var(--bg); color: var(--text-secondary);
+    border: 1px solid var(--border);
+  }
+
+  .add-slide {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    text-align: center;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all 0.15s;
+  }
+  .add-slide:hover { border-color: var(--text-secondary); color: var(--text); }
+
+  .toast {
+    position: fixed; bottom: 24px; right: 24px;
+    padding: 10px 20px; border-radius: 6px;
+    font-size: 13px; font-weight: 500;
+    background: var(--accent); color: var(--card-bg);
+    z-index: 200; opacity: 0; transition: opacity 0.2s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+<header>
+  <div class="header-left">
+    <h1>Slideshow Producer</h1>
+    <span class="platform-badge" id="platformBadge">TT</span>
+  </div>
+  <div class="header-right">
+    <button id="saveBtn">Save</button>
+    <button id="generateBtn" class="primary">Generate</button>
+  </div>
+</header>
+
+<main>
+  <div class="meta-bar">
+    <span>ID: <strong id="slideshowId">—</strong></span>
+    <span>Slides: <strong id="slideCount">0</strong></span>
+    <span id="canvasMeta"></span>
+  </div>
+  <div id="slideList"></div>
+  <div class="add-slide" id="addSlideBtn">+ Add Slide</div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let manifest = null;
+let dragIdx = null;
+
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => document.querySelectorAll(s);
+
+async function init() {
+  const res = await fetch('/api/manifest');
+  if (!res.ok) {
+    showToast('No manifest loaded. Start server with --manifest <path>');
+    return;
+  }
+  manifest = await res.json();
+  render();
+}
+
+function render() {
+  $('#slideshowId').textContent = manifest.slideshowId || '—';
+  $('#slideCount').textContent = manifest.slides ? manifest.slides.length : 0;
+  $('#platformBadge').textContent = manifest.platform === 'ig' ? 'IG' : 'TT';
+  $('#canvasMeta').textContent = manifest.canvasPx || '';
+
+  const list = $('#slideList');
+  list.innerHTML = '';
+
+  if (!manifest.slides) manifest.slides = [];
+
+  manifest.slides.forEach((slide, idx) => {
+    const card = document.createElement('div');
+    card.className = 'slide-card';
+    card.draggable = true;
+    card.dataset.idx = idx;
+
+    card.addEventListener('dragstart', () => {
+      card.classList.add('dragging');
+      dragIdx = idx;
+    });
+    card.addEventListener('dragend', () => {
+      card.classList.remove('dragging');
+      $$('.slide-card').forEach(c => c.classList.remove('drag-over'));
+      dragIdx = null;
+    });
+    card.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      if (idx !== dragIdx) card.classList.add('drag-over');
+    });
+    card.addEventListener('dragleave', () => card.classList.remove('drag-over'));
+    card.addEventListener('drop', (e) => {
+      e.preventDefault();
+      card.classList.remove('drag-over');
+      if (dragIdx !== null && dragIdx !== idx) {
+        const moved = manifest.slides.splice(dragIdx, 1)[0];
+        manifest.slides.splice(idx, 0, moved);
+        manifest.slides.forEach((s, i) => { s.position = i + 1; });
+        render();
+        autoSave();
+      }
+    });
+
+    const imgSrc = slide.generatedImagePath
+      ? `/api/image?path=${encodeURIComponent(slide.generatedImagePath)}`
+      : (slide.localImagePath ? `/api/image?path=${encodeURIComponent(slide.localImagePath)}` : null);
+
+    const statusClass = `status-${slide.status || 'pending'}`;
+    const isLocal = slide.imageSource === 'local';
+    const generationMode = resolveGenerationMode(slide);
+    slide.generationMode = generationMode;
+    const referencePathsText = Array.isArray(slide.referenceImagePaths)
+      ? slide.referenceImagePaths.join('\n')
+      : '';
+
+    card.innerHTML = `
+      <div class="slide-pos">${slide.position}</div>
+      <div class="slide-preview">
+        ${imgSrc
+          ? `<img src="${imgSrc}" alt="Slide ${slide.position}">`
+          : `<div class="placeholder">No image yet</div>`}
+      </div>
+      <div class="slide-fields">
+        <div class="field-row">
+          <span class="field-label">Cognitive Job</span>
+          <input type="text" value="${escapeHtml(slide.cognitiveJob || '')}" data-field="cognitiveJob" data-idx="${idx}" style="width:120px">
+        </div>
+        <div class="field-row">
+          <span class="field-label">Prompt</span>
+          <textarea class="prompt-field" data-field="prompt" data-idx="${idx}">${escapeHtml(slide.prompt || '')}</textarea>
+        </div>
+        <div class="field-row">
+          <span class="field-label">Overlay Text</span>
+          <textarea class="overlay-field" data-field="overlayText" data-idx="${idx}">${escapeHtml(slide.overlayText || '')}</textarea>
+        </div>
+        ${!isLocal ? `
+        <div class="field-row">
+          <span class="field-label">Reference Images</span>
+          <textarea class="reference-field" data-field="referenceImagePaths" data-idx="${idx}" placeholder="/absolute/path/to/reference.png">${escapeHtml(referencePathsText)}</textarea>
+        </div>
+        ` : ''}
+      </div>
+      <div class="slide-actions">
+        <div class="source-toggle">
+          <input type="radio" id="gen-${idx}" name="source-${idx}" value="generate" ${!isLocal ? 'checked' : ''} data-idx="${idx}">
+          <label for="gen-${idx}">Generate</label>
+          <input type="radio" id="loc-${idx}" name="source-${idx}" value="local" ${isLocal ? 'checked' : ''} data-idx="${idx}">
+          <label for="loc-${idx}">Local</label>
+        </div>
+        ${isLocal ? `<input type="text" class="local-path-input" data-field="localImagePath" data-idx="${idx}" value="${escapeHtml(slide.localImagePath || '')}" placeholder="/absolute/path/to/image.png">` : ''}
+        <span class="mode-badge">${isLocal ? 'local' : generationMode}</span>
+        <span class="status-badge ${statusClass}">${slide.status || 'pending'}</span>
+      </div>
+    `;
+
+    list.appendChild(card);
+  });
+
+  // Event delegation for field changes
+  $$('[data-field]').forEach(el => {
+    el.addEventListener('input', () => {
+      const idx = parseInt(el.dataset.idx);
+      const field = el.dataset.field;
+      if (field === 'overlayText') {
+        manifest.slides[idx].overlayText = el.value || null;
+      } else if (field === 'referenceImagePaths') {
+        manifest.slides[idx].referenceImagePaths = parseReferencePaths(el.value);
+        manifest.slides[idx].generationMode = resolveGenerationMode(manifest.slides[idx]);
+      } else {
+        manifest.slides[idx][field] = el.value;
+      }
+      autoSave();
+    });
+  });
+
+  // Source toggle
+  $$('.source-toggle input').forEach(el => {
+    el.addEventListener('change', () => {
+      const idx = parseInt(el.dataset.idx);
+      manifest.slides[idx].imageSource = el.value;
+      manifest.slides[idx].localImagePath = el.value === 'local' ? (manifest.slides[idx].localImagePath || '') : null;
+      if (el.value === 'local') {
+        manifest.slides[idx].generationMode = null;
+        manifest.slides[idx].referenceImagePaths = [];
+        manifest.slides[idx].referenceImageUrls = [];
+      } else {
+        manifest.slides[idx].generationMode = resolveGenerationMode(manifest.slides[idx]);
+      }
+      render();
+      autoSave();
+    });
+  });
+
+  // Local path inputs
+  $$('.local-path-input').forEach(el => {
+    el.addEventListener('input', () => {
+      const idx = parseInt(el.dataset.idx);
+      manifest.slides[idx].localImagePath = el.value;
+      autoSave();
+    });
+  });
+}
+
+function escapeHtml(s) {
+  if (!s) return '';
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function parseReferencePaths(value) {
+  return value
+    .split(/\n|,/)
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+}
+
+function resolveGenerationMode(slide) {
+  if (slide.imageSource === 'local') return null;
+  const pathCount = Array.isArray(slide.referenceImagePaths) ? slide.referenceImagePaths.filter(Boolean).length : 0;
+  const urlCount = Array.isArray(slide.referenceImageUrls) ? slide.referenceImageUrls.filter(Boolean).length : 0;
+  return pathCount > 0 || urlCount > 0 ? 'edit' : 'text-to-image';
+}
+
+let saveTimer = null;
+function autoSave() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => saveManifest(false), 1000);
+}
+
+async function saveManifest(showMsg = true) {
+  try {
+    const res = await fetch('/api/manifest', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(manifest),
+    });
+    if (res.ok && showMsg) showToast('Saved');
+  } catch (e) {
+    showToast('Save failed');
+  }
+}
+
+function showToast(msg) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+$('#saveBtn').addEventListener('click', () => saveManifest(true));
+$('#generateBtn').addEventListener('click', () => {
+  manifest.slides.forEach(s => { s.generationMode = resolveGenerationMode(s); });
+  const generatedSlides = manifest.slides.filter(s => s.imageSource === 'generate');
+  const textCount = generatedSlides.filter(s => s.generationMode === 'text-to-image').length;
+  const editCount = generatedSlides.filter(s => s.generationMode === 'edit').length;
+  const genCount = generatedSlides.length;
+  if (!confirm(`Generate ${genCount} slides via GPT Image 2 medium 1k? ${textCount} text-to-image, ${editCount} edit.`)) return;
+  // Signal generation intent back to the AI — in practice, the AI reads
+  // the manifest's updated status and triggers image-batch-runner.
+  manifest.slides.forEach(s => {
+    if (s.imageSource === 'generate') s.status = 'generating';
+  });
+  saveManifest(true).then(() => {
+    showToast(`Marked ${genCount} slides for generation. Return to AI to trigger image-batch-runner.`);
+    render();
+  });
+});
+
+$('#addSlideBtn').addEventListener('click', () => {
+  manifest.slides.push({
+    position: manifest.slides.length + 1,
+    cognitiveJob: '',
+    prompt: '',
+    overlayText: null,
+    overlayStyle: {
+      color: '#FFFFFF',
+      strokeColor: '#000000',
+      strokeWidth: 3,
+      fontSize: 56,
+      position: 'upper-center',
+      maxLines: 2,
+    },
+    imageSource: 'generate',
+    localImagePath: null,
+    generationMode: 'text-to-image',
+    referenceImagePaths: [],
+    referenceImageUrls: [],
+    generatedImagePath: null,
+    finalImagePath: null,
+    status: 'pending',
+  });
+  manifest.totalSlides = manifest.slides.length;
+  render();
+  autoSave();
+});
+
+init();
+</script>
+</body>
+</html>

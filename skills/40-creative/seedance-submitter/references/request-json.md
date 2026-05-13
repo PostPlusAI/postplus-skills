@@ -52,11 +52,13 @@ Recommended context fields:
 {
   "promptPlan": {
     "subject": "",
-    "action": "",
+    "storyboardTimeline": [
+      "0.0-2.5s: visible action here. Dialogue: \"spoken line here.\"",
+      "2.5-5.0s: next visible action here. Dialogue: \"next spoken line here.\""
+    ],
     "scene": "",
     "style": "",
     "camera": "",
-    "dialogue": "",
     "audio": "",
     "mustKeep": [],
     "mustAvoid": [
@@ -180,9 +182,10 @@ If the report contains warnings, user-facing copy should prefer wording such as:
 Do not say `same owner locked` or equivalent when the report is only
 `text-only`.
 
-## Dialogue Rule
+## Storyboard Timeline Rule
 
-The exact voiceover must be inside `promptPlan.dialogue`.
+The exact voiceover must live inside `promptPlan.storyboardTimeline`, on the
+same timeline as the visible action.
 
 Bad:
 
@@ -202,7 +205,10 @@ Good:
 ```json
 {
   "promptPlan": {
-    "dialogue": "0:00-0:03 exact spoken line. 0:03-0:07 exact spoken line.",
+    "storyboardTimeline": [
+      "0:00-0:03 visible action here. Dialogue: \"exact spoken line.\"",
+      "0:03-0:07 next visible action here. Dialogue: \"exact spoken line.\""
+    ],
     "audio": "English female UGC voiceover. No subtitles. No screen text. No watermark."
   }
 }

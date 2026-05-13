@@ -26,13 +26,16 @@ This skill is not for unconstrained concept art.
 
 ## Quality Default
 
-When realism matters, default to the strongest provider quality settings that are practically available.
+Default to GPT Image 2 across all situations unless the user explicitly overrides.
 
-Default quality assumption:
+Default configuration:
 
-- higher image quality usually lowers visible AI artifacts
-- lower-quality first passes can exaggerate fake skin, eyes, and texture
-- it is better to step down only when cost, latency, or provider limits force it
+- **model**: `image-gpt-image-2-text` (or `image-gpt-image-2-edit` for edits)
+- **aspect ratio**: `9:16` (portrait, short-form video standard)
+- **quality**: `medium`
+- **resolution**: `1K`
+
+This applies to all asset purposes: persona candidates, cover frames, shot support, and edit fixes. The 9:16 medium 1K default balances visual quality with cost and latency for short-form video production. Do not deviate from this default unless the user explicitly requests a different model, ratio, quality tier, or resolution.
 
 Capture the chosen quality settings in the local request record so later QA can trace realism issues back to generation parameters.
 
@@ -147,7 +150,7 @@ For each generation job, create a local JSON request record containing:
 - local asset directory
 - source basis
 
-When the provider exposes multiple quality tiers or resolutions, default to the highest practical tier for first-pass realism work unless the job is explicitly a cheap draft or throughput test.
+When the provider exposes multiple quality tiers or resolutions, default to the configured default (GPT Image 2, 9:16, medium, 1K) unless the job is explicitly a cheap draft or the user requests different settings.
 
 This request record is the stable local truth even if provider parameters evolve.
 
@@ -262,11 +265,13 @@ For the current hosted integration:
 Model selection rule:
 
 - set `request.model` to one of the hosted image endpoint keys above
-- default is `image-nano-banana-2-text`
+- **default is `image-gpt-image-2-text`** (9:16, medium, 1K)
+- for edits, default is `image-gpt-image-2-edit` (same ratio/quality/resolution defaults)
+- only switch away from GPT Image 2 when the user explicitly requests a different model for a specific reason (cost, consistency, or provider constraint)
 - use Seedream sequential variants when cross-shot identity consistency matters more than single-image iteration speed
 - for Seedream models, prefer explicit `size`
 - for sequential Seedream models, set `maxImages` to the intended number of outputs
-- for GPT Image 2, set `quality` explicitly to `low`, `medium`, or `high`
+- for GPT Image 2, set `quality` explicitly to `medium` by default; only use `low` or `high` when the user asks
 - for Nano Banana Pro, choose the endpoint key with the intended billable
   resolution instead of relying on runtime resolution switching
 

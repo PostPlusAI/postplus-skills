@@ -44,17 +44,52 @@ function collectPromptText(request) {
   return [
     request.prompt,
     promptPlan.subject,
-    promptPlan.action,
+    typeof promptPlan.storyboardTimeline === "string"
+      ? promptPlan.storyboardTimeline
+      : Array.isArray(promptPlan.storyboardTimeline)
+        ? promptPlan.storyboardTimeline
+            .map((entry) =>
+              typeof entry === "string"
+                ? entry
+                : entry && typeof entry === "object"
+                  ? [
+                      entry.time,
+                      entry.action,
+                      entry.visual,
+                      entry.dialogue,
+                    ]
+                      .filter(Boolean)
+                      .join(" ")
+                  : "",
+            )
+            .filter(Boolean)
+            .join("\n")
+        : "",
     promptPlan.scene,
     promptPlan.style,
     promptPlan.camera,
-    promptPlan.dialogue,
     promptPlan.audio,
     Array.isArray(promptPlan.mustKeep) ? promptPlan.mustKeep.join("\n") : "",
     Array.isArray(promptPlan.referenceMap) ? promptPlan.referenceMap.join("\n") : "",
   ]
     .filter(Boolean)
     .join("\n");
+}
+
+function assertNoDeprecatedPromptPlanFields(request, label) {
+  const promptPlan = request.promptPlan || {};
+  const deprecated = [];
+  if (typeof promptPlan.action === "string" && promptPlan.action.trim()) {
+    deprecated.push("promptPlan.action");
+  }
+  if (typeof promptPlan.dialogue === "string" && promptPlan.dialogue.trim()) {
+    deprecated.push("promptPlan.dialogue");
+  }
+  if (deprecated.length > 0) {
+    throw new Error(
+      `seedance_prompt_plan_deprecated: ${label} uses ${deprecated.join(", ")}. Move timecoded action and spoken lines into promptPlan.storyboardTimeline.`,
+    );
+  }
 }
 
 function assertNoCrossSegmentShorthand(request, label) {
@@ -200,6 +235,8 @@ function buildContinuityReport(request) {
 }
 
 function validateSegmentContract(request, durationSeconds, label) {
+  assertNoDeprecatedPromptPlanFields(request, label);
+
   const contract = request.segmentContract;
   const totalDurationSeconds = Number(contract?.totalDurationSeconds ?? request.totalDurationSeconds ?? durationSeconds);
 

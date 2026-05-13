@@ -21,6 +21,7 @@ business skill's `_postplus_shared/` directory.
 - [`shared-public-skill-rules.md`](references/shared-public-skill-rules.md)
 - [`shared-research-preferences.md`](references/shared-research-preferences.md)
 - [`shared-product-selection-preferences.md`](references/shared-product-selection-preferences.md)
+- [`shared-source-of-truth-files.md`](references/shared-source-of-truth-files.md)
 - [`shared-tiktok-music-workflow.md`](references/shared-tiktok-music-workflow.md)
 - [`shared-ads-workflow.md`](references/shared-ads-workflow.md)
 - [`shared-user-guidance.md`](references/shared-user-guidance.md)

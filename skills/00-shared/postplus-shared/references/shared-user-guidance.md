@@ -77,9 +77,8 @@ Common decomposition templates:
 |---|---|
 | "Promote this product" | ① competitive research (amazon-research) → ② audience persona (persona-pack) → ③ creator outreach (creator-discovery) |
 | "Make a viral video" | ① trend collection (tiktok-research) → ② hook breakdown (video-analysis) → ③ storyboard generation (pattern-router) → ④ video render (video-batch-runner) |
-| "Build a social presence for this brand" | ① cross-platform audit (social-media-extractor) → ② content strategy (benchmark-to-brief) → ③ creative production (visual-hook / xiaohongshu-notes) |
+| "Build a social presence for this brand" | ① cross-platform audit (social-media-extractor) → ② content strategy (benchmark-to-brief) → ③ creative production (visual-hook / script-generator) |
 | "Analyze this account" | ① account research (instagram-account-research) → ② audience voice (audience-voice) → ③ content benchmark (content-benchmark) |
-| "Write a Xiaohongshu post" | ① topic discovery (xhs-content-benchmark) → ② note generation (xiaohongshu-notes) → ③ card layout (xiaohongshu-card-notes) |
 
 Use these as reference, not a rigid checklist. Adapt to the user's actual scope.
 

@@ -2,6 +2,10 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { uploadHostedMediaFileReference } from "../../_postplus_shared/00-core/shared-runtime/scripts/lib/hosted_media_generation_bridge.mjs";
+import {
+  readDomainSkillExecutionInput,
+  readHostedSkillExecutionInput,
+} from "../../_postplus_shared/00-core/shared-runtime/scripts/lib/hosted_execution_protocol.mjs";
 import { runHostedCapabilityRequest } from "../../_postplus_shared/00-core/shared-runtime/scripts/lib/postplus_cloud_client.mjs";
 
 const SOCIAL_PUBLISHING_BASE_URL = "https://social-publishing.postplus.local";
@@ -41,7 +45,15 @@ export function requireArg(args, key, message = `Missing required --${key}`) {
 }
 
 export function readJson(filePath) {
-  return JSON.parse(fs.readFileSync(path.resolve(filePath), "utf8"));
+  return readDomainSkillExecutionInput(
+    JSON.parse(fs.readFileSync(path.resolve(filePath), "utf8")),
+  );
+}
+
+export function readHostedJson(filePath) {
+  return readHostedSkillExecutionInput(
+    JSON.parse(fs.readFileSync(path.resolve(filePath), "utf8")),
+  );
 }
 
 export function ensureDirForFile(filePath) {

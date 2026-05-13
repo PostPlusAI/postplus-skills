@@ -12,6 +12,7 @@ import {
   runHostedCapabilityRequest,
 } from "../_postplus_shared/00-core/shared-runtime/scripts/lib/postplus_cloud_client.mjs";
 import { uploadHostedMediaFileReference } from "../_postplus_shared/00-core/shared-runtime/scripts/lib/hosted_media_generation_bridge.mjs";
+import { readDomainSkillExecutionInput } from "../_postplus_shared/00-core/shared-runtime/scripts/lib/hosted_execution_protocol.mjs";
 
 export const VIDEO_ANALYSIS_JSON_PAYLOAD_BYTE_LIMIT =
   HOSTED_CAPABILITY_JSON_PAYLOAD_BYTE_LIMIT;
@@ -34,7 +35,9 @@ function parseArgs(argv) {
 }
 
 function readJson(filePath) {
-  return JSON.parse(fs.readFileSync(path.resolve(filePath), "utf8"));
+  return readDomainSkillExecutionInput(
+    JSON.parse(fs.readFileSync(path.resolve(filePath), "utf8")),
+  );
 }
 
 function writeJson(filePath, value) {

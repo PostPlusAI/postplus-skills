@@ -10,6 +10,7 @@ import { formatCliError } from '../../../00-core/shared-runtime/scripts/lib/netw
 import {
   normalizeDataset,
   parseArgs,
+  readHostedJson,
   readJson,
   writeJson,
 } from './lib/tiktok_common.mjs';
@@ -43,7 +44,7 @@ async function main() {
   const top = Number(args.top || 10);
   const resultsPerSeed = Number(args['results-per-seed'] || 6);
 
-  const inputDataset = readJson(args.input);
+  const inputDataset = readHostedJson(args.input);
   const dataset =
     inputDataset?.platform === 'tiktok'
       ? inputDataset

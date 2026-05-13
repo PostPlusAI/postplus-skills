@@ -10,6 +10,7 @@ import { formatCliError } from '../../../00-core/shared-runtime/scripts/lib/netw
 import {
   normalizeDataset,
   parseArgs,
+  readHostedJson,
   readJson,
   writeJson,
 } from './lib/tiktok_common.mjs';
@@ -43,7 +44,7 @@ async function main() {
   const sourceId = 'clockworks/tiktok-comments-scraper';
   const topCount = Number(args.top || 8);
   const maxComments = Number(args['max-comments'] || 40);
-  const raw = readJson(args.input);
+  const raw = readHostedJson(args.input);
   const dataset =
     raw?.platform === 'tiktok'
       ? raw

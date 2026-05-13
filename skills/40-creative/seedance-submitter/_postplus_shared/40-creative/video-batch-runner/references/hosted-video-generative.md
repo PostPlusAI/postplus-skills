@@ -64,7 +64,7 @@ Text-to-video fields:
 Voice and dialogue notes:
 
 - The hosted generative video capability does not expose a separate `voiceover_script` field.
-- If you only have spoken copy text, put the exact line-by-line spoken content into `prompt` or local `promptPlan.dialogue` so it is folded into the final `prompt`.
+- If you need exact spoken copy in a structured plan, put it inside `promptPlan.storyboardTimeline` on the same timecoded lines as the visible action.
 - Use `reference_audios` only when you have actual audio reference files or URLs to condition on.
 - Do not rely on local-only fields such as `feedback` for spoken copy; they are not sent to the provider payload.
 

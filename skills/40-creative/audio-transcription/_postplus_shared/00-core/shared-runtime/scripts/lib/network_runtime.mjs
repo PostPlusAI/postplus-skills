@@ -1,13 +1,12 @@
 #!/usr/bin/env node
+import { randomUUID } from 'node:crypto';
+import fs from 'node:fs';
+import http from 'node:http';
+import https from 'node:https';
+import path from 'node:path';
+import tls from 'node:tls';
 
-import fs from "node:fs";
-import http from "node:http";
-import https from "node:https";
-import path from "node:path";
-import tls from "node:tls";
-import { randomUUID } from "node:crypto";
-
-const LOCAL_HTTP_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
+const LOCAL_HTTP_HOSTS = new Set(['localhost', '127.0.0.1', '::1']);
 
 export function getProxyUrl(env = process.env) {
   return env.https_proxy || env.HTTPS_PROXY || env.http_proxy || env.HTTP_PROXY;
@@ -34,22 +33,22 @@ export function shouldBypassProxy(urlString, noProxy = getNoProxy()) {
     return false;
   }
 
-  if (noProxy === "*") {
+  if (noProxy === '*') {
     return true;
   }
 
   try {
     const url = new URL(urlString);
-    const port = url.port || (url.protocol === "https:" ? "443" : "80");
+    const port = url.port || (url.protocol === 'https:' ? '443' : '80');
     const hostWithPort = `${hostname}:${port}`;
     const noProxyList = noProxy.split(/[,\s]+/).filter(Boolean);
 
     return noProxyList.some((rawPattern) => {
       const pattern = rawPattern.toLowerCase().trim();
-      if (pattern.includes(":")) {
+      if (pattern.includes(':')) {
         return hostWithPort === pattern;
       }
-      if (pattern.startsWith(".")) {
+      if (pattern.startsWith('.')) {
         return hostname === pattern.slice(1) || hostname.endsWith(pattern);
       }
       return hostname === pattern;
@@ -60,29 +59,87 @@ export function shouldBypassProxy(urlString, noProxy = getNoProxy()) {
 }
 
 export function formatCliError(error) {
-  if (error instanceof Error && typeof error.productErrorCode === "string") {
+  if (
+    error instanceof Error &&
+    error.productErrorCode === 'postplus_cli_quote_confirmation_required'
+  ) {
+    return formatQuoteConfirmationError(error);
+  }
+
+  if (error instanceof Error && typeof error.productErrorCode === 'string') {
     return `${error.productErrorCode}: ${error.message}`;
   }
 
-  if (error instanceof Error && typeof error.code === "string") {
+  if (error instanceof Error && typeof error.code === 'string') {
     return `${error.code}: ${error.message}`;
   }
 
   return error instanceof Error ? error.message : String(error);
 }
 
+function formatQuoteConfirmationError(error) {
+  const lines = [`${error.productErrorCode}: ${error.message}`];
+
+  if (
+    typeof error.confirmationCommand === 'string' &&
+    error.confirmationCommand.trim() &&
+    !error.message.includes(error.confirmationCommand)
+  ) {
+    lines.push(`Confirm the charge with: ${error.confirmationCommand}`);
+  }
+
+  if (
+    typeof error.retryCommand === 'string' &&
+    error.retryCommand.trim() &&
+    !error.message.includes(error.retryCommand)
+  ) {
+    lines.push(`Retry with: ${error.retryCommand}`);
+  }
+
+  const challenge =
+    error.quoteConfirmation &&
+    typeof error.quoteConfirmation === 'object' &&
+    !Array.isArray(error.quoteConfirmation)
+      ? error.quoteConfirmation
+      : null;
+
+  if (challenge) {
+    if (
+      typeof challenge.operationId === 'string' &&
+      challenge.operationId.trim() &&
+      !lines.some((line) => line.includes(challenge.operationId))
+    ) {
+      lines.push(`Hosted operation ID: ${challenge.operationId}`);
+    }
+
+    if (
+      typeof challenge.reservedCredits === 'number' &&
+      Number.isFinite(challenge.reservedCredits)
+    ) {
+      lines.push(`Reserved credits: ${challenge.reservedCredits}`);
+    } else if (
+      typeof challenge.reservedMillicredits === 'number' &&
+      Number.isFinite(challenge.reservedMillicredits)
+    ) {
+      lines.push(`Reserved credits: ${challenge.reservedMillicredits / 1_000}`);
+    }
+  }
+
+  return lines.join('\n');
+}
+
 function isEnvTruthy(value) {
-  if (typeof value !== "string") {
+  if (typeof value !== 'string') {
     return false;
   }
 
   const normalized = value.trim().toLowerCase();
   return (
     normalized.length > 0 &&
-    normalized !== "0" &&
-    normalized !== "false" &&
-    normalized !== "no" &&
-    normalized !== "off"
+    normalized !== '0' &&
+    normalized !== 'false' &&
+    normalized !== 'no' &&
+    normalized !== 'off'
   );
 }
 
@@ -90,7 +147,7 @@ function getLookupFamily(value) {
   if (value === 0 || value === 4 || value === 6) {
     return value;
   }
-  if (value === "IPv6") {
+  if (value === 'IPv6') {
     return 6;
   }
   return 4;
@@ -100,9 +157,9 @@ function createProxyAgent(proxyUrl) {
   const proxy = new URL(proxyUrl);
   const agentOptions = {};
 
-  if (proxy.protocol !== "http:" && proxy.protocol !== "https:") {
+  if (proxy.protocol !== 'http:' && proxy.protocol !== 'https:') {
     throw createHardError(
-      "network_invalid_proxy_url",
+      'network_invalid_proxy_url',
       `Unsupported proxy protocol for ${proxyUrl}`,
     );
   }
@@ -121,31 +178,33 @@ function createProxyAgent(proxyUrl) {
         proxy.username || proxy.password
           ? Buffer.from(
               `${decodeURIComponent(proxy.username)}:${decodeURIComponent(proxy.password)}`,
-            ).toString("base64")
+            ).toString('base64')
           : null;
 
       if (auth) {
-        headers["proxy-authorization"] = `Basic ${auth}`;
+        headers['proxy-authorization'] = `Basic ${auth}`;
       }
 
-      const requestModule = proxy.protocol === "https:" ? https : http;
+      const requestModule = proxy.protocol === 'https:' ? https : http;
       const connectRequest = requestModule.request({
         host: proxy.hostname,
-        port:
-          proxy.port || (proxy.protocol === "https:" ? 443 : 80),
-        method: "CONNECT",
+        port: proxy.port || (proxy.protocol === 'https:' ? 443 : 80),
+        method: 'CONNECT',
         path: `${_options.host}:${_options.port}`,
         headers,
         lookup: agentOptions.lookup,
-        servername: proxy.protocol === "https:" ? proxy.hostname : undefined,
+        servername: proxy.protocol === 'https:' ? proxy.hostname : undefined,
       });
 
-      connectRequest.once("connect", (response, socket) => {
-        if ((response.statusCode ?? 0) < 200 || (response.statusCode ?? 0) >= 300) {
+      connectRequest.once('connect', (response, socket) => {
+        if (
+          (response.statusCode ?? 0) < 200 ||
+          (response.statusCode ?? 0) >= 300
+        ) {
           socket.destroy();
           callback(
             createHardError(
-              "network_proxy_tunnel_failed",
+              'network_proxy_tunnel_failed',
               `Proxy tunnel request failed with ${response.statusCode ?? 0}.`,
               undefined,
               {
@@ -164,7 +223,7 @@ function createProxyAgent(proxyUrl) {
 
         callback(null, tlsSocket);
       });
-      connectRequest.once("error", (error) => {
+      connectRequest.once('error', (error) => {
         callback(error);
       });
       connectRequest.end();
@@ -183,16 +242,16 @@ function createHardError(code, message, cause, extra = {}) {
 }
 
 function normalizeCodePrefix(value) {
-  return String(value || "network")
+  return String(value || 'network')
     .trim()
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "_")
-    .replace(/^_+|_+$/g, "");
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
 }
 
 function normalizeProviderName(value) {
-  const text = String(value || "Network request").trim();
-  return text.length > 0 ? text : "Network request";
+  const text = String(value || 'Network request').trim();
+  return text.length > 0 ? text : 'Network request';
 }
 
 function normalizeBody(body) {
@@ -205,22 +264,22 @@ function normalizeBody(body) {
   if (body instanceof Uint8Array) {
     return Buffer.from(body);
   }
-  if (typeof body === "string") {
+  if (typeof body === 'string') {
     return Buffer.from(body);
   }
 
   throw createHardError(
-    "network_invalid_body",
+    'network_invalid_body',
     `Unsupported request body type: ${typeof body}`,
   );
 }
 
 function isHttpAllowed(requestUrl, allowHttp) {
-  if (requestUrl.protocol === "https:") {
+  if (requestUrl.protocol === 'https:') {
     return true;
   }
 
-  if (requestUrl.protocol !== "http:") {
+  if (requestUrl.protocol !== 'http:') {
     return false;
   }
 
@@ -234,9 +293,9 @@ function buildTransport(urlString, options = {}) {
   const proxyBypassReason = LOCAL_HTTP_HOSTS.has(
     requestUrl.hostname.toLowerCase(),
   )
-    ? "local_host"
+    ? 'local_host'
     : proxyBypassed
-      ? "no_proxy"
+      ? 'no_proxy'
       : null;
   const useProxy = Boolean(proxyUrl) && !proxyBypassed;
   const codePrefix = normalizeCodePrefix(options.codePrefix);
@@ -249,7 +308,7 @@ function buildTransport(urlString, options = {}) {
     );
   }
 
-  if (useProxy && requestUrl.protocol !== "https:") {
+  if (useProxy && requestUrl.protocol !== 'https:') {
     throw createHardError(
       `${codePrefix}_unsupported_proxy_protocol`,
       `${providerName} cannot proxy a non-https URL. Received ${requestUrl.href}`,
@@ -263,7 +322,7 @@ function buildTransport(urlString, options = {}) {
     providerName,
     proxyBypassed,
     proxyUrl,
-    requestModule: requestUrl.protocol === "https:" ? https : http,
+    requestModule: requestUrl.protocol === 'https:' ? https : http,
     requestUrl,
     useProxy,
   };
@@ -271,8 +330,8 @@ function buildTransport(urlString, options = {}) {
 
 function shouldDebugHostedSkillBilling(providerName) {
   return (
-    process.env.POSTPLUS_DEBUG_SKILL_BILLING === "1" &&
-    normalizeProviderName(providerName) === "Hosted skill billing"
+    process.env.POSTPLUS_DEBUG_SKILL_BILLING === '1' &&
+    normalizeProviderName(providerName) === 'Hosted skill billing'
   );
 }
 
@@ -280,21 +339,21 @@ function buildNetworkFailureMessage(transport, detail) {
   const proxyMessage = transport.useProxy
     ? `Proxy ${transport.proxyUrl} was used.`
     : transport.proxyUrl
-      ? transport.proxyBypassReason === "local_host"
+      ? transport.proxyBypassReason === 'local_host'
         ? `Proxy ${transport.proxyUrl} was bypassed for the local host.`
         : `Proxy ${transport.proxyUrl} was configured but bypassed by NO_PROXY.`
-      : "No HTTP(S)_PROXY was configured.";
+      : 'No HTTP(S)_PROXY was configured.';
 
   return `${transport.providerName} network request failed for ${transport.requestUrl.hostname}. ${proxyMessage} ${detail}`.trim();
 }
 
 function buildNetworkError(error, transport) {
   const code =
-    error && typeof error === "object" && "code" in error ? error.code : null;
+    error && typeof error === 'object' && 'code' in error ? error.code : null;
   const detail = error instanceof Error ? error.message : String(error);
   const baseMessage = buildNetworkFailureMessage(transport, detail);
 
-  if (code === "ENOTFOUND") {
+  if (code === 'ENOTFOUND') {
     return createHardError(
       `${transport.codePrefix}_dns_resolution_failed`,
       `${baseMessage} DNS resolution failed.`,
@@ -330,13 +389,13 @@ function buildNetworkError(error, transport) {
 }
 
 function buildHttpError(statusCode, bodyText, transport) {
-  const preview = String(bodyText || "").trim();
-  const suffix = preview ? ` ${preview}` : "";
+  const preview = String(bodyText || '').trim();
+  const suffix = preview ? ` ${preview}` : '';
   const productError = parseProductErrorPayload(preview);
 
   if (
     statusCode === 426 &&
-    productError?.code === "postplus_client_upgrade_required"
+    productError?.code === 'postplus_client_upgrade_required'
   ) {
     return createHardError(
       `${transport.codePrefix}_client_upgrade_required`,
@@ -352,7 +411,7 @@ function buildHttpError(statusCode, bodyText, transport) {
 
   if (
     statusCode === 503 &&
-    productError?.code === "postplus_cli_cloud_release_in_progress"
+    productError?.code === 'postplus_cli_cloud_release_in_progress'
   ) {
     return createHardError(
       `${transport.codePrefix}_cloud_release_in_progress`,
@@ -381,7 +440,7 @@ function buildHttpError(statusCode, bodyText, transport) {
 
   if (
     statusCode === 503 &&
-    productError?.code === "postplus_cli_hosted_capability_unavailable"
+    productError?.code === 'postplus_cli_hosted_capability_unavailable'
   ) {
     return createHardError(
       `${transport.codePrefix}_capability_unavailable`,
@@ -456,7 +515,7 @@ function parseProductErrorPayload(bodyText) {
 
   try {
     const parsed = JSON.parse(bodyText);
-    return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed)
       ? parsed
       : null;
   } catch {
@@ -467,33 +526,33 @@ function parseProductErrorPayload(bodyText) {
 function buildClientUpgradeRequiredMessage(payload) {
   const cliCommand =
     payload.compatibility?.upgrade?.cli?.command ??
-    "npm install -g @postplus/cli@latest";
+    'npm install -g @postplus/cli@latest';
   const skillsCommand =
-    payload.compatibility?.upgrade?.skills?.command ?? "postplus update";
+    payload.compatibility?.upgrade?.skills?.command ?? 'postplus update';
   const restart = payload.compatibility?.upgrade?.restartAgentSession
-    ? " Restart your agent session after updating."
-    : "";
+    ? ' Restart your agent session after updating.'
+    : '';
   const error =
-    typeof payload.error === "string" && payload.error.trim()
+    typeof payload.error === 'string' && payload.error.trim()
       ? payload.error.trim()
-      : "Your PostPlus CLI or PostPlus skills are out of date.";
+      : 'Your PostPlus CLI or PostPlus skills are out of date.';
 
   return `${error} Update CLI: ${cliCommand}. Update skills: ${skillsCommand}.${restart}`;
 }
 
 function buildCloudReleaseInProgressMessage(payload) {
-  return typeof payload.error === "string" && payload.error.trim()
+  return typeof payload.error === 'string' && payload.error.trim()
     ? payload.error.trim()
-    : "PostPlus Cloud is updating. Please retry in about one minute.";
+    : 'PostPlus Cloud is updating. Please retry in about one minute.';
 }
 
 function buildPostPlusProductErrorMessage(payload, transport, statusCode) {
   const message =
-    typeof payload.message === "string" && payload.message.trim()
+    typeof payload.message === 'string' && payload.message.trim()
       ? payload.message.trim()
-      : typeof payload.error === "string" && payload.error.trim()
+      : typeof payload.error === 'string' && payload.error.trim()
         ? payload.error.trim()
-        : "";
+        : '';
 
   return (
     message || `${transport.providerName} request failed with ${statusCode}.`
@@ -506,11 +565,12 @@ function pickProductErrorFields(payload) {
   };
 
   for (const key of [
-    "capabilityDisplayName",
-    "layer",
-    "operationId",
-    "providerDisplayName",
-    "userMessageRule",
+    'capabilityDisplayName',
+    'layer',
+    'operationId',
+    'providerDisplayName',
+    'quoteConfirmation',
+    'userMessageRule',
   ]) {
     if (payload[key] !== undefined) {
       fields[key] = payload[key];
@@ -524,7 +584,9 @@ function shouldUseLowLevelTransport(urlString, options = {}) {
   let isLocalHost = false;
 
   try {
-    isLocalHost = LOCAL_HTTP_HOSTS.has(new URL(urlString).hostname.toLowerCase());
+    isLocalHost = LOCAL_HTTP_HOSTS.has(
+      new URL(urlString).hostname.toLowerCase(),
+    );
   } catch {
     isLocalHost = false;
   }
@@ -545,9 +607,9 @@ async function requestTextViaHttp(urlString, options = {}) {
 
   if (shouldDebugHostedSkillBilling(options.providerName)) {
     console.error(
-      "[Hosted skill billing transport]",
+      '[Hosted skill billing transport]',
       JSON.stringify({
-        mode: "http",
+        mode: 'http',
         url: urlString,
         useProxy: transport.useProxy,
         proxyUrl: transport.proxyUrl ?? null,
@@ -557,8 +619,12 @@ async function requestTextViaHttp(urlString, options = {}) {
     );
   }
 
-  if (body && !("content-length" in headers) && !("Content-Length" in headers)) {
-    headers["content-length"] = String(body.byteLength);
+  if (
+    body &&
+    !('content-length' in headers) &&
+    !('Content-Length' in headers)
+  ) {
+    headers['content-length'] = String(body.byteLength);
   }
 
   return await new Promise((resolve, reject) => {
@@ -567,16 +633,16 @@ async function requestTextViaHttp(urlString, options = {}) {
       {
         agent: transport.agent,
         headers,
-        method: options.method || "GET",
+        method: options.method || 'GET',
       },
       (incoming) => {
         const chunks = [];
-        incoming.setEncoding("utf8");
-        incoming.on("data", (chunk) => {
+        incoming.setEncoding('utf8');
+        incoming.on('data', (chunk) => {
           chunks.push(chunk);
         });
-        incoming.on("end", () => {
-          const bodyText = chunks.join("");
+        incoming.on('end', () => {
+          const bodyText = chunks.join('');
           const statusCode = incoming.statusCode ?? 0;
           if (statusCode < 200 || statusCode >= 300) {
             reject(buildHttpError(statusCode, bodyText, transport));
@@ -589,13 +655,13 @@ async function requestTextViaHttp(urlString, options = {}) {
             transport,
           });
         });
-        incoming.on("error", (streamError) => {
+        incoming.on('error', (streamError) => {
           reject(buildNetworkError(streamError, transport));
         });
       },
     );
 
-    request.on("error", (requestError) => {
+    request.on('error', (requestError) => {
       reject(buildNetworkError(requestError, transport));
     });
 
@@ -612,9 +678,9 @@ async function requestTextViaFetch(urlString, options = {}) {
 
   if (shouldDebugHostedSkillBilling(options.providerName)) {
     console.error(
-      "[Hosted skill billing transport]",
+      '[Hosted skill billing transport]',
       JSON.stringify({
-        mode: "fetch",
+        mode: 'fetch',
         url: urlString,
         useProxy: transport.useProxy,
         proxyUrl: transport.proxyUrl ?? null,
@@ -624,7 +690,7 @@ async function requestTextViaFetch(urlString, options = {}) {
     );
   }
 
-  if (typeof fetchImpl !== "function") {
+  if (typeof fetchImpl !== 'function') {
     throw createHardError(
       `${transport.codePrefix}_network_request_failed`,
       `${transport.providerName} requires fetch to be available.`,
@@ -635,7 +701,7 @@ async function requestTextViaFetch(urlString, options = {}) {
     const response = await fetchImpl(urlString, {
       body: options.body,
       headers: options.headers,
-      method: options.method || "GET",
+      method: options.method || 'GET',
     });
     const bodyText = await response.text();
     if (!response.ok) {
@@ -644,14 +710,14 @@ async function requestTextViaFetch(urlString, options = {}) {
     return {
       bodyText,
       headers:
-        typeof response.headers?.entries === "function"
+        typeof response.headers?.entries === 'function'
           ? Object.fromEntries(response.headers.entries())
           : {},
       statusCode: response.status,
       transport,
     };
   } catch (error) {
-    if (error instanceof Error && typeof error.code === "string") {
+    if (error instanceof Error && typeof error.code === 'string') {
       throw error;
     }
     throw buildNetworkError(error, transport);
@@ -691,8 +757,12 @@ async function requestBytesViaHttp(urlString, options = {}) {
     ...options.headers,
   };
 
-  if (body && !("content-length" in headers) && !("Content-Length" in headers)) {
-    headers["content-length"] = String(body.byteLength);
+  if (
+    body &&
+    !('content-length' in headers) &&
+    !('Content-Length' in headers)
+  ) {
+    headers['content-length'] = String(body.byteLength);
   }
 
   return await new Promise((resolve, reject) => {
@@ -701,19 +771,23 @@ async function requestBytesViaHttp(urlString, options = {}) {
       {
         agent: transport.agent,
         headers,
-        method: options.method || "GET",
+        method: options.method || 'GET',
       },
       (incoming) => {
         const chunks = [];
-        incoming.on("data", (chunk) => {
+        incoming.on('data', (chunk) => {
           chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
         });
-        incoming.on("end", () => {
+        incoming.on('end', () => {
           const bodyBuffer = Buffer.concat(chunks);
           const statusCode = incoming.statusCode ?? 0;
           if (statusCode < 200 || statusCode >= 300) {
             reject(
-              buildHttpError(statusCode, bodyBuffer.toString("utf8"), transport),
+              buildHttpError(
+                statusCode,
+                bodyBuffer.toString('utf8'),
+                transport,
+              ),
             );
             return;
           }
@@ -724,13 +798,13 @@ async function requestBytesViaHttp(urlString, options = {}) {
             transport,
           });
         });
-        incoming.on("error", (streamError) => {
+        incoming.on('error', (streamError) => {
           reject(buildNetworkError(streamError, transport));
         });
       },
     );
 
-    request.on("error", (requestError) => {
+    request.on('error', (requestError) => {
       reject(buildNetworkError(requestError, transport));
     });
 
@@ -745,7 +819,7 @@ async function requestBytesViaFetch(urlString, options = {}) {
   const transport = buildTransport(urlString, options);
   const fetchImpl = options.fetchImpl ?? globalThis.fetch;
 
-  if (typeof fetchImpl !== "function") {
+  if (typeof fetchImpl !== 'function') {
     throw createHardError(
       `${transport.codePrefix}_network_request_failed`,
       `${transport.providerName} requires fetch to be available.`,
@@ -756,23 +830,27 @@ async function requestBytesViaFetch(urlString, options = {}) {
     const response = await fetchImpl(urlString, {
       body: options.body,
       headers: options.headers,
-      method: options.method || "GET",
+      method: options.method || 'GET',
     });
     const bodyBuffer = Buffer.from(await response.arrayBuffer());
     if (!response.ok) {
-      throw buildHttpError(response.status, bodyBuffer.toString("utf8"), transport);
+      throw buildHttpError(
+        response.status,
+        bodyBuffer.toString('utf8'),
+        transport,
+      );
     }
     return {
       bodyBuffer,
       headers:
-        typeof response.headers?.entries === "function"
+        typeof response.headers?.entries === 'function'
           ? Object.fromEntries(response.headers.entries())
           : {},
       statusCode: response.status,
       transport,
     };
   } catch (error) {
-    if (error instanceof Error && typeof error.code === "string") {
+    if (error instanceof Error && typeof error.code === 'string') {
       throw error;
     }
     throw buildNetworkError(error, transport);
@@ -791,7 +869,7 @@ export async function downloadFile(urlString, outputPath, options = {}) {
   fs.mkdirSync(path.dirname(path.resolve(outputPath)), { recursive: true });
   const result = await requestBytes(urlString, {
     ...options,
-    method: "GET",
+    method: 'GET',
   });
   fs.writeFileSync(path.resolve(outputPath), result.bodyBuffer);
   return result;
@@ -805,7 +883,7 @@ export function createMultipartFormData({ fields = [], files = [] } = {}) {
     chunks.push(
       Buffer.from(
         `--${boundary}\r\nContent-Disposition: form-data; name="${field.name}"\r\n\r\n${field.value}\r\n`,
-        "utf8",
+        'utf8',
       ),
     );
   }
@@ -814,19 +892,21 @@ export function createMultipartFormData({ fields = [], files = [] } = {}) {
     const data =
       file.buffer instanceof Buffer
         ? file.buffer
-        : Buffer.from(file.buffer ?? fs.readFileSync(path.resolve(file.filePath)));
-    const contentType = file.contentType || "application/octet-stream";
+        : Buffer.from(
+            file.buffer ?? fs.readFileSync(path.resolve(file.filePath)),
+          );
+    const contentType = file.contentType || 'application/octet-stream';
     chunks.push(
       Buffer.from(
         `--${boundary}\r\nContent-Disposition: form-data; name="${file.name}"; filename="${file.filename}"\r\nContent-Type: ${contentType}\r\n\r\n`,
-        "utf8",
+        'utf8',
       ),
     );
     chunks.push(data);
-    chunks.push(Buffer.from("\r\n", "utf8"));
+    chunks.push(Buffer.from('\r\n', 'utf8'));
   }
 
-  chunks.push(Buffer.from(`--${boundary}--\r\n`, "utf8"));
+  chunks.push(Buffer.from(`--${boundary}--\r\n`, 'utf8'));
 
   return {
     body: Buffer.concat(chunks),
