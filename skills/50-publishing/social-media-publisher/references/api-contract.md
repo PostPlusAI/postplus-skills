@@ -32,6 +32,20 @@ Channel onboarding flow:
 All remote publishing calls from skill scripts are proxied through the PostPlus
 hosted capability bridge. Scripts never hold publishing credentials directly.
 
+All social publishing script request files are hosted execution envelopes:
+
+```json
+{
+  "schemaVersion": 1,
+  "input": {
+    "...": "social publishing request"
+  }
+}
+```
+
+The social publishing request shapes below are the envelope's `input` value.
+Do not pass a bare publish request object as the final `--request` file.
+
 The skill contract assumes:
 
 - channel allowlists are enforced server-side and in local request shaping
@@ -76,9 +90,9 @@ Used by PostPlus backend to generate invite links and label channels:
 - `PUT /integrations/:id/customer-name` — assign a PostPlus account id label
   to a connected channel
 
-## Publish request shape
+## Publish Request Shape
 
-Wrapper request shape:
+Domain request shape:
 
 ```json
 {
@@ -102,6 +116,36 @@ Wrapper request shape:
       ]
     }
   ]
+}
+```
+
+Executable request file:
+
+```json
+{
+  "schemaVersion": 1,
+  "input": {
+    "type": "draft",
+    "date": "2026-04-05T12:00:00.000Z",
+    "shortLink": false,
+    "tags": [],
+    "posts": [
+      {
+        "integrationId": "integration-id",
+        "settings": {
+          "__type": "discord",
+          "channel": "discord-channel-id"
+        },
+        "value": [
+          {
+            "content": "hello from vibe_marketing",
+            "delay": 0,
+            "mediaUrls": []
+          }
+        ]
+      }
+    ]
+  }
 }
 ```
 

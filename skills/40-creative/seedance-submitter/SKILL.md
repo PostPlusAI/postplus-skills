@@ -30,9 +30,13 @@ node skills/40-creative/seedance-submitter/scripts/validate_seedance_request_con
   --input <request.seed.json>
 ```
 
-8. Submit with `skills/40-creative/video-batch-runner/scripts/generate_video_from_image_audio.mjs`.
-9. Poll with `skills/40-creative/video-batch-runner/scripts/poll_prediction.mjs` until completed.
+8. Submit with `skills/40-creative/video-batch-runner/scripts/generate_video_from_image_audio.mjs` using a `schemaVersion: 1` hosted execution envelope whose `input` is the Seedance request.
+9. Poll with `skills/40-creative/video-batch-runner/scripts/poll_prediction.mjs` using the same hosted envelope shape until completed.
 10. Report local `renders/render-001.mp4` paths and prediction ids.
+
+If a segment render is still pending, do not block the user's conversation just
+to poll. Tell the user the segment is running from a saved checkpoint and
+continue independent segment QA, caption prep, or next-segment request review.
 
 If the user says `sd2`, interpret it as Seedance 2.0 unless they explicitly specify another model.
 

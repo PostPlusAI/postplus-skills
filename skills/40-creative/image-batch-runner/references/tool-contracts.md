@@ -8,6 +8,19 @@ This file defines the normalized tool-layer contracts for image generation.
 
 The goal is to keep upstream workflow stable even if the provider or exact curl payload changes.
 
+The normalized request objects below are domain payloads. Hosted image scripts
+do not execute these objects directly. The executable file passed to `--request`
+must wrap the relevant normalized request in the hosted execution envelope:
+
+```json
+{
+  "schemaVersion": 1,
+  "input": {
+    "...": "normalized image request"
+  }
+}
+```
+
 ## 1. `generate_image`
 
 Purpose:
@@ -28,6 +41,8 @@ Normalized request shape:
   "provider": "hosted-media",
   "model": "image-nano-banana-2-text",
   "mode": "text-to-image",
+  "creativeFormat": "short_form_vertical",
+  "targetAspectRatio": "9:16",
   "prompt": "young male knowledge worker, casual authority, home office desk, direct-to-camera tiktok ugc",
   "negativePrompt": "studio ad lighting, luxury office, influencer glam, keynote speaker",
   "aspectRatio": "9:16",
@@ -51,6 +66,24 @@ Normalized request shape:
 }
 ```
 
+Executable request file:
+
+```json
+{
+  "schemaVersion": 1,
+  "input": {
+    "assetId": "example-co-th-001-persona-a",
+    "runId": "image-run-001",
+    "jobId": "example-co-2026-03-th-001-persona-a",
+    "provider": "hosted-media",
+    "model": "image-nano-banana-2-text",
+    "mode": "text-to-image",
+    "prompt": "young male knowledge worker, casual authority, home office desk, direct-to-camera tiktok ugc",
+    "localAssetDir": "customers/<customer-id>/campaigns/example-co-2026-03-persona-test/assets/example-co-th-001-persona-a"
+  }
+}
+```
+
 Normalized response shape:
 
 ```json
@@ -61,6 +94,8 @@ Normalized response shape:
   "provider": "hosted-media",
   "model": "image-nano-banana-2-text",
   "mode": "text-to-image",
+  "creativeFormat": "short_form_vertical",
+  "targetAspectRatio": "9:16",
   "requestPath": "customers/<customer-id>/campaigns/example-co-2026-03-persona-test/assets/example-co-th-001-persona-a/runs/image/image-run-001/request.json",
   "responsePath": "customers/<customer-id>/campaigns/example-co-2026-03-persona-test/assets/example-co-th-001-persona-a/runs/image/image-run-001/response.json",
   "assets": [
@@ -97,12 +132,22 @@ Recommended normalized request defaults:
 
 ```json
 {
-  "enableSyncMode": true,
+  "enableSyncMode": false,
   "enableBase64Output": false,
   "enableWebSearch": false,
   "outputFormat": "png",
+  "creativeFormat": "short_form_vertical",
   "aspectRatio": "9:16",
   "resolution": "1k"
+}
+```
+
+Instagram Meta Ads creative format override:
+
+```json
+{
+  "creativeFormat": "instagram_meta_ads",
+  "aspectRatio": "3:4"
 }
 ```
 
@@ -140,6 +185,8 @@ Normalized request shape:
   "localAssetDir": "customers/<customer-id>/campaigns/example-co-2026-03-persona-test/assets/example-co-th-001-persona-a"
 }
 ```
+
+This object is the executable envelope's `input` value.
 
 Normalized response shape:
 
@@ -198,6 +245,8 @@ Normalized request shape:
 }
 ```
 
+This object is the executable envelope's `input` value.
+
 Normalized response shape:
 
 ```json
@@ -242,10 +291,11 @@ Recommended normalized request defaults:
 
 ```json
 {
-  "enableSyncMode": true,
+  "enableSyncMode": false,
   "enableBase64Output": false,
   "enableWebSearch": false,
   "outputFormat": "png",
+  "creativeFormat": "short_form_vertical",
   "aspectRatio": "9:16",
   "resolution": "1k"
 }

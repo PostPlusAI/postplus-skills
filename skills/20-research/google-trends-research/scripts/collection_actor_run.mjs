@@ -5,6 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { runCollectionActor } from "../_postplus_shared/00-core/shared-collection/scripts/collection_actor_run.mjs";
+import { readHostedSkillExecutionInput } from "../_postplus_shared/00-core/shared-runtime/scripts/lib/hosted_execution_protocol.mjs";
 
 function parseArgs(argv) {
   const args = {};
@@ -46,11 +47,14 @@ function validateRequest(argv) {
     return;
   }
   const inputPath = path.resolve(String(args.input));
-  const input = JSON.parse(fs.readFileSync(inputPath, "utf8"));
+  const input = readHostedSkillExecutionInput(
+    JSON.parse(fs.readFileSync(inputPath, "utf8")),
+  );
   validateGoogleTrendsFastInput(input);
 }
 
-const isDirectRun = path.resolve(process.argv[1] || "") === fileURLToPath(import.meta.url);
+const isDirectRun =
+  path.resolve(process.argv[1] || "") === fileURLToPath(import.meta.url);
 
 if (isDirectRun) {
   const argv = process.argv.slice(2);

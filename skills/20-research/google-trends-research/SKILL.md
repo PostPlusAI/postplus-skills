@@ -140,9 +140,12 @@ For PostPlus runtime execution, use the PostPlus-provided collection runner:
 ```bash
 node skills/20-research/google-trends-research/scripts/collection_actor_run.mjs \
   --collection-key google-trends-fast \
-  --input <input.json> \
+  --input <envelope.json> \
   --output <raw-output.json>
 ```
+
+The `--input` file must be a `schemaVersion: 1` hosted execution envelope. Put
+the Google Trends collection request under the envelope's `input` field.
 
 ## Recommended Workflow
 

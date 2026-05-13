@@ -41,6 +41,9 @@ Prefer:
 
 - `${CLAUDE_SKILL_DIR}/_postplus_shared/00-core/shared-collection/scripts/collection_actor_run.mjs`
 
+The runner's `--input` file must be a `schemaVersion: 1` hosted execution
+envelope whose `input` field contains the compiled collection request.
+
 This skill should stay focused on local contracts after raw data has been collected.
 
 ## Supported Collection Keys
@@ -55,12 +58,12 @@ Minimal runner examples:
 ```bash
 node ${CLAUDE_SKILL_DIR}/scripts/run_x_actor.mjs \
   --collection-key x-posts \
-  --input <work-folder>/.postplus/x-tools/x-posts-input.json \
+  --input <work-folder>/.postplus/x-tools/x-posts-envelope.json \
   --output <work-folder>/.postplus/x-tools/x-posts-raw.json
 
 node ${CLAUDE_SKILL_DIR}/scripts/run_x_actor.mjs \
   --collection-key x-profiles \
-  --input <work-folder>/.postplus/x-tools/x-profiles-input.json \
+  --input <work-folder>/.postplus/x-tools/x-profiles-envelope.json \
   --output <work-folder>/.postplus/x-tools/x-profiles-raw.json
 ```
 

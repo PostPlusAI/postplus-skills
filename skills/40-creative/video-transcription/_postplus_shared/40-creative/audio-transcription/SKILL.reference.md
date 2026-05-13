@@ -50,31 +50,49 @@ Do not rely on the provider dashboard as the durable record.
 
 ## Poll Behavior
 
-Hosted transcription is asynchronous. The script polls the prediction result URL until
-status is `completed` or `failed`. Default poll window: **150 attempts × 2 s = 5 minutes**.
+Hosted transcription is asynchronous. `transcribe_audio.mjs` submits the job,
+persists the provider response, and returns a stable `generationHandle` plus
+`providerUrls.get` when the provider is still processing. It does not block
+locally until the provider finishes.
 
-Short audio clips typically complete in under 30 s. If a job exceeds 5 minutes, retry
-rather than increasing the timeout further.
+Use `poll_transcription.mjs` with the same request file to resume the provider
+status check. Repeat polling until status is `completed` or `failed`; completed
+runs download transcript artifacts into `outputs/`.
 
-Before submission, the script logs a polling preflight line from
-`durationSeconds`. Audio at or above 300 seconds is marked as possibly exceeding
-the current polling window. That warning is informational, not a hidden fallback:
-the script still uses the same 5-minute poll contract and fails on timeout.
+Do not block the user's conversation while the provider is still processing.
+Tell the user the transcription is running from the saved checkpoint, then
+continue any independent cleanup, subtitle planning, or downstream prep. Poll
+again when the transcript is needed or when the user asks to wait.
 
 ## Default Workflow
 
 1. Normalize the transcription request.
-2. Log the 5-minute polling preflight from `durationSeconds`.
+2. Log the async submission contract from `durationSeconds`.
 3. Submit to hosted Whisper capability.
 4. Save raw request and response locally.
-5. Poll if the job is asynchronous.
-6. Save downloaded transcript artifacts locally.
+5. If the manifest is still pending, run `poll_transcription.mjs` with the same request.
+6. Save downloaded transcript artifacts locally when the provider completes.
 7. Hand off to `subtitle-packager` if SRT/VTT is needed.
 
 ## Scripts
 
 - `scripts/transcribe_audio.mjs`
 - `scripts/poll_transcription.mjs`
+
+These scripts are hosted media entrypoints. The file passed to `--request`
+must be a hosted execution envelope:
+
+```json
+{
+  "schemaVersion": 1,
+  "input": {
+    "...": "normalized transcription request"
+  }
+}
+```
+
+The normalized transcription request is the envelope's `input` value. Bare
+normalized request JSON is not an executable script input.
 
 ## Read These References
 

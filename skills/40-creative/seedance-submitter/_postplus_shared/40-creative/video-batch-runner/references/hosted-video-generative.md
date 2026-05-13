@@ -41,6 +41,13 @@ Common fields:
 - `aspect_ratio` can be `16:9`, `9:16`, `4:3`, `3:4`, `1:1`, or `21:9`.
 - `enable_web_search` defaults to `false` and should only be enabled intentionally.
 
+PostPlus creative format mapping:
+
+- `short_form_vertical` maps to `9:16`.
+- `instagram_meta_ads` maps to `3:4`.
+- explicit `ratio`, `aspectRatio`, or `targetAspectRatio` must win over hidden
+  prompt assumptions unless it conflicts with the selected creative format.
+
 Image-to-video fields:
 
 - `image` is required.
@@ -73,6 +80,8 @@ Voice and dialogue notes:
 - The model name selects the endpoint and payload shape.
 - Keep request records in the normalized video contract, then map to the provider's flat payload in the adapter.
 - Use `ratio` or `aspectRatio` locally; the adapter sends provider field `aspect_ratio`.
+- Use `creativeFormat: "instagram_meta_ads"` locally when the customer brief
+  is Instagram Meta Ads `3:4` production.
 - Use `lastImage`, `referenceImages`, `referenceVideos`, and `referenceAudios` locally; snake_case provider aliases are also accepted.
 - The PostPlus Cloud service returns prediction-style responses with `id`, `status`, `urls`, and `outputs`.
 - Success status is `completed`; outputs should be downloaded into the local `renders/` directory.

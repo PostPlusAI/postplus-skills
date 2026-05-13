@@ -12,6 +12,9 @@ import {
   readDomainSkillExecutionInput,
   readHostedSkillExecutionInput,
 } from '../../../00-core/shared-runtime/scripts/lib/hosted_execution_protocol.mjs';
+import {
+  resolveCreativeFormat,
+} from '../../../00-core/shared-runtime/scripts/lib/creative_format.mjs';
 
 export const DEFAULT_PROVIDER = 'hosted-media';
 export const DEFAULT_MODEL = 'image-gpt-image-2-text';
@@ -274,6 +277,7 @@ function assertNoProviderFieldAliases(input) {
 
 export function normalizeGenerationInput(input, mode) {
   assertNoProviderFieldAliases(input);
+  const creativeFormat = resolveCreativeFormat(input);
   const assetId = input?.assetId || input?.jobId || null;
   const runId = input?.runId || input?.jobId || null;
   const localAssetDir = input?.localAssetDir || input?.localOutputDir || null;
@@ -299,6 +303,8 @@ export function normalizeGenerationInput(input, mode) {
     provider: input.provider || DEFAULT_PROVIDER,
     model: input.model || DEFAULT_MODEL,
     mode,
+    creativeFormat: creativeFormat.id,
+    creativeFormatLabel: creativeFormat.label,
     assetId,
     runId,
     jobId: input.jobId || runId,
@@ -308,7 +314,8 @@ export function normalizeGenerationInput(input, mode) {
     assetPurpose: input.assetPurpose || null,
     prompt: input.prompt,
     negativePrompt: input.negativePrompt || null,
-    aspectRatio: input.aspectRatio || DEFAULT_ASPECT_RATIO,
+    aspectRatio: creativeFormat.aspectRatio || DEFAULT_ASPECT_RATIO,
+    targetAspectRatio: creativeFormat.aspectRatio || DEFAULT_ASPECT_RATIO,
     resolution: input.resolution || DEFAULT_RESOLUTION,
     quality: input.quality || null,
     size: input.size || null,
@@ -411,6 +418,9 @@ export function createImageManifestBase(normalized, paths) {
     provider: normalized.provider,
     model: normalized.model,
     mode: normalized.mode,
+    creativeFormat: normalized.creativeFormat,
+    creativeFormatLabel: normalized.creativeFormatLabel,
+    targetAspectRatio: normalized.targetAspectRatio,
     localAssetDir: paths.absoluteAssetDir,
     requestPath: paths.requestPath,
     responsePath: paths.responsePath,
@@ -431,6 +441,9 @@ export function upsertAssetRecord(normalized, paths, updates = {}) {
     personaId: normalized.personaId,
     conceptId: normalized.conceptId,
     assetPurpose: normalized.assetPurpose,
+    creativeFormat: normalized.creativeFormat,
+    creativeFormatLabel: normalized.creativeFormatLabel,
+    targetAspectRatio: normalized.targetAspectRatio,
     status: current.status || 'review_pending',
     sourceBasis: normalized.sourceBasis,
     localAssetDir: paths.absoluteAssetDir,

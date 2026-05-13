@@ -8,6 +8,19 @@ This file defines the normalized tool-layer contracts for voice generation.
 
 The goal is to keep the voice workflow stable even if providers change.
 
+The normalized request objects below are domain payloads. Hosted voice scripts
+do not execute these objects directly. The executable file passed to `--request`
+must wrap the normalized request in the hosted execution envelope:
+
+```json
+{
+  "schemaVersion": 1,
+  "input": {
+    "...": "normalized voice request"
+  }
+}
+```
+
 ## 1. `design_voice`
 
 Purpose:
@@ -34,6 +47,8 @@ Normalized request shape:
   ]
 }
 ```
+
+This object is the executable envelope's `input` value.
 
 Normalized response shape:
 
@@ -102,6 +117,8 @@ Normalized request shape:
   ]
 }
 ```
+
+This object is the executable envelope's `input` value.
 
 Normalized response shape:
 
@@ -174,6 +191,8 @@ Normalized request shape:
   ]
 }
 ```
+
+This object is the executable envelope's `input` value.
 
 Normalized response shape:
 

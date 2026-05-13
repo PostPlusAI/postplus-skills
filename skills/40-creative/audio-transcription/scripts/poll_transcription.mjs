@@ -6,9 +6,9 @@ import {
   createManifestBase,
   downloadProviderOutputs,
   extractTranscriptData,
+  fetchJson,
   normalizeTranscriptionInput,
   parseArgs,
-  pollPredictionResult,
   readHostedJson,
   readJson,
   unwrapProviderResult,
@@ -52,15 +52,18 @@ async function main() {
     );
   }
 
-  const rawResult = await pollPredictionResult(getUrl);
+  const { data: rawResult } = await fetchJson(getUrl);
   writeJson(paths.responsePath, rawResult);
 
   const result = unwrapProviderResult(rawResult);
   const manifest = createManifestBase(request, paths);
   manifest.generationHandle = result?.id || null;
-  manifest.providerStatus = result?.status || null;
+  manifest.providerStatus = result?.status ?? 'unknown';
   manifest.providerUrls = result?.urls || null;
-  manifest.downloadedArtifacts = await downloadProviderOutputs(result, paths);
+  manifest.downloadedArtifacts =
+    result?.status === 'completed'
+      ? await downloadProviderOutputs(result, paths)
+      : [];
 
   const transcriptData = extractTranscriptData(result);
   manifest.transcriptText = transcriptData.transcriptText;

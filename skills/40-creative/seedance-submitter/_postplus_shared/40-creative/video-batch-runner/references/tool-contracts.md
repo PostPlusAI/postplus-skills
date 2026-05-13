@@ -6,6 +6,19 @@
 
 This file defines the normalized local contract for the video render adapters on the public skill surface.
 
+The normalized request objects below are domain payloads. Hosted video scripts
+do not execute these objects directly. The executable file passed to `--request`
+must wrap the normalized request in the hosted execution envelope:
+
+```json
+{
+  "schemaVersion": 1,
+  "input": {
+    "...": "normalized video request"
+  }
+}
+```
+
 ## 1. `generate_video_from_image_audio`
 
 Use when:
@@ -42,6 +55,8 @@ Use when:
 }
 ```
 
+This object is the executable envelope's `input` value.
+
 Hosted execution mapping:
 
 - The CLI skill calls the PostPlus Cloud PostPlus Cloud video service endpoint.
@@ -72,6 +87,8 @@ Use when:
   "assetPurpose": "ugc_variation",
   "provider": "hosted-media",
   "model": "video-seedance-2-text",
+  "creativeFormat": "short_form_vertical",
+  "targetAspectRatio": "9:16",
   "promptPlan": {
     "subject": "a realistic creator in front of a natural background",
     "storyboardTimeline": [
@@ -104,6 +121,8 @@ Use when:
 }
 ```
 
+This object is the executable envelope's `input` value.
+
 ### Notes
 
 - `request.content` can be passed directly when you need full control.
@@ -117,6 +136,9 @@ Use when:
 - `promptPlan.referenceMap` is converted into `[image 1]...，[image 2]...` style prompt text to better match reference-image guidance.
 - `promptPlan.camera`, `promptPlan.shotType`, and `promptPlan.motion` are prompt-planning text only.
 - Camera trajectory, object trajectory, motion brush, and brush mask fields are not supported by the current runner and must fail before provider submission.
+- For Instagram Meta Ads creative production, set
+  `creativeFormat: "instagram_meta_ads"` or `aspectRatio: "3:4"` so the request
+  carries the selected PostPlus creative format outside the prompt text.
 
 ## 3. `generate_video` reference-motion transfer
 
@@ -147,6 +169,8 @@ Use when:
   "feedback": []
 }
 ```
+
+This object is the executable envelope's `input` value.
 
 Provider mapping:
 

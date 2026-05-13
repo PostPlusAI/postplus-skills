@@ -71,10 +71,19 @@ Default binding rule:
 
 State:
 
+- PostPlus creative format
+- target aspect ratio
 - duration
-- aspect ratio
 - full-screen vs storyboard
 - no text / no UI / watermark policy
+
+Default to PostPlus `short_form_vertical` at `9:16`. Use PostPlus
+`instagram_meta_ads` at `3:4` when the brief targets Instagram Meta Ads
+creative production.
+
+If the work started from a storyboard grid, keep the storyboard board layout
+ratio separate from the target video aspect ratio. A contact-sheet board can
+still hand off a `3:4` full-screen render request.
 
 If the target provider is Seedance 2.0 and the script exceeds 15 seconds, do not keep one long output spec.
 
@@ -235,6 +244,8 @@ Do not copy from inspiration-only references:
 Intentionally excluded:
 
 [OUTPUT SPEC]
+PostPlus creative format:
+Target aspect ratio:
 ...
 
 [LOOK AND TONE]

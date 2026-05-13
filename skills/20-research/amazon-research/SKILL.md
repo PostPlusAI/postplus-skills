@@ -13,7 +13,10 @@ Follow shared public skill rules in:
 
 - `postplus-shared` public skill rules
 
-Use this skill for Amazon platform-data work.
+Use this skill only when the request explicitly needs Amazon platform data.
+Generic category, market, or positioning questions should start with cheaper
+web/search or strategy skills unless the user names Amazon, ASINs, reviews,
+seller listings, best sellers, or marketplace price evidence.
 
 Default use cases:
 
@@ -23,8 +26,9 @@ Default use cases:
 - Inspect best sellers / new releases
 - Judge how to position a product on Amazon
 
-Do not default to web search for these when this skill can cover them.
-Use web only for external facts or supplemental context.
+Do not start a hosted Amazon collection just because the user asks broad
+category questions like "what are this category's traits?" First clarify that
+Amazon evidence is needed or route to a lighter research skill.
 
 ## Task Shapes
 
@@ -86,6 +90,7 @@ Tell the user:
   - one keyword set
   - one ASIN batch
   - one bestseller page
+  - at most 20 product-discovery items per start URL
 - if PostPlus Cloud service is unavailable, unauthorized, or returns a stable
   network error, stop immediately instead of switching to ad hoc shell glue
 
@@ -99,6 +104,10 @@ Main scripts:
 - `scripts/normalize_amazon_dataset.mjs`
 - `scripts/analyze_amazon_dataset.mjs`
 
+The collection runner's `--input` file must be a `schemaVersion: 1` hosted
+execution envelope whose `input` field contains the compiled collection
+request.
+
 ## Routing Reminder
 
 If the user asks strategic Amazon questions like:
@@ -108,7 +117,10 @@ If the user asks strategic Amazon questions like:
 - What problems appear most often in reviews
 - How we should position against them
 
-Treat them as Amazon platform-data questions first, not generic strategy questions.
+Treat them as Amazon platform-data questions only when the user explicitly
+asks for Amazon evidence or provides Amazon identifiers/URLs. Otherwise keep
+the first pass on cheaper general research and mention Amazon as an optional
+deeper marketplace check.
 
 ## Downstream Handoff
 

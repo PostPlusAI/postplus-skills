@@ -129,9 +129,22 @@ Read before implementation:
 Use these entrypoints:
 
 - `skills/20-research/youtube-research/scripts/run_youtube_video_collection.mjs`
+- `skills/20-research/youtube-research/scripts/poll_youtube_video_collection.mjs`
+
+If `run_youtube_video_collection.mjs` returns `pending > 0`, keep the emitted
+`collection-report.json` and resume with `poll_youtube_video_collection.mjs
+--collection-report <path>`. Repeat the poll command until `pending` is `0`;
+do not replace it with local blocking waits.
+
+While the collection is pending, do not block the user's conversation just to
+poll. Tell the user the public collection is running from a saved checkpoint and
+continue independent brief structure, source review, or next-step planning.
 
 ## Hosted Collection Note
 
 Use the shared hosted collection runner for actor calls:
 
 - `${CLAUDE_SKILL_DIR}/_postplus_shared/00-core/shared-collection/scripts/collection_actor_run.mjs`
+
+The runner's `--input` file must be a `schemaVersion: 1` hosted execution
+envelope whose `input` field contains the compiled collection request.

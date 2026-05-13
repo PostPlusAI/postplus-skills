@@ -14,9 +14,13 @@ CLI contract:
 ```bash
 node ${CLAUDE_SKILL_DIR}/scripts/collection_actor_run.mjs \
   --collection-key tiktok-videos \
-  --input tmp/input.json \
+  --input tmp/envelope.json \
   --output tmp/raw.json
 ```
+
+`tmp/envelope.json` must be a `schemaVersion: 1` hosted execution envelope whose
+`input` field contains the compiled actor request. Bare actor input JSON is not
+an executable `collection_actor_run.mjs` input.
 
 Output:
 
@@ -83,11 +87,16 @@ Input:
 
 ```bash
 node ${CLAUDE_SKILL_DIR}/scripts/expand_tiktok_creator_graph.mjs \
-  --input tmp/normalized-videos.json \
+  --input tmp/normalized-videos-envelope.json \
   --output tmp/graph-expanded-raw.json \
   --top 10 \
   --results-per-seed 6
 ```
+
+`tmp/normalized-videos-envelope.json` must be a `schemaVersion: 1` hosted
+execution envelope whose `input` field contains the normalized video dataset.
+Bare normalized dataset JSON is not an executable
+`expand_tiktok_creator_graph.mjs` input.
 
 Output:
 
