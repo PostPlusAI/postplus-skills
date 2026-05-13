@@ -22,7 +22,8 @@ This skill is for:
   mapping
 - separating provider-agnostic prompt architecture from provider fields
 - making short test iterations easy to diagnose
-- preserving reference boundaries and negative constraints
+- preserving reference boundaries without letting the request collapse into
+  mechanical constraint-writing
 
 This skill is not for choosing the segment pattern from scratch.
 
@@ -30,7 +31,8 @@ This skill is not for choosing the segment pattern from scratch.
 
 Prompt architecture comes before provider syntax.
 
-First write the request as a director's brief.
+First think like a director, not like a checklist compiler.
+Write what the viewer sees happening, in time order, with clear visible payoff.
 Then map it into model-specific fields.
 
 Every provider-ready request must be self-contained.
@@ -44,6 +46,31 @@ request.
 Read [`references/request-architecture.md`](references/request-architecture.md).
 
 If the task needs an explicit learn/do-not-copy block for references, also use `reference-contract-builder`.
+
+## Writing Posture
+
+The default goal is not to cover every field with defensive language.
+
+The default goal is to help the model imagine one believable short video:
+
+- what the viewer sees first
+- what changes on screen
+- what the person is physically doing
+- what visual moment proves the claim
+- how the scene lands by the end
+
+When writing a segment prompt, describe the clip as something unfolding on
+camera, not as a list of abstract requirements.
+
+Prefer:
+
+- visible actions over category labels
+- timeline-based shot logic over feature-summary prose
+- concrete environmental detail over generic style adjectives
+- one clear payoff beat over repeated explanation
+
+Use constraints with restraint. Add them when they protect the core outcome, not
+as default filler.
 
 ## Default Workflow
 
@@ -59,9 +86,23 @@ State what is being tested:
 
 Do not write the request as if every generation is a full ad.
 
-### 2. Write the provider-agnostic blocks
+### 2. Build the scene before the fields
 
-Use these blocks in order:
+Before writing structured fields, answer these creative questions:
+
+1. What happens in this clip?
+2. What does the viewer see first, next, and last?
+3. Which visible action carries each spoken line?
+4. What exact shot or moment delivers the payoff?
+5. Which details make the world feel real instead of generic?
+6. Which reference truly controls identity, product, or continuity?
+
+If the answer still sounds like a product explanation instead of a clip, keep
+rewriting until it reads like a camera-ready scene.
+
+### 2.2. Write the provider-agnostic blocks
+
+Once the scene is clear, map it into these blocks:
 
 1. role
 2. goal and hook logic
@@ -72,6 +113,9 @@ Use these blocks in order:
 7. camera
 8. sound intent
 9. product policy
+
+These blocks exist to preserve structure after the scene logic is already clear.
+Do not let them replace the scene logic.
 
 ### 2.5. Plan segments before provider mapping
 
@@ -109,6 +153,9 @@ Each segment must:
   provider-ready request
 - avoid shorthand such as `same as previous`, `same character`, or `same
   contract above`
+
+Within those boundaries, write each segment as its own small clip with its own
+visual beginning, readable middle, and usable end.
 
 The generated `segmentContract` is the handoff truth for final request mapping.
 Print this block for every segment before writing the final request set:
@@ -163,6 +210,9 @@ Examples:
 
 Add more constraints only after you know what the first run missed.
 
+If a draft starts feeling rigid, over-explained, or overly defensive, remove
+language before adding more.
+
 ## Reference Binding Rule
 
 When reference images or reference videos are used, bind each reference explicitly before provider mapping.
@@ -184,6 +234,23 @@ For Seedance final requests, prefer explicit bindings such as `[image 1]`, `[ima
 Unless the user explicitly says a reference is inspiration-only, benchmark-only,
 or weak guidance, treat user-provided persona, product, and audio references as
 identity-binding references that should stay consistent in the generated result.
+
+Once a reference is clearly bound, do not keep restating the same continuity
+claim in multiple styles unless the extra wording changes output.
+
+## Gentle Improvement Prompts
+
+When the script is directionally right but weak in execution, improve it by
+surfacing one or two high-value creative observations such as:
+
+- a spoken line has no visible action supporting it
+- the payoff arrives too late or too vaguely
+- too many beats are packed into one short segment
+- the mechanism is being repeated inside a payoff segment
+- the environment still feels generic rather than lived-in
+
+Phrase these as creative guidance, not as hard compliance failures, unless the
+request is truly under-specified.
 
 ## Failure Mode
 

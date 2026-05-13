@@ -5,7 +5,7 @@
 Check final `request.json.prompt`.
 
 - If the exact spoken lines are not in `prompt`, the request is wrong.
-- Move exact lines into `promptPlan.dialogue`.
+- Move exact lines into `promptPlan.storyboardTimeline`, on the same timecoded lines as the visible action.
 - Keep `promptPlan.audio` for voice style, BGM, SFX, subtitle, and watermark constraints.
 - Do not depend on `feedback`; it is local-only.
 
@@ -28,7 +28,7 @@ If a job stays in `processing` for unusually long:
 
 ## Segment Continuity Problems
 
-- If a later segment resets character, product state, or scene, add continuity language to `promptPlan.subject`, `promptPlan.action`, and `mustKeep`.
+- If a later segment resets character, product state, or scene, add continuity language to `promptPlan.subject`, `promptPlan.storyboardTimeline`, and `mustKeep`.
 - If an action crosses segments, restate the visible state inside the later segment request.
 - Reuse the same reference images across related segments.
 - Do not write `continue from the previous segment`, `same as previous`, or similar shorthand. The

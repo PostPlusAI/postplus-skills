@@ -78,6 +78,10 @@ Tell the user:
   `.postplus/`
 - compile the request into a small input JSON before the expensive collection
   step when URLs, ASINs, or keyword seeds need shaping
+- for product discovery with `amazon-products`, build from
+  `templates/junglee-amazon-crawler-search.json`: put category or search URLs
+  in `categoryOrProductUrls` as `{ "url": "..." }` entries and bound the first
+  pass with `maxItemsPerStartUrl`
 - start with a bounded first pass:
   - one keyword set
   - one ASIN batch

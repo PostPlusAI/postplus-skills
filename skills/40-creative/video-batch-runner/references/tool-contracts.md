@@ -74,7 +74,10 @@ Use when:
   "model": "video-seedance-2-text",
   "promptPlan": {
     "subject": "a realistic creator in front of a natural background",
-    "action": "opens a product, demonstrates it, then looks at camera",
+    "storyboardTimeline": [
+      "0.0-2.0s: the creator opens the product and brings it into frame. Dialogue: \"first spoken line.\"",
+      "2.0-5.0s: the creator demonstrates it, then looks at camera. Dialogue: \"second spoken line.\""
+    ],
     "scene": "clean home setting, natural light",
     "style": "real UGC, not a polished studio ad",
     "camera": "handheld close-up, subtle natural motion",
@@ -110,6 +113,7 @@ Use when:
   - `videos[]`
   - `audios[]`
   - `draftTaskId`
+- `promptPlan.storyboardTimeline` is the canonical place for timecoded action and spoken lines.
 - `promptPlan.referenceMap` is converted into `[image 1]...，[image 2]...` style prompt text to better match reference-image guidance.
 - `promptPlan.camera`, `promptPlan.shotType`, and `promptPlan.motion` are prompt-planning text only.
 - Camera trajectory, object trajectory, motion brush, and brush mask fields are not supported by the current runner and must fail before provider submission.

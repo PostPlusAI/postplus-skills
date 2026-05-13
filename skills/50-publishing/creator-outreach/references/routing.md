@@ -95,7 +95,7 @@ Preferred actor routes:
 - profile enrichment -> `clockworks/tiktok-profile-scraper`
 - bulk profile enrichment fallback -> `apidojo/tiktok-profile-scraper`
 - content-first creator discovery -> `clockworks/tiktok-scraper`
-- TikTok Shop creator scouting -> `lemur/tiktok-shop-creators`
+- TikTok Shop creator scouting -> unsupported in the current hosted release
 
 Use for:
 

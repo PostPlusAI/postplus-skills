@@ -73,20 +73,6 @@ Additional platform research skills for company, page, and channel snapshots.
 - `youtube-research`
   - Path: `skills/20-research/youtube-research/SKILL.md`
 
-### Xiaohongshu / Rednote
-Xiaohongshu research, benchmark, asset collection, commerce context, content packaging, and growth operations.
-
-- `xiaohongshu-account-research`
-  - Path: `skills/20-research/xhs-account-research/SKILL.md`
-- `xiaohongshu-content-benchmark`
-  - Path: `skills/20-research/xhs-content-benchmark/SKILL.md`
-- `xiaohongshu-media-collector`
-  - Path: `skills/20-research/xhs-media-collector/SKILL.md`
-- `xiaohongshu-tools`
-  - Path: `skills/20-research/xiaohongshu-tools/SKILL.md`
-- `xiaohongshu-notes`
-  - Path: `skills/40-creative/xiaohongshu-notes/SKILL.md`
-
 ### Marketplace, Sourcing, and Growth
 Demand-side and supply-side research for sourcing, selection, and cold-start strategy.
 
@@ -129,6 +115,9 @@ Transcription, video analysis, B-roll planning, prompt architecture, generation,
   - Path: `skills/40-creative/visual-hook/SKILL.md`
 - `script-generator`
   - Path: `skills/40-creative/script-generator/SKILL.md`
+- `slideshow-producer`
+  - Path: `skills/40-creative/slideshow-producer/SKILL.md`
+  - Supported models: Openai Gpt Image 2 Edit, Openai Gpt Image 2 Text To Image
 - `image-batch-runner`
   - Path: `skills/40-creative/image-batch-runner/SKILL.md`
   - Supported models: Nano Banana 2 Edit, Nano Banana 2 Text To Image, Nano Banana Pro Edit, Nano Banana Pro Edit, Nano Banana Pro Edit, Nano Banana Pro Text To Image, Nano Banana Pro Text To Image, Nano Banana Pro Text To Image, Openai Gpt Image 2 Edit, Openai Gpt Image 2 Text To Image, Seedream v5.0 Lite, Seedream v5.0 Lite Edit, Seedream v5.0 Lite Edit Sequential, Seedream v5.0 Lite Sequential
@@ -143,10 +132,6 @@ Transcription, video analysis, B-roll planning, prompt architecture, generation,
   - Supported models: Qwen3 TTS Voice Clone, Qwen3 TTS Voice Design
 - `creative-qa`
   - Path: `skills/40-creative/creative-qa/SKILL.md`
-- `xiaohongshu-card-notes`
-  - Path: `skills/40-creative/xiaohongshu-card-notes/SKILL.md`
-- `xiaohongshu-article-packager`
-  - Path: `skills/40-creative/xiaohongshu-article-packager/SKILL.md`
 
 ### Workspace, Publishing, and Meta
 Feishu/Lark, Google Workspace, social publishing, outreach, and meta utilities.

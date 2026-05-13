@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-1-da4d9fea58328227",
+  "releaseId": "skills-1-85f21c65f477d0ac",
   "source": "PostPlusAI/postplus-skills",
   "primaryIndex": "skills/INDEX.md",
   "skills": [
@@ -708,6 +708,42 @@
       "supportedModels": []
     },
     {
+      "familyId": "media-production",
+      "familyName": "Media and Creative Production",
+      "name": "slideshow-producer",
+      "path": "skills/40-creative/slideshow-producer/SKILL.md",
+      "requirements": {
+        "accountConnections": [],
+        "collectionKeys": [],
+        "endpointKeys": [
+          "image-gpt-image-2-edit",
+          "image-gpt-image-2-text"
+        ],
+        "hostedCapabilities": [
+          "media-file",
+          "media-generation"
+        ],
+        "localDependencies": [
+          "python3:pillow"
+        ],
+        "modelKeys": [],
+        "sourceKeys": []
+      },
+      "status": "released",
+      "supportedModels": [
+        {
+          "key": "image-gpt-image-2-edit",
+          "name": "Openai Gpt Image 2 Edit",
+          "source": "endpointKey"
+        },
+        {
+          "key": "image-gpt-image-2-text",
+          "name": "Openai Gpt Image 2 Text To Image",
+          "source": "endpointKey"
+        }
+      ]
+    },
+    {
       "familyId": "routing-contracts",
       "familyName": "Routing & Contracts",
       "name": "social-media-extractor",
@@ -1042,138 +1078,6 @@
         "collectionKeys": [
           "x-posts",
           "x-profiles"
-        ],
-        "endpointKeys": [],
-        "hostedCapabilities": [
-          "hosted-collection"
-        ],
-        "localDependencies": [],
-        "modelKeys": [],
-        "sourceKeys": []
-      },
-      "status": "released/support",
-      "supportedModels": []
-    },
-    {
-      "familyId": "xiaohongshu",
-      "familyName": "Xiaohongshu / Rednote",
-      "name": "xiaohongshu-account-research",
-      "path": "skills/20-research/xhs-account-research/SKILL.md",
-      "requirements": {
-        "accountConnections": [],
-        "collectionKeys": [
-          "xhs-account-posts"
-        ],
-        "endpointKeys": [],
-        "hostedCapabilities": [
-          "hosted-collection"
-        ],
-        "localDependencies": [],
-        "modelKeys": [],
-        "sourceKeys": []
-      },
-      "status": "released",
-      "supportedModels": []
-    },
-    {
-      "familyId": "media-production",
-      "familyName": "Media and Creative Production",
-      "name": "xiaohongshu-article-packager",
-      "path": "skills/40-creative/xiaohongshu-article-packager/SKILL.md",
-      "requirements": {
-        "accountConnections": [],
-        "collectionKeys": [],
-        "endpointKeys": [],
-        "hostedCapabilities": [],
-        "localDependencies": [],
-        "modelKeys": [],
-        "sourceKeys": []
-      },
-      "status": "released",
-      "supportedModels": []
-    },
-    {
-      "familyId": "media-production",
-      "familyName": "Media and Creative Production",
-      "name": "xiaohongshu-card-notes",
-      "path": "skills/40-creative/xiaohongshu-card-notes/SKILL.md",
-      "requirements": {
-        "accountConnections": [],
-        "collectionKeys": [],
-        "endpointKeys": [],
-        "hostedCapabilities": [],
-        "localDependencies": [],
-        "modelKeys": [],
-        "sourceKeys": []
-      },
-      "status": "released",
-      "supportedModels": []
-    },
-    {
-      "familyId": "xiaohongshu",
-      "familyName": "Xiaohongshu / Rednote",
-      "name": "xiaohongshu-content-benchmark",
-      "path": "skills/20-research/xhs-content-benchmark/SKILL.md",
-      "requirements": {
-        "accountConnections": [],
-        "collectionKeys": [
-          "xhs-account-posts"
-        ],
-        "endpointKeys": [],
-        "hostedCapabilities": [
-          "hosted-collection"
-        ],
-        "localDependencies": [],
-        "modelKeys": [],
-        "sourceKeys": []
-      },
-      "status": "released",
-      "supportedModels": []
-    },
-    {
-      "familyId": "xiaohongshu",
-      "familyName": "Xiaohongshu / Rednote",
-      "name": "xiaohongshu-media-collector",
-      "path": "skills/20-research/xhs-media-collector/SKILL.md",
-      "requirements": {
-        "accountConnections": [],
-        "collectionKeys": [],
-        "endpointKeys": [],
-        "hostedCapabilities": [],
-        "localDependencies": [],
-        "modelKeys": [],
-        "sourceKeys": []
-      },
-      "status": "released",
-      "supportedModels": []
-    },
-    {
-      "familyId": "xiaohongshu",
-      "familyName": "Xiaohongshu / Rednote",
-      "name": "xiaohongshu-notes",
-      "path": "skills/40-creative/xiaohongshu-notes/SKILL.md",
-      "requirements": {
-        "accountConnections": [],
-        "collectionKeys": [],
-        "endpointKeys": [],
-        "hostedCapabilities": [],
-        "localDependencies": [],
-        "modelKeys": [],
-        "sourceKeys": []
-      },
-      "status": "released",
-      "supportedModels": []
-    },
-    {
-      "familyId": "xiaohongshu",
-      "familyName": "Xiaohongshu / Rednote",
-      "name": "xiaohongshu-tools",
-      "path": "skills/20-research/xiaohongshu-tools/SKILL.md",
-      "requirements": {
-        "accountConnections": [],
-        "collectionKeys": [
-          "xhs-account-posts",
-          "xhs-search"
         ],
         "endpointKeys": [],
         "hostedCapabilities": [
