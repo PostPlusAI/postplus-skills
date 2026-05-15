@@ -51,6 +51,22 @@ postplus status
 npx -y skills add PostPlusAI/postplus-skills --global --list
 ```
 
+## Local Studio
+
+For heavier skills that benefit from a visual workspace, use the CLI-managed
+local Studio:
+
+```bash
+postplus studio init
+postplus studio open
+postplus studio status
+```
+
+Studio creates a visible `PostPlus Studio/` folder in the current working
+directory and opens the bundled local dashboard from the public CLI package.
+Assets, workflow files, activity, and provenance live inside that folder; hidden
+runtime cache and logs stay under `PostPlus Studio/.postplus/`.
+
 ## The Vision
 
 PostPlus is built for a world where one marketer, founder, operator, or agency strategist can work with an AI agent as if they had a larger marketing team around them.
