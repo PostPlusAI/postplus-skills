@@ -22,6 +22,7 @@ export const DEFAULT_OUTPUT_FORMAT = 'png';
 export const DEFAULT_RESOLUTION = '1k';
 export const DEFAULT_ASPECT_RATIO = '9:16';
 export const DEFAULT_SEEDREAM_SIZE = '1440*2560';
+export const DEFAULT_ENABLE_SYNC_MODE = false;
 
 export const HOSTED_IMAGE_MODELS = {
   'image-gpt-image-2-text': {
@@ -321,7 +322,10 @@ export function normalizeGenerationInput(input, mode) {
     size: input.size || null,
     maxImages: Number.isInteger(input.maxImages) ? input.maxImages : null,
     outputFormat: input.outputFormat || DEFAULT_OUTPUT_FORMAT,
-    enableSyncMode: input.enableSyncMode === true,
+    enableSyncMode:
+      typeof input.enableSyncMode === 'boolean'
+        ? input.enableSyncMode
+        : DEFAULT_ENABLE_SYNC_MODE,
     enableBase64Output: input.enableBase64Output === true,
     enableWebSearch: input.enableWebSearch === true,
     localAssetDir,

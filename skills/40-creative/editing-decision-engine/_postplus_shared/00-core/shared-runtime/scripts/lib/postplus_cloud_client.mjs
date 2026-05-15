@@ -273,8 +273,7 @@ async function requestHostedCapabilityBridgeJson(socketPath, payload) {
                     `PostPlus Cloud client request failed with ${statusCode}.`,
                   undefined,
                   {
-                    productErrorCode: productError.code,
-                    quoteConfirmation: productError.quoteConfirmation,
+                    ...pickProductErrorFields(productError),
                     status: statusCode,
                     upstreamBodyText: bodyText,
                   },
@@ -391,4 +390,25 @@ function readProductErrorMessage(payload) {
     : typeof payload.error === 'string' && payload.error.trim()
       ? payload.error.trim()
       : null;
+}
+
+function pickProductErrorFields(payload) {
+  const fields = {
+    productErrorCode: payload.code,
+  };
+
+  for (const key of [
+    'capabilityDisplayName',
+    'layer',
+    'operationId',
+    'providerDisplayName',
+    'quoteConfirmation',
+    'userMessageRule',
+  ]) {
+    if (payload[key] !== undefined) {
+      fields[key] = payload[key];
+    }
+  }
+
+  return fields;
 }

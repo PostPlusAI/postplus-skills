@@ -453,8 +453,7 @@ function buildHttpError(statusCode, bodyText, transport) {
       undefined,
       {
         ...pickProductErrorFields(productError),
-        status: statusCode,
-        upstreamBodyText: preview,
+        ...buildHttpErrorMetadata(statusCode, preview),
       },
     );
   }
@@ -469,8 +468,7 @@ function buildHttpError(statusCode, bodyText, transport) {
       undefined,
       {
         ...pickProductErrorFields(productError),
-        status: statusCode,
-        upstreamBodyText: preview,
+        ...buildHttpErrorMetadata(statusCode, preview),
       },
     );
   }
@@ -482,8 +480,7 @@ function buildHttpError(statusCode, bodyText, transport) {
       undefined,
       {
         ...pickProductErrorFields(productError),
-        status: statusCode,
-        upstreamBodyText: preview,
+        ...buildHttpErrorMetadata(statusCode, preview),
       },
     );
   }
@@ -498,8 +495,7 @@ function buildHttpError(statusCode, bodyText, transport) {
       undefined,
       {
         ...pickProductErrorFields(productError),
-        status: statusCode,
-        upstreamBodyText: preview,
+        ...buildHttpErrorMetadata(statusCode, preview),
       },
     );
   }
@@ -514,8 +510,7 @@ function buildHttpError(statusCode, bodyText, transport) {
       undefined,
       {
         ...pickProductErrorFields(productError),
-        status: statusCode,
-        upstreamBodyText: preview,
+        ...buildHttpErrorMetadata(statusCode, preview),
       },
     );
   }
@@ -525,7 +520,7 @@ function buildHttpError(statusCode, bodyText, transport) {
       `${transport.codePrefix}_rate_limited`,
       `${transport.providerName} request was rate limited (429).${suffix}`,
       undefined,
-      { status: statusCode },
+      buildHttpErrorMetadata(statusCode, preview),
     );
   }
 
@@ -534,7 +529,7 @@ function buildHttpError(statusCode, bodyText, transport) {
       `${transport.codePrefix}_unauthorized`,
       `${transport.providerName} request was unauthorized (401).${suffix}`,
       undefined,
-      { status: statusCode },
+      buildHttpErrorMetadata(statusCode, preview),
     );
   }
 
@@ -546,7 +541,7 @@ function buildHttpError(statusCode, bodyText, transport) {
       `${transport.codePrefix}_capability_unavailable`,
       `${transport.providerName} capability is unavailable (503).${suffix}`,
       undefined,
-      { status: statusCode },
+      buildHttpErrorMetadata(statusCode, preview),
     );
   }
 
@@ -554,8 +549,15 @@ function buildHttpError(statusCode, bodyText, transport) {
     `${transport.codePrefix}_request_failed`,
     `${transport.providerName} request failed with ${statusCode}.${suffix}`,
     undefined,
-    { status: statusCode },
+    buildHttpErrorMetadata(statusCode, preview),
   );
+}
+
+function buildHttpErrorMetadata(statusCode, upstreamBodyText) {
+  return {
+    status: statusCode,
+    ...(upstreamBodyText ? { upstreamBodyText } : {}),
+  };
 }
 
 function parseProductErrorPayload(bodyText) {
