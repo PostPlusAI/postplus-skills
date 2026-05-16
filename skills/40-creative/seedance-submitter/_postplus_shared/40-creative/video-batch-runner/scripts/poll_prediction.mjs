@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 import { formatCliError } from '../../../00-core/shared-runtime/scripts/lib/network_runtime.mjs';
 import {
-  ARK_API_BASE,
   buildRequestPaths,
   createRenderManifestBase,
   fetchJson,
@@ -15,18 +14,12 @@ import {
 
 function usage() {
   console.error(
-    'Usage: node poll_prediction.mjs --request <request.json> [--response <response.json>]',
+    'Usage: node poll_prediction.mjs --request <request.json> [--response <response.json>] [--result-url <url-or-handle>]',
   );
 }
 
 function inferResultUrl(request, responsePayload) {
   const payload = unwrapProviderResult(responsePayload);
-  if (request?.provider === 'ark') {
-    const taskId = payload?.id || responsePayload?.id;
-    if (taskId) {
-      return `${ARK_API_BASE}/contents/generations/tasks/${taskId}`;
-    }
-  }
   if (typeof payload?.urls?.get === 'string' && payload.urls.get.length > 0) {
     return payload.urls.get;
   }
@@ -45,6 +38,11 @@ async function main() {
   }
 
   const request = readHostedJson(args.request);
+  if (request.provider !== 'hosted-media') {
+    throw new Error(
+      `unsupported_video_provider: ${request.provider}. Released video-batch-runner only supports provider "hosted-media".`,
+    );
+  }
   const priorResponse = args.response
     ? readJson(args.response)
     : readJson(buildRequestPaths(request.localOutputDir).responsePath);
@@ -60,12 +58,8 @@ async function main() {
   const result = unwrapProviderResult(rawResult);
 
   const manifest = createRenderManifestBase(request, paths);
-  manifest.generationHandle =
-    request.provider === 'hosted-media'
-      ? result?.id || priorResponse?.id || null
-      : null;
-  manifest.providerTaskId =
-    request.provider === 'ark' ? result?.id || priorResponse?.id || null : null;
+  manifest.generationHandle = result?.id || priorResponse?.id || null;
+  manifest.providerTaskId = null;
   manifest.providerStatus = result?.status || null;
   manifest.providerUrls = result?.urls || priorResponse?.urls || null;
   manifest.hasNsfwContents = Array.isArray(result?.has_nsfw_contents)
@@ -75,8 +69,6 @@ async function main() {
   manifest.generateAudio = request.generateAudio;
   manifest.serviceTier = result?.service_tier || request.serviceTier || null;
   manifest.watermark = request.watermark;
-  manifest.content =
-    request.provider === 'ark' ? result?.content || null : undefined;
   manifest.usage = result?.usage || null;
   manifest.error = result?.error || null;
 

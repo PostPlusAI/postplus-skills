@@ -15,7 +15,6 @@ import {
   resolveCreativeFormat,
 } from '../../../00-core/shared-runtime/scripts/lib/creative_format.mjs';
 
-export const ARK_API_BASE = 'https://ark.cn-beijing.volces.com/api/v3';
 export const DEFAULT_PROVIDER = 'hosted-media';
 export const DEFAULT_MODEL = 'video-infinitetalk';
 export const DEFAULT_RESOLUTION = '720p';
@@ -384,68 +383,6 @@ function formatTimelineRange(startSeconds, endSeconds) {
   return `${Number(endSeconds).toFixed(1)}s`;
 }
 
-function normalizeContentItem(item) {
-  if (!item || typeof item !== 'object' || !item.type) {
-    throw new Error('Each request.content item must be an object with a type.');
-  }
-
-  if (item.type === 'text') {
-    if (typeof item.text !== 'string' || !item.text.trim()) {
-      throw new Error('text content requires a non-empty text field.');
-    }
-    return { type: 'text', text: item.text.trim() };
-  }
-
-  if (item.type === 'image_url') {
-    const url = item.image_url?.url;
-    if (typeof url !== 'string' || !url.trim()) {
-      throw new Error('image_url content requires image_url.url.');
-    }
-    return {
-      type: 'image_url',
-      image_url: { url: url.trim() },
-      ...(item.role ? { role: item.role } : {}),
-    };
-  }
-
-  if (item.type === 'video_url') {
-    const url = item.video_url?.url;
-    if (typeof url !== 'string' || !url.trim()) {
-      throw new Error('video_url content requires video_url.url.');
-    }
-    return {
-      type: 'video_url',
-      video_url: { url: url.trim() },
-      ...(item.role ? { role: item.role } : {}),
-    };
-  }
-
-  if (item.type === 'audio_url') {
-    const url = item.audio_url?.url;
-    if (typeof url !== 'string' || !url.trim()) {
-      throw new Error('audio_url content requires audio_url.url.');
-    }
-    return {
-      type: 'audio_url',
-      audio_url: { url: url.trim() },
-      ...(item.role ? { role: item.role } : {}),
-    };
-  }
-
-  if (item.type === 'draft_task') {
-    const id = item.draft_task?.id;
-    if (typeof id !== 'string' || !id.trim()) {
-      throw new Error('draft_task content requires draft_task.id.');
-    }
-    return {
-      type: 'draft_task',
-      draft_task: { id: id.trim() },
-    };
-  }
-
-  throw new Error(`Unsupported request.content item type: ${item.type}`);
-}
-
 function buildSeedancePromptFromPlan(plan = {}, fallbackPrompt = null) {
   if (!plan || typeof plan !== 'object') {
     return fallbackPrompt || null;
@@ -726,71 +663,6 @@ function readHostedRequiredInput(input, field) {
   return input?.[field] || null;
 }
 
-function normalizeArkContent(input) {
-  if (Array.isArray(input.content) && input.content.length > 0) {
-    return input.content.map(normalizeContentItem);
-  }
-
-  const content = [];
-  const prompt = buildSeedancePromptFromPlan(
-    input.promptPlan,
-    input.prompt || input.text || null,
-  );
-  if (prompt) {
-    content.push({ type: 'text', text: prompt });
-  }
-
-  const images = Array.isArray(input.images) ? input.images : [];
-  for (const image of images) {
-    content.push(
-      normalizeContentItem({
-        type: 'image_url',
-        image_url: { url: image.url || image.image || image },
-        role: image.role,
-      }),
-    );
-  }
-
-  const videos = Array.isArray(input.videos) ? input.videos : [];
-  for (const video of videos) {
-    content.push(
-      normalizeContentItem({
-        type: 'video_url',
-        video_url: { url: video.url || video.video || video },
-        role: video.role || 'reference_video',
-      }),
-    );
-  }
-
-  const audios = Array.isArray(input.audios) ? input.audios : [];
-  for (const audio of audios) {
-    content.push(
-      normalizeContentItem({
-        type: 'audio_url',
-        audio_url: { url: audio.url || audio.audio || audio },
-        role: audio.role || 'reference_audio',
-      }),
-    );
-  }
-
-  if (input.draftTaskId) {
-    content.push(
-      normalizeContentItem({
-        type: 'draft_task',
-        draft_task: { id: input.draftTaskId },
-      }),
-    );
-  }
-
-  if (content.length === 0) {
-    throw new Error(
-      'Ark Seedance requests require request.content or shorthand text/images/videos/audios/draftTaskId.',
-    );
-  }
-
-  return content;
-}
-
 export function normalizeRenderInput(input) {
   if (!input?.jobId) {
     throw new Error('request.jobId is required.');
@@ -802,12 +674,15 @@ export function normalizeRenderInput(input) {
   assertNoDeprecatedPromptPlanFields(input.promptPlan);
 
   const provider = input.provider || DEFAULT_PROVIDER;
+  if (provider !== 'hosted-media') {
+    throw new Error(
+      `unsupported_video_provider: ${provider}. Released video-batch-runner only supports provider "hosted-media".`,
+    );
+  }
   const model = input.model || DEFAULT_MODEL;
-  const hostedModelConfig =
-    provider === 'hosted-media' ? getHostedVideoModelConfig(model) : null;
+  const hostedModelConfig = getHostedVideoModelConfig(model);
   const creativeFormat = resolveCreativeFormat(input);
-  const modelSupportsAspectRatio =
-    provider === 'ark' || hostedModelConfig?.supportsAspectRatio === true;
+  const modelSupportsAspectRatio = hostedModelConfig.supportsAspectRatio === true;
   const prompt = buildSeedancePromptFromPlan(
     input.promptPlan,
     input.prompt || input.text || null,
@@ -826,10 +701,7 @@ export function normalizeRenderInput(input) {
         throw new Error(`Hosted video model ${model} requires request.${field}.`);
       }
     }
-  } else {
-    assertNoUnsupportedStructuredMotionControls(input);
   }
-
   const normalized = {
     provider,
     model,
@@ -928,13 +800,7 @@ export function normalizeRenderInput(input) {
     },
   };
 
-  if (provider === 'ark') {
-    normalized.content = normalizeArkContent(input);
-    normalized.prompt =
-      normalized.content.find((item) => item.type === 'text')?.text || null;
-  } else {
-    normalized.content = [];
-  }
+  normalized.content = [];
 
   return normalized;
 }
@@ -978,58 +844,10 @@ export function createRenderManifestBase(normalized, paths) {
 }
 
 export async function toProviderPayload(normalized, { paths } = {}) {
-  if (normalized.provider === 'ark') {
-    const payload = {
-      model: normalized.model,
-      content: normalized.content,
-    };
-
-    if (normalized.callbackUrl) {
-      payload.callback_url = normalized.callbackUrl;
-    }
-    if (typeof normalized.returnLastFrame === 'boolean') {
-      payload.return_last_frame = normalized.returnLastFrame;
-    }
-    if (normalized.serviceTier) {
-      payload.service_tier = normalized.serviceTier;
-    }
-    if (Number.isInteger(normalized.executionExpiresAfter)) {
-      payload.execution_expires_after = normalized.executionExpiresAfter;
-    }
-    if (typeof normalized.generateAudio === 'boolean') {
-      payload.generate_audio = normalized.generateAudio;
-    }
-    if (typeof normalized.draft === 'boolean') {
-      payload.draft = normalized.draft;
-    }
-    if (Array.isArray(normalized.tools) && normalized.tools.length > 0) {
-      payload.tools = normalized.tools;
-    }
-    if (normalized.safetyIdentifier) {
-      payload.safety_identifier = normalized.safetyIdentifier;
-    }
-    if (normalized.resolution) {
-      payload.resolution = normalized.resolution;
-    }
-    if (normalized.ratio) {
-      payload.ratio = normalized.ratio;
-    }
-    if (Number.isInteger(normalized.frames)) {
-      payload.frames = normalized.frames;
-    } else if (Number.isInteger(normalized.duration)) {
-      payload.duration = normalized.duration;
-    }
-    if (Number.isInteger(normalized.seed)) {
-      payload.seed = normalized.seed;
-    }
-    if (typeof normalized.cameraFixed === 'boolean') {
-      payload.camera_fixed = normalized.cameraFixed;
-    }
-    if (typeof normalized.watermark === 'boolean') {
-      payload.watermark = normalized.watermark;
-    }
-
-    return payload;
+  if (normalized.provider !== 'hosted-media') {
+    throw new Error(
+      `unsupported_video_provider: ${normalized.provider}. Released video-batch-runner only supports provider "hosted-media".`,
+    );
   }
 
   const hostedModelConfig = getHostedVideoModelConfig(normalized.model);
@@ -1125,49 +943,6 @@ export async function toProviderPayload(normalized, { paths } = {}) {
 }
 
 export async function maybeDownloadOutputs(result, manifest, paths) {
-  if (manifest.provider === 'ark') {
-    if (
-      result?.status !== 'succeeded' ||
-      typeof result?.content !== 'object' ||
-      !result.content
-    ) {
-      return manifest;
-    }
-
-    ensureDir(paths.rendersDir);
-    if (
-      typeof result.content.video_url === 'string' &&
-      result.content.video_url
-    ) {
-      const localPath = path.join(paths.rendersDir, 'render-001.mp4');
-      await downloadFile(result.content.video_url, localPath);
-      manifest.assets.push({
-        assetId: `${manifest.jobId}-video-001`,
-        localPath,
-        remoteUrl: result.content.video_url,
-        mimeType: 'video/mp4',
-        createdAt: nowIso(),
-      });
-    }
-
-    if (
-      typeof result.content.last_frame_url === 'string' &&
-      result.content.last_frame_url
-    ) {
-      const localPath = path.join(paths.rendersDir, 'last-frame-001.png');
-      await downloadFile(result.content.last_frame_url, localPath);
-      manifest.assets.push({
-        assetId: `${manifest.jobId}-last-frame-001`,
-        localPath,
-        remoteUrl: result.content.last_frame_url,
-        mimeType: 'image/png',
-        createdAt: nowIso(),
-      });
-    }
-
-    return manifest;
-  }
-
   if (result?.status !== 'completed' || !Array.isArray(result?.outputs)) {
     return manifest;
   }
@@ -1193,11 +968,10 @@ export async function maybeDownloadOutputs(result, manifest, paths) {
 }
 
 export function getProviderApiConfig(request) {
-  if (request.provider === 'ark') {
-    return {
-      baseUrl: ARK_API_BASE,
-      submitUrl: `${ARK_API_BASE}/contents/generations/tasks`,
-    };
+  if (request.provider !== 'hosted-media') {
+    throw new Error(
+      `unsupported_video_provider: ${request.provider}. Released video-batch-runner only supports provider "hosted-media".`,
+    );
   }
 
   return {

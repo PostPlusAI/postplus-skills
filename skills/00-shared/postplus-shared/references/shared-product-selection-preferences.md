@@ -56,7 +56,8 @@ Use these routes:
 - Amazon platform data -> `skills/20-research/amazon-research`
 - TikTok content and audience language -> `skills/20-research/tiktok-research`
 - Instagram creator/content/comment proof -> `skills/20-research/instagram-account-research` or `skills/20-research/instagram-content-benchmark` or `skills/20-research/instagram-audience-voice`
-- 1688 supply-side product or supplier data -> `skills/20-research/1688-research`
+- supply-side product or supplier data -> user-provided supplier sheets,
+  quotations, or approved marketplace exports
 - cross-source sourcing judgment -> `skills/30-strategy/sourcing-selection`
 - Hook, structure, and why content works -> `skills/40-creative/video-analysis`
 - Creative benchmark adaptation -> `skills/40-creative/benchmark-to-brief`

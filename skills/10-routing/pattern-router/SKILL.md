@@ -24,7 +24,8 @@ This skill is for:
 
 This skill is not for writing the final storyboard or provider request.
 
-When the segment is `hook`, this skill should route the segment and opening job, then hand off mechanism selection to `hook-design`.
+When the segment is `hook`, this skill should route the segment and opening job,
+then hand off visual mechanism selection to `visual-hook`.
 
 ## Core Rule
 
@@ -75,13 +76,14 @@ Need explicit hook mechanism:
 Why this route fits:
 ```
 
-This block is the handoff to `hook-design`, `reference-decode`, `storyboard-grid-writer`, or `video-request-architect`.
+This block is the handoff to `visual-hook`, `reference-decode`, or
+`video-request-architect`.
 
 ### 4. Choose the next skill
 
-- If the segment is `hook` and the stop-scroll mechanism still needs to be chosen, hand off to `hook-design`
+- If the segment is `hook` and the stop-scroll mechanism still needs to be chosen, hand off to `visual-hook`
 - If references exist and need decoding, hand off to `reference-decode`
-- If the target is a storyboard grid or beat sheet, hand off to `storyboard-grid-writer`
+- If the target is a storyboard grid, beat sheet, or provider-ready request, hand off to `video-request-architect`
 - If the target is a provider-ready request, hand off to `video-request-architect`
 
 ## Routing Rules

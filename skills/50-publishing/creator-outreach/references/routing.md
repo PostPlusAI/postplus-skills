@@ -126,14 +126,12 @@ Use for:
 
 Use:
 
-- `skills/20-research/x-research`
 - `skills/20-research/x-tools`
 
 Preferred actor routes:
 
-- account snapshot -> `apidojo/twitter-user-scraper`
-- follower enrichment -> `kaitoeasyapi/premium-x-follower-scraper-following-data`
-- deep fallback -> `epctex/twitter-profile-scraper`
+- account snapshot -> `x-profiles`
+- post or topic evidence -> `x-posts`
 
 Use for:
 

@@ -36,7 +36,6 @@ Do not use this skill for:
 
 Expected inputs usually come from:
 
-- [`../tiktok-music-sound-collector/SKILL.md`](skills/20-research/tiktok-music-sound-collector/SKILL.md)
 - [`../tiktok-research/SKILL.md`](skills/20-research/tiktok-research/SKILL.md)
 
 ## Downloader

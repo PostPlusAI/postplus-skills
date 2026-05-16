@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { randomUUID } from 'node:crypto';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 import {
   isHostedCollectionPendingResult,
@@ -17,7 +18,7 @@ import {
 
 function usage() {
   console.error(
-    'Usage: node collect_top_video_comments.mjs --input <dataset-envelope.json> --output <comments.json> [--collection-key tiktok-comments] [--top 8] [--max-comments 40]',
+    'Usage: node collect_top_video_comments.mjs --input <dataset-envelope.json> --output <comments.json> [--collection-key tiktok-comments] [--top 8] [--comments-per-post 40]',
   );
 }
 
@@ -32,6 +33,14 @@ function toScoredVideo(item) {
   };
 }
 
+export function buildCommentCollectionInput(topVideos, commentsPerPost) {
+  return {
+    postURLs: topVideos.map((video) => video.url),
+    commentsPerPost,
+    maxRepliesPerComment: 0,
+  };
+}
+
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   if (args.help || !args.input || !args.output) {
@@ -43,7 +52,9 @@ async function main() {
   const collectionKey = args['collection-key'] || 'tiktok-comments';
   const sourceId = 'clockworks/tiktok-comments-scraper';
   const topCount = Number(args.top || 8);
-  const maxComments = Number(args['max-comments'] || 40);
+  const commentsPerPost = Number(
+    args['comments-per-post'] || args['max-comments'] || 40,
+  );
   const raw = readHostedJson(args.input);
   const dataset =
     raw?.platform === 'tiktok'
@@ -58,10 +69,7 @@ async function main() {
     )
     .slice(0, topCount);
 
-  const input = {
-    postUrls: topVideos.map((video) => video.url),
-    maxItems: maxComments,
-  };
+  const input = buildCommentCollectionInput(topVideos, commentsPerPost);
 
   const outputPath = args.output;
   const tempOutput = `${outputPath}.raw.json`;
@@ -93,7 +101,12 @@ async function main() {
   console.log(`Saved ${normalized.itemCount} comments to ${outputPath}`);
 }
 
-main().catch((error) => {
-  console.error(formatCliError(error));
-  process.exitCode = 1;
-});
+const isDirectRun =
+  process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
+
+if (isDirectRun) {
+  main().catch((error) => {
+    console.error(formatCliError(error));
+    process.exitCode = 1;
+  });
+}

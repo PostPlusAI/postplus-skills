@@ -45,13 +45,14 @@ Default execution order:
 - TikTok platform data -> `skills/20-research/tiktok-research`
 - TikTok ad creative research -> `skills/20-research/tiktok-ad-research`
 - Amazon platform data -> `skills/20-research/amazon-research`
-- 1688 product or supplier data -> `skills/20-research/1688-research`
+- supply-side product or supplier data -> user-provided supplier sheets,
+  quotations, or approved marketplace exports
 - Instagram creator discovery -> `skills/20-research/instagram-creator-discovery`
 - Instagram creator/account research -> `skills/20-research/instagram-account-research`
 - Instagram content benchmark -> `skills/20-research/instagram-content-benchmark`
 - Instagram audience language -> `skills/20-research/instagram-audience-voice`
 - Instagram hashtag/tagged campaign scouting -> `skills/20-research/instagram-campaign-scout`
-- X account/topic graph research -> `skills/20-research/x-research`
+- X account/topic graph research -> `skills/20-research/x-tools`
 - YouTube channel and video research -> `skills/20-research/youtube-research`
 - Facebook page and post research -> `skills/20-research/facebook-research`
 - Hook, structure, and why content works -> `skills/40-creative/video-analysis`

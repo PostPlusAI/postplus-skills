@@ -408,7 +408,6 @@ export function buildInput(brief, sourceId) {
     }
     return {
       ...extra,
-      postUrls: urls,
       postURLs: urls,
       commentsPerPost: explicitResultsPerPage || limit,
       maxRepliesPerComment:

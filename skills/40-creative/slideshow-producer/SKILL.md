@@ -235,7 +235,13 @@ Each sub-agent produces one slide manifest JSON. The main agent collects and pre
 
 A minimal localhost review tool at `gui/index.html`.
 
-Start with `node gui/server.mjs` (default port 3099).
+Start with:
+
+```bash
+node gui/server.mjs --manifest <path-to-manifest.json>
+```
+
+The default port is `3099`.
 
 The GUI lets the user:
 - See all slides in order

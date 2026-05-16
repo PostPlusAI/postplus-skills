@@ -30,15 +30,14 @@ End users do **not** need separate publishing-service accounts.
 
 Channel onboarding uses the PostPlus invite-link mechanism:
 
-1. the product calls `GET /public/v1/social/{integration}` with the PostPlus
-   social publishing service
-2. PostPlus returns a social-platform OAuth URL (e.g. Instagram, TikTok)
+1. the product asks PostPlus Cloud to create an invite link for the target
+   social platform
+2. PostPlus returns a social-platform OAuth URL
 3. the product delivers that URL to the end user (via UI or CLI)
 4. the user clicks the link and authorizes their social account on the
    platform's own OAuth consent screen
 5. the resulting channel token lands in the PostPlus social publishing workspace
-6. the product labels the channel with the user's PostPlus account id via
-   `PUT /integrations/:id/customer-name`
+6. the product labels the channel with the user's PostPlus account id
 
 ## Safe default
 
@@ -111,7 +110,7 @@ Release workflow rules:
 Prepare a publish request preview from a hosted envelope request file:
 
 ```bash
-node skills/50-publishing/social-media-publisher/scripts/create_post.mjs \
+node ${CLAUDE_SKILL_DIR}/scripts/create_post.mjs \
   --request "<request.json>" \
   --customer-config "<social-publishing.config.json>" \
   --output "<create-post.preview.json>"
@@ -120,7 +119,7 @@ node skills/50-publishing/social-media-publisher/scripts/create_post.mjs \
 Execute the approved create from the same hosted envelope request file:
 
 ```bash
-node skills/50-publishing/social-media-publisher/scripts/create_post.mjs \
+node ${CLAUDE_SKILL_DIR}/scripts/create_post.mjs \
   --request "<request.json>" \
   --customer-config "<social-publishing.config.json>" \
   --output "<create-post.result.json>" \
@@ -131,7 +130,7 @@ node skills/50-publishing/social-media-publisher/scripts/create_post.mjs \
 Promote a draft into the publish queue:
 
 ```bash
-node skills/50-publishing/social-media-publisher/scripts/change_post_status.mjs \
+node ${CLAUDE_SKILL_DIR}/scripts/change_post_status.mjs \
   --post-id "<post-id>" \
   --status schedule \
   --output "<status.result.json>" \

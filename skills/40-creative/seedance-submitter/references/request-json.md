@@ -97,7 +97,7 @@ For any request that belongs to a source script above 15 seconds, include a
 Before submission, validate the request:
 
 ```bash
-node skills/40-creative/seedance-submitter/scripts/validate_seedance_request_contract.mjs \
+node ${CLAUDE_SKILL_DIR}/scripts/validate_seedance_request_contract.mjs \
   --input path/to/request.seed.json
 ```
 
@@ -255,17 +255,17 @@ Seedance request from `input`.
 Upload images with:
 
 ```bash
-node skills/40-creative/image-batch-runner/scripts/upload_media.mjs --request path/to/upload-request.json
+node ${CLAUDE_SKILL_DIR}/../image-batch-runner/scripts/upload_media.mjs --request path/to/upload-request.json
 ```
 
 Submit video with:
 
 ```bash
-node skills/40-creative/video-batch-runner/scripts/generate_video_from_image_audio.mjs --request path/to/request.seed.json
+node ${CLAUDE_SKILL_DIR}/../video-batch-runner/scripts/generate_video_from_image_audio.mjs --request path/to/request.seed.json
 ```
 
 Poll with:
 
 ```bash
-node skills/40-creative/video-batch-runner/scripts/poll_prediction.mjs --request path/to/request.json
+node ${CLAUDE_SKILL_DIR}/../video-batch-runner/scripts/poll_prediction.mjs --request path/to/request.json
 ```
