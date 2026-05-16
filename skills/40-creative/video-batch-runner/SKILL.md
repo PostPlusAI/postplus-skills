@@ -83,7 +83,7 @@ Required upstream inputs depend on route:
   - script or concept reference
   - render purpose
   - local output directory
-- `ark / seedance`
+- `seedance`
   - prompt or `promptPlan`
   - any required media refs for the chosen mode
   - concept reference
@@ -121,12 +121,10 @@ Current routes:
 - `kling-reference-motion-transfer` (hosted)
   - endpoint key: `video-kling-v2-6-pro-motion-control`
   - category: reference image plus reference motion video to video
-- `ark`
-  - direct workspace route for internal video/audio workflows
-  - category: text/image/video/audio to video
 
 Not currently released:
 
+- direct provider routes outside PostPlus hosted media
 - structured motion-control request fields mapped to provider-native parameters
 
 Current `promptPlan.camera`, `promptPlan.shotType`, and `promptPlan.motion`
@@ -140,13 +138,13 @@ reference image and a reference motion video.
 
 Read [`references/hosted-video-talking-head.md`](references/hosted-video-talking-head.md) before implementation or request design.
 Read [`references/hosted-video-generative.md`](references/hosted-video-generative.md) before designing hosted Seedance requests.
-Read [`references/volcengine-seedance-2.md`](references/volcengine-seedance-2.md) before designing Seedance requests.
+Read [`references/hosted-video-generative.md`](references/hosted-video-generative.md) before designing Seedance requests.
 
 If the project should keep related image, audio, and video files under one asset root, use the shared asset model in [`../image-batch-runner/references/unified-asset-contract-v1.md`](skills/40-creative/image-batch-runner/references/unified-asset-contract-v1.md).
 
 ## PostPlus Cloud Rule
 
-- keep request files, raw provider responses, and polling state under
+- keep request files, hosted response payloads, and polling state under
   `<work-folder>/.postplus/video-batch-runner/` when they are internal
   execution state
 - keep only final user-facing renders outside `.postplus/`
@@ -255,7 +253,7 @@ At minimum record:
 
 When the provider exposes multiple resolution tiers, default to the highest practical tier for realism-sensitive renders.
 
-### 3. Call the provider and save raw response
+### 3. Call the hosted capability and save the raw response
 
 Always save:
 
@@ -264,14 +262,14 @@ Always save:
 - `manifest.json`
 - downloaded video files under `renders/`
 
-Do not use the provider response alone as the durable store.
+Do not use the hosted response alone as the durable store.
 
 ### 4. Normalize local outputs
 
 Every run should end with a local manifest containing:
 
 - stable upstream refs
-- provider ids
+- hosted generation ids
 - local asset paths
 - source basis
 - feedback history
@@ -312,7 +310,7 @@ videos/<job-id>/
 
 Do not assume this example layout is the universal default.
 
-Keep draft request files, raw provider responses, and polling state under
+Keep draft request files, hosted response payloads, and polling state under
 `<work-folder>/.postplus/video-batch-runner/` when they are internal execution
 artifacts rather than the final handoff.
 
@@ -323,7 +321,9 @@ This skill expects these adapters:
 - `generate_video_from_image_audio`
 - `poll_prediction` for async providers
 
-For Seedance, the same `generate_video_from_image_audio` script is used as the normalized submit entrypoint even though the request may be text-to-video or multimodal; the route is chosen by `provider`.
+For Seedance, the same `generate_video_from_image_audio` script is used as the
+normalized submit entrypoint even though the request may be text-to-video or
+multimodal. Released runs use `provider: "hosted-media"`.
 
 The normalized request and manifest shapes live in [`references/tool-contracts.md`](references/tool-contracts.md).
 
@@ -340,9 +340,9 @@ Before calling a video provider, verify:
 - for `talking-head`, image asset is approved
 - for `talking-head`, voice take is approved
 - for `seedance` (hosted), request mode is explicit and required media exists
-- for `ark`, request mode is explicit
-- for `ark`, media roles match the intended Seedance mode
-- for `ark`, prompt or prompt plan is concrete enough to constrain the generation
+- `provider` is `hosted-media`
+- media roles match the intended hosted model
+- prompt or prompt plan is concrete enough to constrain the generation
 - render request is tied to a real concept or asset purpose
 - local output path is explicit
 
@@ -361,7 +361,8 @@ Stop and say the request is under-specified if any of these are missing:
 - for `talking-head`, no approved image asset
 - for `talking-head`, no approved voice take
 - for `seedance` (hosted), no prompt or no required first image
-- for `ark`, no prompt or no usable `content`
+- unsupported provider values outside `hosted-media`
+- no prompt or no usable media for the selected hosted model
 - no asset purpose
 - no source basis
 - no local output path

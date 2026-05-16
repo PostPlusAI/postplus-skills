@@ -41,13 +41,11 @@ export async function collectFromPlan(
     raw[platform] = result;
     summary[platform] = isPublicContentPendingResult(result)
       ? {
-          sourceId,
           status: 'pending',
           runHandle: result.runHandle,
           snapshotId: result.snapshotId || result.runHandle,
         }
       : {
-          sourceId,
           ...summarizePlatformItems(
             (Array.isArray(result) ? result : []).map((item) => ({
               metrics: {

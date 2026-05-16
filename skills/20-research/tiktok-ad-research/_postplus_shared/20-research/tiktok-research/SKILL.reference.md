@@ -394,12 +394,15 @@ node ${CLAUDE_SKILL_DIR}/scripts/normalize_tiktok_dataset.mjs \
 node ${CLAUDE_SKILL_DIR}/scripts/expand_tiktok_creator_graph.mjs \
   --input <work-folder>/.postplus/topic-video-search-normalized-envelope.json \
   --output <work-folder>/.postplus/topic-graph-raw.json \
+  --collection-key tiktok-related-videos \
   --top 10 \
   --results-per-seed 6
 ```
 
 `expand_tiktok_creator_graph.mjs` is also a hosted side-effecting entrypoint.
-Wrap the normalized video dataset under `input` before passing it to `--input`.
+It sends shortlisted seed videos through the `tiktok-related-videos` collection
+key. Wrap the normalized video dataset under `input` before passing it to
+`--input`.
 
 ### Comment sampling
 
@@ -409,12 +412,14 @@ node ${CLAUDE_SKILL_DIR}/scripts/collect_top_video_comments.mjs \
   --output <work-folder>/.postplus/comments.json \
   --collection-key tiktok-comments \
   --top 8 \
-  --max-comments 40
+  --comments-per-post 40
 ```
 
 `collect_top_video_comments.mjs` is a hosted side-effecting entrypoint. Its
 `--input` file must be a `schemaVersion: 1` hosted execution envelope whose
-`input` value is the raw or normalized video dataset to sample.
+`input` value is the raw or normalized video dataset to sample. It sends
+shortlisted video URLs to the hosted comments actor as `postURLs` and uses
+`commentsPerPost` for the per-video comment limit.
 
 Then summarize:
 

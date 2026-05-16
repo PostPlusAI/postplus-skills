@@ -138,7 +138,7 @@ developer errors only.
 For PostPlus runtime execution, use the PostPlus-provided collection runner:
 
 ```bash
-node skills/20-research/google-trends-research/scripts/collection_actor_run.mjs \
+node ${CLAUDE_SKILL_DIR}/scripts/collection_actor_run.mjs \
   --collection-key google-trends-fast \
   --input <envelope.json> \
   --output <raw-output.json>

@@ -82,10 +82,12 @@ export async function runHostedCapabilityRequest(request) {
   return envelope.output;
 }
 
-export async function runHostedCapabilityEnvelopeRequest(request) {
+export async function runHostedCapabilityEnvelopeRequest(request, options = {}) {
   const config = resolveHostedCapabilityBridgeConfig();
   const normalizedRequest = withHostedOperationId(
-    applyProcessHostedExecutionFields(request),
+    options.applyProcessHostedExecutionFields === false
+      ? request
+      : applyProcessHostedExecutionFields(request),
   );
 
   let response;

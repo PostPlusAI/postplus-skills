@@ -168,9 +168,11 @@ Use for:
 - customization
 - location
 
-Current preferred route:
+Current public release route:
 
-- `skills/20-research/1688-research`
+- use user-provided supplier sheets, quotations, or approved marketplace data
+  as supply-side evidence
+- do not claim hosted 1688 collection from the released skill surface
 
 ### Demand-Side Source
 
@@ -288,7 +290,8 @@ At the moment, this skill should usually compose existing skills rather than cre
 
 Current building blocks:
 
-- supply-side: `skills/20-research/1688-research`
+- supply-side: user-provided supplier sheets, quotations, or approved
+  marketplace data
 - search-intent: `skills/20-research/google-trends-research`
 - search-led demand: `skills/20-research/amazon-research`
 - content-language fit: `skills/20-research/tiktok-research`

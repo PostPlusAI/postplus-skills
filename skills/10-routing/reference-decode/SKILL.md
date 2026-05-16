@@ -82,8 +82,7 @@ Print the decode in that exact shape first.
 
 ### 5. Hand off cleanly
 
-- if the target is a grid, hand off to `storyboard-grid-writer`
-- if the target is a full render request, hand off to `video-request-architect`
+- if the target is a grid, beat sheet, or full render request, hand off to `video-request-architect`
 - if references should be explicitly bounded, hand off to `reference-contract-builder`
 
 ## No-Reference Rule

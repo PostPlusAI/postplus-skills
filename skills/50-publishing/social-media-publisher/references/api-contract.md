@@ -16,16 +16,15 @@ End users do not need separate publishing-service accounts.
 
 Channel onboarding flow:
 
-1. PostPlus backend calls `GET /public/v1/social/{integration}` with the
-   PostPlus social publishing service
+1. PostPlus backend asks PostPlus Cloud to create an invite link for the target
+   social platform
 2. PostPlus returns a social-platform OAuth URL (e.g. Instagram consent screen)
 3. PostPlus delivers the URL to the end user via product UI or CLI
 4. End user clicks the link and authorizes their social account on the
    platform's own consent screen
 5. PostPlus saves the resulting channel token into the social publishing
    workspace
-6. PostPlus calls `PUT /integrations/:id/customer-name` to label the channel
-   with the user's PostPlus account id
+6. PostPlus labels the channel with the user's PostPlus account id
 
 ## PostPlus Cloud Boundary
 
@@ -78,17 +77,15 @@ Rules:
   invite-link flow
 - an empty array means "no channels connected yet" and must fail for publish
   actions
-- do not infer permissions from provider names alone
+- do not infer permissions from platform names alone
 
-## Channel onboarding endpoints
+## Channel Onboarding Operations
 
 Used by PostPlus backend to generate invite links and label channels:
 
-- `GET /public/v1/social/{integration}` — generate social-platform OAuth URL;
-  the returned `url` is delivered to the end user as the invite link
-- `GET /integrations/customers` — list customer labels in the org
-- `PUT /integrations/:id/customer-name` — assign a PostPlus account id label
-  to a connected channel
+- create invite link for the target social platform
+- list channel account labels in the workspace
+- assign a PostPlus account id label to a connected channel
 
 ## Publish Request Shape
 
@@ -180,21 +177,22 @@ Mapped remote request shape:
 
 Notes:
 
-- `settings.__type` must be included explicitly according to the official provider docs
+- `settings.__type` must be included explicitly according to the connected
+  channel type
 - `mediaUrls` are mapped to remote `image` objects
 - every request must already know the exact integration id
 - `tags` must use the official publishing API object shape; do not send string arrays
 
-Provider note for Facebook Pages:
+Platform note for Facebook Pages:
 
-- use the connected Facebook Page integration id from `GET /integrations`
+- use the connected Facebook Page integration id from the channel list
 - set `settings.__type` to `facebook`
 - optional: `settings.url` creates a link preview in the post
 - do not treat arbitrary Facebook profile URLs as writable publishing targets
 
-Provider note for Instagram:
+Platform note for Instagram:
 
-- use the connected Instagram integration id from `GET /integrations`
+- use the connected Instagram integration id from the channel list
 - set `settings.__type` to `instagram` for Facebook Business-linked Instagram accounts
 - set `settings.__type` to `instagram-standalone` for standalone Instagram accounts
 - set `settings.post_type` explicitly; supported values include `post` and `story`
@@ -203,24 +201,22 @@ Provider note for Instagram:
 - upload images or videos first, then reference the returned uploaded URLs in `mediaUrls`
 - do not assume Instagram requests can succeed without a professional Instagram account and the correct Meta scopes
 
-## Endpoints used by this workspace
+## Operations Used By This Workspace
 
-- `GET /is-connected`
-- `GET /integrations`
-- `GET /integration-settings/:id`
-- `POST /integration-trigger/:id`
-- `POST /upload`
-- `POST /upload-from-url`
-- `POST /posts`
-- `PUT /posts/{id}/status`
-- `GET /posts`
-- `DELETE /posts/:id`
-- `DELETE /posts/group/:group`
-- `GET /posts/:id/missing`
-- `PUT /posts/:id/release-id`
-- `GET /analytics/:id?date=<days>`
-- `GET /analytics/post/:id?date=<days>`
-- `GET /notifications?page=<page>`
+- list connected channels
+- read channel settings
+- trigger channel setup helpers
+- upload media from local files or URLs
+- create post drafts or scheduled posts
+- update post status after approval
+- list posts
+- delete one post after approval
+- delete a post group after approval
+- inspect missing media content
+- attach a release id after approval
+- read platform analytics
+- read post analytics
+- list notifications
 
 ## Failure posture
 
@@ -234,7 +230,7 @@ Provider note for Instagram:
 
 ## Create post response shape
 
-The official `POST /posts` response is an array like:
+The create-post operation response is an array like:
 
 ```json
 [

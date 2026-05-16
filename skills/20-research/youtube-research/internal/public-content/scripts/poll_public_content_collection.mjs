@@ -28,9 +28,8 @@ function readJsonIfExists(filePath, fallback = null) {
   }
 }
 
-function summarizeReadyResult(sourceId, result) {
+function summarizeReadyResult(result) {
   return {
-    sourceId,
     ...summarizePlatformItems(
       (Array.isArray(result) ? result : []).map((item) => ({
         metrics: {
@@ -45,9 +44,8 @@ function summarizeReadyResult(sourceId, result) {
   };
 }
 
-function summarizePending(sourceId, result, fallbackSnapshotId) {
+function summarizePending(result, fallbackSnapshotId) {
   return {
-    sourceId,
     status: "pending",
     runHandle: result.runHandle || fallbackSnapshotId,
     snapshotId: result.snapshotId || result.runHandle || fallbackSnapshotId
@@ -75,7 +73,6 @@ export async function main(
   ensureDir(analysisDir);
 
   for (const [platform, item] of Object.entries(currentSummary)) {
-    const sourceId = item?.sourceId || null;
     const snapshotId = item?.snapshotId || item?.runHandle || null;
     const rawPath = path.join(rawDir, `${platform}.json`);
 
@@ -89,8 +86,8 @@ export async function main(
     raw[platform] = result;
     writeJson(rawPath, result);
     nextSummary[platform] = isPublicContentPendingResult(result)
-      ? summarizePending(sourceId, result, snapshotId)
-      : summarizeReadyResult(sourceId, result);
+      ? summarizePending(result, snapshotId)
+      : summarizeReadyResult(result);
   }
 
   for (const platform of ["linkedin", "youtube", "facebook"]) {

@@ -19,7 +19,7 @@ import {
 function usage() {
   return `Usage:
   node postplus_workspace.mjs init --project-slug <slug> --name <name> --goal <goal> [--projects-root <dir>] [--studio-root <dir>] [--workdir <dir>] [--steps brief,script,storyboard]
-  node postplus_workspace.mjs serve --project <slug-or-path> [--projects-root <dir>] [--studio-root <dir>] [--host 127.0.0.1] [--port 3978] [--dashboard-dist <dir>] [--enable-fixture-launch]
+  node postplus_workspace.mjs serve [--project <slug-or-path>] [--projects-root <dir>] [--studio-root <dir>] [--host 127.0.0.1] [--port 3978] [--dashboard-dist <dir>] [--enable-fixture-launch]
   node postplus_workspace.mjs import-asset --project <slug-or-path> --asset-id <id> --source-file <path> [--type text|image|audio|video|reference] [--step-id <id>] [--role <role>]
   node postplus_workspace.mjs create-version --project <slug-or-path> --asset-id <id> --input <data.json> [--source edited_by_user|edited_by_ai|external_file_edit]
   node postplus_workspace.mjs register-large-file --project <slug-or-path> --asset-id <id> --source-file <path> --type image|audio|video|reference [--step-id <id>] [--role <role>] [--source-assets a,b] [--pipeline-command <text>] [--pipeline-run-title <text>]

@@ -7,15 +7,8 @@ import fsp from "node:fs/promises";
 import http from "node:http";
 import os from "node:os";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 
 export const POSTPLUS_STUDIO_DIRECTORY_NAME = "PostPlus Studio";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const WORKSPACE_ARTIFACT_INGESTOR_SCRIPT = path.resolve(
-  __dirname,
-  "../../../workspace-artifact-ingestor/scripts/ingest_workspace_artifacts.mjs",
-);
 
 export const ASSET_ROLES = new Set([
   "reference",
@@ -154,6 +147,16 @@ export function resolveProjectRoot(project, options = {}) {
   }
 
   return path.join(resolveProjectsRoot(options.projectsRoot), safeSlug(expanded));
+}
+
+export function resolveDefaultProjectRoot(options = {}) {
+  const projectsRoot = resolveProjectsRoot(options.projectsRoot);
+  return initializeProject({
+    goal: "Default PostPlus workspace project.",
+    name: "Project",
+    projectSlug: "project",
+    projectsRoot,
+  }).projectRoot;
 }
 
 export function safeSlug(value) {
@@ -1561,21 +1564,197 @@ export class PostPlusWorkspaceRuntime {
     }
   }
 
+  uploadAsset(input = {}) {
+    const upload = normalizeUploadedAsset(input);
+    if (upload.type === "text") {
+      const text = upload.bytes.toString("utf8");
+      const blocks = text
+        .split(/\n{2,}/u)
+        .map((block, index) => ({
+          block_id: `block_${String(index + 1).padStart(3, "0")}`,
+          text: block.trim(),
+        }))
+        .filter((block) => block.text);
+      return this.updateTextAsset({
+        activityMessage: input.activityMessage ?? `${upload.name} imported`,
+        assetId: upload.assetId,
+        blocks,
+        name: upload.name,
+        role: input.role ?? "generated_asset",
+        source: input.source ?? "uploaded_by_user",
+        status: "ready",
+        stepId: input.stepId ?? input.step_id ?? "script",
+      });
+    }
+
+    const tempDir = path.join(this.projectRoot, ".postplus/temp/uploads");
+    fs.mkdirSync(tempDir, { recursive: true });
+    const tempPath = path.join(
+      tempDir,
+      `${safeFileStem(upload.assetId)}-${crypto.randomUUID()}${upload.extension}`,
+    );
+
+    try {
+      atomicWriteFileSync(tempPath, upload.bytes);
+      return this.upsertLargeFileAsset({
+        activityMessage: input.activityMessage ?? `${upload.name} imported`,
+        assetId: upload.assetId,
+        fileName: upload.fileName,
+        name: upload.name,
+        reason: input.reason ?? "Asset uploaded through workspace dashboard",
+        role: input.role ?? "reference",
+        source: input.source ?? "uploaded_by_user",
+        sourceAssets: input.sourceAssets ?? input.source_assets ?? [],
+        sourceFile: tempPath,
+        status: "ready",
+        stepId: input.stepId ?? input.step_id ?? upload.type,
+        type: upload.type,
+      });
+    } finally {
+      fs.rmSync(tempPath, { force: true });
+    }
+  }
+
+  renameAsset(assetId, name) {
+    safeIdentifier(assetId, "asset_id");
+    const nextName = String(name ?? "").trim();
+    if (!nextName) {
+      throw new Error("Asset name is required.");
+    }
+
+    const asset = this.lockManager.withLock(`asset-${assetId}`, () => {
+      const manifest = this.readManifest();
+      const target = findAssetOrThrow(manifest, assetId);
+      target.name = nextName;
+      this.lockManager.withLock("manifest", () => {
+        this.writeManifestUnlocked(manifest);
+      });
+      return target;
+    });
+
+    const activity = this.activity.append(`${nextName} renamed`, {
+      asset_id: assetId,
+      event: "asset_renamed",
+    });
+    this.notifier.send("activity.created", { activity });
+    this.notifier.send("asset.updated", {
+      asset,
+      currentData: this.readCurrentAssetData(asset),
+    });
+    return asset;
+  }
+
+  renamePipelineRun(runId, title) {
+    safeIdentifier(runId, "run_id");
+    const nextTitle = String(title ?? "").trim();
+    if (!nextTitle) {
+      throw new Error("Run title is required.");
+    }
+
+    const pipeline = this.lockManager.withLock("pipeline", () => {
+      const current = this.readPipeline();
+      const run = (current.runs ?? []).find((item) => (item.run_id ?? item.id) === runId);
+      if (!run) {
+        throw new Error(`Pipeline run not found: ${runId}`);
+      }
+      run.title = nextTitle;
+      run.updated_at = nowIso();
+      this.writePipelineUnlocked(current);
+      return current;
+    });
+    this.notifier.send("pipeline.step.updated", { pipeline, run_id: runId });
+    return pipeline.runs.find((item) => (item.run_id ?? item.id) === runId);
+  }
+
+  deleteAsset(assetId) {
+    safeIdentifier(assetId, "asset_id");
+    const deleted = this.lockManager.withLock(`asset-${assetId}`, () => {
+      const manifest = this.readManifest();
+      const target = findAssetOrThrow(manifest, assetId);
+      for (const version of target.versions ?? []) {
+        if (version.file_path) {
+          moveProjectFileToTrash(this.projectRoot, version.file_path);
+        }
+        if (version.data_path) {
+          moveProjectFileToTrash(this.projectRoot, version.data_path);
+        }
+      }
+      manifest.assets = (manifest.assets ?? [])
+        .filter((asset) => asset.asset_id !== assetId)
+        .map((asset) => ({
+          ...asset,
+          source_assets: normalizeStringArray(asset.source_assets).filter((id) => id !== assetId),
+        }));
+      this.lockManager.withLock("manifest", () => {
+        this.writeManifestUnlocked(manifest);
+      });
+      return target;
+    });
+
+    this.lockManager.withLock("pipeline", () => {
+      const pipeline = this.readPipeline();
+      pipeline.runs = (pipeline.runs ?? []).map((run) => ({
+        ...run,
+        input_assets: normalizeStringArray(run.input_assets).filter((id) => id !== assetId),
+        output_assets: normalizeStringArray(run.output_assets).filter((id) => id !== assetId),
+      }));
+      this.writePipelineUnlocked(pipeline);
+    });
+
+    const activity = this.activity.append(`${displayAssetName(deleted)} deleted`, {
+      asset_id: assetId,
+      event: "asset_deleted",
+    });
+    this.notifier.send("activity.created", { activity });
+    this.notifier.send("asset.updated", { asset_id: assetId, deleted: true });
+    this.notifier.send("pipeline.step.updated", { deleted_asset_id: assetId });
+    return deleted;
+  }
+
+  deletePipelineRun(runId) {
+    safeIdentifier(runId, "run_id");
+    const pipeline = this.lockManager.withLock("pipeline", () => {
+      const current = this.readPipeline();
+      const runs = current.runs ?? [];
+      const nextRuns = runs.filter((run) => (run.run_id ?? run.id) !== runId);
+      if (nextRuns.length === runs.length) {
+        throw new Error(`Pipeline run not found: ${runId}`);
+      }
+      current.runs = nextRuns;
+      this.writePipelineUnlocked(current);
+      return current;
+    });
+    this.notifier.send("pipeline.step.updated", { pipeline, run_id: runId, deleted: true });
+    return { run_id: runId };
+  }
+
+  resolveOpenTarget(input = {}) {
+    if (input.filePath ?? input.file_path) {
+      return resolveProjectPath(this.projectRoot, input.filePath ?? input.file_path, "file_path");
+    }
+    if (input.runId ?? input.run_id) {
+      return resolveProjectPath(this.projectRoot, "pipeline.json");
+    }
+    const assetId = safeIdentifier(input.assetId ?? input.asset_id, "asset_id");
+    const { version } = this.getCurrentAsset(assetId);
+    if (!version?.file_path) {
+      throw new Error(`No file is recorded for asset: ${assetId}`);
+    }
+    return resolveProjectPath(this.projectRoot, version.file_path, "file_path");
+  }
+
   launchFixturePipeline(input = {}) {
     const command =
       input.command ??
-      "Create a vertical product video showing the phone stand in natural light.";
-    const currentPipeline = this.readPipeline();
-    const currentRuns = Array.isArray(currentPipeline.runs)
-      ? currentPipeline.runs
-      : [];
-    const runNumber = String(currentRuns.length + 1).padStart(2, "0");
-    const pipelineRunId = safeIdentifier(
-      input.pipelineRunId ?? input.pipeline_run_id ?? `run-${runNumber}`,
-      "pipeline_run_id",
-    );
-    const pipelineRunTitle =
-      input.pipelineRunTitle ?? input.pipeline_run_title ?? `Run ${runNumber}`;
+      "Create a vertical product video from selected project assets.";
+    const manifest = this.readManifest();
+    const assetById = new Map((manifest.assets ?? []).map((asset) => [asset.asset_id, asset]));
+    const requestedInputAssets = mergeUnique(normalizeStringArray(
+      input.inputAssetIds ?? input.inputAssets ?? input.input_assets,
+    )).filter((assetId) => assetById.has(assetId));
+    const inputAssetRecords = requestedInputAssets.map((assetId) => assetById.get(assetId));
+    const inputTypes = new Set(inputAssetRecords.map((asset) => asset.type));
+    const inputSteps = new Set(inputAssetRecords.map((asset) => asset.step_id));
 
     for (const [stepId, name] of [
       ["script", "Script"],
@@ -1584,223 +1763,114 @@ export class PostPlusWorkspaceRuntime {
       ["video", "Video"],
     ]) {
       this.pipeline.ensureStep(stepId, name);
-      this.pipeline.markStepRunning(stepId);
     }
 
-    const sourceDir = resolveProjectPath(
-      this.projectRoot,
-      `data/pipeline-runs/${pipelineRunId}/generated`,
+    this.pipeline.updateStepStatus(
+      "script",
+      inputTypes.has("text") || inputSteps.has("script") ? "done" : "pending",
     );
-    fs.mkdirSync(sourceDir, { recursive: true });
-
-    const scriptPath = path.join(sourceDir, "script-main.json");
-    writeJsonFileAtomic(scriptPath, {
-      blocks: [
-        {
-          block_id: "hook_001",
-          label: "Hook",
-          text: "Ever tried taking the perfect selfie, only to get your arm in the shot?",
-        },
-        {
-          block_id: "problem_001",
-          label: "Problem",
-          text: "You want natural video, but holding the phone changes every angle.",
-        },
-        {
-          block_id: "solution_001",
-          label: "Solution",
-          text: "Phone Free Selfie keeps the camera steady so you can record hands-free.",
-        },
-        {
-          block_id: "cta_001",
-          label: "CTA",
-          text: "Set it down, hit record, and capture what matters.",
-        },
-      ],
-    });
-
-    const imageSpecs = [
-      {
-        assetId: "product_lavender",
-        fileName: "product-lavender.svg",
-        name: "Phone Mount - Lavender",
-        stepId: "visuals",
-        tone: "purple",
-        title: "Phone Mount - Lavender",
-      },
-      {
-        assetId: "lifestyle_talking",
-        fileName: "lifestyle-talking.svg",
-        name: "Lifestyle - Talking to Camera",
-        stepId: "visuals",
-        tone: "green",
-        title: "Lifestyle - Talking to Camera",
-      },
-      {
-        assetId: "compact_portable",
-        fileName: "compact-portable.svg",
-        name: "Compact & Portable",
-        stepId: "visuals",
-        tone: "gray",
-        title: "Compact & Portable",
-      },
-      {
-        assetId: "storyboard_scene_01",
-        fileName: "storyboard-scene-01.svg",
-        name: "Scene 1 - Greeting",
-        stepId: "storyboard",
-        tone: "gray",
-        title: "Scene 1 - Greeting",
-      },
-      {
-        assetId: "storyboard_scene_02",
-        fileName: "storyboard-scene-02.svg",
-        name: "Frame 02 - Product Reveal",
-        stepId: "storyboard",
-        tone: "blue",
-        title: "Frame 02 - Product Reveal",
-      },
-    ];
-
-    for (const [index, spec] of imageSpecs.entries()) {
-      atomicWriteFileSync(
-        path.join(sourceDir, spec.fileName),
-        renderFixtureSvg(spec, index + 1),
-      );
-    }
-
-    const videoSource = path.join(sourceDir, "outcome-video-v1-2.mp4");
-    generateFixtureVideo(videoSource);
-
-    const skillRunDir = resolveProjectPath(
-      this.projectRoot,
-      `.postplus/runs/workspace-artifact-ingestor/${pipelineRunId}`,
+    this.pipeline.updateStepStatus(
+      "visuals",
+      inputTypes.has("image") ||
+        inputTypes.has("reference") ||
+        inputSteps.has("visuals") ||
+        inputSteps.has("storyboard")
+        ? "done"
+        : "pending",
     );
-    fs.mkdirSync(skillRunDir, { recursive: true });
-    const inputPath = path.join(skillRunDir, "input.json");
-    const outputPath = path.join(skillRunDir, "output.json");
-    const inputAssetIds = [
-      "script_main",
-      ...imageSpecs.map((spec) => spec.assetId),
-    ];
-    writeJsonFileAtomic(inputPath, {
-      schemaVersion: 1,
-      input: {
-        artifacts: [
-          {
-            assetId: "script_main",
-            name: "Main Script",
-            path: scriptPath,
-            role: "generated_asset",
-            stepId: "script",
-            type: "text",
-          },
-          ...imageSpecs.map((spec) => ({
-            assetId: spec.assetId,
-            name: spec.name,
-            path: path.join(sourceDir, spec.fileName),
-            role: spec.stepId === "storyboard" ? "intermediate" : "generated_asset",
-            stepId: spec.stepId,
-            type: "image",
-          })),
-          {
-            assetId: "outcome_video_v1_2",
-            name: "Outcome Video v1.2",
-            path: videoSource,
-            pipelineCommand: command,
-            pipelineRunId,
-            pipelineRunTitle,
-            role: "final_output",
-            sourceAssets: inputAssetIds,
-            stepId: "video",
-            type: "video",
-          },
-        ],
-        project: this.projectRoot,
-      },
-    });
+    this.pipeline.updateStepStatus(
+      "audio",
+      inputTypes.has("audio") || inputSteps.has("audio") ? "done" : "pending",
+    );
 
-    const skillStartedAt = nowIso();
-    this.activity.append("Running workspace-artifact-ingestor for pipeline", {
-      event: "skill_run_started",
-      pipeline_run_id: pipelineRunId,
-      skill_id: "workspace-artifact-ingestor",
-    });
-
-    let stdout = "";
-    try {
-      stdout = execFileSync(
-        process.execPath,
-        [
-          WORKSPACE_ARTIFACT_INGESTOR_SCRIPT,
-          "--input",
-          inputPath,
-          "--output",
-          outputPath,
-        ],
-        {
-          cwd: this.projectRoot,
-          encoding: "utf8",
-          stdio: ["ignore", "pipe", "pipe"],
-        },
-      );
-    } catch (error) {
-      const stderr = error?.stderr ? String(error.stderr) : "";
-      this.activity.append("workspace-artifact-ingestor failed", {
-        event: "skill_run_failed",
-        pipeline_run_id: pipelineRunId,
-        skill_id: "workspace-artifact-ingestor",
-        stderr,
+    if (requestedInputAssets.length === 0) {
+      this.pipeline.updateStepStatus("video", "pending");
+      const pipeline = this.lockManager.withLock("pipeline", () => {
+        const current = this.readPipeline();
+        const runs = Array.isArray(current.runs) ? current.runs : [];
+        const createdAt = nowIso();
+        const runNumber = String(runs.length + 1).padStart(2, "0");
+        const run = {
+          run_id: `run-${runNumber}`,
+          title: `Run ${runNumber}`,
+          command,
+          status: "pending",
+          input_assets: [],
+          output_assets: [],
+          created_at: createdAt,
+          updated_at: createdAt,
+          source: "local_fixture_launch",
+        };
+        current.runs = [...runs, run];
+        this.writePipelineUnlocked(current);
+        return current;
       });
-      throw new Error(stderr || error.message || "Pipeline skill run failed.");
+      this.notifier.send("pipeline.step.updated", { pipeline });
+      const context = this.context.updateContext({
+        active_step: "video",
+        selected_asset_id: null,
+        selected_block_id: null,
+        selected_version: null,
+        visible_panel: "pipeline",
+      });
+      const activity = this.activity.append("Pipeline launched without project inputs", {
+        event: "pipeline_launched",
+        input_command: command,
+        input_assets: [],
+      });
+      this.notifier.send("activity.created", { activity });
+
+      return {
+        assets: [],
+        context,
+        currentAssetData: this.getProjectSnapshot().currentAssetData,
+        pipeline,
+      };
     }
 
-    const skillResult = readJsonFile(outputPath);
-    this.provenance.append("skill_run_completed", {
-      output_path: toProjectRelative(this.projectRoot, outputPath),
-      pipeline_run_id: pipelineRunId,
-      skill_id: "workspace-artifact-ingestor",
-      started_at: skillStartedAt,
-      stdout,
+    const tempDir = resolveProjectPath(this.projectRoot, ".postplus/temp");
+    fs.mkdirSync(tempDir, { recursive: true });
+    const outputSuffix = crypto.randomUUID().replace(/-/g, "").slice(0, 8);
+    const videoAssetId = safeIdentifier(`pipeline_video_${outputSuffix}`, "asset_id");
+    const videoSource = path.join(tempDir, `${videoAssetId}.mp4`);
+    generateFixtureVideo(videoSource);
+    const videoResult = this.upsertLargeFileAsset({
+      activityMessage: "Pipeline output generated",
+      assetId: videoAssetId,
+      fileName: `${videoAssetId}.mp4`,
+      name: "Pipeline Output Video",
+      role: "final_output",
+      source: "generated_by_pipeline_fixture",
+      sourceAssets: requestedInputAssets,
+      sourceFile: videoSource,
+      pipelineCommand: command,
+      status: "ready",
+      stepId: "video",
+      type: "video",
     });
-    this.activity.append("workspace-artifact-ingestor completed", {
-      event: "skill_run_completed",
-      imported: skillResult.imported ?? [],
-      pipeline_run_id: pipelineRunId,
-      skill_id: "workspace-artifact-ingestor",
-    });
-
-    const manifest = this.readManifest();
-    const assets = [
-      ...inputAssetIds,
-      "outcome_video_v1_2",
-    ]
-      .map((assetId) => manifest.assets.find((asset) => asset.asset_id === assetId))
-      .filter(Boolean);
-    const videoAsset = assets.find((asset) => asset.asset_id === "outcome_video_v1_2");
+    this.pipeline.markStepDone("video");
     const pipeline = this.readPipeline();
 
     const context = this.context.updateContext({
       active_step: "video",
-      selected_asset_id: videoAsset?.asset_id ?? "outcome_video_v1_2",
+      selected_asset_id: videoResult.asset.asset_id,
       selected_block_id: null,
-      selected_version: videoAsset?.current_version ?? null,
+      selected_version: videoResult.asset.current_version,
       visible_panel: "video_preview",
     });
 
-    const activity = this.activity.append("Pipeline launched with workspace-artifact-ingestor", {
+    const activity = this.activity.append("Pipeline launched", {
       event: "pipeline_launched",
       input_command: command,
-      pipeline_run_id: pipelineRunId,
+      input_assets: requestedInputAssets,
     });
     this.notifier.send("activity.created", { activity });
 
     return {
-      assets,
+      assets: [videoResult.asset],
       context,
       currentAssetData: this.getProjectSnapshot().currentAssetData,
       pipeline,
-      skillResult,
     };
   }
 
@@ -2013,10 +2083,13 @@ export class PostPlusWorkspaceRuntime {
 
 export async function startDashboardServer(options = {}) {
   const projectsRoot = resolveProjectsRoot(options.projectsRoot);
-  const projectRoot = resolveProjectRoot(options.project, {
-    projectRoot: options.projectRoot,
-    projectsRoot,
-  });
+  const projectRoot =
+    options.project || options.projectRoot
+      ? resolveProjectRoot(options.project, {
+          projectRoot: options.projectRoot,
+          projectsRoot,
+        })
+      : resolveDefaultProjectRoot({ projectsRoot });
   const notifier = options.notifier ?? new DashboardNotifier();
   const runtime =
     options.runtime ?? new PostPlusWorkspaceRuntime(projectRoot, { notifier });
@@ -2121,6 +2194,137 @@ async function handleDashboardRequest(state, request, response) {
     return;
   }
 
+  if (request.method === "POST" && pathname === "/api/projects") {
+    const body = await readRequestJson(request);
+    const name = String(body.name ?? "").trim();
+    if (!name) {
+      sendJson(response, 400, {
+        error: "Project name is required.",
+        ok: false,
+      });
+      return;
+    }
+
+    const baseSlug = safeSlug(body.project_id ?? body.projectId ?? body.slug ?? name);
+    const projectSlug = nextAvailableProjectSlug(baseSlug, state.projectsRoot);
+    const { projectRoot } = initializeProject({
+      goal: body.goal ?? "",
+      name,
+      pipelineId: body.pipeline_id ?? body.pipelineId,
+      projectSlug,
+      projectsRoot: state.projectsRoot,
+      steps: body.steps,
+      status: body.status,
+    });
+
+    state.watcher?.close();
+    state.projectWatcher?.close();
+    runtime.switchProjectRoot(projectRoot);
+    state.watcher = state.watchMarkdown ? runtime.startMarkdownWatcher() : null;
+    state.projectWatcher = state.watchProjectState ? new ProjectStateWatcher(runtime).start() : null;
+    runtime.notifier.send("project.updated", {
+      project_id: runtime.readProject().project_id ?? null,
+      reason: "project_created",
+    });
+
+    sendJson(response, 201, {
+      ok: true,
+      projects: listWorkspaceProjects(state.projectsRoot, runtime.projectRoot),
+      snapshot: runtime.getProjectSnapshot(),
+    });
+    return;
+  }
+
+  const projectResourceMatch = pathname.match(/^\/api\/projects\/([^/]+)$/u);
+  if (projectResourceMatch && request.method === "PATCH") {
+    const projectId = decodeURIComponent(projectResourceMatch[1]);
+    const body = await readRequestJson(request);
+    const name = String(body.name ?? "").trim();
+    if (!name) {
+      sendJson(response, 400, {
+        error: "Project name is required.",
+        ok: false,
+      });
+      return;
+    }
+
+    const projectRoot = resolveProjectRoot(projectId, {
+      projectsRoot: state.projectsRoot,
+    });
+    if (!fs.existsSync(resolveProjectPath(projectRoot, "project.json"))) {
+      sendJson(response, 404, {
+        error: `Project not found: ${projectId}`,
+        ok: false,
+      });
+      return;
+    }
+
+    const renamedProjectRoot = renameWorkspaceProject(projectRoot, name, state.projectsRoot);
+    if (path.resolve(projectRoot) === path.resolve(runtime.projectRoot)) {
+      state.watcher?.close();
+      state.projectWatcher?.close();
+      runtime.switchProjectRoot(renamedProjectRoot);
+      state.watcher = state.watchMarkdown ? runtime.startMarkdownWatcher() : null;
+      state.projectWatcher = state.watchProjectState ? new ProjectStateWatcher(runtime).start() : null;
+      runtime.notifier.send("project.updated", {
+        project_id: runtime.readProject().project_id ?? null,
+        reason: "project_renamed",
+      });
+    }
+
+    sendJson(response, 200, {
+      ok: true,
+      projects: listWorkspaceProjects(state.projectsRoot, runtime.projectRoot),
+      snapshot: runtime.getProjectSnapshot(),
+    });
+    return;
+  }
+
+  if (projectResourceMatch && request.method === "DELETE") {
+    const projectId = decodeURIComponent(projectResourceMatch[1]);
+    const projectRoot = resolveProjectRoot(projectId, {
+      projectsRoot: state.projectsRoot,
+    });
+    if (!fs.existsSync(resolveProjectPath(projectRoot, "project.json"))) {
+      sendJson(response, 404, {
+        error: `Project not found: ${projectId}`,
+        ok: false,
+      });
+      return;
+    }
+
+    const deletingActiveProject = path.resolve(projectRoot) === path.resolve(runtime.projectRoot);
+    if (deletingActiveProject) {
+      state.watcher?.close();
+      state.projectWatcher?.close();
+    }
+
+    deleteWorkspaceProject(projectRoot, state.projectsRoot);
+
+    if (deletingActiveProject) {
+      const nextProject = listWorkspaceProjects(state.projectsRoot, null)[0];
+      const nextProjectRoot = nextProject
+        ? resolveProjectRoot(nextProject.project_id, { projectsRoot: state.projectsRoot })
+        : resolveDefaultProjectRoot({ projectsRoot: state.projectsRoot });
+      runtime.switchProjectRoot(nextProjectRoot);
+      state.watcher = state.watchMarkdown ? runtime.startMarkdownWatcher() : null;
+      state.projectWatcher = state.watchProjectState ? new ProjectStateWatcher(runtime).start() : null;
+    }
+
+    runtime.notifier.send("project.updated", {
+      deleted_project_id: projectId,
+      project_id: runtime.readProject().project_id ?? null,
+      reason: "project_deleted",
+    });
+
+    sendJson(response, 200, {
+      ok: true,
+      projects: listWorkspaceProjects(state.projectsRoot, runtime.projectRoot),
+      snapshot: runtime.getProjectSnapshot(),
+    });
+    return;
+  }
+
   if (request.method === "POST" && pathname === "/api/project/switch") {
     const body = await readRequestJson(request);
     const project = body.project ?? body.project_id ?? body.projectId ?? body.slug;
@@ -2203,6 +2407,41 @@ async function handleDashboardRequest(state, request, response) {
     const body = await readRequestJson(request);
     const result = runtime.uploadImageAsset(body);
     sendJson(response, 200, { ok: true, ...result });
+    return;
+  }
+
+  if (request.method === "POST" && pathname === "/api/assets/upload") {
+    const body = await readRequestJson(request);
+    const result = runtime.uploadAsset(body);
+    sendJson(response, 200, { ok: true, ...result });
+    return;
+  }
+
+  if (request.method === "POST" && pathname === "/api/assets/open") {
+    const body = await readRequestJson(request);
+    const target = runtime.resolveOpenTarget(body);
+    if (process.platform === "darwin") {
+      execFileSync("open", [target], { stdio: "ignore" });
+    }
+    sendJson(response, 200, { ok: true, opened: target });
+    return;
+  }
+
+  if (request.method === "POST" && pathname === "/api/assets/rename") {
+    const body = await readRequestJson(request);
+    const updated = body.run_id || body.runId
+      ? runtime.renamePipelineRun(body.run_id ?? body.runId, body.name ?? body.title)
+      : runtime.renameAsset(body.asset_id ?? body.assetId, body.name ?? body.title);
+    sendJson(response, 200, { ok: true, updated });
+    return;
+  }
+
+  if (request.method === "POST" && pathname === "/api/assets/delete") {
+    const body = await readRequestJson(request);
+    const deleted = body.run_id || body.runId
+      ? runtime.deletePipelineRun(body.run_id ?? body.runId)
+      : runtime.deleteAsset(body.asset_id ?? body.assetId);
+    sendJson(response, 200, { ok: true, deleted });
     return;
   }
 
@@ -2424,6 +2663,86 @@ function listWorkspaceProjects(projectsRoot, activeProjectRoot) {
       if (right.active) return 1;
       return String(left.name).localeCompare(String(right.name));
     });
+}
+
+function nextAvailableProjectSlug(baseSlug, projectsRoot) {
+  const root = resolveProjectsRoot(projectsRoot);
+  let candidate = safeSlug(baseSlug);
+  let suffix = 2;
+
+  while (fs.existsSync(path.join(root, candidate, "project.json"))) {
+    candidate = `${baseSlug}-${suffix}`;
+    suffix += 1;
+  }
+
+  return candidate;
+}
+
+function renameWorkspaceProject(projectRoot, name, projectsRoot) {
+  const root = resolveProjectsRoot(projectsRoot);
+  const sourceRoot = path.resolve(projectRoot);
+  if (sourceRoot === root || !sourceRoot.startsWith(`${root}${path.sep}`)) {
+    throw new Error("Project rename target must stay inside the configured projects root.");
+  }
+
+  const projectPath = resolveProjectPath(sourceRoot, "project.json");
+  const project = readJsonFile(projectPath, {});
+  const currentProjectId = project.project_id ?? path.basename(sourceRoot);
+  const nextProjectId = nextAvailableProjectSlugForRename(
+    safeSlug(name),
+    root,
+    currentProjectId,
+  );
+  const nextRoot = path.join(root, nextProjectId);
+  writeJsonFileAtomic(projectPath, {
+    ...project,
+    project_id: nextProjectId,
+    name,
+    updated_at: nowIso(),
+  });
+
+  const contextPath = resolveProjectPath(sourceRoot, "context.json");
+  if (!isEmptyFile(contextPath)) {
+    const context = readJsonFile(contextPath, {});
+    writeJsonFileAtomic(contextPath, {
+      ...context,
+      active_project: nextProjectId,
+      updated_at: nowIso(),
+    });
+  }
+
+  if (path.resolve(nextRoot) !== sourceRoot) {
+    fs.renameSync(sourceRoot, nextRoot);
+  }
+
+  return nextRoot;
+}
+
+function nextAvailableProjectSlugForRename(baseSlug, projectsRoot, currentProjectId) {
+  const root = resolveProjectsRoot(projectsRoot);
+  let candidate = safeSlug(baseSlug);
+  let suffix = 2;
+  const currentSlug = safeSlug(currentProjectId);
+
+  while (
+    candidate !== currentSlug &&
+    fs.existsSync(path.join(root, candidate, "project.json"))
+  ) {
+    candidate = `${baseSlug}-${suffix}`;
+    suffix += 1;
+  }
+
+  return candidate;
+}
+
+function deleteWorkspaceProject(projectRoot, projectsRoot) {
+  const root = resolveProjectsRoot(projectsRoot);
+  const target = path.resolve(projectRoot);
+  if (target === root || !target.startsWith(`${root}${path.sep}`)) {
+    throw new Error("Project delete target must stay inside the configured projects root.");
+  }
+
+  fs.rmSync(target, { force: true, recursive: true });
 }
 
 function resolveUnderRoot(rootDir, relativePath, label) {
@@ -2934,38 +3253,6 @@ function renderDashboardHtml() {
 </html>`;
 }
 
-function renderFixtureSvg(spec, index) {
-  const palettes = {
-    blue: ["#dbeafe", "#2563eb", "#93c5fd"],
-    gray: ["#f1f5f9", "#475569", "#cbd5e1"],
-    green: ["#dcfce7", "#16a34a", "#bbf7d0"],
-    purple: ["#ede9fe", "#7c3aed", "#c4b5fd"],
-  };
-  const [bg, fg, soft] = palettes[spec.tone] ?? palettes.purple;
-  const label = escapeSvgText(spec.title ?? spec.name ?? spec.assetId);
-
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
-  <rect width="1280" height="720" rx="36" fill="${bg}"/>
-  <circle cx="${240 + index * 42}" cy="190" r="112" fill="${soft}" opacity=".68"/>
-  <circle cx="${850 - index * 20}" cy="250" r="148" fill="#ffffff" opacity=".42"/>
-  <rect x="510" y="190" width="250" height="330" rx="44" fill="#111827" opacity=".56"/>
-  <rect x="548" y="246" width="174" height="210" rx="28" fill="#ffffff" opacity=".86"/>
-  <circle cx="585" cy="286" r="22" fill="${fg}" opacity=".55"/>
-  <circle cx="650" cy="286" r="22" fill="${fg}" opacity=".38"/>
-  <rect x="450" y="500" width="370" height="70" rx="35" fill="#ffffff" opacity=".76"/>
-  <text x="80" y="640" fill="#111827" font-family="Inter, Arial, sans-serif" font-size="54" font-weight="800">${label}</text>
-  <text x="80" y="94" fill="${fg}" font-family="Inter, Arial, sans-serif" font-size="42" font-weight="800">PostPlus fixture ${index}</text>
-</svg>
-`;
-}
-
-function escapeSvgText(value) {
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-}
-
 function generateFixtureVideo(outputPath) {
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
   try {
@@ -3022,6 +3309,26 @@ const IMAGE_UPLOAD_MIME_EXTENSIONS = new Map([
   ["image/svg+xml", ".svg"],
 ]);
 
+const GENERIC_UPLOAD_MIME_EXTENSIONS = new Map([
+  ...IMAGE_UPLOAD_MIME_EXTENSIONS,
+  ["audio/mpeg", ".mp3"],
+  ["audio/mp3", ".mp3"],
+  ["audio/wav", ".wav"],
+  ["audio/x-wav", ".wav"],
+  ["audio/mp4", ".m4a"],
+  ["audio/x-m4a", ".m4a"],
+  ["audio/aac", ".aac"],
+  ["audio/ogg", ".ogg"],
+  ["audio/flac", ".flac"],
+  ["video/mp4", ".mp4"],
+  ["video/quicktime", ".mov"],
+  ["video/webm", ".webm"],
+  ["text/plain", ".txt"],
+  ["text/html", ".html"],
+  ["text/markdown", ".md"],
+  ["application/json", ".json"],
+]);
+
 function normalizeUploadedImage(input = {}) {
   const rawMimeType = String(input.mimeType ?? input.mime_type ?? "").trim().toLowerCase();
   const fileNameInput = String(input.fileName ?? input.file_name ?? "uploaded-image").trim();
@@ -3063,6 +3370,85 @@ function normalizeUploadedImage(input = {}) {
     fileName: `${stem}${normalizedExtension}`,
     name: String(input.name ?? titleizeSlug(stem)),
   };
+}
+
+function normalizeUploadedAsset(input = {}) {
+  const type = validateAssetType(input.assetType ?? input.asset_type ?? input.type ?? inferAssetTypeFromMime(input.mimeType ?? input.mime_type));
+  if (!["text", "image", "audio", "video", "reference"].includes(type)) {
+    throw new Error(`Dashboard upload is not supported for type: ${type}`);
+  }
+
+  const rawMimeType = String(input.mimeType ?? input.mime_type ?? "").trim().toLowerCase();
+  const fileNameInput = String(input.fileName ?? input.file_name ?? "uploaded-file").trim();
+  const extensionFromName = path.extname(fileNameInput).toLowerCase();
+  const extensionFromMime = GENERIC_UPLOAD_MIME_EXTENSIONS.get(rawMimeType);
+  const extension = normalizeUploadExtension(extensionFromMime ?? extensionFromName, type);
+  const base64 = String(input.dataBase64 ?? input.data_base64 ?? "")
+    .replace(/^data:[^;]+;base64,/i, "")
+    .trim();
+  if (!base64) {
+    throw new Error("Uploaded file dataBase64 is required.");
+  }
+
+  const bytes = Buffer.from(base64, "base64");
+  if (!bytes.length) {
+    throw new Error("Uploaded file data is empty.");
+  }
+  const maxBytes = 250 * 1024 * 1024;
+  if (bytes.length > maxBytes) {
+    throw new Error("Uploaded file exceeds the 250MB local dashboard limit.");
+  }
+
+  const stem = safeFileStem(path.basename(fileNameInput, extensionFromName), "uploaded-file");
+  const assetId =
+    input.assetId || input.asset_id
+      ? safeIdentifier(input.assetId ?? input.asset_id, "asset_id")
+      : safeIdentifier(`${type}_${stem}_${crypto.randomUUID().replace(/-/g, "").slice(0, 8)}`, "asset_id");
+  return {
+    assetId,
+    bytes,
+    extension,
+    fileName: `${stem}${extension}`,
+    name: String(input.name ?? titleizeSlug(stem)),
+    type,
+  };
+}
+
+function inferAssetTypeFromMime(mimeType) {
+  const value = String(mimeType ?? "").toLowerCase();
+  if (value.startsWith("image/")) return "image";
+  if (value.startsWith("audio/")) return "audio";
+  if (value.startsWith("video/")) return "video";
+  if (value.startsWith("text/") || value === "application/json") return "text";
+  return "reference";
+}
+
+function normalizeUploadExtension(extension, type) {
+  if (extension) {
+    return extension === ".jpeg" ? ".jpg" : extension;
+  }
+  if (type === "text") return ".md";
+  if (type === "image") return ".png";
+  if (type === "audio") return ".mp3";
+  if (type === "video") return ".mp4";
+  return ".bin";
+}
+
+function moveProjectFileToTrash(projectRoot, relativePath) {
+  const absolutePath = resolveProjectPath(projectRoot, relativePath, "trash file path");
+  if (!fs.existsSync(absolutePath)) {
+    return null;
+  }
+
+  const trashRoot = resolveProjectPath(
+    projectRoot,
+    `.postplus/trash/${nowIso().replace(/[:.]/g, "-")}`,
+    "trash path",
+  );
+  const targetPath = path.join(trashRoot, relativePath.split(/[\\/]+/).join(path.sep));
+  fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+  fs.renameSync(absolutePath, targetPath);
+  return targetPath;
 }
 
 function normalizePipelineSteps(steps) {

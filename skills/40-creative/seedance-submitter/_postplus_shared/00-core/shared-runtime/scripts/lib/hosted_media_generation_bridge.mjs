@@ -74,11 +74,16 @@ export async function requestHostedMediaGenerationStatus(handle) {
     throw new Error('handle is required for hosted media status.');
   }
 
-  const result = await runHostedCapabilityEnvelopeRequest({
-    capability: 'media-generation',
-    operation: 'status',
-    handle: normalizedHandle,
-  });
+  const result = await runHostedCapabilityEnvelopeRequest(
+    {
+      capability: 'media-generation',
+      operation: 'status',
+      handle: normalizedHandle,
+    },
+    {
+      applyProcessHostedExecutionFields: false,
+    },
+  );
 
   return {
     billing: result.billing,
@@ -118,11 +123,16 @@ async function resolveHostedMediaGenerationResult(initialResult) {
       await new Promise((resolve) => setTimeout(resolve, intervalMs));
     }
 
-    current = await runHostedCapabilityEnvelopeRequest({
-      capability: 'media-generation',
-      operation: 'status',
-      handle,
-    });
+    current = await runHostedCapabilityEnvelopeRequest(
+      {
+        capability: 'media-generation',
+        operation: 'status',
+        handle,
+      },
+      {
+        applyProcessHostedExecutionFields: false,
+      },
+    );
     handle = readPendingRunHandle(current.output);
   }
 

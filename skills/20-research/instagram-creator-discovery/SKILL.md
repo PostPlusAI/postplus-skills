@@ -41,21 +41,19 @@ If the request cares about:
 - topical fit
 - audience fit
 
-prefer content-first or mixed discovery:
+prefer a released mixed-discovery path:
 
-1. collect matching posts / Reels / hashtag results / tagged posts
-2. extract candidate usernames from the matched content
-3. enrich candidate profiles
-4. optionally enrich recent posts for stronger evidence
-5. rank creators by profile + content evidence
-6. return a research pool plus shortlist
+1. use `instagram-search` to find candidate profiles from topical terms
+2. enrich candidate profiles with `instagram-profiles`
+3. optionally bring in normalized post or hashtag evidence produced by
+   `instagram-content-benchmark` or `instagram-campaign-scout`
+4. rank creators by profile plus any already-collected content evidence
+5. return a research pool plus shortlist
 
 ## Primary Hosted Collection Keys
 
 - `instagram-search`
-- `instagram-hashtags`
 - `instagram-profiles`
-- `instagram-posts`
 
 Released enrichment:
 

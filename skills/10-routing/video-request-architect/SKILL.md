@@ -144,7 +144,7 @@ For Seedance 2.0 work, any script longer than 15 seconds must be converted into 
 Use the PostPlus-provided builder to make that boundary explicit:
 
 ```bash
-node skills/10-routing/video-request-architect/scripts/build_video_request_architecture.mjs \
+node ${CLAUDE_SKILL_DIR}/scripts/build_video_request_architecture.mjs \
   --input <brief.json> \
   --output <request-architecture.json>
 ```

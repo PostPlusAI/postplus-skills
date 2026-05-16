@@ -1,6 +1,6 @@
 ---
 name: facebook-research
-description: Research Facebook pages, public follower or following surfaces, and public posts using PostPlus Cloud collection service. Use this when the user wants Facebook account research, follower-surface sampling, or public post metrics.
+description: Research public Facebook page, group, and post content using PostPlus Cloud collection service. Use this when the user wants Facebook public post research, public content metrics, or source-grounded summaries.
 metadata:
   postplus:
     familyId: platform-research
@@ -17,8 +17,6 @@ Use this skill when the request is about Facebook account or content research.
 
 This skill is for:
 
-- sampling public follower or following surfaces from a Facebook page or profile
-- collecting public page or profile follow-graph items when Facebook exposes them
 - collecting one or more public Facebook page, group, or direct post URLs
 - discovering a small Facebook post set from a broad query
 - normalizing Facebook post metrics into local artifacts
@@ -30,14 +28,15 @@ This skill is not for:
 - YouTube collection
 - TikTok, Instagram, or X workflows
 - publishing, deleting, or scheduling posts
-- guaranteeing a complete private follower list when Facebook does not expose it publicly
+- follower or following collection; that path is not exposed on the released
+  PostPlus public skill surface
 
 ## Before Collection Boundary
 
-Before running collection, tell the user that Facebook results are public
-samples from exposed surfaces, not a complete follower export. If the user's
-goal requires private or exhaustive audience data, stop and ask for a different
-source of truth before collecting.
+Before running collection, confirm the task can be answered from public
+Facebook page, group, or post content. If the user's goal requires follower,
+following, private audience, or exhaustive audience data, stop and ask for a
+different source of truth before collecting.
 
 ## PostPlus Cloud Boundary
 
@@ -52,26 +51,15 @@ In the PostPlus runtime:
 
 ## Default Collection Path
 
-Use the hosted follower collection path by default:
+Use hosted public-content collection by default:
 
-- default collection mode: public follower or following items from a page or profile URL
-  - use for public follower or following item collection from a page or profile URL
-  - tested input shape:
-    - `startUrls = [{ "url": "https://www.facebook.com/<page-or-profile>" }]`
-    - `resultsLimit`
-    - `followType = "follower"` or `followType = "following"`
-  - current observed output fields include:
-    - `facebookUrl`
-    - `followType`
-    - `title`
-    - `url`
-    - `subtitle_text`
-    - `image`
-  - this is the default hosted path for Facebook audience-surface research on the public skill surface
+- page/profile URL -> recent public posts
+- public group URL -> recent public posts
+- direct public post URL -> one post
+- broad query -> small discovered public post set, then public content collection
 
 ## Supported Facebook Targets
 
-- public page/profile URL -> follower or following items through hosted collection
 - public page/profile URL -> recent posts through hosted content collection
 - public group URL -> recent posts
 - direct public post URL -> one post
@@ -81,16 +69,18 @@ Use the hosted follower collection path by default:
 - fail if the request includes non-Facebook platforms
 - fail if no Facebook public URLs can be discovered
 - fail if hosted content collection returns malformed items without stable URL or id fields
-- fail if hosted follower collection returns no publicly visible follower or following items
 - keep raw responses for debugging
 
 ## Recommended Workflow
 
-1. If the user wants account audience research, start with follower collection using the PostPlus Cloud collection service.
-2. If the user wants content research, use the hosted content collection scripts below.
-3. If the user wants both, collect follower or following items first, then collect post evidence from the same page or profile.
+1. If the user wants content research, use the hosted content collection scripts below.
+2. If the user wants account audience research, explain that follower/following
+   collection is not released and ask for a public content or user-provided
+   audience data source instead.
+3. If the user wants both public content and audience context, collect public
+   post evidence first and keep audience claims separate from collected facts.
 
-Do not treat Facebook follower-surface results as a guaranteed full audience export.
+Do not treat public Facebook post evidence as a guaranteed audience export.
 
 ## Public Skill Execution Contract
 

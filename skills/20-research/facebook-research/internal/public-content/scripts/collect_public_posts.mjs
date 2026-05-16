@@ -41,14 +41,12 @@ export async function collectFromPlan(
     raw[platform] = result;
     summary[platform] = isPublicContentPendingResult(result)
       ? {
-          sourceId,
           status: 'pending',
           runHandle: result.runHandle,
           snapshotId: result.snapshotId || result.runHandle,
         }
       : Array.isArray(result)
         ? {
-          sourceId,
           ...summarizePlatformItems(
             result.map((item) => ({
               metrics: {
@@ -65,15 +63,15 @@ export async function collectFromPlan(
             })),
           ),
         }
-        : failUnexpectedCollectionResult(platform, sourceId);
+        : failUnexpectedCollectionResult(platform);
   }
 
   return { raw, summary };
 }
 
-function failUnexpectedCollectionResult(platform, sourceId) {
+function failUnexpectedCollectionResult(platform) {
   throw new Error(
-    `Hosted public content collection for ${platform} (${sourceId}) returned a non-array result.`,
+    `Hosted public content collection for ${platform} returned a non-array result.`,
   );
 }
 

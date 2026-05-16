@@ -3,7 +3,6 @@
 import path from "node:path";
 
 import {
-  SOURCE_IDS,
   isDirectRun,
   parseArgs,
   readJson,
@@ -35,7 +34,6 @@ export function normalizeLinkedinItem(item) {
     },
     source: {
       provider: "public-content",
-      sourceId: SOURCE_IDS.linkedinPosts,
       collectedAt: item.timestamp || null,
       rawPlatform: "linkedin"
     }
@@ -64,7 +62,6 @@ export function normalizeYoutubeItem(item) {
     },
     source: {
       provider: "public-content",
-      sourceId: SOURCE_IDS.youtubeVideos,
       collectedAt: item.timestamp || null,
       rawPlatform: "youtube"
     }
@@ -106,11 +103,6 @@ export function normalizeFacebookItem(item) {
     },
     source: {
       provider: "public-content",
-      sourceId: item.input?.url?.includes("/groups/")
-        ? SOURCE_IDS.facebookGroupPosts
-        : item.input?.url && /(\/posts\/|\/videos\/|\/reel\/|\/permalink\/)/.test(item.input.url)
-          ? SOURCE_IDS.facebookPostByUrl
-          : SOURCE_IDS.facebookProfilePosts,
       collectedAt: item.timestamp || null,
       rawPlatform: "facebook"
     }

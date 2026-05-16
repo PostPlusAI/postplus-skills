@@ -253,7 +253,7 @@ Use the narrowest useful platform skill:
 
 - TikTok data -> `skills/20-research/tiktok-research`
 - Instagram accounts -> `skills/20-research/instagram-account-research`
-- X accounts -> `skills/20-research/x-research`
+- X accounts -> `skills/20-research/x-tools`
 - Outreach prep -> `skills/50-publishing/creator-outreach`
 
 Do not use public web search as the primary route for platform creator discovery unless platform collection is blocked.

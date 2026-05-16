@@ -46,10 +46,8 @@ async function main() {
   const result = unwrapProviderResult(rawResult);
 
   const manifest = createRenderManifestBase(request, paths);
-  manifest.generationHandle =
-    request.provider === 'hosted-media' ? result?.id || null : null;
-  manifest.providerTaskId =
-    request.provider === 'ark' ? result?.id || null : null;
+  manifest.generationHandle = result?.id || null;
+  manifest.providerTaskId = null;
   manifest.providerStatus = result?.status || null;
   manifest.providerUrls = result?.urls || null;
   manifest.hasNsfwContents = Array.isArray(result?.has_nsfw_contents)
@@ -59,7 +57,6 @@ async function main() {
   manifest.generateAudio = request.generateAudio;
   manifest.serviceTier = request.serviceTier;
   manifest.watermark = request.watermark;
-  manifest.content = request.provider === 'ark' ? request.content : undefined;
 
   await maybeDownloadOutputs(result, manifest, paths);
 

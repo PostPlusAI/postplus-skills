@@ -26,7 +26,7 @@ This file is intentionally lightweight. Platform-specific collection logic lives
 - Instagram content benchmark: [`skills/20-research/instagram-content-benchmark/SKILL.md`](skills/20-research/instagram-content-benchmark/SKILL.md)
 - Instagram audience voice: [`skills/20-research/instagram-audience-voice/SKILL.md`](skills/20-research/instagram-audience-voice/SKILL.md)
 - Instagram campaign scouting: [`skills/20-research/instagram-campaign-scout/SKILL.md`](skills/20-research/instagram-campaign-scout/SKILL.md)
-- X: [`skills/20-research/x-research/SKILL.md`](skills/20-research/x-research/SKILL.md)
+- X: [`skills/20-research/x-tools/SKILL.md`](skills/20-research/x-tools/SKILL.md)
 - YouTube: [`skills/20-research/youtube-research/SKILL.md`](skills/20-research/youtube-research/SKILL.md)
 - Facebook: [`skills/20-research/facebook-research/SKILL.md`](skills/20-research/facebook-research/SKILL.md)
 

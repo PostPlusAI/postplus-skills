@@ -284,7 +284,7 @@ Avoid `/tmp` for final assets.
 
 ## Tool Contract
 
-This skill expects two tool adapters:
+This skill expects three tool adapters:
 
 - `generate_image`
 - `upload_media`

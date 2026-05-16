@@ -83,9 +83,9 @@ Can run now:
 When a prompt is weak, point the problem to the right stage:
 
 - bad routing -> `pattern-router`
-- missing or misfit hook mechanism -> `hook-design`
+- missing or misfit hook mechanism -> `visual-hook`
 - weak hook decode -> `reference-decode`
-- weak panel logic -> `storyboard-grid-writer`
+- weak panel or beat logic -> `video-request-architect`
 - bad request mapping -> `video-request-architect`
 - bad learn/do-not-copy rules -> `reference-contract-builder`
 

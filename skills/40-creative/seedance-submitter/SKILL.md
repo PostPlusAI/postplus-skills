@@ -26,7 +26,7 @@ Follow shared public skill rules in:
 7. Validate every Seedance request before submission:
 
 ```bash
-node skills/40-creative/seedance-submitter/scripts/validate_seedance_request_contract.mjs \
+node ${CLAUDE_SKILL_DIR}/scripts/validate_seedance_request_contract.mjs \
   --input <request.seed.json>
 ```
 
