@@ -309,16 +309,39 @@ For multi-image edit:
 }
 ```
 
-## 4. Raw Curl Persistence
+## 4. Attempt Persistence
 
-Even when the eventual adapter is scripted, persist these files per run:
+Image generation submit and poll scripts persist attempt state per run:
 
 - `runs/<media-type>/<run-id>/request.json`
 - `runs/<media-type>/<run-id>/response.json`
 - `runs/<media-type>/<run-id>/manifest.json`
+- `runs/image/<run-id>/attempts/index.json`
+- `runs/image/<run-id>/attempts/<attempt-id>/attempt.json`
+- `runs/image/<run-id>/attempts/<attempt-id>/submit-response.json`
+- `runs/image/<run-id>/attempts/<attempt-id>/poll-response-NNN.json`
 - shared media outputs under `images/`
 
-This makes reruns and debugging cheap.
+`response.json` and `manifest.json` remain latest-run convenience files.
+Recovery truth lives in the append-only attempt records.
+
+Attempt states drive operator action:
+
+- `not_submitted`: no hosted generation was created; submitting later is safe.
+- `submitted_processing`: poll the existing attempt.
+- `provider_completed`: provider output URLs have been seen; resume
+  materialization/download only.
+- `materialization_failed`: keep the provider output URL and materialization
+  error; retry materialization before paying for a new generation.
+- `hosted_generation_handle_not_found`: preserve the disappeared hosted handle,
+  operation id, response path, and previous materialization error. A new paid
+  generation requires an explicit `--new-attempt`.
+
+`generate_image.mjs` and `edit_image.mjs` fail fast when a submitted attempt
+already exists for the same `runId`. Pass `--new-attempt` only when the operator
+intends to create a separate paid generation attempt. `poll_prediction.mjs`
+defaults to the active submitted attempt and also accepts `--attempt-id` for a
+specific attempt.
 
 ## 5. Local-First Output Rule
 
@@ -336,3 +359,52 @@ Preferred behavior:
 - persist raw `response.json` even when `outputs` is empty
 - poll later using the provider `urls.get`
 - only download outputs once `status` becomes `completed`
+
+## 7. Recoverable Materialization Failure
+
+Provider completion and local asset materialization are separate states.
+
+When provider `status` is `completed`, image scripts must persist the completed
+provider output metadata in `runs/image/<run-id>/manifest.json` before calling
+`media-file/download-to-storage`:
+
+- `providerStatus: "completed"`
+- `providerOutputs[]`
+- `providerOutputUrls[]`
+- `providerBilling`
+
+If `media-file/download-to-storage` or the signed local download fails after
+provider completion, the run is not a provider failure. The script should fail
+with `provider_completed_asset_materialization_failed` and leave a recoverable
+pointer:
+
+```json
+{
+  "providerStatus": "completed",
+  "materializationStatus": "provider_completed_asset_materialization_failed",
+  "providerOutputUrls": ["https://..."],
+  "recoverableFailure": {
+    "code": "provider_completed_asset_materialization_failed",
+    "layer": "hosted_storage_network",
+    "providerOutputUrls": ["https://..."],
+    "recoverable": true,
+    "responsePath": "runs/image/image-run-001/response.json",
+    "manifestPath": "runs/image/image-run-001/manifest.json"
+  },
+  "assets": []
+}
+```
+
+`asset.json` records the same state with `status: "materialization_failed"` and
+`lastRecoverableError`. `index.json` records it under `recoverableFailures[]`.
+This prevents an empty browse layer from looking like a never-generated asset.
+
+Resume behavior:
+
+- `poll_prediction.mjs --request <request.json> --response <response.json>`
+  must materialize directly from a saved completed `response.json`.
+- A saved completed response must not require a still-valid hosted generation
+  run handle.
+- On successful resume, the script writes `images/candidates/*`, updates
+  `asset.json.heroImagePath`, writes the normal `index.json.images[]` entry, and
+  clears the prior recoverable failure pointer for the run.

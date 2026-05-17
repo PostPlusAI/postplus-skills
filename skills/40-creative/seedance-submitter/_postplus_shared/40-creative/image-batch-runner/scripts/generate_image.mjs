@@ -1,29 +1,33 @@
 #!/usr/bin/env node
 
-import fs from "node:fs";
-import path from "node:path";
+import { formatCliError } from "../../../00-core/shared-runtime/scripts/lib/network_runtime.mjs";
+import {
+  createGenerationAttempt,
+  finalizeAttemptManifest,
+  isNotSubmittedGenerationError,
+  recordAttemptMaterializationError,
+  recordAttemptNotSubmitted,
+  recordAttemptSubmissionResponse,
+} from "./attempt_state.mjs";
 import {
   buildAssetPaths,
   createImageManifestBase,
-  downloadFile,
-  ensureDir,
   fetchJson,
   finalizeImageRun,
   getHostedImageModelConfig,
   inferSeedreamSize,
+  materializeCompletedImageOutputs,
   normalizeGenerationInput,
   parseArgs,
   readHostedJson,
-  readJson,
-  resolveHostedImageOutputFormat,
-  sha256,
-  toAssetRelative,
   unwrapProviderResult,
-  writeJson
+  writeJson,
 } from "./_shared.mjs";
 
 function usage() {
-  console.error("Usage: node generate_image.mjs --request <request.json>");
+  console.error(
+    "Usage: node generate_image.mjs --request <request.json> [--new-attempt]",
+  );
 }
 
 function buildProviderBody(request) {
@@ -34,14 +38,14 @@ function buildProviderBody(request) {
       size: inferSeedreamSize(request),
       output_format: request.outputFormat,
       enable_sync_mode: request.enableSyncMode,
-      enable_base64_output: request.enableBase64Output
+      enable_base64_output: request.enableBase64Output,
     };
     if (Number.isInteger(request.maxImages)) {
       body.max_images = request.maxImages;
     }
     return {
       endpointKey: modelConfig.endpointKey,
-      body
+      body,
     };
   }
 
@@ -54,8 +58,8 @@ function buildProviderBody(request) {
         resolution: request.resolution,
         quality: request.quality || "medium",
         enable_sync_mode: request.enableSyncMode,
-        enable_base64_output: request.enableBase64Output
-      }
+        enable_base64_output: request.enableBase64Output,
+      },
     };
   }
 
@@ -70,8 +74,8 @@ function buildProviderBody(request) {
         : {}),
       output_format: request.outputFormat,
       enable_sync_mode: request.enableSyncMode,
-      enable_base64_output: request.enableBase64Output
-    }
+      enable_base64_output: request.enableBase64Output,
+    },
   };
 }
 
@@ -86,65 +90,56 @@ async function main() {
   const input = readHostedJson(args.request);
   const request = normalizeGenerationInput(input, "text-to-image");
   const paths = buildAssetPaths(request.localAssetDir, request.runId, "image");
+  let attempt = createGenerationAttempt(request, paths, {
+    allowNewAttempt: args["new-attempt"] === true,
+    operation: "text-to-image",
+  });
   writeJson(paths.requestPath, request);
 
   const providerRequest = buildProviderBody(request);
-  const { data } = await fetchJson(providerRequest.endpointKey, {
-    method: "POST",
-    body: JSON.stringify(providerRequest.body)
-  });
+  let hostedResponse;
+  try {
+    hostedResponse = await fetchJson(providerRequest.endpointKey, {
+      method: "POST",
+      body: JSON.stringify(providerRequest.body),
+    });
+  } catch (error) {
+    if (isNotSubmittedGenerationError(error)) {
+      throw recordAttemptNotSubmitted(paths, attempt, error);
+    }
+    throw error;
+  }
 
-  writeJson(paths.responsePath, data);
-
+  attempt = recordAttemptSubmissionResponse(paths, attempt, hostedResponse);
+  const data = hostedResponse.data;
   const manifest = createImageManifestBase(request, paths);
   const result = unwrapProviderResult(data);
   manifest.generationHandle = result?.id || null;
   manifest.providerStatus = result?.status || null;
   manifest.providerUrls = result?.urls || null;
   manifest.mediaType = "image";
-  const outputs = Array.isArray(result?.outputs) ? result.outputs : [];
 
-  for (let index = 0; index < outputs.length; index += 1) {
-    const output = outputs[index];
-    const fileExt = resolveHostedImageOutputFormat(request, "text-to-image");
-    const imageId = `img-${String(index + 1).padStart(3, "0")}`;
-    const localPath = path.join(paths.candidatesDir, `${imageId}.${fileExt}`);
-
-    if (typeof output === "string" && /^https?:\/\//.test(output)) {
-      await downloadFile(output, localPath);
-      manifest.assets.push({
-        assetId: imageId,
-        localPath,
-        assetRelativePath: toAssetRelative(paths.absoluteAssetDir, localPath),
-        remoteUrl: output,
-        mimeType: `image/${fileExt}`,
-        promptHash: `sha256:${sha256(request.prompt)}`,
-        sourceBasis: request.sourceBasis
-      });
-      continue;
-    }
-
-    if (typeof output === "string" && request.enableBase64Output) {
-      const bytes = Buffer.from(output, "base64");
-      ensureDir(path.dirname(localPath));
-      fs.writeFileSync(localPath, bytes);
-      manifest.assets.push({
-        assetId: imageId,
-        localPath,
-        assetRelativePath: toAssetRelative(paths.absoluteAssetDir, localPath),
-        remoteUrl: null,
-        mimeType: `image/${fileExt}`,
-        promptHash: `sha256:${sha256(request.prompt)}`,
-        sourceBasis: request.sourceBasis
-      });
+  if (result?.status === "completed") {
+    try {
+      await materializeCompletedImageOutputs(
+        request,
+        result,
+        manifest,
+        paths,
+        "text-to-image",
+      );
+    } catch (error) {
+      recordAttemptMaterializationError(paths, attempt, error, manifest);
+      throw error;
     }
   }
 
-  finalizeImageRun(request, paths, manifest);
-  console.log(JSON.stringify(manifest, null, 2));
+  const finalized = finalizeAttemptManifest(paths, attempt, manifest);
+  finalizeImageRun(request, paths, finalized.manifest);
+  console.log(JSON.stringify(finalized.manifest, null, 2));
 }
 
 main().catch((error) => {
-  console.error(error instanceof Error ? error.stack : String(error));
+  console.error(formatCliError(error));
   process.exitCode = 1;
 });

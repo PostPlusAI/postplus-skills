@@ -1,6 +1,6 @@
 ---
 name: social-media-publisher
-description: Prepare and, after explicit approval, publish social posts through the PostPlus platform-owned social publishing workspace.
+description: Prepare social publishing requests and approval artifacts through the PostPlus platform-owned social publishing workspace.
 metadata:
   postplus:
     familyId: workspace-publishing
@@ -20,8 +20,8 @@ This skill is for:
 - guiding users through the invite-link channel onboarding flow
 - listing integrations available on the PostPlus social publishing workspace
 - preparing a local publish request draft
-- creating a social post draft or schedule only after explicit approval
-- promoting an existing social post draft into the queue only after a second approval
+- creating a social post draft only after explicit approval
+- promoting or scheduling an existing social post only when the target channel has current entitlement and live-evidence coverage for that operation
 
 ## Ownership model
 
@@ -58,7 +58,7 @@ Actual remote mutation requires:
 - a channel that has been onboarded via the invite-link flow above
 
 Use `change_post_status.mjs` to move a real social post draft from `draft` to
-`schedule` after a second explicit approval.
+`schedule` only after a second explicit approval and current channel evidence.
 
 ## Authentication
 
@@ -86,8 +86,8 @@ Release workflow rules:
 8. Run `create_post.mjs` without `--execute` to produce an approval artifact.
 9. After approval, re-run `create_post.mjs --execute --approval-file ...`.
 10. If the post should stay reviewable, keep it in `draft`.
-11. Only after a second approval, run `change_post_status.mjs --status schedule`
-    to queue it for publishing.
+11. Only after a second approval and current channel evidence, run
+    `change_post_status.mjs --status schedule` to queue it for publishing.
 
 ## Main scripts
 

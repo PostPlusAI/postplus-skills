@@ -1,25 +1,35 @@
 #!/usr/bin/env node
 
-import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+import { formatCliError } from "../_postplus_shared/00-core/shared-runtime/scripts/lib/network_runtime.mjs";
+import {
+  finalizeAttemptManifest,
+  isHostedGenerationHandleNotFoundError,
+  readAttemptLatestResponse,
+  recordAttemptHostedHandleNotFound,
+  recordAttemptMaterializationError,
+  recordAttemptStatusResponse,
+  resolvePollAttempt,
+} from "./attempt_state.mjs";
 import {
   buildAssetPaths,
   createImageManifestBase,
-  downloadFile,
-  ensureDir,
   fetchJson,
   finalizeImageRun,
+  materializeCompletedImageOutputs,
   parseArgs,
   readHostedJson,
   readJson,
-  sha256,
-  toAssetRelative,
+  readJsonIfExists,
   unwrapProviderResult,
-  writeJson
 } from "./_shared.mjs";
 
 function usage() {
-  console.error("Usage: node poll_prediction.mjs --request <request.json> [--response <response.json>] [--result-url <url>]");
+  console.error(
+    "Usage: node poll_prediction.mjs --request <request.json> [--response <response.json>] [--result-url <url>] [--attempt-id <attempt-id>]",
+  );
 }
 
 function inferResultUrl(request, responsePayload) {
@@ -38,53 +48,20 @@ function normalizePollRequest(request) {
     ...request,
     assetId: request.assetId || request.jobId,
     runId: request.runId || request.jobId,
-    localAssetDir: request.localAssetDir || request.localOutputDir
+    localAssetDir: request.localAssetDir || request.localOutputDir,
   };
 }
 
-async function downloadOutputs(request, result, manifest, paths) {
-  const outputs = Array.isArray(result?.outputs) ? result.outputs : [];
-  const fileExt = request.outputFormat === "jpeg" ? "jpeg" : "png";
-
-  ensureDir(paths.candidatesDir);
-  for (let index = 0; index < outputs.length; index += 1) {
-    const output = outputs[index];
-    const assetId = `img-${String(index + 1).padStart(3, "0")}`;
-    const localPath = path.join(paths.candidatesDir, `${assetId}.${fileExt}`);
-
-    if (typeof output === "string" && /^https?:\/\//.test(output)) {
-      await downloadFile(output, localPath);
-      manifest.assets.push({
-        assetId,
-        localPath,
-        assetRelativePath: toAssetRelative(paths.absoluteAssetDir, localPath),
-        remoteUrl: output,
-        mimeType: `image/${fileExt}`,
-        promptHash: `sha256:${sha256(request.prompt)}`,
-        sourceBasis: request.sourceBasis
-      });
-      continue;
-    }
-
-    if (typeof output === "string" && request.enableBase64Output) {
-      const bytes = Buffer.from(output, "base64");
-      ensureDir(path.dirname(localPath));
-      fs.writeFileSync(localPath, bytes);
-      manifest.assets.push({
-        assetId,
-        localPath,
-        assetRelativePath: toAssetRelative(paths.absoluteAssetDir, localPath),
-        remoteUrl: null,
-        mimeType: `image/${fileExt}`,
-        promptHash: `sha256:${sha256(request.prompt)}`,
-        sourceBasis: request.sourceBasis
-      });
-    }
-  }
+function isCompletedProviderResponse(responsePayload) {
+  return unwrapProviderResult(responsePayload)?.status === "completed";
 }
 
-async function main() {
-  const args = parseArgs(process.argv.slice(2));
+function resolveImageOperation(request) {
+  return request.mode === "edit" ? "edit" : "text-to-image";
+}
+
+export async function runPollPrediction(argv = process.argv.slice(2)) {
+  const args = parseArgs(argv);
   if (args.help || !args.request) {
     usage();
     process.exitCode = args.help ? 0 : 1;
@@ -93,14 +70,44 @@ async function main() {
 
   const rawRequest = readHostedJson(args.request);
   const request = normalizePollRequest(rawRequest);
-
   const paths = buildAssetPaths(request.localAssetDir, request.runId, "image");
-  const priorResponse = args.response ? readJson(args.response) : readJson(paths.responsePath);
-  const resultUrl = args["result-url"] || inferResultUrl(request, priorResponse);
+  const fallbackResponse = args.response
+    ? readJson(args.response)
+    : readJsonIfExists(paths.responsePath);
+  const attempt = resolvePollAttempt(request, paths, fallbackResponse, {
+    attemptId:
+      typeof args["attempt-id"] === "string" ? args["attempt-id"] : null,
+  });
+  const priorResponse = readAttemptLatestResponse(attempt, fallbackResponse);
+  const shouldUseSavedCompletedResponse =
+    !args["result-url"] && isCompletedProviderResponse(priorResponse);
 
-  const { data: rawResult } = await fetchJson(resultUrl);
+  let recordedAttempt = attempt;
+  let rawResult = priorResponse;
 
-  writeJson(paths.responsePath, rawResult);
+  if (shouldUseSavedCompletedResponse) {
+    recordedAttempt = recordAttemptStatusResponse(paths, attempt, {
+      data: priorResponse,
+    });
+  } else {
+    const resultUrl = args["result-url"] || inferResultUrl(request, priorResponse);
+    let hostedResponse;
+    try {
+      hostedResponse = await fetchJson(resultUrl);
+    } catch (error) {
+      if (isHostedGenerationHandleNotFoundError(error)) {
+        throw recordAttemptHostedHandleNotFound(
+          paths,
+          attempt,
+          error,
+          resultUrl,
+        );
+      }
+      throw error;
+    }
+    recordedAttempt = recordAttemptStatusResponse(paths, attempt, hostedResponse);
+    rawResult = hostedResponse.data;
+  }
 
   const result = unwrapProviderResult(rawResult);
   const manifest = createImageManifestBase(request, paths);
@@ -110,14 +117,31 @@ async function main() {
   manifest.mediaType = "image";
 
   if (result?.status === "completed") {
-    await downloadOutputs(request, result, manifest, paths);
+    try {
+      await materializeCompletedImageOutputs(
+        request,
+        result,
+        manifest,
+        paths,
+        resolveImageOperation(request),
+      );
+    } catch (error) {
+      recordAttemptMaterializationError(paths, recordedAttempt, error, manifest);
+      throw error;
+    }
   }
 
-  finalizeImageRun(request, paths, manifest);
-  console.log(JSON.stringify(manifest, null, 2));
+  const finalized = finalizeAttemptManifest(paths, recordedAttempt, manifest);
+  finalizeImageRun(request, paths, finalized.manifest);
+  console.log(JSON.stringify(finalized.manifest, null, 2));
 }
 
-main().catch((error) => {
-  console.error(error instanceof Error ? error.stack : String(error));
-  process.exitCode = 1;
-});
+if (
+  process.argv[1] &&
+  path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+) {
+  runPollPrediction().catch((error) => {
+    console.error(formatCliError(error));
+    process.exitCode = 1;
+  });
+}

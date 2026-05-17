@@ -24,6 +24,9 @@ export const DEFAULT_RESOLUTION = '1k';
 export const DEFAULT_ASPECT_RATIO = '9:16';
 export const DEFAULT_SEEDREAM_SIZE = '1440*2560';
 export const DEFAULT_ENABLE_SYNC_MODE = false;
+export const IMAGE_MATERIALIZATION_FAILURE_CODE =
+  'provider_completed_asset_materialization_failed';
+export const IMAGE_MATERIALIZATION_FAILURE_LAYER = 'hosted_storage_network';
 
 export const HOSTED_IMAGE_MODELS = {
   'image-gpt-image-2-text': {
@@ -228,6 +231,7 @@ export async function uploadLocalMedia(localFilePath) {
 export function buildAssetPaths(localAssetDir, runId, mediaType = 'image') {
   const absoluteAssetDir = path.resolve(localAssetDir);
   const runDir = path.join(absoluteAssetDir, 'runs', mediaType, runId);
+  const attemptsDir = path.join(runDir, 'attempts');
   const requestPath = path.join(runDir, 'request.json');
   const responsePath = path.join(runDir, 'response.json');
   const manifestPath = path.join(runDir, 'manifest.json');
@@ -241,6 +245,8 @@ export function buildAssetPaths(localAssetDir, runId, mediaType = 'image') {
   return {
     absoluteAssetDir,
     runDir,
+    attemptsDir,
+    attemptIndexPath: path.join(attemptsDir, 'index.json'),
     requestPath,
     responsePath,
     manifestPath,
@@ -444,6 +450,198 @@ export function createImageManifestBase(normalized, paths) {
   };
 }
 
+function isHttpUrl(value) {
+  return typeof value === 'string' && /^https?:\/\//.test(value);
+}
+
+function copyJsonRecord(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return null;
+  }
+
+  return JSON.parse(JSON.stringify(value));
+}
+
+export function recordCompletedProviderOutputs(manifest, result) {
+  const outputs = Array.isArray(result?.outputs) ? result.outputs : [];
+  const providerOutputs = outputs.map((output, index) => {
+    if (isHttpUrl(output)) {
+      return {
+        index,
+        type: 'url',
+        url: output,
+      };
+    }
+
+    if (typeof output === 'string') {
+      return {
+        index,
+        type: 'base64',
+      };
+    }
+
+    return {
+      index,
+      type: typeof output,
+    };
+  });
+
+  manifest.providerOutputs = providerOutputs;
+  manifest.providerOutputUrls = providerOutputs
+    .map((output) => output.url)
+    .filter((url) => typeof url === 'string' && url.length > 0);
+  manifest.providerBilling = copyJsonRecord(result?.billing);
+  return manifest;
+}
+
+function buildImageAssetEntry(request, paths, assetId, localPath, remoteUrl) {
+  const fileExt = path.extname(localPath).replace(/^\./, '') || 'png';
+
+  return {
+    assetId,
+    localPath,
+    assetRelativePath: toAssetRelative(paths.absoluteAssetDir, localPath),
+    remoteUrl,
+    mimeType: `image/${fileExt}`,
+    promptHash: `sha256:${sha256(request.prompt)}`,
+    sourceBasis: request.sourceBasis,
+  };
+}
+
+export async function materializeImageOutputs(
+  request,
+  result,
+  manifest,
+  paths,
+  operation,
+  options = {},
+) {
+  const outputs = Array.isArray(result?.outputs) ? result.outputs : [];
+  const fileExt = resolveHostedImageOutputFormat(request, operation);
+  const download = options.download || downloadFile;
+
+  ensureDir(paths.candidatesDir);
+  for (let index = 0; index < outputs.length; index += 1) {
+    const output = outputs[index];
+    const assetId = `img-${String(index + 1).padStart(3, '0')}`;
+    const localPath = path.join(paths.candidatesDir, `${assetId}.${fileExt}`);
+
+    if (isHttpUrl(output)) {
+      await download(output, localPath);
+      manifest.assets.push(
+        buildImageAssetEntry(request, paths, assetId, localPath, output),
+      );
+      continue;
+    }
+
+    if (typeof output === 'string' && request.enableBase64Output) {
+      const bytes = Buffer.from(output, 'base64');
+      ensureDir(path.dirname(localPath));
+      fs.writeFileSync(localPath, bytes);
+      manifest.assets.push(
+        buildImageAssetEntry(request, paths, assetId, localPath, null),
+      );
+    }
+  }
+}
+
+function buildRecoverableFailurePointer(request, paths, manifest, failure) {
+  return {
+    code: failure.code,
+    failedAt: failure.failedAt,
+    layer: failure.layer,
+    manifestPath: toAssetRelative(paths.absoluteAssetDir, paths.manifestPath),
+    message: failure.message,
+    providerOutputUrls: failure.providerOutputUrls,
+    providerStatus: manifest.providerStatus,
+    recoverable: true,
+    responsePath: toAssetRelative(paths.absoluteAssetDir, paths.responsePath),
+    runId: request.runId,
+  };
+}
+
+export function markImageMaterializationFailure(
+  request,
+  paths,
+  manifest,
+  error,
+) {
+  const providerOutputUrls = Array.isArray(manifest.providerOutputUrls)
+    ? manifest.providerOutputUrls
+    : [];
+  const failure = {
+    code: IMAGE_MATERIALIZATION_FAILURE_CODE,
+    failedAt: nowIso(),
+    layer: IMAGE_MATERIALIZATION_FAILURE_LAYER,
+    message: error instanceof Error ? error.message : String(error),
+    providerOutputUrls,
+    recoverable: true,
+  };
+
+  manifest.materializationStatus = IMAGE_MATERIALIZATION_FAILURE_CODE;
+  manifest.recoverableFailure = buildRecoverableFailurePointer(
+    request,
+    paths,
+    manifest,
+    failure,
+  );
+  return manifest.recoverableFailure;
+}
+
+export function createImageMaterializationError(paths, failure, cause) {
+  const error = new Error(
+    [
+      `${IMAGE_MATERIALIZATION_FAILURE_CODE}: provider generation completed, but asset materialization failed at ${failure.layer}.`,
+      `Provider output URLs are saved in ${paths.manifestPath} as providerOutputUrls and in ${paths.responsePath}.`,
+      `Retry materialization with poll_prediction.mjs using the saved response.json; a live hosted generation run handle is not required.`,
+    ].join(' '),
+  );
+  error.code = IMAGE_MATERIALIZATION_FAILURE_CODE;
+  error.productErrorCode = IMAGE_MATERIALIZATION_FAILURE_CODE;
+  error.layer = failure.layer;
+  error.manifestPath = paths.manifestPath;
+  error.responsePath = paths.responsePath;
+  error.providerOutputUrls = failure.providerOutputUrls;
+  error.cause = cause;
+  return error;
+}
+
+export async function materializeCompletedImageOutputs(
+  request,
+  result,
+  manifest,
+  paths,
+  operation,
+  options = {},
+) {
+  recordCompletedProviderOutputs(manifest, result);
+  writeJson(paths.manifestPath, manifest);
+
+  try {
+    await materializeImageOutputs(
+      request,
+      result,
+      manifest,
+      paths,
+      operation,
+      options,
+    );
+  } catch (error) {
+    const failure = markImageMaterializationFailure(
+      request,
+      paths,
+      manifest,
+      error,
+    );
+    finalizeImageRun(request, paths, manifest, { updateHero: false });
+    throw createImageMaterializationError(paths, failure, error);
+  }
+
+  delete manifest.materializationStatus;
+  delete manifest.recoverableFailure;
+  return manifest;
+}
+
 export function upsertAssetRecord(normalized, paths, updates = {}) {
   const current = readJsonIfExists(paths.assetJsonPath) || {};
   const heroImagePath =
@@ -499,6 +697,49 @@ export function updateAssetIndex(paths, mediaType, entries) {
   return next;
 }
 
+function updateAssetIndexRecoverableFailure(paths, failurePointer) {
+  const current = readJsonIfExists(paths.indexJsonPath) || {
+    assetId: path.basename(paths.absoluteAssetDir),
+    images: [],
+    videos: [],
+    audio: [],
+    uploads: [],
+  };
+  const currentFailures = Array.isArray(current.recoverableFailures)
+    ? current.recoverableFailures
+    : [];
+  const next = {
+    ...current,
+    recoverableFailures: [
+      ...currentFailures.filter(
+        (failure) =>
+          failure?.runId !== failurePointer.runId ||
+          failure?.code !== failurePointer.code,
+      ),
+      failurePointer,
+    ],
+  };
+
+  writeJson(paths.indexJsonPath, next);
+  return next;
+}
+
+function clearAssetIndexRecoverableFailure(paths, runId) {
+  const current = readJsonIfExists(paths.indexJsonPath);
+  if (!current || !Array.isArray(current.recoverableFailures)) {
+    return current;
+  }
+
+  const next = {
+    ...current,
+    recoverableFailures: current.recoverableFailures.filter(
+      (failure) => failure?.runId !== runId,
+    ),
+  };
+  writeJson(paths.indexJsonPath, next);
+  return next;
+}
+
 export function finalizeImageRun(request, paths, manifest, options = {}) {
   writeJson(paths.manifestPath, manifest);
   const indexEntries = manifest.assets.map((asset) => ({
@@ -506,13 +747,33 @@ export function finalizeImageRun(request, paths, manifest, options = {}) {
     kind: options.kind || 'candidate',
     originRunId: request.runId,
   }));
-  upsertAssetRecord(request, paths, {
+  const currentAsset = readJsonIfExists(paths.assetJsonPath) || {};
+  const assetUpdates = {
     heroImagePath:
       options.updateHero === false
         ? undefined
         : manifest.assets[0]?.assetRelativePath || null,
+  };
+  if (manifest.recoverableFailure) {
+    assetUpdates.status = 'materialization_failed';
+    assetUpdates.lastRunStatus = IMAGE_MATERIALIZATION_FAILURE_CODE;
+    assetUpdates.lastRecoverableError = manifest.recoverableFailure;
+  } else if (manifest.assets.length > 0) {
+    assetUpdates.lastRunStatus = manifest.providerStatus || 'completed';
+    assetUpdates.lastRecoverableError = null;
+    if (currentAsset.status === 'materialization_failed') {
+      assetUpdates.status = 'review_pending';
+    }
+  }
+  upsertAssetRecord(request, paths, {
+    ...assetUpdates,
   });
   updateAssetIndex(paths, 'image', indexEntries);
+  if (manifest.recoverableFailure) {
+    updateAssetIndexRecoverableFailure(paths, manifest.recoverableFailure);
+  } else if (manifest.assets.length > 0) {
+    clearAssetIndexRecoverableFailure(paths, request.runId);
+  }
   return manifest;
 }
 
