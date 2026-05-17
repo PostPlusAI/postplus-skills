@@ -77,19 +77,28 @@ TikTok-specific runtime notes:
 
 Node 18+ is required. This workspace already has Node available.
 
-## Default Actors
+## Hosted Collection Keys And Actor Aliases
 
- - creator discovery by matched videos: `tiktok-scraper`
- - keyword account-search supplement: `tiktok-user-search-scraper`
-- profile enrichment: `tiktok-profile-scraper`
-- keyword / hashtag video discovery: `tiktok-scraper`
-- direct video enrichment: `tiktok-video-scraper`
-- hashtag-only sampling: `tiktok-hashtag-scraper`
-- comment collection default: `tiktok-comments-scraper`
-- low-cost search expansion fallback: `tiktok-scraper`
-- low-cost exploratory query fallback: `tiktok-scraper-api`
+Use PostPlus hosted collection keys only with `collection_actor_run.mjs
+--collection-key`. Use actor aliases only with `build_tiktok_actor_input.mjs
+--actor` or local normalization `--actor`.
 
-Treat these as defaults, not hard requirements.
+Released hosted collection keys:
+
+- `tiktok-videos` - keyword, hashtag, profile URL, music URL, location, direct
+  video, and content-first creator discovery; actor alias `tiktok-scraper`
+- `tiktok-users` - keyword account-search supplement; actor alias
+  `tiktok-user-search-scraper`
+- `tiktok-profiles` - profile enrichment from known handles; actor alias
+  `tiktok-profile-scraper`
+- `tiktok-related-videos` - graph expansion from shortlisted video URLs; actor
+  alias `tiktok-scraper` with `postURLs` and `scrapeRelatedVideos`
+- `tiktok-comments` - focused comment collection; actor alias
+  `tiktok-comments-scraper`
+
+`tiktok-scraper`, `tiktok-user-search-scraper`, `tiktok-profile-scraper`,
+`tiktok-comments-scraper`, and `tiktok-scraper-api` are not hosted collection
+keys. Do not pass them to `collection_actor_run.mjs --collection-key`.
 
 PostPlus runtime note:
 
@@ -101,16 +110,24 @@ PostPlus runtime note:
 
 Start from the user's real collection surface, not from one favorite actor.
 
-- creator search with follower-band or content-fit constraints -> `tiktok-scraper` first
-- creator search as account-search supplement -> `tiktok-user-search-scraper`
-- profile enrichment -> `tiktok-profile-scraper`
-- bulk profile enrichment stays on `tiktok-profile-scraper`
-- topic/search video discovery -> `tiktok-scraper`
-- hashtag-only sampling -> `tiktok-hashtag-scraper`
-- known video URL enrichment -> `tiktok-video-scraper`
-- focused comments -> `tiktok-comments-scraper`
-- larger or cheaper comment runs -> `tiktok-comments-scraper`
-- region-aware low-cost discovery -> `tiktok-scraper`
+- creator search with follower-band or content-fit constraints -> hosted key
+  `tiktok-videos`, actor alias `tiktok-scraper` first
+- creator search as account-search supplement -> hosted key `tiktok-users`,
+  actor alias `tiktok-user-search-scraper`
+- profile enrichment -> hosted key `tiktok-profiles`, actor alias
+  `tiktok-profile-scraper`
+- bulk profile enrichment stays on hosted key `tiktok-profiles`
+- topic/search video discovery -> hosted key `tiktok-videos`, actor alias
+  `tiktok-scraper`
+- hashtag-only sampling -> hosted key `tiktok-videos`, actor alias
+  `tiktok-scraper`
+- known video URL enrichment -> hosted key `tiktok-videos`, actor alias
+  `tiktok-scraper`
+- focused comments -> hosted key `tiktok-comments`, actor alias
+  `tiktok-comments-scraper`
+- larger or cheaper comment runs -> hosted key `tiktok-comments`
+- region-aware low-cost discovery -> hosted key `tiktok-videos`, actor alias
+  `tiktok-scraper`
 - shop creator analytics -> unsupported in the current hosted release
 
 Do not use TikTok Shop actors for generic creator discovery.
@@ -205,9 +222,29 @@ default to this first move:
 2. run `${CLAUDE_SKILL_DIR}/scripts/build_tiktok_actor_input.mjs` with `--query`, `--limit`, `--actor`, and `--output`
 3. place the domain actor input under the current work folder's `.postplus/`
 4. wrap that domain actor input as `schemaVersion: 1` + `input`
-5. then run `${CLAUDE_SKILL_DIR}/scripts/collection_actor_run.mjs` against the envelope file
+5. then run `${CLAUDE_SKILL_DIR}/scripts/collection_actor_run.mjs` with the
+   released hosted collection key `tiktok-videos`
 
 Do not start by reading or writing a new `.postplus/*.json` file when the direct actor-input path already fits.
+
+```bash
+node ${CLAUDE_SKILL_DIR}/scripts/build_tiktok_actor_input.mjs \
+  --query "portable photo printer" \
+  --limit 20 \
+  --country US \
+  --actor tiktok-scraper \
+  --output <work-folder>/.postplus/tiktok-actor-input.json
+
+node ${CLAUDE_SKILL_DIR}/scripts/collection_actor_run.mjs \
+  --collection-key tiktok-videos \
+  --input <work-folder>/.postplus/tiktok-envelope.json \
+  --output <work-folder>/.postplus/tiktok-run.json \
+  --skill-name tiktok-research
+```
+
+In this example, `--actor tiktok-scraper` selects the provider actor input
+shape. `--collection-key tiktok-videos` selects the released PostPlus hosted
+collection route.
 
 ### Profile-enrichment bridge
 
@@ -215,7 +252,7 @@ For creator discovery from a normalized `videos` dataset:
 
 1. extract usernames from `.items[].authorUsername`
 2. write a real profile-request JSON file under `.postplus/`
-3. run `collection_actor_run.mjs` with `tiktok-profile-scraper`
+3. run `collection_actor_run.mjs` with `--collection-key tiktok-profiles`
 4. normalize the profile dataset
 5. run `rank_tiktok_accounts.mjs --profiles <profiles-normalized.json> --videos <videos-normalized.json>`
 

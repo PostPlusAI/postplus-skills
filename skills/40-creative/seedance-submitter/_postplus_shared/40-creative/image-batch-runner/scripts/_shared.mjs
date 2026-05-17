@@ -17,7 +17,8 @@ import {
 } from '../../../00-core/shared-runtime/scripts/lib/creative_format.mjs';
 
 export const DEFAULT_PROVIDER = 'hosted-media';
-export const DEFAULT_MODEL = 'image-gpt-image-2-text';
+export const DEFAULT_TEXT_MODEL = 'image-gpt-image-2-text';
+export const DEFAULT_EDIT_MODEL = 'image-gpt-image-2-edit';
 export const DEFAULT_OUTPUT_FORMAT = 'png';
 export const DEFAULT_RESOLUTION = '1k';
 export const DEFAULT_ASPECT_RATIO = '9:16';
@@ -276,6 +277,16 @@ function assertNoProviderFieldAliases(input) {
   );
 }
 
+export function getDefaultImageModel(mode) {
+  if (mode === 'text-to-image') {
+    return DEFAULT_TEXT_MODEL;
+  }
+  if (mode === 'edit') {
+    return DEFAULT_EDIT_MODEL;
+  }
+  throw new Error(`Unsupported image generation mode: ${mode}`);
+}
+
 export function normalizeGenerationInput(input, mode) {
   assertNoProviderFieldAliases(input);
   const creativeFormat = resolveCreativeFormat(input);
@@ -302,7 +313,7 @@ export function normalizeGenerationInput(input, mode) {
   }
   return {
     provider: input.provider || DEFAULT_PROVIDER,
-    model: input.model || DEFAULT_MODEL,
+    model: input.model || getDefaultImageModel(mode),
     mode,
     creativeFormat: creativeFormat.id,
     creativeFormatLabel: creativeFormat.label,

@@ -78,12 +78,15 @@ Release workflow rules:
 3. User authorizes their social account via the platform OAuth screen.
 4. Product labels the new channel integration with the user's account id.
 5. List integrations to confirm the exact integration id for the user's channel.
-6. Build the local request JSON as a `schemaVersion: 1` hosted execution
+6. Build the local `--request` JSON as a `schemaVersion: 1` hosted execution
    envelope; place the social publishing request under `input`.
-7. Run `create_post.mjs` without `--execute` to produce an approval artifact.
-8. After approval, re-run `create_post.mjs --execute --approval-file ...`.
-9. If the post should stay reviewable, keep it in `draft`.
-10. Only after a second approval, run `change_post_status.mjs --status schedule`
+7. Keep the `--customer-config` JSON as a bare customer config object with
+   `allowedIntegrationIds` at the top level. Do not wrap it in a hosted
+   execution envelope.
+8. Run `create_post.mjs` without `--execute` to produce an approval artifact.
+9. After approval, re-run `create_post.mjs --execute --approval-file ...`.
+10. If the post should stay reviewable, keep it in `draft`.
+11. Only after a second approval, run `change_post_status.mjs --status schedule`
     to queue it for publishing.
 
 ## Main scripts
@@ -107,7 +110,8 @@ Release workflow rules:
 
 ## Command examples
 
-Prepare a publish request preview from a hosted envelope request file:
+Prepare a publish request preview from a hosted envelope request file and a
+bare customer config file:
 
 ```bash
 node ${CLAUDE_SKILL_DIR}/scripts/create_post.mjs \
@@ -116,7 +120,8 @@ node ${CLAUDE_SKILL_DIR}/scripts/create_post.mjs \
   --output "<create-post.preview.json>"
 ```
 
-Execute the approved create from the same hosted envelope request file:
+Execute the approved create from the same hosted envelope request file and bare
+customer config file:
 
 ```bash
 node ${CLAUDE_SKILL_DIR}/scripts/create_post.mjs \

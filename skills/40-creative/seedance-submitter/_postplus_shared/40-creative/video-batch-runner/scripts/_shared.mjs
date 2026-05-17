@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import {
   downloadHostedMediaFile,
@@ -18,6 +19,9 @@ import {
 export const DEFAULT_PROVIDER = 'hosted-media';
 export const DEFAULT_MODEL = 'video-infinitetalk';
 export const DEFAULT_RESOLUTION = '720p';
+const VIDEO_RUNNER_ARCHIVED_REQUEST_ERROR_CODE =
+  'postplus_video_batch_runner_archived_request_not_executable';
+const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 
 export const HOSTED_VIDEO_MODELS = {
   'video-infinitetalk': {
@@ -96,9 +100,14 @@ export function readJson(filePath) {
 }
 
 export function readHostedJson(filePath) {
-  return readHostedSkillExecutionInput(
-    JSON.parse(fs.readFileSync(path.resolve(filePath), 'utf8')),
-  );
+  const absolutePath = path.resolve(filePath);
+  const payload = JSON.parse(fs.readFileSync(absolutePath, 'utf8'));
+
+  try {
+    return readHostedSkillExecutionInput(payload);
+  } catch (error) {
+    throw enhanceHostedEnvelopeError(error, payload, absolutePath);
+  }
 }
 
 export function ensureDir(targetPath) {
@@ -216,6 +225,97 @@ export function buildRequestPaths(localOutputDir) {
     rendersDir,
     qaDir,
   };
+}
+
+function enhanceHostedEnvelopeError(error, payload, absolutePath) {
+  if (
+    error?.code !== 'postplus_hosted_skill_execution_envelope_required' ||
+    !isArchivedNormalizedVideoRequest(payload)
+  ) {
+    return error;
+  }
+
+  const manifestPath = buildRequestPaths(payload.localOutputDir).manifestPath;
+  const executionEnvelopePath =
+    readExecutionEnvelopePathFromManifest(manifestPath) ||
+    inferExecutionEnvelopePath(payload, absolutePath);
+  const lines = [
+    'This video-batch-runner request is an archived normalized request, not an executable hosted execution envelope.',
+    `Archived request path: ${absolutePath}`,
+    '`poll_prediction.mjs --request` requires the hosted execution envelope with `schemaVersion: 1` and `input`.',
+  ];
+
+  if (executionEnvelopePath) {
+    lines.push(
+      `Use executionEnvelopePath/pollRequestPath instead: ${executionEnvelopePath}`,
+    );
+  } else {
+    lines.push(
+      `Use executionEnvelopePath or pollRequestPath from ${manifestPath}.`,
+    );
+  }
+
+  const archivedRequestError = new Error(lines.join('\n'));
+  archivedRequestError.code = VIDEO_RUNNER_ARCHIVED_REQUEST_ERROR_CODE;
+  archivedRequestError.productErrorCode = VIDEO_RUNNER_ARCHIVED_REQUEST_ERROR_CODE;
+  archivedRequestError.status = 400;
+  archivedRequestError.archivedRequestPath = absolutePath;
+  archivedRequestError.executionEnvelopePath = executionEnvelopePath;
+  archivedRequestError.manifestPath = manifestPath;
+  archivedRequestError.cause = error;
+  return archivedRequestError;
+}
+
+function isArchivedNormalizedVideoRequest(value) {
+  return Boolean(
+    value &&
+      typeof value === 'object' &&
+      !Array.isArray(value) &&
+      value.schemaVersion !== 1 &&
+      typeof value.jobId === 'string' &&
+      value.jobId.trim() &&
+      typeof value.localOutputDir === 'string' &&
+      value.localOutputDir.trim(),
+  );
+}
+
+function readExecutionEnvelopePathFromManifest(manifestPath) {
+  try {
+    const manifest = JSON.parse(
+      fs.readFileSync(path.resolve(manifestPath), 'utf8'),
+    );
+    return normalizePathField(
+      manifest?.executionEnvelopePath || manifest?.pollRequestPath,
+    );
+  } catch {
+    return null;
+  }
+}
+
+function inferExecutionEnvelopePath(request, absoluteArchivedRequestPath) {
+  const archivedOutputDir = path.resolve(
+    request.localOutputDir || path.dirname(absoluteArchivedRequestPath),
+  );
+  const jobDirName = path.basename(archivedOutputDir);
+  const parentDir = path.dirname(archivedOutputDir);
+
+  if (path.basename(parentDir) !== 'videos') {
+    return null;
+  }
+
+  return path.join(
+    path.dirname(parentDir),
+    '.postplus',
+    'video-batch-runner',
+    jobDirName,
+    'request.json',
+  );
+}
+
+function normalizePathField(value) {
+  return typeof value === 'string' && value.trim()
+    ? path.resolve(value.trim())
+    : null;
 }
 
 function inferMimeTypeFromPath(filePath) {
@@ -805,7 +905,11 @@ export function normalizeRenderInput(input) {
   return normalized;
 }
 
-export function createRenderManifestBase(normalized, paths) {
+export function createRenderManifestBase(normalized, paths, options = {}) {
+  const executionEnvelopePath = normalizePathField(
+    options.executionEnvelopePath,
+  );
+
   return {
     jobId: normalized.jobId,
     campaignId: normalized.campaignId,
@@ -820,7 +924,12 @@ export function createRenderManifestBase(normalized, paths) {
     creativeFormat: normalized.creativeFormat,
     creativeFormatLabel: normalized.creativeFormatLabel,
     targetAspectRatio: normalized.targetAspectRatio,
-    requestPath: paths.requestPath,
+    executionEnvelopePath,
+    pollRequestPath: executionEnvelopePath,
+    pollCommand: executionEnvelopePath
+      ? buildPollCommand(executionEnvelopePath)
+      : null,
+    archivedRequestPath: paths.requestPath,
     responsePath: paths.responsePath,
     createdAt: nowIso(),
     sourceBasis: normalized.sourceBasis,
@@ -841,6 +950,31 @@ export function createRenderManifestBase(normalized, paths) {
     assets: [],
     feedback: normalized.feedback,
   };
+}
+
+export function buildPollCommand(executionEnvelopePath) {
+  const normalizedExecutionEnvelopePath = normalizePathField(
+    executionEnvelopePath,
+  );
+  if (!normalizedExecutionEnvelopePath) {
+    throw new Error('executionEnvelopePath is required to build poll command.');
+  }
+
+  return [
+    'node',
+    shellQuote(path.join(SCRIPT_DIR, 'poll_prediction.mjs')),
+    '--request',
+    shellQuote(normalizedExecutionEnvelopePath),
+  ].join(' ');
+}
+
+function shellQuote(value) {
+  const text = String(value);
+  if (/^[A-Za-z0-9_./:=@-]+$/.test(text)) {
+    return text;
+  }
+
+  return `'${text.replaceAll("'", "'\\''")}'`;
 }
 
 export async function toProviderPayload(normalized, { paths } = {}) {

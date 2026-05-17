@@ -198,8 +198,11 @@ fields directly.
   "assetPurpose": "talking_head",
   "provider": "hosted-media",
   "model": "video-infinitetalk",
-  "requestPath": "/abs/path/request.json",
-  "responsePath": "/abs/path/response.json",
+  "executionEnvelopePath": "/abs/path/.postplus/video-batch-runner/example-co-2026-03-render-001/request.json",
+  "pollRequestPath": "/abs/path/.postplus/video-batch-runner/example-co-2026-03-render-001/request.json",
+  "pollCommand": "node /abs/path/scripts/poll_prediction.mjs --request /abs/path/.postplus/video-batch-runner/example-co-2026-03-render-001/request.json",
+  "archivedRequestPath": "/abs/path/videos/example-co-2026-03-render-001/request.json",
+  "responsePath": "/abs/path/videos/example-co-2026-03-render-001/response.json",
   "providerStatus": "completed",
   "createdAt": "2026-03-13T00:00:00.000Z",
   "sourceBasis": [],
@@ -229,8 +232,9 @@ Use when:
 
 Expected inputs:
 
-- `--request <request.json>` is required because the script needs
-  `localOutputDir` to refresh the local manifest
+- `--request <execution-envelope-request.json>` is required. This must be the
+  hosted execution envelope (`schemaVersion: 1` with `input`), not the archived
+  normalized request under `videos/.../request.json`.
 - `--response <response.json>` is optional; when omitted, the script reads the
   response from the request's output directory
 - `--result-url <url>` is optional when the response does not include a pollable

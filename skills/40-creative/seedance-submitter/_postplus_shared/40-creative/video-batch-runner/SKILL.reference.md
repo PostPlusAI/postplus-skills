@@ -185,7 +185,9 @@ Should include:
 - `conceptId`
 - `provider`
 - `model`
-- `requestPath`
+- `executionEnvelopePath`
+- `pollRequestPath`
+- `archivedRequestPath`
 - `responsePath`
 - `predictionId`
 - `providerStatus`
@@ -419,7 +421,13 @@ request JSON is not an executable script input.
 
 These scripts write:
 
-- `request.json`
+- `request.json` as the archived normalized request under the user-visible
+  render directory
 - `response.json`
 - `manifest.json`
 - downloaded videos under `renders/`
+
+The script output uses `executionEnvelopePath` / `pollRequestPath` for the
+file that can be passed back to `poll_prediction.mjs --request`. It uses
+`archivedRequestPath` for the user-visible normalized request record. Do not
+poll with the archived request.

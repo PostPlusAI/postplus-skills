@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import path from 'node:path';
+
 import { formatCliError } from '../../../00-core/shared-runtime/scripts/lib/network_runtime.mjs';
 import {
   buildRequestPaths,
@@ -33,6 +35,7 @@ async function main() {
   const request = normalizeRenderInput(input);
   const paths = buildRequestPaths(request.localOutputDir);
   const providerConfig = getProviderApiConfig(request);
+  const executionEnvelopePath = path.resolve(args.request);
 
   writeJson(paths.requestPath, request);
 
@@ -45,7 +48,9 @@ async function main() {
 
   const result = unwrapProviderResult(rawResult);
 
-  const manifest = createRenderManifestBase(request, paths);
+  const manifest = createRenderManifestBase(request, paths, {
+    executionEnvelopePath,
+  });
   manifest.generationHandle = result?.id || null;
   manifest.providerTaskId = null;
   manifest.providerStatus = result?.status || null;

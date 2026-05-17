@@ -74,6 +74,12 @@ export function writeText(filePath, value) {
 
 export function readCustomerConfig(configPath) {
   const payload = readJson(configPath);
+  if (isHostedExecutionEnvelopeLike(payload)) {
+    throw new Error(
+      "Customer social publishing service config is not a hosted execution envelope. Pass the bare customer config object with allowedIntegrationIds at the top level."
+    );
+  }
+
   return {
     socialPublishingWorkspace: payload.socialPublishingWorkspace ?? null,
     allowedIntegrationIds: Array.isArray(payload.allowedIntegrationIds)
@@ -97,6 +103,16 @@ export function assertAllowedIntegrationIds(customerConfig, integrationIds) {
       `Integration ids not allowed for customer: ${disallowed.join(", ")}`
     );
   }
+}
+
+function isHostedExecutionEnvelopeLike(value) {
+  return (
+    Boolean(value) &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    value.schemaVersion === 1 &&
+    Object.hasOwn(value, "input")
+  );
 }
 
 export async function socialPublishingJson(pathname, { method = "GET", body, headers = {} } = {}, options = {}) {

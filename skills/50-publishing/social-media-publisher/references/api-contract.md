@@ -31,7 +31,8 @@ Channel onboarding flow:
 All remote publishing calls from skill scripts are proxied through the PostPlus
 hosted capability bridge. Scripts never hold publishing credentials directly.
 
-All social publishing script request files are hosted execution envelopes:
+Executable social publishing request files passed with `--request` are hosted
+execution envelopes:
 
 ```json
 {
@@ -44,6 +45,11 @@ All social publishing script request files are hosted execution envelopes:
 
 The social publishing request shapes below are the envelope's `input` value.
 Do not pass a bare publish request object as the final `--request` file.
+
+Customer config files passed with `--customer-config` are different. They are
+bare customer domain config files, not hosted execution envelopes. Do not wrap
+customer config in `schemaVersion` / `input`; `allowedIntegrationIds` must stay
+at the top level of the config file.
 
 The skill contract assumes:
 
@@ -72,6 +78,7 @@ Shape:
 
 Rules:
 
+- this file is a bare customer config object, not a hosted execution envelope
 - `allowedIntegrationIds` is the enforcement boundary; it contains the
   integration ids that were onboarded for this PostPlus account via the
   invite-link flow
