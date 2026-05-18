@@ -80,7 +80,7 @@ export async function runPollPrediction(argv = process.argv.slice(2)) {
   });
   const priorResponse = readAttemptLatestResponse(attempt, fallbackResponse);
   const shouldUseSavedCompletedResponse =
-    !args["result-url"] && isCompletedProviderResponse(priorResponse);
+    isCompletedProviderResponse(priorResponse);
 
   let recordedAttempt = attempt;
   let rawResult = priorResponse;

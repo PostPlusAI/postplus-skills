@@ -454,6 +454,35 @@ function isHttpUrl(value) {
   return typeof value === 'string' && /^https?:\/\//.test(value);
 }
 
+function providerOutputType(value) {
+  if (value === null) {
+    return 'null';
+  }
+  if (Array.isArray(value)) {
+    return 'array';
+  }
+  if (typeof value === 'string' && !isHttpUrl(value)) {
+    return 'base64';
+  }
+  return typeof value;
+}
+
+function unsupportedProviderOutputError(index, output, request) {
+  const outputType = providerOutputType(output);
+  const error = new Error(
+    [
+      `Unsupported image provider output at outputs[${index}]: ${outputType}.`,
+      'Expected an http(s) URL output',
+      request.enableBase64Output
+        ? 'or a base64 image string.'
+        : 'or enableBase64Output=true for base64 image strings.',
+    ].join(' '),
+  );
+  error.outputIndex = index;
+  error.outputType = outputType;
+  return error;
+}
+
 function copyJsonRecord(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
     return null;
@@ -541,7 +570,10 @@ export async function materializeImageOutputs(
       manifest.assets.push(
         buildImageAssetEntry(request, paths, assetId, localPath, null),
       );
+      continue;
     }
+
+    throw unsupportedProviderOutputError(index, output, request);
   }
 }
 

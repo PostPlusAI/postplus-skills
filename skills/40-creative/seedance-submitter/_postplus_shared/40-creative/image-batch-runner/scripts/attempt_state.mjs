@@ -125,11 +125,11 @@ function outputUrls(result) {
     : [];
 }
 
-function stateForResult(result) {
+function stateForResult(result, providerOutputUrls = outputUrls(result)) {
   const status =
     typeof result?.status === 'string' ? result.status.toLowerCase() : null;
   if (status === 'completed') {
-    return outputUrls(result).length > 0
+    return providerOutputUrls.length > 0
       ? { state: 'provider_completed', nextAction: 'resume materialization' }
       : {
           state: 'provider_completed_without_outputs',
@@ -140,6 +140,16 @@ function stateForResult(result) {
     return { state: 'provider_failed', nextAction: 'review provider failure' };
   }
   return { state: 'submitted_processing', nextAction: 'poll existing attempt' };
+}
+
+function mergeProviderOutputUrls(attempt, result) {
+  const resultOutputUrls = outputUrls(result);
+  if (resultOutputUrls.length > 0) {
+    return resultOutputUrls;
+  }
+  return Array.isArray(attempt.providerOutputUrls)
+    ? attempt.providerOutputUrls
+    : [];
 }
 
 function appendHistory(attempt, entry) {
@@ -393,6 +403,7 @@ export function readAttemptLatestResponse(attempt, fallbackResponse = null) {
 export function recordAttemptStatusResponse(paths, attempt, hostedResponse) {
   const data = hostedResponse?.data;
   const result = unwrapProviderResult(data);
+  const providerOutputUrls = mergeProviderOutputUrls(attempt, result);
   const responseCount = Array.isArray(attempt.responseHistory)
     ? attempt.responseHistory.length + 1
     : 1;
@@ -404,7 +415,7 @@ export function recordAttemptStatusResponse(paths, attempt, hostedResponse) {
   writeJson(paths.responsePath, data);
   return persistAttempt(paths, readIndex(attempt, paths), {
     ...attempt,
-    ...stateForResult(result),
+    ...stateForResult(result, providerOutputUrls),
     submitted: true,
     hostedOperationId:
       attempt.hostedOperationId ||
@@ -418,7 +429,7 @@ export function recordAttemptStatusResponse(paths, attempt, hostedResponse) {
     generationHandle: result?.id || attempt.generationHandle || null,
     providerStatus: result?.status || null,
     providerUrls: result?.urls || attempt.providerUrls || null,
-    providerOutputUrls: outputUrls(result),
+    providerOutputUrls,
     responsePath,
     legacyResponsePath: paths.responsePath,
     responseHistory: appendHistory(attempt, {
