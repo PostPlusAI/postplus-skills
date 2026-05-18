@@ -140,7 +140,7 @@ Read [`references/hosted-video-talking-head.md`](references/hosted-video-talking
 Read [`references/hosted-video-generative.md`](references/hosted-video-generative.md) before designing hosted Seedance requests.
 Read [`references/hosted-video-generative.md`](references/hosted-video-generative.md) before designing Seedance requests.
 
-If the project should keep related image, audio, and video files under one asset root, use the shared asset model in [`../image-batch-runner/references/unified-asset-contract-v1.md`](skills/40-creative/image-batch-runner/references/unified-asset-contract-v1.md).
+If the project should keep related image, audio, and video files under one asset root, use the shared asset model in [`../image-batch-runner/references/unified-asset-contract-v1.md`](../image-batch-runner/references/unified-asset-contract-v1.md).
 
 ## PostPlus Cloud Rule
 

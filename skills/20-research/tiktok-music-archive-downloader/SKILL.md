@@ -36,7 +36,7 @@ Do not use this skill for:
 
 Expected inputs usually come from:
 
-- [`../tiktok-research/SKILL.md`](skills/20-research/tiktok-research/SKILL.md)
+- `../tiktok-research/SKILL.md`
 
 ## Downloader
 
@@ -120,8 +120,8 @@ Before reporting success:
 ## Handoff
 
 - Need video-level breakdown: run a dedicated visual analysis workflow on the downloaded files
-- Need transcription or lyrics/voice extraction: [`../audio-transcription/SKILL.md`](skills/40-creative/audio-transcription/SKILL.md) or [`../video-transcription/SKILL.md`](skills/40-creative/video-transcription/SKILL.md)
-- Need subtitle files: [`../subtitle-packager/SKILL.md`](skills/40-creative/subtitle-packager/SKILL.md)
+- Need transcription or lyrics/voice extraction: `../audio-transcription/SKILL.md` or `../video-transcription/SKILL.md`
+- Need subtitle files: `../subtitle-packager/SKILL.md`
 
 ## Rights Posture
 

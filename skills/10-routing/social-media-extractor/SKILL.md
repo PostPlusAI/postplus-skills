@@ -17,18 +17,18 @@ Use this skill only as a high-level entry point when the user asks for cross-pla
 
 This file is intentionally lightweight. Platform-specific collection logic lives elsewhere:
 
-- TikTok: [`skills/20-research/tiktok-research/SKILL.md`](skills/20-research/tiktok-research/SKILL.md)
-- TikTok music archive downloads: [`skills/20-research/tiktok-music-archive-downloader/SKILL.md`](skills/20-research/tiktok-music-archive-downloader/SKILL.md)
-- TikTok music chain: `postplus-shared` TikTok music workflow
-- TikTok ads: [`skills/20-research/tiktok-ad-research/SKILL.md`](skills/20-research/tiktok-ad-research/SKILL.md)
-- Instagram creator discovery: [`skills/20-research/instagram-creator-discovery/SKILL.md`](skills/20-research/instagram-creator-discovery/SKILL.md)
-- Instagram accounts: [`skills/20-research/instagram-account-research/SKILL.md`](skills/20-research/instagram-account-research/SKILL.md)
-- Instagram content benchmark: [`skills/20-research/instagram-content-benchmark/SKILL.md`](skills/20-research/instagram-content-benchmark/SKILL.md)
-- Instagram audience voice: [`skills/20-research/instagram-audience-voice/SKILL.md`](skills/20-research/instagram-audience-voice/SKILL.md)
-- Instagram campaign scouting: [`skills/20-research/instagram-campaign-scout/SKILL.md`](skills/20-research/instagram-campaign-scout/SKILL.md)
-- X: [`skills/20-research/x-tools/SKILL.md`](skills/20-research/x-tools/SKILL.md)
-- YouTube: [`skills/20-research/youtube-research/SKILL.md`](skills/20-research/youtube-research/SKILL.md)
-- Facebook: [`skills/20-research/facebook-research/SKILL.md`](skills/20-research/facebook-research/SKILL.md)
+- TikTok: `../../20-research/tiktok-research/SKILL.md`
+- TikTok music archive downloads: `../../20-research/tiktok-music-archive-downloader/SKILL.md`
+- TikTok music chain: `../../00-shared/postplus-shared/references/shared-tiktok-music-workflow.md`
+- TikTok ads: `../../20-research/tiktok-ad-research/SKILL.md`
+- Instagram creator discovery: `../../20-research/instagram-creator-discovery/SKILL.md`
+- Instagram accounts: `../../20-research/instagram-account-research/SKILL.md`
+- Instagram content benchmark: `../../20-research/instagram-content-benchmark/SKILL.md`
+- Instagram audience voice: `../../20-research/instagram-audience-voice/SKILL.md`
+- Instagram campaign scouting: `../../20-research/instagram-campaign-scout/SKILL.md`
+- X: `../../20-research/x-tools/SKILL.md`
+- YouTube: `../../20-research/youtube-research/SKILL.md`
+- Facebook: `../../20-research/facebook-research/SKILL.md`
 
 ## Core Rule
 

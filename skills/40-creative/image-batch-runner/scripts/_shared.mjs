@@ -467,6 +467,24 @@ function providerOutputType(value) {
   return typeof value;
 }
 
+function normalizeBase64Output(value) {
+  const normalized = value.replace(/\s+/g, '');
+  if (
+    normalized.length === 0 ||
+    normalized.length % 4 !== 0 ||
+    !/^[A-Za-z0-9+/]+={0,2}$/.test(normalized)
+  ) {
+    return null;
+  }
+
+  const bytes = Buffer.from(normalized, 'base64');
+  if (bytes.length === 0 || bytes.toString('base64') !== normalized) {
+    return null;
+  }
+
+  return { bytes };
+}
+
 function unsupportedProviderOutputError(index, output, request) {
   const outputType = providerOutputType(output);
   const error = new Error(
@@ -564,9 +582,13 @@ export async function materializeImageOutputs(
     }
 
     if (typeof output === 'string' && request.enableBase64Output) {
-      const bytes = Buffer.from(output, 'base64');
+      const normalized = normalizeBase64Output(output);
+      if (!normalized) {
+        throw unsupportedProviderOutputError(index, output, request);
+      }
+
       ensureDir(path.dirname(localPath));
-      fs.writeFileSync(localPath, bytes);
+      fs.writeFileSync(localPath, normalized.bytes);
       manifest.assets.push(
         buildImageAssetEntry(request, paths, assetId, localPath, null),
       );
