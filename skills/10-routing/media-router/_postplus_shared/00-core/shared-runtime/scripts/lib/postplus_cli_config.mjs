@@ -6,7 +6,7 @@ import path from 'node:path';
 import { requestJson } from './network_runtime.mjs';
 
 const POSTPLUS_SESSION_REFRESH_LEEWAY_SECONDS = 60;
-export const POSTPLUS_CLIENT_CONTRACT_VERSION = 1;
+export const POSTPLUS_CLIENT_CONTRACT_VERSION = 2;
 export const POSTPLUS_CLIENT_RUNTIME = 'postplus-skill';
 export const POSTPLUS_CLIENT_COMPATIBILITY_HEADERS = {
   cliVersion: 'x-postplus-cli-version',
