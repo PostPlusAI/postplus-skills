@@ -12,8 +12,16 @@
 - Default hosted endpoint group: `video-seedance-2-*`.
 - Use `video-seedance-2-text` when reference images are conditioning references, not first-frame image-to-video inputs.
 - Use `ratio: "9:16"` unless the user specifies otherwise.
-- Supported duration values: `5`, `10`, or `15` seconds.
-- If user timing is not exactly supported, map to the nearest viable segment structure without breaking action continuity.
+- `duration` is the provider duration bucket. Supported values: `5`, `10`,
+  or `15` seconds.
+- `targetEditDurationSeconds` is the intended final edit length. It may be
+  shorter than `duration`, but never longer.
+- If user timing is not exactly supported, keep `duration` on the next viable
+  provider bucket and record the creative trim point in
+  `targetEditDurationSeconds`.
+- When `targetEditDurationSeconds < duration`, include
+  `timeline.activePerformanceEndSeconds` and `timeline.tailStrategy` so the
+  final provider tail is explicitly designed for trimming.
 - If the approved script exceeds 15 seconds, splitting is mandatory before submission.
 - Validate request JSON with
   `scripts/validate_seedance_request_contract.mjs` before submission.
@@ -68,6 +76,10 @@
 - Each segment must include only its own `promptPlan.storyboardTimeline`.
 - Each segment must be independently submit-ready.
 - Each segment should still be usable as a standalone clip, not just as a middle fragment.
+- If a segment targets a 7-8s final edit inside a 10s provider bucket, the
+  active action and dialogue must complete by `targetEditDurationSeconds`; the
+  extra provider tail must be a declared hold, settle, micro-expression, or
+  loopable tail.
 - Final request text must not depend on previous-segment memory through
   shorthand such as `continue from the previous segment`, `same as previous`,
   `same character`, `content above`, or `延续上一段`.

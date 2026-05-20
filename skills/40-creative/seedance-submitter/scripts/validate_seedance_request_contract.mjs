@@ -15,6 +15,13 @@ export const CONTINUITY_BINDING_LEVELS = [
   "audio-bound",
   "multimodal-bound",
 ];
+export const SEEDANCE_TAIL_STRATEGY_VALUES = [
+  "natural_hold",
+  "natural_hold_for_trim",
+  "micro_expression",
+  "settle",
+  "loopable_tail",
+];
 
 const SHORTHAND_PATTERNS = [
   /continue from (the )?(previous|prior) segment/iu,
@@ -26,6 +33,23 @@ const SHORTHAND_PATTERNS = [
   /同上一段/u,
   /和上一段一样/u,
 ];
+const TAIL_TIMELINE_ROLES = new Set([
+  "tail",
+  "hold",
+  ...SEEDANCE_TAIL_STRATEGY_VALUES,
+]);
+const TAIL_TEXT_PATTERNS = [
+  /\btail\b/iu,
+  /\bhold\b/iu,
+  /\bnatural hold\b/iu,
+  /\bmicro[- ]expression\b/iu,
+  /\bsettle\b/iu,
+  /\bloopable\b/iu,
+  /\btrim(?:ming)?\b/iu,
+];
+const TIME_RANGE_PATTERN =
+  /^(\d+(?::\d{1,2}(?:\.\d+)?|\.\d+)?)\s*(?:-|–|—|to)\s*(\d+(?::\d{1,2}(?:\.\d+)?|\.\d+)?)\s*s?\b/iu;
+const TIMELINE_EPSILON_SECONDS = 0.000001;
 
 function isSeedanceModel(model) {
   return typeof model === "string" && model.startsWith("video-seedance-2-");
@@ -34,9 +58,97 @@ function isSeedanceModel(model) {
 function toFiniteSeconds(value, fieldName) {
   const seconds = Number(value);
   if (!Number.isFinite(seconds) || seconds <= 0) {
-    throw new Error(`${fieldName}_invalid: ${fieldName} must be a positive number of seconds.`);
+    throw new Error(
+      `${fieldName}_invalid: ${fieldName} must be a positive number of seconds.`,
+    );
   }
   return seconds;
+}
+
+function parseTimelineTimestamp(value) {
+  const text = String(value ?? "").trim().replace(/s$/iu, "");
+  if (!text) {
+    return null;
+  }
+
+  const mmss = text.match(/^(\d+):(\d{1,2}(?:\.\d+)?)$/u);
+  if (mmss) {
+    return Number(mmss[1]) * 60 + Number(mmss[2]);
+  }
+
+  const seconds = Number(text);
+  return Number.isFinite(seconds) ? seconds : null;
+}
+
+function parseTimelineRangeText(value) {
+  const match = String(value ?? "").trim().match(TIME_RANGE_PATTERN);
+  if (!match) {
+    return null;
+  }
+
+  const startSeconds = parseTimelineTimestamp(match[1]);
+  const endSeconds = parseTimelineTimestamp(match[2]);
+  if (!Number.isFinite(startSeconds) || !Number.isFinite(endSeconds)) {
+    return null;
+  }
+
+  return {
+    startSeconds,
+    endSeconds,
+  };
+}
+
+function timelineEntryText(entry) {
+  if (typeof entry === "string") {
+    return entry.trim();
+  }
+  if (!entry || typeof entry !== "object") {
+    return "";
+  }
+
+  return [
+    entry.time,
+    entry.action,
+    entry.visual,
+    entry.dialogue,
+    entry.spokenLine,
+    entry.text,
+    entry.notes,
+  ]
+    .filter((value) => typeof value === "string" && value.trim())
+    .join(" ");
+}
+
+function readTimelineEntryRange(entry) {
+  if (entry && typeof entry === "object" && !Array.isArray(entry)) {
+    const startSeconds = Number(entry.startSeconds ?? entry.start);
+    const endSeconds = Number(entry.endSeconds ?? entry.end);
+    if (Number.isFinite(startSeconds) && Number.isFinite(endSeconds)) {
+      return {
+        startSeconds,
+        endSeconds,
+      };
+    }
+    if (typeof entry.time === "string") {
+      return parseTimelineRangeText(entry.time);
+    }
+  }
+
+  return parseTimelineRangeText(timelineEntryText(entry));
+}
+
+function isTailTimelineEntry(entry) {
+  if (entry && typeof entry === "object" && !Array.isArray(entry)) {
+    const role = toTrimmedString(
+      entry.timelineRole || entry.role || entry.kind || entry.type,
+    ).toLowerCase();
+    if (TAIL_TIMELINE_ROLES.has(role)) {
+      return true;
+    }
+  }
+
+  const text = timelineEntryText(entry);
+  return TAIL_TEXT_PATTERNS.some((pattern) => pattern.test(text));
 }
 
 function collectPromptText(request) {
@@ -279,6 +391,123 @@ function validateSegmentContract(request, durationSeconds, label) {
   }
 }
 
+function validateStoryboardTimelineAgainstTarget(
+  request,
+  targetEditDurationSeconds,
+  label,
+) {
+  const rawTimeline = request.promptPlan?.storyboardTimeline;
+  const timeline = Array.isArray(rawTimeline)
+    ? rawTimeline
+    : typeof rawTimeline === "string"
+      ? [rawTimeline]
+      : [];
+  if (timeline.length === 0) {
+    return;
+  }
+
+  timeline.forEach((entry, index) => {
+    const range = readTimelineEntryRange(entry);
+    if (
+      !range ||
+      range.endSeconds <= targetEditDurationSeconds + TIMELINE_EPSILON_SECONDS
+    ) {
+      return;
+    }
+    if (isTailTimelineEntry(entry)) {
+      return;
+    }
+
+    throw new Error(
+      `seedance_target_edit_timeline_overrun: ${label}.promptPlan.storyboardTimeline[${index}] ends at ${range.endSeconds}s after targetEditDurationSeconds ${targetEditDurationSeconds}s and is not marked as tail/hold.`,
+    );
+  });
+}
+
+function validateTargetEditContract(request, durationSeconds, label) {
+  const targetEditDurationRaw =
+    request.targetEditDurationSeconds ?? request.target_edit_duration_seconds;
+  if (targetEditDurationRaw == null) {
+    return null;
+  }
+
+  const targetEditDurationSeconds = toFiniteSeconds(
+    targetEditDurationRaw,
+    `${label}.targetEditDurationSeconds`,
+  );
+  if (targetEditDurationSeconds > durationSeconds) {
+    throw new Error(
+      `seedance_target_edit_duration_exceeds_provider: ${label}.targetEditDurationSeconds is ${targetEditDurationSeconds}s, above provider duration ${durationSeconds}s.`,
+    );
+  }
+
+  const timeline =
+    request.timeline && typeof request.timeline === "object"
+      ? request.timeline
+      : {};
+  const activePerformanceEndRaw =
+    timeline.activePerformanceEndSeconds ??
+    timeline.active_performance_end_seconds ??
+    request.activePerformanceEndSeconds ??
+    request.active_performance_end_seconds;
+  const tailStrategyRaw =
+    timeline.tailStrategy ??
+    timeline.tail_strategy ??
+    request.tailStrategy ??
+    request.tail_strategy;
+
+  const activePerformanceEndSeconds =
+    activePerformanceEndRaw == null
+      ? null
+      : toFiniteSeconds(
+          activePerformanceEndRaw,
+          `${label}.timeline.activePerformanceEndSeconds`,
+        );
+  if (
+    activePerformanceEndSeconds != null &&
+    activePerformanceEndSeconds > targetEditDurationSeconds
+  ) {
+    throw new Error(
+      `seedance_active_performance_after_target: ${label}.timeline.activePerformanceEndSeconds is ${activePerformanceEndSeconds}s, above targetEditDurationSeconds ${targetEditDurationSeconds}s.`,
+    );
+  }
+
+  const tailStrategy =
+    tailStrategyRaw == null ? null : String(tailStrategyRaw).trim();
+  if (tailStrategy && !SEEDANCE_TAIL_STRATEGY_VALUES.includes(tailStrategy)) {
+    throw new Error(
+      `seedance_tail_strategy_unsupported: ${label}.timeline.tailStrategy must be one of ${SEEDANCE_TAIL_STRATEGY_VALUES.join(", ")}.`,
+    );
+  }
+
+  if (targetEditDurationSeconds < durationSeconds) {
+    if (activePerformanceEndSeconds == null) {
+      throw new Error(
+        `seedance_active_performance_end_required: ${label}.timeline.activePerformanceEndSeconds is required when targetEditDurationSeconds is shorter than duration.`,
+      );
+    }
+    if (!tailStrategy) {
+      throw new Error(
+        `seedance_tail_strategy_required: ${label}.timeline.tailStrategy is required when targetEditDurationSeconds is shorter than duration.`,
+      );
+    }
+  }
+
+  validateStoryboardTimelineAgainstTarget(
+    request,
+    targetEditDurationSeconds,
+    label,
+  );
+
+  return {
+    targetEditDurationSeconds,
+    timeline: {
+      activePerformanceEndSeconds,
+      tailStrategy,
+    },
+  };
+}
+
 export function validateSeedanceRequestContract(request, label = "request") {
   if (!request || typeof request !== "object") {
     throw new Error(`${label}_invalid: request must be an object.`);
@@ -305,14 +534,28 @@ export function validateSeedanceRequestContract(request, label = "request") {
 
   assertNoCrossSegmentShorthand(request, label);
   validateSegmentContract(request, durationSeconds, label);
+  const targetEditContract = validateTargetEditContract(
+    request,
+    durationSeconds,
+    label,
+  );
   const continuityReport = buildContinuityReport(request);
 
-  return {
+  const report = {
     checked: true,
     durationSeconds,
+    providerDurationSeconds: durationSeconds,
     model: request.model,
     continuityReport,
   };
+
+  if (targetEditContract) {
+    report.targetEditDurationSeconds =
+      targetEditContract.targetEditDurationSeconds;
+    report.timeline = targetEditContract.timeline;
+  }
+
+  return report;
 }
 
 export function validateSeedanceRequestFile(payload) {

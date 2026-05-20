@@ -110,6 +110,11 @@ Use when:
   "resolution": "720p",
   "ratio": "9:16",
   "duration": 5,
+  "targetEditDurationSeconds": 4.5,
+  "timeline": {
+    "activePerformanceEndSeconds": 4.5,
+    "tailStrategy": "natural_hold_for_trim"
+  },
   "seed": -1,
   "returnLastFrame": true,
   "generateAudio": true,
@@ -135,6 +140,10 @@ This object is the executable envelope's `input` value.
 - `promptPlan.storyboardTimeline` is the canonical place for timecoded action and spoken lines.
 - `promptPlan.referenceMap` is converted into `[image 1]...，[image 2]...` style prompt text to better match reference-image guidance.
 - `promptPlan.camera`, `promptPlan.shotType`, and `promptPlan.motion` are prompt-planning text only.
+- For Seedance, `duration` remains the provider duration bucket. Use
+  `targetEditDurationSeconds` plus `timeline.activePerformanceEndSeconds` and
+  `timeline.tailStrategy` when the final edit should trim shorter than the
+  provider bucket.
 - Camera trajectory, object trajectory, motion brush, and brush mask fields are not supported by the current runner and must fail before provider submission.
 - For Instagram Meta Ads creative production, set
   `creativeFormat: "instagram_meta_ads"` or `aspectRatio: "3:4"` so the request

@@ -26,6 +26,8 @@ Recommended context fields:
 - `resolution`
 - `ratio`
 - `duration`
+- `targetEditDurationSeconds`
+- `timeline`
 - `enableWebSearch`
 - `sourceBasis`
 - `feedback`
@@ -45,6 +47,47 @@ Recommended context fields:
   "enableWebSearch": false
 }
 ```
+
+## Provider Duration And Target Edit Duration
+
+`duration` is the provider duration bucket sent to PostPlus Cloud and Seedance.
+It must stay one of `5`, `10`, or `15`.
+
+`targetEditDurationSeconds` is the intended final creative length after edit
+trim. It may be fractional and may be shorter than `duration`, but it must not
+be longer than `duration`.
+
+When the target edit duration is shorter than the provider bucket, include a
+`timeline` block:
+
+```json
+{
+  "duration": 10,
+  "targetEditDurationSeconds": 7.5,
+  "timeline": {
+    "activePerformanceEndSeconds": 7.5,
+    "tailStrategy": "natural_hold_for_trim"
+  },
+  "promptPlan": {
+    "storyboardTimeline": [
+      "0-7.5s: complete the active demonstration.",
+      "7.5-10s: natural hold for trim; subtle breathing only, no new action."
+    ]
+  }
+}
+```
+
+Allowed `timeline.tailStrategy` values:
+
+- `natural_hold`
+- `natural_hold_for_trim`
+- `micro_expression`
+- `settle`
+- `loopable_tail`
+
+The validator rejects target edit durations longer than the provider duration.
+When `targetEditDurationSeconds < duration`, the validator requires
+`timeline.activePerformanceEndSeconds` and `timeline.tailStrategy`.
 
 ## PromptPlan Fields
 
