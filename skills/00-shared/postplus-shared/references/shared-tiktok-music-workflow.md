@@ -15,6 +15,10 @@ Classify the request by the object the user already has:
 
 Do not start with downloading when the user has not selected a sound or sample set.
 Do not treat extracted audio as commercially cleared unless the user confirms rights or platform-licensed use.
+Download claims are limited to TikTok post URLs reachable from the user's current
+local browser/IP environment. If `yt_dlp` reports that the current IP is blocked,
+preserve the failed source URL and stop the archive/audio-extraction chain
+instead of retrying broad downloads or inventing an unapproved proxy/cookie path.
 
 ## Skill Chain
 
@@ -37,6 +41,15 @@ collector skill. Keep music-specific collection claims inside `tiktok-research`
 only when the released collection key and script path support the exact request.
 If they do not, ask for selected TikTok video URLs or an existing sample dataset
 before downloading.
+
+## Download Access Boundary
+
+`tiktok-music-archive-downloader` is a local downloader for reachable TikTok post
+URLs. Passing the local dependency bootstrap does not prove that TikTok will let
+the current local IP/browser access path fetch the post. A download report item
+with `failureCode: "tiktok_ip_blocked"` is the supported fail-fast outcome:
+report the blocker with `sourceUrl`, `stderr`, and the report path, then stop
+until a reachable URL/sample file or approved access bootstrap exists.
 
 ## Output Contracts
 
@@ -135,5 +148,7 @@ Use `creative-qa` only after a human has reviewed candidate audio/video samples 
 - Jumping from a trend list directly to audio extraction without checking videos that use the sound.
 - Ranking sounds only by trend rank instead of campaign fit and sample availability.
 - Treating TikTok sound-page downloads as reliable when `yt-dlp` sound extraction may be broken.
+- Retrying broad archive downloads after `failureCode: "tiktok_ip_blocked"`
+  instead of reporting the access blocker.
 - Losing provenance by saving audio without source video URL, music id, and actor output.
 - Presenting scraped or extracted audio as cleared for commercial reuse.

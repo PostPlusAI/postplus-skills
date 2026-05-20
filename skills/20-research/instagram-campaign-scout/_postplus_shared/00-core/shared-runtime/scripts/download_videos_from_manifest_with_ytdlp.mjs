@@ -59,6 +59,20 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function classifyDownloadFailure(result) {
+  const stderr = String(result?.stderr || "");
+  if (stderr.includes("Your IP address is blocked from accessing this post")) {
+    return {
+      agentAction: "report_blocker",
+      failureCode: "tiktok_ip_blocked",
+      failureMessage:
+        "TikTok blocked this post for the current local IP/browser access path. Report the blocker with the preserved sourceUrl and stop the archive/audio-extraction chain until the URL is reachable from the user's local browser/IP or an approved access path exists.",
+      retryable: false,
+    };
+  }
+  return null;
+}
+
 async function findDownloadedPath(outputTemplate) {
   const dir = path.dirname(outputTemplate);
   const stem = path.basename(outputTemplate, path.extname(outputTemplate));
@@ -102,12 +116,24 @@ async function downloadOne(item, outputTemplate, attempts) {
       return { success: true, filePath, ...lastResult };
     }
 
+    const failure = classifyDownloadFailure(result);
+    if (failure?.retryable === false) {
+      return {
+        success: false,
+        filePath: null,
+        ...lastResult,
+        failure,
+      };
+    }
+
     await sleep(Math.min(5000, attempt * 1000));
   }
 
+  const failure = classifyDownloadFailure(lastResult);
   return {
     success: false,
     filePath: null,
+    ...(failure ? { failure } : {}),
     ...(lastResult || { code: 1, stdout: "", stderr: "download did not run", attempt: 0 })
   };
 }
@@ -154,6 +180,14 @@ async function main() {
 
       const run = await downloadOne(item, outputTemplate, attempts);
       results.push({
+        ...(run.failure
+          ? {
+              agentAction: run.failure.agentAction,
+              failureCode: run.failure.failureCode,
+              failureMessage: run.failure.failureMessage,
+              retryable: run.failure.retryable,
+            }
+          : {}),
         sourceId: item.sourceId,
         sourceUrl: item.sourceUrl,
         filePath: run.filePath,

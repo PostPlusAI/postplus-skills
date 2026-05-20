@@ -68,6 +68,25 @@ When the upstream normalized dataset includes both `postPageUrl` and direct
 video fields, prefer the canonical TikTok post page URL for `sourceUrl`.
 That keeps `yt_dlp` on the stable page surface instead of an expiring CDN URL.
 
+## TikTok Access Boundary
+
+This skill downloads only TikTok post URLs that are reachable from the user's
+current local browser/IP environment after the approved local dependency
+bootstrap passes. A working `python3`, `yt_dlp`, and `ffmpeg` setup is necessary
+but not sufficient when TikTok gates the post by IP, browser access, login, or
+cookies.
+
+When the download report contains `failureCode: "tiktok_ip_blocked"`:
+
+- report the blocker directly with the preserved `sourceUrl`, `stderr`, and
+  report path
+- stop the archive and audio-extraction chain for that source set
+- do not retry broad downloads, switch to a proxy, or invent a cookie/browser
+  bootstrap path
+- continue only after the user provides a TikTok URL or sample file that is
+  reachable from their current local browser/IP environment, or after an
+  approved access path is added to this skill contract
+
 ## Audio Extraction
 
 After videos are downloaded, extract audio with `ffmpeg`.
@@ -116,6 +135,9 @@ Before reporting success:
 - confirm audio files exist and are non-empty
 - report failures separately instead of hiding them
 - keep source URLs in the manifest even when download fails
+- if a report item has `failureCode: "tiktok_ip_blocked"`, treat it as a
+  supported fail-fast blocker and do not proceed to audio extraction for that
+  source set
 
 ## Handoff
 
@@ -142,3 +164,6 @@ Treat downloaded TikTok music as research/reference material unless the user con
   download or extraction
 - if local dependency bootstrap fails, stop immediately instead of switching to
   ad hoc shell glue
+- downloads are supported only for TikTok post URLs reachable from the user's
+  current local browser/IP environment; TikTok IP/browser/cookie gating is a
+  hard blocker unless this contract later adds an approved access bootstrap
