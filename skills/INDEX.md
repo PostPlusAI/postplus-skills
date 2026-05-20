@@ -140,5 +140,3 @@ Feishu/Lark, Google Workspace, social publishing, outreach, and meta utilities.
 
 - `social-media-publisher`
   - Path: `skills/50-publishing/social-media-publisher/SKILL.md`
-- `skill-finder-cn`
-  - Path: `skills/90-meta/skill-finder-cn/SKILL.md`

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-1-44287c50d65662f7",
+  "releaseId": "skills-1-d12d53c4b8d54637",
   "source": "PostPlusAI/postplus-skills",
   "primaryIndex": "skills/INDEX.md",
   "skills": [
@@ -706,23 +706,6 @@
           "source": "endpointKey"
         }
       ]
-    },
-    {
-      "familyId": "workspace-publishing",
-      "familyName": "Workspace, Publishing, and Meta",
-      "name": "skill-finder-cn",
-      "path": "skills/90-meta/skill-finder-cn/SKILL.md",
-      "requirements": {
-        "accountConnections": [],
-        "collectionKeys": [],
-        "endpointKeys": [],
-        "hostedCapabilities": [],
-        "localDependencies": [],
-        "modelKeys": [],
-        "sourceKeys": []
-      },
-      "status": "released",
-      "supportedModels": []
     },
     {
       "familyId": "media-production",
