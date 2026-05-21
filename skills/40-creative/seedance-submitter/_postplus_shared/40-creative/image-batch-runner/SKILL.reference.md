@@ -34,10 +34,10 @@ Default configuration:
 - **PostPlus creative format**: `short_form_vertical`
 - **aspect ratio**: `9:16` (portrait, short-form video standard)
 - **quality**: `medium`
-- **resolution**: `1K`
+- **resolution**: `1k`
 - **execution**: async (`enableSyncMode: false`)
 
-This applies to all asset purposes: persona candidates, cover frames, shot support, and edit fixes. The 9:16 medium 1K async default balances visual quality with cost and latency for short-form video production. Do not deviate from this default unless the user explicitly requests a different model, ratio, quality tier, resolution, or sync execution.
+This applies to all asset purposes: persona candidates, cover frames, shot support, and edit fixes. The 9:16 medium 1k async default balances visual quality with cost and latency for short-form video production. Do not deviate from this default unless the user explicitly requests a different model, ratio, quality tier, resolution, or sync execution.
 
 Capture the chosen quality settings in the local request record so later QA can trace realism issues back to generation parameters.
 
@@ -192,7 +192,7 @@ For each generation job, create a local JSON request record containing:
 - local asset directory
 - source basis
 
-When the provider exposes multiple quality tiers or resolutions, default to the configured default (GPT Image 2, 9:16, medium, 1K) unless the job is explicitly a cheap draft or the user requests different settings.
+When the provider exposes multiple quality tiers or resolutions, default to the configured default (GPT Image 2, 9:16, medium, 1k) unless the job is explicitly a cheap draft or the user requests different settings.
 
 If the request is for Instagram Meta Ads, use
 `creativeFormat: "instagram_meta_ads"` or `aspectRatio: "3:4"` in the
@@ -327,7 +327,7 @@ Model selection rule:
 
 - set `request.model` to one of the hosted image endpoint keys above
 - **default is `image-gpt-image-2-text`** with PostPlus `short_form_vertical`
-  format (9:16, medium, 1K)
+  format (9:16, medium, 1k)
 - for edits, default is `image-gpt-image-2-edit` (same ratio/quality/resolution defaults)
 - for Instagram Meta Ads creative production, set PostPlus
   `instagram_meta_ads` format so the request carries 3:4 explicitly

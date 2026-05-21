@@ -19,6 +19,15 @@ import {
 export const DEFAULT_PROVIDER = 'hosted-media';
 export const DEFAULT_MODEL = 'video-infinitetalk';
 export const DEFAULT_RESOLUTION = '720p';
+export const SEEDANCE_TAIL_STRATEGY_PROMPTS = {
+  natural_hold: 'natural hold with subtle breathing only',
+  natural_hold_for_trim:
+    'natural hold with subtle breathing and micro-expression only',
+  micro_expression: 'subtle micro-expression only',
+  settle: 'settle into the final pose with subtle breathing only',
+  loopable_tail: 'loopable tail with no new action',
+};
+const SEEDANCE_PROVIDER_DURATION_VALUES_SECONDS = [5, 10, 15];
 const VIDEO_RUNNER_ARCHIVED_REQUEST_ERROR_CODE =
   'postplus_video_batch_runner_archived_request_not_executable';
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
@@ -483,9 +492,176 @@ function formatTimelineRange(startSeconds, endSeconds) {
   return `${Number(endSeconds).toFixed(1)}s`;
 }
 
-function buildSeedancePromptFromPlan(plan = {}, fallbackPrompt = null) {
+function formatPromptSeconds(value) {
+  return Number(value).toFixed(3).replace(/\.?0+$/u, '');
+}
+
+function toPositiveSeconds(value, fieldName) {
+  const seconds = Number(value);
+  if (!Number.isFinite(seconds) || seconds <= 0) {
+    throw new Error(`${fieldName} must be a positive number of seconds.`);
+  }
+  return seconds;
+}
+
+function normalizeSeedanceEditTiming(input, providerDurationSeconds, modelGroup) {
+  if (modelGroup !== 'seedance-2.0') {
+    return {
+      targetEditDurationSeconds: null,
+      activePerformanceEndSeconds: null,
+      tailStrategy: null,
+      timeline: null,
+    };
+  }
+
+  const timeline =
+    input.timeline && typeof input.timeline === 'object'
+      ? input.timeline
+      : {};
+  const targetEditRaw =
+    input.targetEditDurationSeconds ?? input.target_edit_duration_seconds;
+  const activeEndRaw =
+    timeline.activePerformanceEndSeconds ??
+    timeline.active_performance_end_seconds ??
+    input.activePerformanceEndSeconds ??
+    input.active_performance_end_seconds;
+  const tailStrategyRaw =
+    timeline.tailStrategy ??
+    timeline.tail_strategy ??
+    input.tailStrategy ??
+    input.tail_strategy;
+
+  if (targetEditRaw == null) {
+    return {
+      targetEditDurationSeconds: null,
+      activePerformanceEndSeconds: null,
+      tailStrategy: null,
+      timeline: null,
+    };
+  }
+
+  if (!Number.isFinite(providerDurationSeconds)) {
+    throw new Error(
+      'request.duration is required when request.targetEditDurationSeconds is set.',
+    );
+  }
+
+  const targetEditDurationSeconds = toPositiveSeconds(
+    targetEditRaw,
+    'request.targetEditDurationSeconds',
+  );
+  if (targetEditDurationSeconds > providerDurationSeconds) {
+    throw new Error(
+      `request.targetEditDurationSeconds ${targetEditDurationSeconds}s exceeds provider duration ${providerDurationSeconds}s.`,
+    );
+  }
+
+  const activePerformanceEndSeconds =
+    activeEndRaw == null
+      ? null
+      : toPositiveSeconds(
+          activeEndRaw,
+          'request.timeline.activePerformanceEndSeconds',
+        );
+  if (
+    activePerformanceEndSeconds != null &&
+    activePerformanceEndSeconds > targetEditDurationSeconds
+  ) {
+    throw new Error(
+      `request.timeline.activePerformanceEndSeconds ${activePerformanceEndSeconds}s exceeds targetEditDurationSeconds ${targetEditDurationSeconds}s.`,
+    );
+  }
+
+  const tailStrategy =
+    tailStrategyRaw == null ? null : String(tailStrategyRaw).trim();
+  if (
+    tailStrategy &&
+    !Object.hasOwn(SEEDANCE_TAIL_STRATEGY_PROMPTS, tailStrategy)
+  ) {
+    throw new Error(
+      `request.timeline.tailStrategy must be one of ${Object.keys(SEEDANCE_TAIL_STRATEGY_PROMPTS).join(', ')}.`,
+    );
+  }
+
+  if (targetEditDurationSeconds < providerDurationSeconds) {
+    if (activePerformanceEndSeconds == null) {
+      throw new Error(
+        'request.timeline.activePerformanceEndSeconds is required when targetEditDurationSeconds is shorter than duration.',
+      );
+    }
+    if (!tailStrategy) {
+      throw new Error(
+        'request.timeline.tailStrategy is required when targetEditDurationSeconds is shorter than duration.',
+      );
+    }
+  }
+
+  return {
+    targetEditDurationSeconds,
+    activePerformanceEndSeconds,
+    tailStrategy,
+    timeline: {
+      activePerformanceEndSeconds,
+      tailStrategy,
+    },
+  };
+}
+
+function assertSeedanceProviderDuration(providerDurationSeconds, modelGroup) {
+  if (modelGroup !== 'seedance-2.0' || providerDurationSeconds == null) {
+    return;
+  }
+  if (
+    SEEDANCE_PROVIDER_DURATION_VALUES_SECONDS.includes(providerDurationSeconds)
+  ) {
+    return;
+  }
+
+  throw new Error(
+    `request.duration must be one of ${SEEDANCE_PROVIDER_DURATION_VALUES_SECONDS.join(', ')} seconds for Seedance.`,
+  );
+}
+
+function buildSeedanceTailInstruction(timing, providerDurationSeconds) {
+  if (
+    !timing?.targetEditDurationSeconds ||
+    !Number.isFinite(providerDurationSeconds) ||
+    timing.targetEditDurationSeconds >= providerDurationSeconds
+  ) {
+    return null;
+  }
+
+  const activeEndSeconds =
+    timing.activePerformanceEndSeconds ?? timing.targetEditDurationSeconds;
+  const tailInstruction =
+    SEEDANCE_TAIL_STRATEGY_PROMPTS[timing.tailStrategy] ||
+    SEEDANCE_TAIL_STRATEGY_PROMPTS.natural_hold_for_trim;
+
+  return [
+    `0-${formatPromptSeconds(activeEndSeconds)}s: complete the active performance.`,
+    `${formatPromptSeconds(activeEndSeconds)}-${formatPromptSeconds(providerDurationSeconds)}s: ${tailInstruction}, no new action or dialogue, designed for clean trimming.`,
+  ].join('\n');
+}
+
+function buildSeedancePromptFromPlan(
+  plan = {},
+  fallbackPrompt = null,
+  timing = null,
+  providerDurationSeconds = null,
+) {
   if (!plan || typeof plan !== 'object') {
-    return fallbackPrompt || null;
+    const sections = [];
+    if (typeof fallbackPrompt === 'string' && fallbackPrompt.trim()) {
+      sections.push(fallbackPrompt.trim());
+    }
+    const tailInstruction = buildSeedanceTailInstruction(
+      timing,
+      providerDurationSeconds,
+    );
+    if (tailInstruction) {
+      sections.push(tailInstruction);
+    }
+    return sections.join('\n\n').trim() || null;
   }
 
   const storyboardTimeline = normalizeStoryboardTimeline(plan.storyboardTimeline);
@@ -505,6 +681,14 @@ function buildSeedancePromptFromPlan(plan = {}, fallbackPrompt = null) {
 
   if (storyboardTimeline) {
     sections.push(storyboardTimeline);
+  }
+
+  const tailInstruction = buildSeedanceTailInstruction(
+    timing,
+    providerDurationSeconds,
+  );
+  if (tailInstruction) {
+    sections.push(tailInstruction);
   }
 
   const framing = dedupeStrings([
@@ -783,9 +967,23 @@ export function normalizeRenderInput(input) {
   const hostedModelConfig = getHostedVideoModelConfig(model);
   const creativeFormat = resolveCreativeFormat(input);
   const modelSupportsAspectRatio = hostedModelConfig.supportsAspectRatio === true;
+  const providerDurationSeconds = Number.isInteger(input.duration)
+    ? input.duration
+    : null;
+  assertSeedanceProviderDuration(
+    providerDurationSeconds,
+    hostedModelConfig.modelGroup,
+  );
+  const seedanceEditTiming = normalizeSeedanceEditTiming(
+    input,
+    providerDurationSeconds,
+    hostedModelConfig.modelGroup,
+  );
   const prompt = buildSeedancePromptFromPlan(
     input.promptPlan,
     input.prompt || input.text || null,
+    seedanceEditTiming,
+    providerDurationSeconds,
   );
 
   if (provider === 'hosted-media') {
@@ -827,7 +1025,7 @@ export function normalizeRenderInput(input) {
     characterOrientation:
       input.characterOrientation || input.character_orientation || null,
     ratio: modelSupportsAspectRatio ? creativeFormat.aspectRatio : null,
-    duration: Number.isInteger(input.duration) ? input.duration : null,
+    duration: providerDurationSeconds,
     frames: Number.isInteger(input.frames) ? input.frames : null,
     seed: Number.isInteger(input.seed) ? input.seed : -1,
     watermark: typeof input.watermark === 'boolean' ? input.watermark : false,
@@ -861,6 +1059,12 @@ export function normalizeRenderInput(input) {
         : typeof input.enableWebSearch === 'boolean'
           ? input.enableWebSearch
           : null,
+    providerDurationSeconds,
+    targetEditDurationSeconds: seedanceEditTiming.targetEditDurationSeconds,
+    activePerformanceEndSeconds:
+      seedanceEditTiming.activePerformanceEndSeconds,
+    tailStrategy: seedanceEditTiming.tailStrategy,
+    timeline: seedanceEditTiming.timeline,
     lastImage: input.last_image || input.lastImage || null,
     referenceImages: stringList(
       input.reference_images || input.referenceImages || input.images,
@@ -939,6 +1143,11 @@ export function createRenderManifestBase(normalized, paths, options = {}) {
     prompt: normalized.prompt,
     resolution: normalized.resolution,
     ratio: normalized.ratio,
+    providerDurationSeconds: normalized.providerDurationSeconds,
+    targetEditDurationSeconds: normalized.targetEditDurationSeconds,
+    activePerformanceEndSeconds: normalized.activePerformanceEndSeconds,
+    tailStrategy: normalized.tailStrategy,
+    timeline: normalized.timeline,
     duration: normalized.duration,
     frames: normalized.frames,
     seed: normalized.seed,

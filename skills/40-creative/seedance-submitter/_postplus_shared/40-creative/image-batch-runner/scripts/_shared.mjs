@@ -293,6 +293,37 @@ export function getDefaultImageModel(mode) {
   throw new Error(`Unsupported image generation mode: ${mode}`);
 }
 
+function normalizeOptionalString(value, fieldName) {
+  if (value === undefined || value === null || value === '') {
+    return null;
+  }
+  if (typeof value !== 'string') {
+    throw new Error(`request.${fieldName} must be a string.`);
+  }
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+export function normalizeImageResolution(value) {
+  const resolution = normalizeOptionalString(value, 'resolution');
+  if (!resolution) {
+    return DEFAULT_RESOLUTION;
+  }
+
+  const tier = resolution.match(/^(\d+(?:\.\d+)?)\s*k$/iu);
+  return tier ? `${tier[1]}k` : resolution;
+}
+
+export function normalizeImageQuality(value) {
+  const quality = normalizeOptionalString(value, 'quality');
+  return quality ? quality.toLowerCase() : null;
+}
+
+export function normalizeImageOutputFormat(value) {
+  const outputFormat = normalizeOptionalString(value, 'outputFormat');
+  return outputFormat ? outputFormat.toLowerCase() : DEFAULT_OUTPUT_FORMAT;
+}
+
 export function normalizeGenerationInput(input, mode) {
   assertNoProviderFieldAliases(input);
   const creativeFormat = resolveCreativeFormat(input);
@@ -334,11 +365,11 @@ export function normalizeGenerationInput(input, mode) {
     negativePrompt: input.negativePrompt || null,
     aspectRatio: creativeFormat.aspectRatio || DEFAULT_ASPECT_RATIO,
     targetAspectRatio: creativeFormat.aspectRatio || DEFAULT_ASPECT_RATIO,
-    resolution: input.resolution || DEFAULT_RESOLUTION,
-    quality: input.quality || null,
+    resolution: normalizeImageResolution(input.resolution),
+    quality: normalizeImageQuality(input.quality),
     size: input.size || null,
     maxImages: Number.isInteger(input.maxImages) ? input.maxImages : null,
-    outputFormat: input.outputFormat || DEFAULT_OUTPUT_FORMAT,
+    outputFormat: normalizeImageOutputFormat(input.outputFormat),
     enableSyncMode:
       typeof input.enableSyncMode === 'boolean'
         ? input.enableSyncMode

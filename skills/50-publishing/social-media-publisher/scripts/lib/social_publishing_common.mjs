@@ -329,11 +329,69 @@ export function toSocialPublishingCreatePayload(request) {
   };
 }
 
+export function extractCreatePostIds(result) {
+  const postIds = [];
+  const seen = new Set();
+  const addPostId = (value) => {
+    if (typeof value !== "string" || !value.trim()) {
+      return;
+    }
+    const postId = value.trim();
+    if (!seen.has(postId)) {
+      seen.add(postId);
+      postIds.push(postId);
+    }
+  };
+  const addFromPost = (post) => {
+    if (!post || typeof post !== "object" || Array.isArray(post)) {
+      return;
+    }
+    addPostId(post.postId);
+    addPostId(post.id);
+  };
+  const addFromArray = (items) => {
+    for (const item of items) {
+      if (typeof item === "string") {
+        addPostId(item);
+        continue;
+      }
+      addFromPost(item);
+    }
+  };
+  const visitKnownCreateShape = (value) => {
+    if (!value || typeof value !== "object") {
+      return;
+    }
+    if (Array.isArray(value)) {
+      addFromArray(value);
+      return;
+    }
+
+    addFromPost(value);
+    for (const key of ["post", "posts", "postIds", "ids", "data", "result", "output"]) {
+      const child = value[key];
+      if (!child) {
+        continue;
+      }
+      if (Array.isArray(child)) {
+        addFromArray(child);
+        continue;
+      }
+      if (typeof child === "object") {
+        visitKnownCreateShape(child);
+      }
+    }
+  };
+
+  visitKnownCreateShape(result);
+  return postIds;
+}
+
 export function summarizeCreateResult(result) {
-  const created = Array.isArray(result) ? result.length : 0;
-  const postIds = Array.isArray(result)
-    ? result.map((post) => post.postId).filter(Boolean)
-    : [];
+  const postIds = extractCreatePostIds(result);
+  const created = Array.isArray(result)
+    ? result.length
+    : postIds.length;
   return {
     created,
     postIds

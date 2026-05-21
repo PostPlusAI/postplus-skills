@@ -17,7 +17,9 @@ Follow shared public skill rules in:
 
 ## Workflow
 
-1. Lock inputs: product image paths, storyboard image path, script, target duration, output root, and whether the user wants submit or only JSON.
+1. Lock inputs: product image paths, storyboard image path, script, provider
+   duration bucket, target edit duration, output root, and whether the user
+   wants submit or only JSON.
 2. Read [references/current-rules.md](references/current-rules.md).
 3. If creating request JSON, read [references/request-json.md](references/request-json.md).
 4. Upload local reference images before submission and replace local paths with uploaded URLs.
@@ -39,6 +41,35 @@ to poll. Tell the user the segment is running from a saved checkpoint and
 continue independent segment QA, caption prep, or next-segment request review.
 
 If the user says `sd2`, interpret it as Seedance 2.0 unless they explicitly specify another model.
+
+## Target Edit Duration
+
+`duration` is the provider bucket sent to Seedance. It must stay one of `5`,
+`10`, or `15`.
+
+For edit targets like `7.5s` or `11-12s`, use the next viable provider bucket
+in `duration` and write the intended trim length to
+`targetEditDurationSeconds`.
+
+When `targetEditDurationSeconds < duration`, include:
+
+- `timeline.activePerformanceEndSeconds`: latest time where new action or
+  dialogue may happen
+- `timeline.tailStrategy`: `natural_hold`, `natural_hold_for_trim`,
+  `micro_expression`, `settle`, or `loopable_tail`
+
+Example:
+
+```json
+{
+  "duration": 10,
+  "targetEditDurationSeconds": 7.5,
+  "timeline": {
+    "activePerformanceEndSeconds": 7.5,
+    "tailStrategy": "natural_hold_for_trim"
+  }
+}
+```
 
 ## Mandatory Split Rule
 

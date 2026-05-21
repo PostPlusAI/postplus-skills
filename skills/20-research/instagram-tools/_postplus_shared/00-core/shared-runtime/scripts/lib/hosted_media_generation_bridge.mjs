@@ -114,8 +114,13 @@ async function resolveHostedMediaGenerationResult(initialResult) {
       ? Math.max(1, Math.ceil(timeoutMs / intervalMs))
       : 0,
   );
+  const maxTransientStatusFailures = readNonNegativeIntegerEnv(
+    'POSTPLUS_HOSTED_MEDIA_STATUS_TRANSIENT_RETRIES',
+    2,
+  );
   const deadline = timeoutMs > 0 ? Date.now() + timeoutMs : Date.now();
   let attempts = 0;
+  let transientStatusFailures = 0;
 
   while (handle && attempts < maxAttempts && Date.now() <= deadline) {
     attempts += 1;
@@ -123,16 +128,31 @@ async function resolveHostedMediaGenerationResult(initialResult) {
       await new Promise((resolve) => setTimeout(resolve, intervalMs));
     }
 
-    current = await runHostedCapabilityEnvelopeRequest(
-      {
-        capability: 'media-generation',
-        operation: 'status',
-        handle,
-      },
-      {
-        applyProcessHostedExecutionFields: false,
-      },
-    );
+    try {
+      current = await runHostedCapabilityEnvelopeRequest(
+        {
+          capability: 'media-generation',
+          operation: 'status',
+          handle,
+        },
+        {
+          applyProcessHostedExecutionFields: false,
+        },
+      );
+      transientStatusFailures = 0;
+    } catch (error) {
+      if (
+        isRetryableHostedMediaStatusError(error) &&
+        transientStatusFailures < maxTransientStatusFailures &&
+        attempts < maxAttempts &&
+        Date.now() <= deadline
+      ) {
+        transientStatusFailures += 1;
+        continue;
+      }
+
+      throw error;
+    }
     handle = readPendingRunHandle(current.output);
   }
 
@@ -181,6 +201,26 @@ function readPendingRunHandle(output) {
   }
 
   return null;
+}
+
+function isRetryableHostedMediaStatusError(error) {
+  if (!error || typeof error !== 'object') {
+    return false;
+  }
+
+  if (
+    typeof error.status === 'number' &&
+    error.status >= 500 &&
+    error.status < 600
+  ) {
+    return true;
+  }
+
+  return (
+    typeof error.code === 'string' &&
+    (error.code === 'skill_server_capability_network_request_failed' ||
+      error.code === 'skill_server_capability_proxy_request_failed')
+  );
 }
 
 function unwrapProviderPayload(output) {
