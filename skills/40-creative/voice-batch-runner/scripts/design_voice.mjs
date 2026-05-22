@@ -1,16 +1,20 @@
 #!/usr/bin/env node
 import path from 'node:path';
 
+import { formatCliError } from '../_postplus_shared/00-core/shared-runtime/scripts/lib/network_runtime.mjs';
 import {
   DEFAULT_LANGUAGE,
   DEFAULT_PROVIDER,
   buildRequestPaths,
+  createHostedMediaGenerationFailedError,
   createReviewStub,
   downloadFile,
   fetchJson,
   inferAudioExtension,
+  isHostedMediaGenerationFailedResult,
   nowIso,
   parseArgs,
+  readHostedMediaGenerationFailure,
   readHostedJson,
   readJson,
   unwrapProviderResult,
@@ -101,6 +105,7 @@ async function main() {
     generationHandle: result?.id || null,
     providerStatus: result?.status || null,
     providerUrls: result?.urls || null,
+    error: readHostedMediaGenerationFailure(result),
     createdAt: nowIso(),
     sourceBasis: request.sourceBasis,
     reviewStatus: 'pending_review',
@@ -108,10 +113,15 @@ async function main() {
 
   writeJson(paths.manifestPath, manifest);
   writeJson(paths.reviewPath, createReviewStub());
+  if (isHostedMediaGenerationFailedResult(result)) {
+    throw createHostedMediaGenerationFailedError(result, {
+      label: 'Voice design generation',
+    });
+  }
   console.log(JSON.stringify(manifest, null, 2));
 }
 
 main().catch((error) => {
-  console.error(error instanceof Error ? error.stack : String(error));
+  console.error(formatCliError(error));
   process.exitCode = 1;
 });

@@ -16,10 +16,13 @@ import {
 import {
   buildAssetPaths,
   createImageManifestBase,
+  createHostedMediaGenerationFailedError,
   fetchJson,
   finalizeImageRun,
+  isHostedMediaGenerationFailedResult,
   materializeCompletedImageOutputs,
   parseArgs,
+  readHostedMediaGenerationFailure,
   readHostedJson,
   readJson,
   readJsonIfExists,
@@ -115,6 +118,10 @@ export async function runPollPrediction(argv = process.argv.slice(2)) {
   manifest.providerStatus = result?.status || null;
   manifest.providerUrls = result?.urls || null;
   manifest.mediaType = "image";
+  const providerFailure = readHostedMediaGenerationFailure(result);
+  if (providerFailure) {
+    manifest.error = providerFailure;
+  }
 
   if (result?.status === "completed") {
     try {
@@ -133,6 +140,11 @@ export async function runPollPrediction(argv = process.argv.slice(2)) {
 
   const finalized = finalizeAttemptManifest(paths, recordedAttempt, manifest);
   finalizeImageRun(request, paths, finalized.manifest);
+  if (isHostedMediaGenerationFailedResult(result)) {
+    throw createHostedMediaGenerationFailedError(result, {
+      label: "Image generation polling",
+    });
+  }
   console.log(JSON.stringify(finalized.manifest, null, 2));
 }
 

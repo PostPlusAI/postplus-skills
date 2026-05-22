@@ -137,6 +137,7 @@ Attempt records distinguish:
 - `not_submitted` for failures such as `billing_balance_insufficient`
 - `submitted_processing` with next action `poll existing attempt`
 - `provider_completed` with next action `resume materialization`
+- `provider_failed` with the provider error preserved and surfaced to the agent
 - `materialization_failed` with the provider output URL preserved locally
 - `hosted_generation_handle_not_found` when hosted status can no longer find
   the saved handle

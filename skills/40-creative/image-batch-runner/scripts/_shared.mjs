@@ -4,8 +4,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import {
+  createHostedMediaGenerationFailedError,
   downloadHostedMediaFile,
+  isHostedMediaGenerationFailedResult,
   requestHostedMediaGenerationJson,
+  readHostedMediaGenerationFailure,
   uploadHostedMediaFile,
 } from '../_postplus_shared/00-core/shared-runtime/scripts/lib/hosted_media_generation_bridge.mjs';
 import {
@@ -27,6 +30,12 @@ export const DEFAULT_ENABLE_SYNC_MODE = false;
 export const IMAGE_MATERIALIZATION_FAILURE_CODE =
   'provider_completed_asset_materialization_failed';
 export const IMAGE_MATERIALIZATION_FAILURE_LAYER = 'hosted_storage_network';
+
+export {
+  createHostedMediaGenerationFailedError,
+  isHostedMediaGenerationFailedResult,
+  readHostedMediaGenerationFailure,
+};
 
 export const HOSTED_IMAGE_MODELS = {
   'image-gpt-image-2-text': {

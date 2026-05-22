@@ -57,7 +57,9 @@ locally until the provider finishes.
 
 Use `poll_transcription.mjs` with the same request file to resume the provider
 status check. Repeat polling until status is `completed` or `failed`; completed
-runs download transcript artifacts into `outputs/`.
+runs download transcript artifacts into `outputs/`. Failed runs preserve the
+provider error in `manifest.json` and exit non-zero with the provider message
+and user action.
 
 Do not block the user's conversation while the provider is still processing.
 Tell the user the transcription is running from the saved checkpoint, then

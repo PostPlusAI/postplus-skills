@@ -127,6 +127,11 @@ For each beat, decide:
 
 Do not overcut low-value filler beats.
 
+For talking-head proof, package B-roll as `picture-in-picture` by default and
+include a dynamic placement policy. The policy must avoid covering the face,
+worn product, active product gesture, truth-bearing UI, and subtitle safe
+area. Do not pick a fixed corner in the package.
+
 ### 3. Package keyword emphasis
 
 Use `keywordOverlay` from `broll-plan.json` as a starting point.
@@ -205,6 +210,7 @@ A good package lets a human editor answer:
 
 - should I stay on face or cut away
 - what B-roll candidate should I use
+- where can the B-roll inset safely go after protected zones are checked
 - which words should be emphasized
 - what kind of motion should be applied
 - should subtitles move, simplify, or stay normal

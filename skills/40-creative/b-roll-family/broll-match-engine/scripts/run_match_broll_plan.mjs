@@ -78,6 +78,48 @@ function inferBeatRoleAndVisualNeed(text) {
 
   const rules = [
     {
+      beatRole: 'workflow-friction-proof',
+      visualNeed: 'process-proof',
+      keywords: [
+        'digging through notes',
+        'typing with one hand',
+        'start digging',
+        'one hand',
+        'notes',
+      ],
+    },
+    {
+      beatRole: 'hands-free-product-proof',
+      visualNeed: 'hands-free-proof',
+      keywords: [
+        'phone down',
+        'keep the phone down',
+        'glasses stay on',
+        'talk through the update',
+        'hands free',
+      ],
+    },
+    {
+      beatRole: 'recap-proof',
+      visualNeed: 'recap-proof',
+      keywords: [
+        'capture the recap',
+        'recap',
+        'next question',
+        'conversation moving',
+      ],
+    },
+    {
+      beatRole: 'travel-payoff',
+      visualNeed: 'travel-payoff',
+      keywords: [
+        'now i can board',
+        'team already briefed',
+        'already briefed',
+        'ready to board',
+      ],
+    },
+    {
       beatRole: 'tool-discovery',
       visualNeed: 'ui-demo',
       keywords: [
@@ -154,8 +196,12 @@ function shouldUseBrollForNeed(visualNeed, text) {
 
 function inferCoverageStyle(visualNeed) {
   const mapping = {
-    'ui-demo': 'full-cutaway',
-    proof: 'full-cutaway',
+    'ui-demo': 'picture-in-picture',
+    proof: 'picture-in-picture',
+    'process-proof': 'picture-in-picture',
+    'hands-free-proof': 'picture-in-picture',
+    'recap-proof': 'picture-in-picture',
+    'travel-payoff': 'picture-in-picture',
     'workflow-bridge': 'overlay-support',
     comparison: 'overlay-support',
     'transition-cover': 'overlay-support',
@@ -169,6 +215,10 @@ function inferMotionHint(visualNeed) {
   const mapping = {
     'ui-demo': 'gentle-push-in',
     proof: 'hold-clean',
+    'process-proof': 'gentle-push-in',
+    'hands-free-proof': 'hold-clean',
+    'recap-proof': 'hold-clean',
+    'travel-payoff': 'soft-fade',
     'workflow-bridge': 'soft-slide',
     comparison: 'quick-cut-contrast',
     'transition-cover': 'soft-fade',
@@ -188,6 +238,12 @@ function inferKeywordOverlay(text) {
     'inbox',
     'tab',
     'tone',
+    'phone',
+    'glasses',
+    'notes',
+    'recap',
+    'board',
+    'briefed',
   ];
   const lowered = text.toLowerCase();
   return keywords.filter((keyword) => lowered.includes(keyword));
@@ -197,6 +253,10 @@ function inferDesiredRoles(visualNeed) {
   const mapping = {
     'ui-demo': ['ui-demo', 'proof'],
     proof: ['proof', 'ui-demo'],
+    'process-proof': ['proof', 'workflow-bridge'],
+    'hands-free-proof': ['proof', 'workflow-bridge'],
+    'recap-proof': ['proof'],
+    'travel-payoff': ['transition-cover', 'proof', 'cta-support'],
     'workflow-bridge': ['workflow-bridge', 'proof'],
     comparison: ['workflow-bridge', 'proof', 'transition-cover'],
     'transition-cover': ['transition-cover', 'ui-demo'],
@@ -229,6 +289,24 @@ function scoreAssetForBeat(beat, asset) {
     ['reply', ['reply', 'response', 'draft']],
     ['search', ['google', 'search', 'homepage']],
     ['rewrite', ['rewrite', 'tone', 'shorten', 'clean']],
+    [
+      'deadline',
+      ['digging through notes', 'typing with one hand', 'one hand', 'notes'],
+    ],
+    [
+      'laptop-notes',
+      ['digging through notes', 'typing with one hand', 'notes', 'laptop'],
+    ],
+    ['phone-down', ['phone down', 'keep the phone down', 'phone']],
+    [
+      'wearable-product',
+      ['glasses stay on', 'glasses', 'hands free', 'talk through the update'],
+    ],
+    ['recap', ['recap', 'next question', 'conversation moving']],
+    ['boarding', ['board', 'boarding', 'team already briefed', 'briefed']],
+    ['payoff', ['now i can board', 'team already briefed', 'already briefed']],
+    ['travel-doc', ['board', 'boarding', 'passport', 'gate', 'briefed']],
+    ['airport', ['airport', 'layover', 'gate', 'board', 'boarding']],
     [
       'chatgpt',
       [
@@ -266,6 +344,48 @@ function scoreAssetForBeat(beat, asset) {
     reasons.push('shows in-product proof');
   }
 
+  if (
+    beat.visualNeed === 'process-proof' &&
+    (assetTags.has('deadline') || assetTags.has('laptop-notes'))
+  ) {
+    score += 0.22;
+    reasons.push('shows work-friction proof surface');
+  }
+
+  if (
+    beat.visualNeed === 'hands-free-proof' &&
+    (assetTags.has('phone-down') || assetTags.has('wearable-product'))
+  ) {
+    score += 0.22;
+    reasons.push('supports phone-down hands-free proof');
+  }
+
+  if (beat.visualNeed === 'recap-proof' && assetTags.has('recap')) {
+    score += 0.22;
+    reasons.push('shows recap proof surface');
+  }
+
+  if (
+    beat.visualNeed === 'travel-payoff' &&
+    (assetTags.has('boarding') ||
+      assetTags.has('travel-doc') ||
+      assetTags.has('airport') ||
+      assetTags.has('payoff'))
+  ) {
+    score += assetTags.has('payoff') ? 0.34 : 0.22;
+    reasons.push('supports boarding payoff');
+  }
+
+  if (beat.visualNeed === 'travel-payoff' && !assetTags.has('payoff')) {
+    score = Math.min(score, 0.82);
+    reasons.push('not the dedicated payoff asset');
+  }
+
+  if (beat.visualNeed === 'hands-free-proof' && !assetTags.has('phone-down')) {
+    score = Math.min(score, 0.82);
+    reasons.push('does not directly show phone-down proof');
+  }
+
   if (beat.visualNeed === 'comparison' && assetTags.has('chatgpt')) {
     score += 0.14;
     reasons.push('shows extra-tool detour');
@@ -301,7 +421,7 @@ function scoreAssetForBeat(beat, asset) {
   }
 
   return {
-    score: Number(Math.max(score, 0).toFixed(3)),
+    score: Number(Math.min(Math.max(score, 0), 1).toFixed(3)),
     reasons,
   };
 }

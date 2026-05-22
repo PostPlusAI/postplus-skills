@@ -4,11 +4,14 @@ import {
   buildNormalizedTranscript,
   buildRequestPaths,
   createManifestBase,
+  createHostedMediaGenerationFailedError,
   downloadProviderOutputs,
   extractTranscriptData,
   fetchJson,
+  isHostedMediaGenerationFailedResult,
   normalizeTranscriptionInput,
   parseArgs,
+  readHostedMediaGenerationFailure,
   readHostedJson,
   readJson,
   unwrapProviderResult,
@@ -60,6 +63,7 @@ async function main() {
   manifest.generationHandle = result?.id || null;
   manifest.providerStatus = result?.status ?? 'unknown';
   manifest.providerUrls = result?.urls || null;
+  manifest.error = readHostedMediaGenerationFailure(result);
   manifest.downloadedArtifacts =
     result?.status === 'completed'
       ? await downloadProviderOutputs(result, paths)
@@ -76,6 +80,11 @@ async function main() {
     paths.normalizedTranscriptPath,
     buildNormalizedTranscript({ request, manifest, paths, transcriptData }),
   );
+  if (isHostedMediaGenerationFailedResult(result)) {
+    throw createHostedMediaGenerationFailedError(result, {
+      label: 'Transcription polling',
+    });
+  }
   console.log(JSON.stringify(manifest, null, 2));
 }
 

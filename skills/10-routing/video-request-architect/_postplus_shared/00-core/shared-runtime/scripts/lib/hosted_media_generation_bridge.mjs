@@ -57,14 +57,92 @@ export async function requestHostedMediaGenerationJson(
 
 export function isHostedMediaGenerationPendingResult(value) {
   const payload = unwrapProviderPayload(value);
-  const status =
-    typeof payload?.status === 'string' ? payload.status.toLowerCase() : null;
+  const status = readHostedMediaGenerationStatus(value);
 
   return Boolean(
     status &&
       !TERMINAL_HOSTED_MEDIA_STATUSES.has(status) &&
       readPendingRunHandle(value),
   );
+}
+
+export function isHostedMediaGenerationFailedResult(value) {
+  return readHostedMediaGenerationStatus(value) === 'failed';
+}
+
+export function readHostedMediaGenerationStatus(value) {
+  const payload = unwrapProviderPayload(value);
+  return typeof payload?.status === 'string' && payload.status.trim()
+    ? payload.status.trim().toLowerCase()
+    : null;
+}
+
+export function readHostedMediaGenerationFailure(value) {
+  const payload = unwrapProviderPayload(value);
+  const failure = payload?.error;
+
+  if (typeof failure === 'string' && failure.trim()) {
+    return {
+      message: failure.trim(),
+    };
+  }
+
+  if (failure && typeof failure === 'object' && !Array.isArray(failure)) {
+    const normalized = Object.fromEntries(
+      Object.entries(failure).filter(([, entry]) => entry !== undefined),
+    );
+    const message =
+      typeof normalized.message === 'string' && normalized.message.trim()
+        ? normalized.message.trim()
+        : typeof normalized.error === 'string' && normalized.error.trim()
+          ? normalized.error.trim()
+          : null;
+
+    return {
+      ...normalized,
+      ...(message ? { message } : {}),
+    };
+  }
+
+  return null;
+}
+
+export function createHostedMediaGenerationFailedError(
+  value,
+  { label = 'Hosted media generation' } = {},
+) {
+  const status = readHostedMediaGenerationStatus(value) || 'failed';
+  const failure = readHostedMediaGenerationFailure(value);
+  const failureCode =
+    typeof failure?.code === 'string' && failure.code.trim()
+      ? failure.code.trim()
+      : 'postplus_hosted_media_generation_failed';
+  const providerMessage =
+    typeof failure?.message === 'string' && failure.message.trim()
+      ? failure.message.trim()
+      : null;
+  const userAction =
+    typeof failure?.userAction === 'string' && failure.userAction.trim()
+      ? failure.userAction.trim()
+      : null;
+  const message = [
+    `${label} failed with provider status "${status}".`,
+    providerMessage
+      ? `Provider error: ${providerMessage}`
+      : 'Provider did not return a detailed error message.',
+    userAction ? `Action: ${userAction}` : null,
+  ]
+    .filter(Boolean)
+    .join(' ');
+  const error = new Error(message);
+  error.code = failureCode;
+  error.productErrorCode = failureCode;
+  error.providerStatus = status;
+  error.providerError = failure;
+  if (userAction) {
+    error.userAction = userAction;
+  }
+  return error;
 }
 
 export async function requestHostedMediaGenerationStatus(handle) {
@@ -188,7 +266,12 @@ function readPendingRunHandle(output) {
   const status =
     typeof payload?.status === 'string' ? payload.status.toLowerCase() : null;
 
-  if (status !== 'processing' && status !== 'queued' && status !== 'settling') {
+  if (
+    status !== 'created' &&
+    status !== 'processing' &&
+    status !== 'queued' &&
+    status !== 'settling'
+  ) {
     return null;
   }
 

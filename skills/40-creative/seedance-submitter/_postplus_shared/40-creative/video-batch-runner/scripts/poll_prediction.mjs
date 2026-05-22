@@ -5,9 +5,12 @@ import { formatCliError } from '../../../00-core/shared-runtime/scripts/lib/netw
 import {
   buildRequestPaths,
   createRenderManifestBase,
+  createHostedMediaGenerationFailedError,
   fetchJson,
+  isHostedMediaGenerationFailedResult,
   maybeDownloadOutputs,
   parseArgs,
+  readHostedMediaGenerationFailure,
   readHostedJson,
   readJson,
   unwrapProviderResult,
@@ -75,11 +78,16 @@ async function main() {
   manifest.serviceTier = result?.service_tier || request.serviceTier || null;
   manifest.watermark = request.watermark;
   manifest.usage = result?.usage || null;
-  manifest.error = result?.error || null;
+  manifest.error = readHostedMediaGenerationFailure(result);
 
   await maybeDownloadOutputs(result, manifest, paths);
 
   writeJson(paths.manifestPath, manifest);
+  if (isHostedMediaGenerationFailedResult(result)) {
+    throw createHostedMediaGenerationFailedError(result, {
+      label: 'Video generation polling',
+    });
+  }
   console.log(JSON.stringify(manifest, null, 2));
 }
 

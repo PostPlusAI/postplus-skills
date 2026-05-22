@@ -269,6 +269,11 @@ These scripts write:
 - `request.json`
 - `response.json`
 - `manifest.json`
+
+If the hosted provider returns `failed`, the script preserves the provider
+error in `manifest.json` and exits non-zero with the provider message and user
+action.
+- `manifest.json`
 - `review.json`
 - downloaded audio under `audio/`
 

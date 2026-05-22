@@ -5,12 +5,15 @@ import { formatCliError } from '../_postplus_shared/00-core/shared-runtime/scrip
 import {
   buildRequestPaths,
   createManifestBase,
+  createHostedMediaGenerationFailedError,
   downloadProviderOutputs,
   extractTranscriptData,
   fetchJson,
+  isHostedMediaGenerationFailedResult,
   logTranscriptionAsyncPreflight,
   normalizeTranscriptionInput,
   parseArgs,
+  readHostedMediaGenerationFailure,
   readHostedJson,
   readJson,
   toProviderPayload,
@@ -51,6 +54,7 @@ async function main() {
   manifest.generationHandle = result?.id || null;
   manifest.providerStatus = result?.status || null;
   manifest.providerUrls = result?.urls || null;
+  manifest.error = readHostedMediaGenerationFailure(result);
   manifest.mediaUploadRequestPath = fs.existsSync(paths.mediaUploadRequestPath)
     ? paths.mediaUploadRequestPath
     : null;
@@ -70,6 +74,11 @@ async function main() {
   }
 
   writeJson(paths.manifestPath, manifest);
+  if (isHostedMediaGenerationFailedResult(result)) {
+    throw createHostedMediaGenerationFailedError(result, {
+      label: 'Audio transcription',
+    });
+  }
   console.log(JSON.stringify(manifest, null, 2));
 }
 

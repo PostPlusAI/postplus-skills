@@ -12,13 +12,16 @@ import {
 import {
   buildAssetPaths,
   createImageManifestBase,
+  createHostedMediaGenerationFailedError,
   fetchJson,
   finalizeImageRun,
   getHostedImageModelConfig,
   inferSeedreamSize,
+  isHostedMediaGenerationFailedResult,
   materializeCompletedImageOutputs,
   normalizeGenerationInput,
   parseArgs,
+  readHostedMediaGenerationFailure,
   readHostedJson,
   unwrapProviderResult,
   writeJson,
@@ -145,6 +148,10 @@ async function main() {
   manifest.providerStatus = result?.status || null;
   manifest.providerUrls = result?.urls || null;
   manifest.mediaType = "image";
+  const providerFailure = readHostedMediaGenerationFailure(result);
+  if (providerFailure) {
+    manifest.error = providerFailure;
+  }
 
   if (result?.status === "completed") {
     try {
@@ -163,6 +170,11 @@ async function main() {
 
   const finalized = finalizeAttemptManifest(paths, attempt, manifest);
   finalizeImageRun(request, paths, finalized.manifest);
+  if (isHostedMediaGenerationFailedResult(result)) {
+    throw createHostedMediaGenerationFailedError(result, {
+      label: "Image edit generation",
+    });
+  }
   console.log(JSON.stringify(finalized.manifest, null, 2));
 }
 

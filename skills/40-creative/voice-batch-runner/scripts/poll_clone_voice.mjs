@@ -1,14 +1,19 @@
 #!/usr/bin/env node
 
 import path from "node:path";
+
+import { formatCliError } from "../_postplus_shared/00-core/shared-runtime/scripts/lib/network_runtime.mjs";
 import {
   buildRequestPaths,
+  createHostedMediaGenerationFailedError,
   createReviewStub,
   downloadFile,
   fetchJson,
   inferAudioExtension,
+  isHostedMediaGenerationFailedResult,
   nowIso,
   parseArgs,
+  readHostedMediaGenerationFailure,
   readHostedJson,
   readJson,
   unwrapProviderResult,
@@ -55,7 +60,7 @@ function buildManifest(request, paths, responsePayload, priorManifest = null, au
     updatedAt: nowIso(),
     sourceBasis: Array.isArray(request.sourceBasis) ? request.sourceBasis : [],
     reviewStatus: priorManifest?.reviewStatus || "pending_review",
-    error: null
+    error: readHostedMediaGenerationFailure(result)
   };
 }
 
@@ -110,10 +115,15 @@ async function main() {
   writeJson(paths.manifestPath, manifest);
   writeJson(paths.reviewPath, createReviewStub());
 
+  if (isHostedMediaGenerationFailedResult(result)) {
+    throw createHostedMediaGenerationFailedError(result, {
+      label: "Voice clone polling",
+    });
+  }
   console.log(JSON.stringify(manifest, null, 2));
 }
 
 main().catch((error) => {
-  console.error(error instanceof Error ? error.stack : String(error));
+  console.error(formatCliError(error));
   process.exitCode = 1;
 });

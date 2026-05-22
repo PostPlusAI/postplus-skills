@@ -37,13 +37,34 @@ It sits after `broll-plan.json` and before any renderer, NLE export, or human ed
       "end": 22.291,
       "spokenText": "in gmail and use the tool in the",
       "attentionOwner": "b-roll-proof",
-      "aRollAction": "cut-away",
+      "aRollAction": "picture-in-picture",
       "brollAction": {
-        "mode": "full-cutaway",
+        "mode": "picture-in-picture",
         "assetId": "broll-003",
         "range": { "start": 0.2, "end": 2.4 },
         "confidence": "medium",
-        "reason": "product proof should carry the moment"
+        "reason": "product proof should carry the moment",
+        "placementPolicy": {
+          "mode": "dynamic-protected-zone",
+          "target": "picture-in-picture",
+          "protectedZones": [
+            "face",
+            "worn-product",
+            "primary-product-action",
+            "truth-bearing-ui",
+            "subtitle-safe-area"
+          ],
+          "candidateAnchors": [
+            "lower-right",
+            "lower-left",
+            "middle-right",
+            "middle-left",
+            "upper-right",
+            "upper-left"
+          ],
+          "selectionRule": "sample representative A-roll frames for the beat and choose the first anchor whose inset box does not overlap protected zones; stop for human placement review if no safe anchor exists",
+          "allowFixedDefault": false
+        }
       },
       "keywordEmphasis": {
         "mode": "subtitle-highlight",
@@ -117,6 +138,28 @@ Use one of:
 - `overlay-support`
 - `picture-in-picture`
 - `split-emphasis`
+
+For talking-head proof beats, prefer `picture-in-picture`. The renderer or
+human editor must choose the actual anchor from a placement policy after
+checking representative A-roll frames. Do not treat any corner as a fixed
+default.
+
+## B-roll Placement Policy
+
+`brollAction.placementPolicy` records how a renderer or editor should place
+the inset.
+
+Use `dynamic-protected-zone` when B-roll appears over A-roll. The policy must
+name protected zones such as:
+
+- `face`
+- `worn-product`
+- `primary-product-action`
+- `truth-bearing-ui`
+- `subtitle-safe-area`
+
+If no candidate anchor avoids those zones, stop for human placement review.
+Do not silently fall back to a fixed corner.
 
 ## Keyword Emphasis Modes
 

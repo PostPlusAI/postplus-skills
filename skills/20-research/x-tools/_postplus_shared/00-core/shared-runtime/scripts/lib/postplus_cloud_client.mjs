@@ -404,7 +404,9 @@ function pickProductErrorFields(payload) {
     'layer',
     'operationId',
     'providerDisplayName',
+    'providerStatus',
     'quoteConfirmation',
+    'userAction',
     'userMessageRule',
   ]) {
     if (payload[key] !== undefined) {

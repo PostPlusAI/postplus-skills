@@ -85,7 +85,7 @@ The match result between edit beats and B-roll candidates.
       "beatRole": "problem-definition",
       "visualNeed": "workflow-bridge",
       "shouldUseBroll": true,
-      "coverageStyle": "full-cutaway",
+      "coverageStyle": "picture-in-picture",
       "keywordOverlay": ["workflow"],
       "motionHint": "gentle-push-in",
       "candidates": [
@@ -131,6 +131,11 @@ The match result between edit beats and B-roll candidates.
   - `picture-in-picture`
   - `overlay-support`
   - `stay-on-face`
+
+Talking-head proof beats default to `picture-in-picture` so the speaker,
+face performance, and worn product remain visible. Use `full-cutaway` only
+when the B-roll is standalone POV/proof footage or an explicit transition
+bridge that should replace the speaker.
 
 `motionHint`
 

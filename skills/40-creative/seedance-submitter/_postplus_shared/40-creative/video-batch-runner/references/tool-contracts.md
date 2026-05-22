@@ -254,6 +254,8 @@ Expected outputs:
 - refreshed `response.json`
 - refreshed `manifest.json`
 - downloaded assets if status is `completed`
+- non-zero exit after writing `response.json` and `manifest.json` if status is
+  `failed`, with the provider error and user action in the CLI error
 
 The CLI skill calls the PostPlus Cloud hosted polling endpoint.
 

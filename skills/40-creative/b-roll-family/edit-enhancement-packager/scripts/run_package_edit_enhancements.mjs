@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { isMainModule } from '../_postplus_shared/00-core/shared-runtime/scripts/lib/local_skill_cli.mjs';
 import { formatCliError } from '../_postplus_shared/00-core/shared-runtime/scripts/lib/network_runtime.mjs';
 
 function parseArgs(argv) {
@@ -72,6 +73,16 @@ function isMediumCandidate(candidate) {
   return Number(candidate?.score || 0) >= 0.5;
 }
 
+const PROOF_VISUAL_NEEDS = new Set([
+  'proof',
+  'ui-demo',
+  'comparison',
+  'process-proof',
+  'hands-free-proof',
+  'recap-proof',
+  'travel-payoff',
+]);
+
 function classifyAttentionOwner(beat, candidate) {
   if (!beat.shouldUseBroll || !candidate) {
     if (Array.isArray(beat.keywordOverlay) && beat.keywordOverlay.length > 0) {
@@ -82,7 +93,16 @@ function classifyAttentionOwner(beat, candidate) {
 
   if (
     isStrongCandidate(candidate) &&
-    ['proof', 'ui-demo', 'comparison'].includes(beat.visualNeed)
+    PROOF_VISUAL_NEEDS.has(beat.visualNeed)
+  ) {
+    return 'b-roll-proof';
+  }
+
+  if (
+    isMediumCandidate(candidate) &&
+    ['process-proof', 'hands-free-proof', 'recap-proof', 'travel-payoff'].includes(
+      beat.visualNeed,
+    )
   ) {
     return 'b-roll-proof';
   }
@@ -103,6 +123,12 @@ function classifyAttentionOwner(beat, candidate) {
 
 function inferARollAction(attentionOwner, beat) {
   if (attentionOwner === 'b-roll-proof') {
+    if (
+      beat.coverageStyle === 'picture-in-picture' ||
+      beat.coverageStyle === 'overlay-support'
+    ) {
+      return 'picture-in-picture';
+    }
     return 'cut-away';
   }
   if (
@@ -139,7 +165,7 @@ function inferBrollAction(attentionOwner, beat, candidate) {
       : 'low';
   const mode =
     attentionOwner === 'b-roll-proof'
-      ? beat.coverageStyle || 'full-cutaway'
+      ? beat.coverageStyle || 'picture-in-picture'
       : 'overlay-support';
 
   return {
@@ -148,6 +174,46 @@ function inferBrollAction(attentionOwner, beat, candidate) {
     range: candidate.suggestedRange || null,
     confidence,
     reason: candidate.reason || 'top ranked B-roll candidate',
+    placementPolicy: inferBrollPlacementPolicy(mode, attentionOwner),
+  };
+}
+
+function inferBrollPlacementPolicy(mode, attentionOwner) {
+  if (mode === 'none' || attentionOwner === 'a-roll-face') {
+    return {
+      mode: 'none',
+      reason: 'no B-roll placement needed',
+    };
+  }
+
+  if (mode === 'full-cutaway') {
+    return {
+      mode: 'full-frame',
+      reason: 'B-roll intentionally replaces A-roll for this beat',
+    };
+  }
+
+  return {
+    mode: 'dynamic-protected-zone',
+    target: 'picture-in-picture',
+    protectedZones: [
+      'face',
+      'worn-product',
+      'primary-product-action',
+      'truth-bearing-ui',
+      'subtitle-safe-area',
+    ],
+    candidateAnchors: [
+      'lower-right',
+      'lower-left',
+      'middle-right',
+      'middle-left',
+      'upper-right',
+      'upper-left',
+    ],
+    selectionRule:
+      'sample representative A-roll frames for the beat and choose the first anchor whose inset box does not overlap protected zones; stop for human placement review if no safe anchor exists',
+    allowFixedDefault: false,
   };
 }
 
@@ -211,7 +277,7 @@ function inferMicroMotion(beat, attentionOwner) {
 function inferSubtitleTreatment(attentionOwner, beat) {
   if (
     attentionOwner === 'b-roll-proof' &&
-    ['ui-demo', 'proof'].includes(beat.visualNeed)
+    PROOF_VISUAL_NEEDS.has(beat.visualNeed)
   ) {
     return {
       mode: 'lift-up',
@@ -241,7 +307,7 @@ function buildEditorNote(beat, attentionOwner, candidate) {
     return 'Stay on A-roll unless manual review finds stronger proof footage.';
   }
   if (attentionOwner === 'b-roll-proof') {
-    return 'Use the selected B-roll only if the crop is readable at target aspect ratio.';
+    return 'Keep the A-roll visible and use the selected B-roll as a small picture-in-picture proof window unless full-frame replacement is explicitly approved.';
   }
   if (attentionOwner === 'transition-motion') {
     return 'Keep the B-roll light; it should support pacing, not replace the face.';
@@ -270,7 +336,7 @@ function enhanceBeat(beat) {
   };
 }
 
-function buildPackage({
+export function buildPackage({
   brollPlanPath,
   outputPath,
   aspectRatio,
@@ -346,7 +412,9 @@ async function main() {
   );
 }
 
-main().catch((error) => {
-  console.error(formatCliError(error));
-  process.exitCode = 1;
-});
+if (isMainModule(import.meta.url)) {
+  main().catch((error) => {
+    console.error(formatCliError(error));
+    process.exitCode = 1;
+  });
+}

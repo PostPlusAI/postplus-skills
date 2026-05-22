@@ -387,6 +387,127 @@ export function extractCreatePostIds(result) {
   return postIds;
 }
 
+export function extractListPostIds(result) {
+  const postIds = [];
+  const seen = new Set();
+  const addPostId = (value) => {
+    if (typeof value !== "string" || !value.trim()) {
+      return;
+    }
+    const postId = value.trim();
+    if (!seen.has(postId)) {
+      seen.add(postId);
+      postIds.push(postId);
+    }
+  };
+  const addFromPost = (post) => {
+    if (!post || typeof post !== "object" || Array.isArray(post)) {
+      return;
+    }
+    addPostId(post.id);
+    addPostId(post.postId);
+  };
+  const addFromArray = (items) => {
+    for (const item of items) {
+      if (typeof item === "string") {
+        addPostId(item);
+        continue;
+      }
+      addFromPost(item);
+      visitKnownListShape(item);
+    }
+  };
+  const visitKnownListShape = (value) => {
+    if (!value || typeof value !== "object") {
+      return;
+    }
+    if (Array.isArray(value)) {
+      addFromArray(value);
+      return;
+    }
+
+    addFromPost(value);
+    for (const key of ["posts", "items", "results", "data", "result", "output"]) {
+      const child = value[key];
+      if (!child) {
+        continue;
+      }
+      if (Array.isArray(child)) {
+        addFromArray(child);
+        continue;
+      }
+      if (typeof child === "object") {
+        visitKnownListShape(child);
+      }
+    }
+  };
+
+  visitKnownListShape(result);
+  return postIds;
+}
+
+export function findExplicitProviderErrorMarker(value) {
+  return findExplicitProviderErrorMarkerAt(value, "$", new Set());
+}
+
+export function createExplicitProviderError(action, value) {
+  const marker = findExplicitProviderErrorMarker(value);
+  if (!marker) {
+    return null;
+  }
+
+  const error = new Error(
+    `${action} returned explicit provider error marker at ${marker.path}.`
+  );
+  error.code = "social_publishing_provider_error_marker";
+  error.marker = marker;
+  return error;
+}
+
+function findExplicitProviderErrorMarkerAt(value, jsonPath, seen) {
+  if (!value || typeof value !== "object") {
+    return null;
+  }
+  if (seen.has(value)) {
+    return null;
+  }
+  seen.add(value);
+
+  if (!Array.isArray(value) && Object.hasOwn(value, "error") && value.error === true) {
+    return {
+      path: `${jsonPath}.error`,
+      value: true
+    };
+  }
+
+  if (Array.isArray(value)) {
+    for (const [index, child] of value.entries()) {
+      const marker = findExplicitProviderErrorMarkerAt(
+        child,
+        `${jsonPath}[${index}]`,
+        seen
+      );
+      if (marker) {
+        return marker;
+      }
+    }
+    return null;
+  }
+
+  for (const [key, child] of Object.entries(value)) {
+    const marker = findExplicitProviderErrorMarkerAt(
+      child,
+      `${jsonPath}.${key}`,
+      seen
+    );
+    if (marker) {
+      return marker;
+    }
+  }
+
+  return null;
+}
+
 export function summarizeCreateResult(result) {
   const postIds = extractCreatePostIds(result);
   const created = Array.isArray(result)

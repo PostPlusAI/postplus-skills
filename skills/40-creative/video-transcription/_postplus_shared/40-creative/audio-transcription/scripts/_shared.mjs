@@ -3,7 +3,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import {
+  createHostedMediaGenerationFailedError,
+  isHostedMediaGenerationFailedResult,
   requestHostedMediaGenerationJson,
+  readHostedMediaGenerationFailure,
   uploadHostedMediaFile,
 } from '../../../00-core/shared-runtime/scripts/lib/hosted_media_generation_bridge.mjs';
 import {
@@ -18,6 +21,11 @@ export const DEFAULT_LANGUAGE = 'auto';
 export const DEFAULT_TASK = 'transcribe';
 export const DEFAULT_POLL_MAX_ATTEMPTS = 150;
 export const DEFAULT_POLL_INTERVAL_MS = 2000;
+export {
+  createHostedMediaGenerationFailedError,
+  isHostedMediaGenerationFailedResult,
+  readHostedMediaGenerationFailure,
+};
 
 export function parseArgs(argv) {
   const args = {};
@@ -152,8 +160,10 @@ export async function pollPredictionResult(
     if (result?.status === 'completed') {
       return data;
     }
-    if (result?.status === 'failed') {
-      throw new Error(`Prediction failed: ${JSON.stringify(data)}`);
+    if (isHostedMediaGenerationFailedResult(result)) {
+      throw createHostedMediaGenerationFailedError(result, {
+        label: 'Transcription generation',
+      });
     }
     await sleep(intervalMs);
   }

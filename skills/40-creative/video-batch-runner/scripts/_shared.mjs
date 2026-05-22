@@ -4,8 +4,11 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import {
+  createHostedMediaGenerationFailedError,
   downloadHostedMediaFile,
+  isHostedMediaGenerationFailedResult,
   requestHostedMediaGenerationJson,
+  readHostedMediaGenerationFailure,
   uploadHostedMediaFile,
 } from '../_postplus_shared/00-core/shared-runtime/scripts/lib/hosted_media_generation_bridge.mjs';
 import {
@@ -19,6 +22,11 @@ import {
 export const DEFAULT_PROVIDER = 'hosted-media';
 export const DEFAULT_MODEL = 'video-infinitetalk';
 export const DEFAULT_RESOLUTION = '720p';
+export {
+  createHostedMediaGenerationFailedError,
+  isHostedMediaGenerationFailedResult,
+  readHostedMediaGenerationFailure,
+};
 export const SEEDANCE_TAIL_STRATEGY_PROMPTS = {
   natural_hold: 'natural hold with subtle breathing only',
   natural_hold_for_trim:

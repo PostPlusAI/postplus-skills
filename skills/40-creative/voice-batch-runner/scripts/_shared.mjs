@@ -3,8 +3,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import {
+  createHostedMediaGenerationFailedError,
   downloadHostedMediaFile,
+  isHostedMediaGenerationFailedResult,
   requestHostedMediaGenerationJson,
+  readHostedMediaGenerationFailure,
   uploadHostedMediaFile,
 } from '../_postplus_shared/00-core/shared-runtime/scripts/lib/hosted_media_generation_bridge.mjs';
 import {
@@ -14,6 +17,11 @@ import {
 
 export const DEFAULT_PROVIDER = 'hosted-media';
 export const DEFAULT_LANGUAGE = 'auto';
+export {
+  createHostedMediaGenerationFailedError,
+  isHostedMediaGenerationFailedResult,
+  readHostedMediaGenerationFailure,
+};
 
 export function parseArgs(argv) {
   const args = {};
@@ -132,8 +140,10 @@ export async function pollPredictionResult(
     if (result?.status === 'completed') {
       return data;
     }
-    if (result?.status === 'failed') {
-      throw new Error(`Prediction failed: ${JSON.stringify(data)}`);
+    if (isHostedMediaGenerationFailedResult(result)) {
+      throw createHostedMediaGenerationFailedError(result, {
+        label: 'Voice generation',
+      });
     }
     await sleep(intervalMs);
   }

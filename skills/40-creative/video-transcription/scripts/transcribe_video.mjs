@@ -6,12 +6,15 @@ import {
   buildNormalizedTranscript,
   buildRequestPaths,
   createManifestBase,
+  createHostedMediaGenerationFailedError,
   downloadProviderOutputs,
   extractTranscriptData,
   fetchJson,
+  isHostedMediaGenerationFailedResult,
   logTranscriptionAsyncPreflight,
   normalizeTranscriptionInput,
   parseArgs,
+  readHostedMediaGenerationFailure,
   readHostedJson,
   toProviderPayload,
   unwrapProviderResult,
@@ -51,6 +54,7 @@ async function main() {
   manifest.generationHandle = result?.id || null;
   manifest.providerStatus = result?.status || null;
   manifest.providerUrls = result?.urls || null;
+  manifest.error = readHostedMediaGenerationFailure(result);
   manifest.mediaUploadRequestPath = fs.existsSync(paths.mediaUploadRequestPath)
     ? paths.mediaUploadRequestPath
     : null;
@@ -75,6 +79,11 @@ async function main() {
     paths.normalizedTranscriptPath,
     buildNormalizedTranscript({ request, manifest, paths, transcriptData }),
   );
+  if (isHostedMediaGenerationFailedResult(result)) {
+    throw createHostedMediaGenerationFailedError(result, {
+      label: 'Video transcription',
+    });
+  }
   console.log(JSON.stringify(manifest, null, 2));
 }
 

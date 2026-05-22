@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import path from 'node:path';
 
+import { formatCliError } from '../_postplus_shared/00-core/shared-runtime/scripts/lib/network_runtime.mjs';
 import {
   buildRequestPaths,
   createReviewStub,
@@ -9,6 +10,7 @@ import {
   inferAudioExtension,
   nowIso,
   parseArgs,
+  readHostedMediaGenerationFailure,
   readHostedJson,
   readJson,
   sleep,
@@ -104,7 +106,7 @@ function buildManifest(request, paths, responsePayload, extras = {}) {
     updatedAt: nowIso(),
     sourceBasis: request.sourceBasis,
     reviewStatus: extras.reviewStatus || 'pending_review',
-    error: extras.error || null,
+    error: readHostedMediaGenerationFailure(result) || extras.error || null,
   };
 }
 
@@ -361,9 +363,17 @@ async function main() {
   };
 
   console.log(JSON.stringify(summary, null, 2));
+  if (summary.failed > 0) {
+    const error = new Error(
+      `voice_clone_batch_failed: ${summary.failed}/${summary.submitted} hosted voice clone generations failed. Review each manifest error field for provider details and user action.`,
+    );
+    error.code = 'voice_clone_batch_failed';
+    error.productErrorCode = 'voice_clone_batch_failed';
+    throw error;
+  }
 }
 
 main().catch((error) => {
-  console.error(error instanceof Error ? error.stack : String(error));
+  console.error(formatCliError(error));
   process.exitCode = 1;
 });

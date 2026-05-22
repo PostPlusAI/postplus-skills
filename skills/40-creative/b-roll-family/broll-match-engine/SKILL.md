@@ -148,6 +148,12 @@ Build `broll-plan.json` with:
 - keyword overlay suggestions
 - motion hints
 
+For talking-head proof beats, set `coverageStyle` to
+`picture-in-picture` by default. Do not encode a fixed corner or coordinate
+in the match plan; placement belongs to the edit enhancement / assembly layer
+after representative A-roll frames reveal face, worn-product, subtitle, and
+proof safe zones.
+
 ## Minimal Script
 
 First implementation script:

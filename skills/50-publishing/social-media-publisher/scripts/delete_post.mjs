@@ -2,6 +2,7 @@
 
 import {
   isDirectRun,
+  createExplicitProviderError,
   parseArgs,
   socialPublishingJson,
   requireArg,
@@ -54,16 +55,32 @@ export async function main(argv = process.argv.slice(2), io = console) {
   });
 
   const payload = await socialPublishingJson(`/posts/${postId}`, { method: "DELETE" }, { args });
+  const providerError = createExplicitProviderError(
+    "social-media-publisher.delete-post",
+    payload
+  );
 
   const envelope = {
     requestedAt: new Date().toISOString(),
     postId,
     executed: true,
     result: payload,
+    ...(providerError
+      ? {
+          failure: {
+            code: providerError.code,
+            marker: providerError.marker,
+            message: providerError.message,
+          },
+        }
+      : {}),
   };
 
   writeJson(output, envelope);
   io.log(JSON.stringify(envelope, null, 2));
+  if (providerError) {
+    throw providerError;
+  }
 }
 
 if (isDirectRun(import.meta.url)) {

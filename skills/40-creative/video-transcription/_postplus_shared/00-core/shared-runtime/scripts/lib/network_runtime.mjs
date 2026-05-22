@@ -67,7 +67,7 @@ export function formatCliError(error) {
   }
 
   if (error instanceof Error && typeof error.productErrorCode === 'string') {
-    return `${error.productErrorCode}: ${error.message}`;
+    return formatProductError(error);
   }
 
   if (error instanceof Error && typeof error.code === 'string') {
@@ -75,6 +75,20 @@ export function formatCliError(error) {
   }
 
   return error instanceof Error ? error.message : String(error);
+}
+
+function formatProductError(error) {
+  const lines = [`${error.productErrorCode}: ${error.message}`];
+  const userAction =
+    typeof error.userAction === 'string' && error.userAction.trim()
+      ? error.userAction.trim()
+      : null;
+
+  if (userAction && !error.message.includes(userAction)) {
+    lines.push(`Action: ${userAction}`);
+  }
+
+  return lines.join('\n');
 }
 
 function formatQuoteConfirmationError(error) {
@@ -621,7 +635,9 @@ function pickProductErrorFields(payload) {
     'layer',
     'operationId',
     'providerDisplayName',
+    'providerStatus',
     'quoteConfirmation',
+    'userAction',
     'userMessageRule',
   ]) {
     if (payload[key] !== undefined) {

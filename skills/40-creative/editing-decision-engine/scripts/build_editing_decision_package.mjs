@@ -50,6 +50,7 @@ function buildEditBrief(input) {
   if (!editThesis) {
     throw new Error('editing-decision-engine requires editThesis.');
   }
+  const rawAssetInventory = input.assetInventory ?? input.brollAssets;
 
   return {
     videoId: readString(input.videoId, 'unnamed-video'),
@@ -60,9 +61,8 @@ function buildEditBrief(input) {
     groundingStatus: {
       hasTranscript: true,
       hasARollContext: Boolean(input.aRollContext),
-      hasBRollInventory: Array.isArray(
-        input.assetInventory ?? input.brollAssets,
-      ),
+      hasBRollInventory:
+        Array.isArray(rawAssetInventory) && rawAssetInventory.length > 0,
     },
   };
 }

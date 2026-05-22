@@ -5,11 +5,14 @@ import { formatCliError } from '../../../00-core/shared-runtime/scripts/lib/netw
 import {
   buildRequestPaths,
   createRenderManifestBase,
+  createHostedMediaGenerationFailedError,
   fetchJson,
   getProviderApiConfig,
+  isHostedMediaGenerationFailedResult,
   maybeDownloadOutputs,
   normalizeRenderInput,
   parseArgs,
+  readHostedMediaGenerationFailure,
   readHostedJson,
   readJson,
   toProviderPayload,
@@ -62,10 +65,16 @@ async function main() {
   manifest.generateAudio = request.generateAudio;
   manifest.serviceTier = request.serviceTier;
   manifest.watermark = request.watermark;
+  manifest.error = readHostedMediaGenerationFailure(result);
 
   await maybeDownloadOutputs(result, manifest, paths);
 
   writeJson(paths.manifestPath, manifest);
+  if (isHostedMediaGenerationFailedResult(result)) {
+    throw createHostedMediaGenerationFailedError(result, {
+      label: 'Video generation',
+    });
+  }
   console.log(JSON.stringify(manifest, null, 2));
 }
 
