@@ -434,70 +434,69 @@ function dedupeStrings(values) {
   );
 }
 
-function normalizeStoryboardTimeline(timeline) {
-  if (!timeline) {
-    return null;
+function formatPromptStoryline(promptStoryline) {
+  if (!Array.isArray(promptStoryline) || promptStoryline.length === 0) {
+    throw new Error(
+      'Seedance requests require promptPlan.prompt_storyline as a non-empty array.',
+    );
   }
 
-  if (typeof timeline === 'string') {
-    const normalized = timeline.trim();
-    return normalized || null;
-  }
-
-  if (!Array.isArray(timeline)) {
-    return null;
-  }
-
-  const lines = timeline
-    .map((entry) => {
-      if (typeof entry === 'string') {
-        return entry.trim();
-      }
+  const lines = promptStoryline
+    .map((entry, index) => {
       if (!entry || typeof entry !== 'object') {
-        return '';
+        throw new Error(
+          `Seedance promptPlan.prompt_storyline[${index}] must be an object.`,
+        );
       }
 
-      const time =
-        typeof entry.time === 'string' && entry.time.trim()
-          ? entry.time.trim()
-          : formatTimelineRange(entry.startSeconds, entry.endSeconds);
-      const action =
-        typeof entry.action === 'string' && entry.action.trim()
-          ? entry.action.trim()
-          : typeof entry.visual === 'string' && entry.visual.trim()
-            ? entry.visual.trim()
-            : '';
+      const shot = typeof entry.shot === 'string' ? entry.shot.trim() : '';
+      const time = typeof entry.time === 'string' ? entry.time.trim() : '';
+      const visual = typeof entry.visual === 'string' ? entry.visual.trim() : '';
       const dialogue =
-        typeof entry.dialogue === 'string' && entry.dialogue.trim()
-          ? entry.dialogue.trim()
-          : '';
+        typeof entry.dialogue === 'string' ? entry.dialogue.trim() : '';
 
-      if (!time || !action) {
-        return '';
+      if (!shot || !time || !visual) {
+        throw new Error(
+          `Seedance promptPlan.prompt_storyline[${index}] requires shot, time, and visual.`,
+        );
       }
 
       return dialogue
-        ? `${time}: ${action} Dialogue: "${dialogue}"`
-        : `${time}: ${action}`;
-    })
-    .filter(Boolean);
+        ? `${shot} | ${time}: ${visual} Dialogue: "${dialogue}"`
+        : `${shot} | ${time}: ${visual}`;
+    });
 
-  return lines.length > 0 ? lines.join('\n') : null;
+  return lines.join('\n');
 }
 
-function formatTimelineRange(startSeconds, endSeconds) {
-  const hasStart = Number.isFinite(Number(startSeconds));
-  const hasEnd = Number.isFinite(Number(endSeconds));
-  if (!hasStart && !hasEnd) {
-    return '';
+function formatReferenceMap(referenceMap) {
+  if (referenceMap == null) {
+    return null;
   }
-  if (hasStart && hasEnd) {
-    return `${Number(startSeconds).toFixed(1)}-${Number(endSeconds).toFixed(1)}s`;
+  if (!Array.isArray(referenceMap)) {
+    throw new Error('Seedance promptPlan.referenceMap must be an array.');
   }
-  if (hasStart) {
-    return `${Number(startSeconds).toFixed(1)}s`;
+  if (referenceMap.length === 0) {
+    return null;
   }
-  return `${Number(endSeconds).toFixed(1)}s`;
+
+  const lines = referenceMap.map((item, index) => {
+    if (!item || typeof item !== 'object') {
+      throw new Error(
+        `Seedance promptPlan.referenceMap[${index}] must be an object.`,
+      );
+    }
+    const ref = typeof item.ref === 'string' ? item.ref.trim() : '';
+    const role = typeof item.role === 'string' ? item.role.trim() : '';
+    if (!ref || !role) {
+      throw new Error(
+        `Seedance promptPlan.referenceMap[${index}] requires ref and role.`,
+      );
+    }
+    return `${ref} ${role}`;
+  });
+
+  return lines.join(' ');
 }
 
 function formatPromptSeconds(value) {
@@ -651,50 +650,30 @@ function buildSeedanceTailInstruction(timing, providerDurationSeconds) {
   ].join('\n');
 }
 
-function buildSeedancePromptFromPlan(
-  plan = {},
-  fallbackPrompt = null,
+function buildSeedanceFinalPrompt(
+  input,
   timing = null,
   providerDurationSeconds = null,
 ) {
+  const plan = input.promptPlan;
   if (!plan || typeof plan !== 'object') {
-    const sections = [];
-    if (typeof fallbackPrompt === 'string' && fallbackPrompt.trim()) {
-      sections.push(fallbackPrompt.trim());
-    }
-    const tailInstruction = buildSeedanceTailInstruction(
-      timing,
-      providerDurationSeconds,
-    );
-    if (tailInstruction) {
-      sections.push(tailInstruction);
-    }
-    return sections.join('\n\n').trim() || null;
+    return null;
   }
 
-  const storyboardTimeline = normalizeStoryboardTimeline(plan.storyboardTimeline);
+  const promptSummary =
+    typeof input.prompt_summary === 'string' ? input.prompt_summary.trim() : '';
+  const promptStoryline = formatPromptStoryline(plan.prompt_storyline);
   const sections = [];
-  const core = dedupeStrings([
-    plan.subject,
-    plan.scene,
-    plan.style,
-    plan.mood,
-    plan.timeOfDay,
-    plan.lighting,
-    plan.color,
-  ]);
-  if (core.length > 0) {
-    sections.push(core.join(' '));
+
+  if (promptSummary) {
+    sections.push(promptSummary);
   }
 
-  if (storyboardTimeline) {
-    sections.push(storyboardTimeline);
+  if (promptStoryline) {
+    sections.push(promptStoryline);
   }
 
-  const tailInstruction = buildSeedanceTailInstruction(
-    timing,
-    providerDurationSeconds,
-  );
+  const tailInstruction = buildSeedanceTailInstruction(timing, providerDurationSeconds);
   if (tailInstruction) {
     sections.push(tailInstruction);
   }
@@ -744,40 +723,18 @@ function buildSeedancePromptFromPlan(
     sections.push(`Avoid ${avoid.join(', ')}.`);
   }
 
-  const referenceMap = Array.isArray(plan.referenceMap)
-    ? plan.referenceMap
-        .map((item, index) => {
-          if (typeof item === 'string' && item.trim()) {
-            const trimmed = item.trim();
-            if (/^\[(image|video|audio)\s+\d+\]/i.test(trimmed)) {
-              return trimmed;
-            }
-            const lower = trimmed.toLowerCase();
-            if (lower.includes('[audio ')) {
-              return trimmed;
-            }
-            if (lower.includes('[video ')) {
-              return trimmed;
-            }
-            if (lower.includes('[image ')) {
-              return trimmed;
-            }
-            return `[image ${index + 1}] ${trimmed}`;
-          }
-          return null;
-        })
-        .filter(Boolean)
-    : [];
-  if (referenceMap.length > 0) {
-    sections.push(referenceMap.join(' '));
-  }
-
-  if (typeof fallbackPrompt === 'string' && fallbackPrompt.trim()) {
-    sections.unshift(fallbackPrompt.trim());
+  const referenceBindings = formatReferenceMap(plan.referenceMap);
+  if (referenceBindings) {
+    sections.push(referenceBindings);
   }
 
   const prompt = sections.join('\n\n').trim();
   return prompt || null;
+}
+
+function hasPromptStoryline(input) {
+  return Array.isArray(input.promptPlan?.prompt_storyline) &&
+    input.promptPlan.prompt_storyline.length > 0;
 }
 
 function assertNoDeprecatedPromptPlanFields(plan) {
@@ -786,6 +743,18 @@ function assertNoDeprecatedPromptPlanFields(plan) {
   }
 
   const deprecated = [];
+  if (typeof plan.promptSummary === 'string' && plan.promptSummary.trim()) {
+    deprecated.push('promptPlan.promptSummary');
+  }
+  if (typeof plan.intent === 'string' && plan.intent.trim()) {
+    deprecated.push('promptPlan.intent');
+  }
+  if (typeof plan.storyboardTimeline === 'string' || Array.isArray(plan.storyboardTimeline)) {
+    deprecated.push('promptPlan.storyboardTimeline');
+  }
+  if (typeof plan.promptStoryline === 'string' || Array.isArray(plan.promptStoryline)) {
+    deprecated.push('promptPlan.promptStoryline');
+  }
   if (typeof plan.action === 'string' && plan.action.trim()) {
     deprecated.push('promptPlan.action');
   }
@@ -795,7 +764,29 @@ function assertNoDeprecatedPromptPlanFields(plan) {
 
   if (deprecated.length > 0) {
     throw new Error(
-      `video-batch-runner no longer supports ${deprecated.join(', ')} for Seedance prompt assembly. Use promptPlan.storyboardTimeline instead so action and dialogue stay on the same timeline.`,
+      `video-batch-runner no longer supports ${deprecated.join(', ')} for Seedance prompt assembly. Use request.prompt_summary and promptPlan.prompt_storyline.`,
+    );
+  }
+}
+
+function assertNoDeprecatedSeedancePromptFields(input) {
+  const deprecated = [];
+  if (typeof input.prompt === 'string' && input.prompt.trim()) {
+    deprecated.push('request.prompt');
+  }
+  if (typeof input.text === 'string' && input.text.trim()) {
+    deprecated.push('request.text');
+  }
+  if (typeof input.promptSummary === 'string' && input.promptSummary.trim()) {
+    deprecated.push('request.promptSummary');
+  }
+  if (typeof input.finalPrompt === 'string' && input.finalPrompt.trim()) {
+    deprecated.push('request.finalPrompt');
+  }
+
+  if (deprecated.length > 0) {
+    throw new Error(
+      `Seedance requests no longer support ${deprecated.join(', ')}. Use request.prompt_summary and promptPlan.prompt_storyline, or provide request.final_prompt explicitly.`,
     );
   }
 }
@@ -963,8 +954,6 @@ export function normalizeRenderInput(input) {
     throw new Error('request.localOutputDir is required.');
   }
 
-  assertNoDeprecatedPromptPlanFields(input.promptPlan);
-
   const provider = input.provider || DEFAULT_PROVIDER;
   if (provider !== 'hosted-media') {
     throw new Error(
@@ -987,20 +976,40 @@ export function normalizeRenderInput(input) {
     providerDurationSeconds,
     hostedModelConfig.modelGroup,
   );
-  const prompt = buildSeedancePromptFromPlan(
-    input.promptPlan,
-    input.prompt || input.text || null,
-    seedanceEditTiming,
-    providerDurationSeconds,
-  );
+  if (hostedModelConfig.modelGroup === 'seedance-2.0') {
+    assertNoDeprecatedSeedancePromptFields(input);
+    assertNoDeprecatedPromptPlanFields(input.promptPlan);
+  }
+  const promptSummary =
+    typeof input.prompt_summary === 'string' ? input.prompt_summary.trim() : null;
+  const finalPrompt =
+    typeof input.final_prompt === 'string' && input.final_prompt.trim()
+      ? input.final_prompt.trim()
+      : hostedModelConfig.modelGroup === 'seedance-2.0'
+        ? buildSeedanceFinalPrompt(
+            input,
+            seedanceEditTiming,
+            providerDurationSeconds,
+          )
+        : input.prompt || input.text || null;
+
+  if (
+    hostedModelConfig.modelGroup === 'seedance-2.0' &&
+    !input.final_prompt &&
+    (!promptSummary || !hasPromptStoryline(input))
+  ) {
+    throw new Error(
+      'Seedance requests require request.prompt_summary and promptPlan.prompt_storyline, unless request.final_prompt is provided.',
+    );
+  }
 
   if (provider === 'hosted-media') {
     assertNoUnsupportedHostedStructuredMotionControls(input, model);
 
     for (const field of hostedModelConfig.requiredFields) {
-      if (field === 'prompt' && !prompt) {
+      if (field === 'prompt' && !finalPrompt) {
         throw new Error(
-          `Hosted video model ${model} requires request.prompt or request.promptPlan.`,
+          `Hosted video model ${model} requires request.prompt_summary and promptPlan.prompt_storyline, or request.final_prompt.`,
         );
       }
       if (field !== 'prompt' && !readHostedRequiredInput(input, field)) {
@@ -1026,7 +1035,9 @@ export function normalizeRenderInput(input) {
     motionVideo: input.motionVideo || input.motion_video || input.video || null,
     audio: input.audio || null,
     maskImage: input.maskImage || null,
-    prompt,
+    promptSummary,
+    finalPrompt,
+    prompt: finalPrompt,
     negativePrompt: input.negativePrompt || input.negative_prompt || null,
     promptPlan: input.promptPlan || null,
     resolution: input.resolution || DEFAULT_RESOLUTION,
@@ -1148,6 +1159,8 @@ export function createRenderManifestBase(normalized, paths, options = {}) {
     continuityPolicy: normalized.continuityPolicy,
     continuityReport: normalized.continuityReport,
     upstreamRefs: normalized.upstreamRefs,
+    prompt_summary: normalized.promptSummary,
+    final_prompt: normalized.finalPrompt,
     prompt: normalized.prompt,
     resolution: normalized.resolution,
     ratio: normalized.ratio,

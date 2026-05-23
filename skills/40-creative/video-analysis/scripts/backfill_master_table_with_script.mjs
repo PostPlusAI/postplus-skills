@@ -117,19 +117,27 @@ function listJsonFiles(dirPath) {
 }
 
 function buildScript(parsed) {
-  const shots = Array.isArray(parsed?.shots) ? parsed.shots : [];
+  const timeline = Array.isArray(parsed?.timeline) ? parsed.timeline : [];
   return JSON.stringify(
     {
-      openingLine: shots[0]?.audio || parsed?.hook || "",
-      closingLine: shots.length > 0 ? shots[shots.length - 1]?.audio || "" : "",
-      visualSummary: parsed?.summary || "",
-      spokenAudioFlow: shots.map((shot) => shot.audio).filter(Boolean).join(" "),
-      shots: shots.map((shot) => ({
-        startTime: shot.startTime || "",
-        endTime: shot.endTime || "",
-        durationSeconds: shot.durationSeconds ?? "",
-        visual: shot.visual || "",
-        audio: shot.audio || ""
+      promptVersion: parsed?.promptVersion || "",
+      spokenAudioFlow: timeline
+        .map((item) => item.spokenLine)
+        .filter(Boolean)
+        .join(" "),
+      timeline: timeline.map((item) => ({
+        index: item.index ?? "",
+        startTime: item.startTime || "",
+        endTime: item.endTime || "",
+        durationSeconds: item.durationSeconds ?? "",
+        spokenLine: item.spokenLine || "",
+        spokenMeaning: item.spokenMeaning || "",
+        visual: item.visual || "",
+        subjectAction: item.subjectAction || "",
+        camera: item.camera || "",
+        edit: item.edit || "",
+        caption: item.caption || "",
+        audioPacing: item.audioPacing || ""
       }))
     },
     null,
@@ -138,24 +146,36 @@ function buildScript(parsed) {
 }
 
 function flattenAnalysis(analysis, filePath) {
-  const parsed = analysis?.result?.parsed || null;
-  const shots = Array.isArray(parsed?.shots) ? parsed.shots : [];
+  const parsed = analysis?.result || null;
+  const timeline = Array.isArray(parsed?.timeline) ? parsed.timeline : [];
+  const firstItem = timeline[0] || null;
+  const lastItem = timeline.length > 0 ? timeline[timeline.length - 1] : null;
   return {
     downloadAvailable: analysis?.source?.videoFilePath ? "true" : "",
-    analysisStatus: parsed ? "success" : analysis ? "present_unparsed" : "missing",
-    videoHook: parsed?.hook || "",
-    videoSummary: parsed?.summary || "",
-    videoStructureType: parsed?.structureType || "",
-    videoVisualStyle: parsed?.visualStyle || "",
-    videoCreatorType: parsed?.creatorType || "",
-    videoProtagonist: parsed?.protagonist || "",
-    videoShotCount: shots.length ? String(shots.length) : "0",
-    videoOpeningLineExact: shots[0]?.audio || parsed?.hook || "",
-    videoClosingLineApprox: shots.length > 0 ? shots[shots.length - 1]?.audio || "" : "",
-    videoShotTimeline: shots.map((shot) => `${shot.startTime || "?"}-${shot.endTime || "?"}: ${shot.audio || ""}`).join(" || "),
-    videoSpokenAudioFlow: shots.map((shot) => shot.audio).filter(Boolean).join(" "),
-    videoWhyItWorks: (parsed?.whyItWorks || []).join(" | "),
-    videoAdaptationIdeas: (parsed?.adaptationIdeas || []).join(" | "),
+    analysisStatus: timeline.length ? "success" : analysis ? "present_unparsed" : "missing",
+    videoHook: "",
+    videoSummary: "",
+    videoStructureType: "",
+    videoVisualStyle: "",
+    videoCreatorType: "",
+    videoProtagonist: "",
+    videoShotCount: timeline.length ? String(timeline.length) : "0",
+    videoOpeningLineExact: firstItem?.spokenLine || "",
+    videoClosingLineApprox: lastItem?.spokenLine || "",
+    videoShotTimeline: timeline
+      .map((item) => {
+        const range = `${item.startTime || "?"}-${item.endTime || "?"}`;
+        const spokenLine = item.spokenLine ? ` | ${item.spokenLine}` : "";
+        const edit = item.edit ? ` | edit: ${item.edit}` : "";
+        return `${range}: ${item.visual || ""}${spokenLine}${edit}`;
+      })
+      .join(" || "),
+    videoSpokenAudioFlow: timeline
+      .map((item) => item.spokenLine)
+      .filter(Boolean)
+      .join(" "),
+    videoWhyItWorks: "",
+    videoAdaptationIdeas: "",
     videoUncertainties: (parsed?.uncertainties || []).join(" | "),
     analysisModel: analysis?.gemini?.model || "",
     analysisInputMode: analysis?.gemini?.inputMode || "",

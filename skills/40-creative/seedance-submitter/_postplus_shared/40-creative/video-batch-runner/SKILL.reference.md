@@ -27,7 +27,8 @@ This skill is not for unconstrained video ideation.
 
 ## Quality Default
 
-When the goal is believable human video, default to the highest practical render quality the provider offers.
+When the goal is believable human video, default to the highest practical
+render quality the provider offers.
 
 Default quality assumption:
 
@@ -35,7 +36,14 @@ Default quality assumption:
 - realism-sensitive talking-head jobs should start from the best available resolution before blaming script or voice
 - only step down when the user is explicitly running a cheap draft, a latency test, or a provider-limited experiment
 
-The selected resolution should always be persisted in the request and manifest.
+For believable creator talking-head video, default to clean creator UGC. Native
+should mean casual, direct, and unperformed, not raw or low-quality. Prefer a
+clean iPhone front-camera feel with bright soft daylight, a clear face, fresh
+neutral color, tidy everyday surroundings, stable casual framing, and smooth but
+natural skin.
+
+The selected resolution and quality intent should always be persisted in the
+request and manifest.
 
 ## Creative Format Rule
 
@@ -373,12 +381,19 @@ Do not compensate for missing upstream approvals by letting the render model imp
 
 ## Seedance Prompt Rule
 
-For Seedance 2.0 work, prefer a structured prompt plan over a single dense paragraph.
+For Seedance 2.0 work, prefer a structured prompt plan over a single dense
+paragraph.
 
-The adapter accepts `promptPlan` and turns it into a timeline-first prompt in this order:
+For creator clips, organize each segment around one spoken idea. Visual
+instructions should support that spoken idea; they should not turn a
+talking-head script into acted emotional choreography.
+
+The adapter accepts `prompt_summary` plus `promptPlan` and turns them into a
+timeline-first `final_prompt` in this order:
 
 - subject
-- storyboard timeline
+- prompt summary
+- prompt storyline
 - scene / environment / style
 - camera / shot / motion
 - sound intent
@@ -388,6 +403,11 @@ The adapter accepts `promptPlan` and turns it into a timeline-first prompt in th
 - reference bindings such as `[image 1]...，[audio 1]...，[video 1]...`
 
 This is a better default than freehand adjective stacks.
+
+For talking-head dialogue clips, choose the provider duration by spoken density,
+not by leftover visual hold. A 10-second clip should usually contain a full
+10-second spoken thought. Use a shorter supported duration bucket or rewrite the
+segment instead of padding with silent holds.
 
 The prompt plan may describe framing in natural language, but the selected
 PostPlus creative format must also be present in the normalized request as

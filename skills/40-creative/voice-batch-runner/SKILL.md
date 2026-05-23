@@ -246,6 +246,7 @@ See [`references/tool-contracts.md`](references/tool-contracts.md).
 ## Core Scripts
 
 - `scripts/design_voice.mjs`
+- `scripts/poll_design_voice.mjs`
 - `scripts/clone_voice_take.mjs`
 - `scripts/poll_clone_voice.mjs`
 
@@ -280,7 +281,8 @@ action.
 If a voice job is still pending, do not block the user's conversation just to
 poll. Save the checkpoint, tell the user the voice job is running, and continue
 independent script cleanup, review rubric, or downstream prep until the audio is
-needed.
+needed. Resume pending voice-design jobs with `scripts/poll_design_voice.mjs`.
+Resume pending voice-clone jobs with `scripts/poll_clone_voice.mjs`.
 
 ## Current Provider Direction
 
@@ -345,10 +347,24 @@ node ${CLAUDE_SKILL_DIR}/scripts/design_voice.mjs \
   --request /path/to/request.json
 ```
 
+Resume a pending persona-aligned voice design from the same hosted envelope request file:
+
+```bash
+node ${CLAUDE_SKILL_DIR}/scripts/poll_design_voice.mjs \
+  --request /path/to/request.json
+```
+
 Generate a new take from approved reference audio from a hosted envelope request file:
 
 ```bash
 node ${CLAUDE_SKILL_DIR}/scripts/clone_voice_take.mjs \
+  --request /path/to/request.json
+```
+
+Resume a pending voice-clone take from the same hosted envelope request file:
+
+```bash
+node ${CLAUDE_SKILL_DIR}/scripts/poll_clone_voice.mjs \
   --request /path/to/request.json
 ```
 

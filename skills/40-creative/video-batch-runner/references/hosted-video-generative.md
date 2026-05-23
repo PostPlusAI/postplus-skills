@@ -37,7 +37,8 @@ Common fields:
 
 - `prompt` is required.
 - `resolution` defaults to `720p`.
-- `duration` can be any integer from `4` to `15` seconds.
+- Seedance `duration` must use one of the supported provider buckets: `5`,
+  `10`, or `15` seconds.
 - `aspect_ratio` can be `16:9`, `9:16`, `4:3`, `3:4`, `1:1`, or `21:9`.
 - `enable_web_search` defaults to `false` and should only be enabled intentionally.
 
@@ -88,4 +89,8 @@ Voice and dialogue notes:
 
 ## Quality Guideline
 
-Default to `720p` for production tests. Use turbo models when iteration speed or lower cost matters; use non-turbo models when quality is the main goal. Use `1080p` only when the additional cost is justified.
+Default to `720p` for production tests. For creator talking-head clips, aim for
+clean creator UGC: casual and direct, but still clear, bright, stable, and
+visually fresh. Use turbo models when iteration speed or lower cost matters; use
+non-turbo models when quality is the main goal. Use `1080p` only when the
+additional cost is justified.

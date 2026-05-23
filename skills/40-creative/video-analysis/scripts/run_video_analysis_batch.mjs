@@ -16,6 +16,9 @@ import { readDomainSkillExecutionInput } from "../_postplus_shared/00-core/share
 
 export const VIDEO_ANALYSIS_JSON_PAYLOAD_BYTE_LIMIT =
   HOSTED_CAPABILITY_JSON_PAYLOAD_BYTE_LIMIT;
+export const VIDEO_ANALYSIS_PROMPT_VERSION = "objective-timeline-v1";
+export const VIDEO_ANALYSIS_PROVIDER_MODEL = "gemini-3.5-flash";
+export const VIDEO_ANALYSIS_MODEL_KEY = "gemini-video-analysis";
 
 function parseArgs(argv) {
   const args = {};
@@ -119,46 +122,26 @@ function detectVideoDurationSeconds(filePath) {
   }
 }
 
-function normalizeTimeline(shots) {
-  if (!Array.isArray(shots)) return "";
-  return shots
-    .map((shot) => {
-      const start = shot.startTime || "";
-      const end = shot.endTime || "";
-      const audio = String(shot.audio || "").replace(/\s+/g, " ").trim();
-      return `${start}-${end}: ${audio}`;
-    })
-    .filter(Boolean)
-    .join(" || ");
-}
-
 function buildPrompt(sourceUrl) {
   return [
-    "Analyze this short-form social video.",
+    "Analyze this short-form social video as an objective editing timeline.",
     "Return strict JSON only.",
-    "All explanatory fields must be in Simplified Chinese except exact spoken lines, which should stay in the video's original language.",
-    "Focus on educational/explainer content structure, hook, CTA, and why the video works.",
+    "All descriptive field values must be in Simplified Chinese.",
+    "Exact or approximate spoken lines must stay in the video's original language.",
+    "Only describe observable visual facts and audible content. Do not explain why the video works, do not give marketing advice, and do not provide production recommendations.",
+    "Focus on each real shot or distinct visual beat: what is said, what is visible, what moves, how it is cut, how captions behave, and how the audio pace feels.",
     `Source URL: ${sourceUrl}`,
     "Required JSON fields:",
     "{",
-    '  "summaryEn": string,',
-    '  "hookEn": string,',
-    '  "contentPromiseEn": string,',
-    '  "structureTypeEn": string,',
-    '  "visualStyleEn": string,',
-    '  "ctaEn": string,',
-    '  "whyItWorksEn": string[],',
-    '  "openingLineExact": string,',
-    '  "closingLineApprox": string,',
-    '  "spokenAudioFlowEn": string,',
-    '  "shots": [{"startTime":"MM:SS","endTime":"MM:SS","durationSeconds":number,"visual":"English","audio":"original language"}],',
-    '  "uncertaintiesEn": string[]',
+    '  "timeline": [{"index":number,"startTime":"MM:SS","endTime":"MM:SS","durationSeconds":number,"spokenLine":"original language exact or approximate","spokenMeaning":"这段话客观在表达什么","visual":"画面里看到什么","subjectAction":"人物/手/产品/道具动作","camera":"景别、角度、运镜、构图","edit":"cut、jump cut、punch-in、画面切换、覆盖关系等","caption":"字幕内容、样式、位置、跟随节奏","audioPacing":"语速、停顿、重音、beat、音乐/音效"}],',
+    '  "uncertainties": string[]',
     "}",
     "Rules:",
-    "- Keep shots to 4-8 segments unless the pacing genuinely requires more.",
-    "- openingLineExact should capture the true opening spoken line as closely as possible.",
-    "- closingLineApprox can be approximate if the ending is partially obscured.",
-    "- whyItWorksEn should be 3-5 concrete points, not generic praise.",
+    "- Split by real camera cuts or clearly distinct visual beats. Do not force 4-8 segments.",
+    "- Describe concrete visible action and audible pacing, not vague mood words.",
+    "- Do not include any overview, recommendation, evaluation, adaptation, or production-advice fields.",
+    "- spokenMeaning must be descriptive, not evaluative.",
+    "- If speech, captions, edits, timing, or visual details are unclear, record the uncertainty instead of inventing details.",
   ].join("\n");
 }
 
@@ -206,7 +189,18 @@ function extractTextResponse(payload) {
   );
 }
 
+function resolveVideoAnalysisModelKey(model) {
+  if (model !== VIDEO_ANALYSIS_PROVIDER_MODEL) {
+    throw new Error(
+      `unsupported_video_analysis_model: ${model}. Supported model: ${VIDEO_ANALYSIS_PROVIDER_MODEL}.`,
+    );
+  }
+
+  return VIDEO_ANALYSIS_MODEL_KEY;
+}
+
 export async function analyzeOne({ item, model, outputDir, dependencies = {} }) {
+  const modelKey = resolveVideoAnalysisModelKey(model);
   const absoluteFilePath = path.resolve(item.filePath);
   const stat = fs.statSync(absoluteFilePath);
   const mimeType = inferMimeTypeFromPath(item.filePath);
@@ -243,7 +237,7 @@ export async function analyzeOne({ item, model, outputDir, dependencies = {} }) 
   const raw = await (dependencies.runHostedCapabilityRequest ?? runHostedCapabilityRequest)({
     capability: "video-analysis",
     operation: "analyze",
-    modelKey: "gemini-video-analysis",
+    modelKey,
     payload,
     estimatedUsage: buildEstimatedUsage({
       prompt,
@@ -262,32 +256,40 @@ export async function analyzeOne({ item, model, outputDir, dependencies = {} }) 
     throw new Error(`Gemini returned non-JSON text: ${text.slice(0, 500)}`);
   }
 
-  const shots = Array.isArray(parsed.shots) ? parsed.shots : [];
+  if (!Array.isArray(parsed.timeline) || parsed.timeline.length === 0) {
+    throw new Error(
+      `video_analysis_timeline_missing: Gemini response must include a non-empty timeline array for ${item.sourceId}.`,
+    );
+  }
+
+  const timeline = parsed.timeline.map((item, index) => ({
+    index:
+      typeof item.index === "number" && Number.isFinite(item.index)
+        ? item.index
+        : index + 1,
+    startTime: item.startTime || formatSeconds(item.startTimeSeconds),
+    endTime: item.endTime || formatSeconds(item.endTimeSeconds),
+    durationSeconds:
+      typeof item.durationSeconds === "number" && Number.isFinite(item.durationSeconds)
+        ? item.durationSeconds
+        : null,
+    spokenLine: item.spokenLine || "",
+    spokenMeaning: item.spokenMeaning || "",
+    visual: item.visual || "",
+    subjectAction: item.subjectAction || "",
+    camera: item.camera || "",
+    edit: item.edit || "",
+    caption: item.caption || "",
+    audioPacing: item.audioPacing || "",
+  }));
   const normalized = {
     sourceId: item.sourceId,
     sourceUrl: item.sourceUrl,
     videoFilePath: item.filePath,
     model,
-    summaryEn: parsed.summaryEn || "",
-    hookEn: parsed.hookEn || "",
-    contentPromiseEn: parsed.contentPromiseEn || "",
-    structureTypeEn: parsed.structureTypeEn || "",
-    visualStyleEn: parsed.visualStyleEn || "",
-    ctaEn: parsed.ctaEn || "",
-    whyItWorksEn: Array.isArray(parsed.whyItWorksEn) ? parsed.whyItWorksEn : [],
-    openingLineExact: parsed.openingLineExact || "",
-    closingLineApprox: parsed.closingLineApprox || "",
-    spokenAudioFlowEn: parsed.spokenAudioFlowEn || "",
-    shotTimelineEn: normalizeTimeline(
-      shots.map((shot) => ({
-        ...shot,
-        startTime: shot.startTime || formatSeconds(shot.startTimeSeconds),
-        endTime: shot.endTime || formatSeconds(shot.endTimeSeconds),
-      }))
-    ),
-    shots,
-    uncertaintiesEn: Array.isArray(parsed.uncertaintiesEn) ? parsed.uncertaintiesEn : [],
-    rawText: text,
+    promptVersion: VIDEO_ANALYSIS_PROMPT_VERSION,
+    timeline,
+    uncertainties: Array.isArray(parsed.uncertainties) ? parsed.uncertainties : [],
   };
 
   const outputPath = path.join(path.resolve(outputDir), `${item.sourceId}.json`);
@@ -299,6 +301,7 @@ export async function analyzeOne({ item, model, outputDir, dependencies = {} }) 
     },
     gemini: {
       model,
+      modelKey,
       inputMode,
       jsonPayloadByteLimit: VIDEO_ANALYSIS_JSON_PAYLOAD_BYTE_LIMIT,
       inputBoundary,
@@ -359,7 +362,7 @@ async function main() {
   const args = parseArgs(process.argv.slice(2));
   if (!args["download-report"] || !args["output-dir"]) {
     console.error(
-      "Usage: node run_video_analysis_batch.mjs --download-report <report.json> --output-dir <dir> [--model gemini-3.1-pro-preview] [--concurrency 1]"
+      `Usage: node run_video_analysis_batch.mjs --download-report <report.json> --output-dir <dir> [--model ${VIDEO_ANALYSIS_PROVIDER_MODEL}] [--concurrency 1]`,
     );
     process.exitCode = 1;
     return;
@@ -368,7 +371,7 @@ async function main() {
   const report = readJson(args["download-report"]);
   const items = (report.results || []).filter((item) => item.success && item.filePath);
   const outputDir = path.resolve(args["output-dir"]);
-  const model = args.model || "gemini-3.1-pro-preview";
+  const model = args.model || VIDEO_ANALYSIS_PROVIDER_MODEL;
   const concurrency = Math.max(1, Number(args.concurrency || 1));
   fs.mkdirSync(outputDir, { recursive: true });
 

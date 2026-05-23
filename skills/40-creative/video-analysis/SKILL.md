@@ -1,6 +1,6 @@
 ---
 name: video-analysis
-description: Analyze local or downloaded social video files with the official Gemini API, especially for TikTok/Reels benchmark breakdowns, script decomposition, and structured JSON outputs. Use this when you need video-level analysis beyond metadata, including uploading video files, prompting Gemini 3.1 Pro Preview, and linking results back to source metadata.
+description: Analyze local or downloaded social video files with the official Gemini API, especially for objective TikTok/Reels timeline breakdowns, shot-level editing descriptions, spoken-line capture, and structured JSON outputs. Use this when you need video-level analysis beyond metadata, including uploading video files, prompting gemini-3.5-flash, and linking results back to source metadata.
 metadata:
   postplus:
     familyId: media-production
@@ -9,7 +9,7 @@ metadata:
 
 # Video Analysis
 
-> **Tip:** Gemini 3.1 Pro is recommended for video analysis. The PostPlus
+> **Tip:** gemini-3.5-flash is the default video analysis model. The PostPlus
 > runner uploads local videos through the hosted `file_reference` path.
 
 Follow shared public skill rules in:
@@ -27,8 +27,8 @@ This skill is usually downstream of platform research, not the default first ste
 ## Use For
 
 - analyze local video files through the hosted Gemini video-analysis path
-- run Gemini 3.1 Pro Preview on video inputs
-- use a stable TikTok/Reels analysis prompt
+- run gemini-3.5-flash on video inputs
+- use a stable TikTok/Reels objective timeline prompt
 - request structured JSON output
 - keep analysis linked to source metadata such as TikTok URL, video id, or dataset row
 
@@ -56,12 +56,12 @@ ask before proceeding with other tools.
 
 Use this skill when the user asks for things like:
 
-- why a video works
-- hook or structure breakdown
-- spoken-line or CTA analysis
+- objective shot-by-shot timeline extraction
+- spoken-line and visible-caption capture
+- spoken-line or CTA capture
 - shot-level decomposition
 - visual execution analysis
-- adaptation or recreation guidance based on actual videos
+- editing, pacing, camera, caption, and audio-beat description based on actual videos
 
 Do not use this skill as a substitute for broad TikTok trend discovery when no shortlist exists yet.
 
@@ -95,9 +95,29 @@ Do not start with full-market video analysis. First shortlist, then analyze.
 
 If the user request is broad or ambiguous, ask one short question before running:
 
-- "Do you want to first find breakout samples worth inspecting, or do you already have videos for direct hook, structure, and shot breakdown?"
+- "Do you want to first find breakout samples worth inspecting, or do you already have videos for direct objective timeline and shot breakdown?"
 
 If the user appears to want a broader TikTok research outcome, proactively mention that `skills/20-research/tiktok-research` can first build the shortlist this skill should analyze.
+
+## Output Shape
+
+The runner writes one JSON file per source video. The outer `source`, `gemini`,
+and `raw` sections preserve execution evidence. The normalized `result` is an
+objective timeline record:
+
+- `sourceId`
+- `sourceUrl`
+- `videoFilePath`
+- `model`
+- `promptVersion`
+- `timeline`
+- `uncertainties`
+
+`timeline` items describe only observable and audible facts: time range, spoken
+line, spoken meaning, visible scene, subject action, camera/framing, edit,
+caption behavior, and audio pacing. The skill does not output marketing
+explanations, adaptation ideas, or production recommendations. Downstream
+skills should derive those from the objective timeline when needed.
 
 ## Environment
 
@@ -114,7 +134,7 @@ In the PostPlus runtime:
 
 ## Default Model
 
-- `gemini-3.1-pro-preview`
+- `gemini-3.5-flash`
 
 Do not use `gemini-3-pro-preview`; it has been shut down.
 
@@ -131,7 +151,7 @@ node ${CLAUDE_SKILL_DIR}/scripts/run_video_analysis_batch.mjs \
   --download-report <work-folder>/.postplus/download-report.json \
   --output-dir <work-folder>/.postplus/video-analysis-results \
   --concurrency 1 \
-  --model gemini-3.1-pro-preview
+  --model gemini-3.5-flash
 ```
 
 The download report should contain at least:
@@ -203,7 +223,7 @@ node ${CLAUDE_SKILL_DIR}/scripts/run_video_analysis_batch.mjs \
   --download-report /path/to/download-report.json \
   --output-dir <work-folder>/.postplus/video-results \
   --concurrency 2 \
-  --model gemini-3.1-pro-preview
+  --model gemini-3.5-flash
 ```
 
 ## Always Keep
