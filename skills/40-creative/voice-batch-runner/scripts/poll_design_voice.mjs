@@ -4,15 +4,15 @@ import { pollVoiceGeneration } from './_poll_voice_generation.mjs';
 
 function usage() {
   console.error(
-    'Usage: node poll_clone_voice.mjs --request <request.json> [--response <response.json>] [--result-url <url>]',
+    'Usage: node poll_design_voice.mjs --request <request.json> [--response <response.json>] [--result-url <url>]',
   );
 }
 
 async function main() {
   await pollVoiceGeneration({
-    defaultMode: 'voice_clone_take',
-    defaultModel: 'voice-qwen3-clone',
-    failureLabel: 'Voice clone polling',
+    defaultMode: 'voice_design',
+    defaultModel: 'voice-qwen3-design',
+    failureLabel: 'Voice design polling',
     usage,
   });
 }

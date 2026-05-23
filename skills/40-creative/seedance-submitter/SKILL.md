@@ -23,7 +23,7 @@ Follow shared public skill rules in:
 2. Read [references/current-rules.md](references/current-rules.md).
 3. If creating request JSON, read [references/request-json.md](references/request-json.md).
 4. Upload local reference images before submission and replace local paths with uploaded URLs.
-5. Put timecoded action and spoken lines together in `promptPlan.storyboardTimeline`.
+5. Put timecoded action and spoken lines together in `promptPlan.prompt_storyline`.
 6. Put voice style, BGM, SFX, subtitle, and watermark constraints in `promptPlan.audio`.
 7. Validate every Seedance request before submission:
 

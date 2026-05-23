@@ -28,7 +28,13 @@
 
 ## Dialogue And Audio
 
-- Timecoded action and exact spoken copy must live together inside `promptPlan.storyboardTimeline`.
+- Timecoded action and exact spoken copy must live together inside `promptPlan.prompt_storyline`.
+- `prompt_summary` is the compact scene intent. It is not the final provider prompt.
+- `final_prompt` is the assembled provider-facing prompt derived from
+  `prompt_summary`, `promptPlan.prompt_storyline`, compact reference bindings,
+  audio direction, and hard negatives.
+- Keep most generation detail in `promptPlan.prompt_storyline`, not in
+  `prompt_summary`.
 - Do not rely on `feedback` for spoken copy; it is local-only and not sent to the provider.
 - Do not put exact spoken copy only inside `promptPlan.audio`.
 - `promptPlan.audio` is for voice style, BGM, SFX, subtitle rules, watermark rules, and environmental sound constraints.
@@ -43,12 +49,14 @@
 - Upload local product and storyboard images before submission and replace local paths with uploaded URLs.
 - For one object identity, default to one image reference; for one voice identity, default to one audio reference.
 - Do not add many near-duplicate references by default; more references can make video generation less stable.
-- Use `promptPlan.referenceMap` to explain each image:
+- Use `promptPlan.referenceMap` to bind references compactly:
   - storyboard image: character, shot order, camera, motion flow
   - product images: product shape, color, packaging, texture, component details
 - If planning notes use handles such as `@storyboard`, `@product-detail`, or `@ref-video-1`, convert them into explicit bindings before submission.
 - Do not say only `use the attached references`.
 - In the final prompt, prefer explicit bindings such as `[image 1]`, `[image 2]`, and `[video 1]` plus role descriptions.
+- Treat `promptPlan.mustAvoid` as compact hard negatives only. Keep it short:
+  default total length is 20 words or fewer.
 - Always include `subtitles`, `on-screen text`, and `watermark` in `promptPlan.mustAvoid` unless the user explicitly wants on-screen text.
 - If continuity matters, add `continuityPolicy` and verify whether the request is
   really `image-bound`, `audio-bound`, or only `text-only`.
@@ -56,15 +64,20 @@
 
 ## PromptPlan Mapping
 
-- subject / main character -> `promptPlan.subject`
-- storyboard action plus spoken lines -> `promptPlan.storyboardTimeline`
+- compact scene intent -> `prompt_summary`
+- storyboard action plus spoken lines -> `promptPlan.prompt_storyline`
 - style -> `promptPlan.style`
 - scene, environment, lighting -> `promptPlan.scene`
 - camera, handheld feel, transition rhythm -> `promptPlan.camera`
 - voice/BGM/SFX/subtitle constraints -> `promptPlan.audio`
-- must preserve -> `promptPlan.mustKeep`
+- must preserve -> avoid unless truly non-negotiable
 - forbidden issues -> `promptPlan.mustAvoid`
 - image roles -> `promptPlan.referenceMap`
+
+Keep `prompt_summary`, `promptPlan.subject`, `promptPlan.scene`, and
+`promptPlan.style` concise, usually 10-20 words each. Treat them as routing
+labels, not full prompts. Put the real generation detail in
+`promptPlan.prompt_storyline`, with compact negatives in `mustAvoid`.
 
 ## Splitting
 
@@ -73,7 +86,7 @@
 - If an action crosses two segments, the second request must restate the needed
   character, product, scene, and action state inside its own prompt fields.
 - Shared references can be reused across segments.
-- Each segment must include only its own `promptPlan.storyboardTimeline`.
+- Each segment must include only its own `promptPlan.prompt_storyline`.
 - Each segment must be independently submit-ready.
 - Each segment should still be usable as a standalone clip, not just as a middle fragment.
 - If a segment targets a 7-8s final edit inside a 10s provider bucket, the

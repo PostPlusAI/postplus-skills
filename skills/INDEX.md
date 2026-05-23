@@ -88,7 +88,7 @@ Transcription, video analysis, B-roll planning, prompt architecture, generation,
 
 - `video-analysis`
   - Path: `skills/40-creative/video-analysis/SKILL.md`
-  - Supported models: Gemini 3.1 Pro Preview
+  - Supported models: Gemini 3.5 Flash
 - `video-transcription`
   - Path: `skills/40-creative/video-transcription/SKILL.md`
   - Supported models: Whisper With Video

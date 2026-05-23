@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-1-2d50d3d4dc448b03",
+  "releaseId": "skills-1-a0dc985c96336a43",
   "source": "PostPlusAI/postplus-skills",
   "primaryIndex": "skills/INDEX.md",
   "skills": [
@@ -909,7 +909,7 @@
       "supportedModels": [
         {
           "key": "gemini-video-analysis",
-          "name": "Gemini 3.1 Pro Preview",
+          "name": "Gemini 3.5 Flash",
           "source": "modelKey"
         }
       ]

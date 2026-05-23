@@ -11,10 +11,12 @@ Use this shape for Seedance 2.0 request records on the public skill surface.
 
 Model-specific required fields:
 
-- `video-seedance-2-text` / `video-seedance-2-text-turbo`: `prompt` or
-  `promptPlan`
-- `video-seedance-2-image` / `video-seedance-2-image-turbo`: `prompt` or
-  `promptPlan`, plus `image`
+- `video-seedance-2-text` / `video-seedance-2-text-turbo`: `prompt_summary`,
+  plus `promptPlan.prompt_storyline`, unless `final_prompt` is intentionally
+  supplied
+- `video-seedance-2-image` / `video-seedance-2-image-turbo`: `prompt_summary`,
+  plus `promptPlan.prompt_storyline`, unless `final_prompt` is intentionally
+  supplied, plus `image`
 
 Recommended context fields:
 
@@ -28,6 +30,8 @@ Recommended context fields:
 - `duration`
 - `targetEditDurationSeconds`
 - `timeline`
+- `prompt_summary`
+- `final_prompt`
 - `enableWebSearch`
 - `sourceBasis`
 - `feedback`
@@ -68,10 +72,21 @@ When the target edit duration is shorter than the provider bucket, include a
     "activePerformanceEndSeconds": 7.5,
     "tailStrategy": "natural_hold_for_trim"
   },
+  "prompt_summary": "Creator completes one active demonstration.",
   "promptPlan": {
-    "storyboardTimeline": [
-      "0-7.5s: complete the active demonstration.",
-      "7.5-10s: natural hold for trim; subtle breathing only, no new action."
+    "prompt_storyline": [
+      {
+        "shot": "shot 1",
+        "time": "0-7.5s",
+        "visual": "complete the active demonstration.",
+        "dialogue": "spoken line here"
+      },
+      {
+        "shot": "shot 2",
+        "time": "7.5-10s",
+        "visual": "natural hold for trim; subtle breathing only, no new action.",
+        "timelineRole": "tail"
+      }
     ]
   }
 }
@@ -95,9 +110,19 @@ When `targetEditDurationSeconds < duration`, the validator requires
 {
   "promptPlan": {
     "subject": "",
-    "storyboardTimeline": [
-      "0.0-2.5s: visible action here. Dialogue: \"spoken line here.\"",
-      "2.5-5.0s: next visible action here. Dialogue: \"next spoken line here.\""
+    "prompt_storyline": [
+      {
+        "shot": "shot 1",
+        "time": "0.0-2.5s",
+        "visual": "visible action here",
+        "dialogue": "spoken line here"
+      },
+      {
+        "shot": "shot 2",
+        "time": "2.5-5.0s",
+        "visual": "next visible action here",
+        "dialogue": "next spoken line here"
+      }
     ],
     "scene": "",
     "style": "",
@@ -227,7 +252,7 @@ Do not say `same owner locked` or equivalent when the report is only
 
 ## Storyboard Timeline Rule
 
-The exact voiceover must live inside `promptPlan.storyboardTimeline`, on the
+The exact voiceover must live inside `promptPlan.prompt_storyline`, on the
 same timeline as the visible action.
 
 Bad:
@@ -248,9 +273,19 @@ Good:
 ```json
 {
   "promptPlan": {
-    "storyboardTimeline": [
-      "0:00-0:03 visible action here. Dialogue: \"exact spoken line.\"",
-      "0:03-0:07 next visible action here. Dialogue: \"exact spoken line.\""
+    "prompt_storyline": [
+      {
+        "shot": "shot 1",
+        "time": "0:00-0:03",
+        "visual": "visible action here",
+        "dialogue": "exact spoken line."
+      },
+      {
+        "shot": "shot 2",
+        "time": "0:03-0:07",
+        "visual": "next visible action here",
+        "dialogue": "exact spoken line."
+      }
     ],
     "audio": "English female UGC voiceover. No subtitles. No screen text. No watermark."
   }

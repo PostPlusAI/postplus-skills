@@ -153,20 +153,33 @@ function isTailTimelineEntry(entry) {
 
 function collectPromptText(request) {
   const promptPlan = request.promptPlan || {};
+  const referenceMap = Array.isArray(promptPlan.referenceMap)
+    ? promptPlan.referenceMap
+        .map((entry) => {
+          if (entry && typeof entry === "object") {
+            return [
+              entry.ref,
+              entry.role,
+            ]
+              .filter(Boolean)
+              .join(" ");
+          }
+          return "";
+        })
+        .filter(Boolean)
+        .join("\n")
+    : "";
   return [
-    request.prompt,
+    request.final_prompt,
+    request.prompt_summary,
     promptPlan.subject,
-    typeof promptPlan.storyboardTimeline === "string"
-      ? promptPlan.storyboardTimeline
-      : Array.isArray(promptPlan.storyboardTimeline)
-        ? promptPlan.storyboardTimeline
+    Array.isArray(promptPlan.prompt_storyline)
+      ? promptPlan.prompt_storyline
             .map((entry) =>
-              typeof entry === "string"
-                ? entry
-                : entry && typeof entry === "object"
+              entry && typeof entry === "object"
                   ? [
                       entry.time,
-                      entry.action,
+                      entry.shot,
                       entry.visual,
                       entry.dialogue,
                     ]
@@ -182,7 +195,7 @@ function collectPromptText(request) {
     promptPlan.camera,
     promptPlan.audio,
     Array.isArray(promptPlan.mustKeep) ? promptPlan.mustKeep.join("\n") : "",
-    Array.isArray(promptPlan.referenceMap) ? promptPlan.referenceMap.join("\n") : "",
+    referenceMap,
   ]
     .filter(Boolean)
     .join("\n");
@@ -191,6 +204,30 @@ function collectPromptText(request) {
 function assertNoDeprecatedPromptPlanFields(request, label) {
   const promptPlan = request.promptPlan || {};
   const deprecated = [];
+  if (typeof request.prompt === "string" && request.prompt.trim()) {
+    deprecated.push("request.prompt");
+  }
+  if (typeof request.text === "string" && request.text.trim()) {
+    deprecated.push("request.text");
+  }
+  if (typeof request.promptSummary === "string" && request.promptSummary.trim()) {
+    deprecated.push("request.promptSummary");
+  }
+  if (typeof request.finalPrompt === "string" && request.finalPrompt.trim()) {
+    deprecated.push("request.finalPrompt");
+  }
+  if (typeof promptPlan.promptSummary === "string" && promptPlan.promptSummary.trim()) {
+    deprecated.push("promptPlan.promptSummary");
+  }
+  if (typeof promptPlan.intent === "string" && promptPlan.intent.trim()) {
+    deprecated.push("promptPlan.intent");
+  }
+  if (typeof promptPlan.storyboardTimeline === "string" || Array.isArray(promptPlan.storyboardTimeline)) {
+    deprecated.push("promptPlan.storyboardTimeline");
+  }
+  if (typeof promptPlan.promptStoryline === "string" || Array.isArray(promptPlan.promptStoryline)) {
+    deprecated.push("promptPlan.promptStoryline");
+  }
   if (typeof promptPlan.action === "string" && promptPlan.action.trim()) {
     deprecated.push("promptPlan.action");
   }
@@ -199,7 +236,21 @@ function assertNoDeprecatedPromptPlanFields(request, label) {
   }
   if (deprecated.length > 0) {
     throw new Error(
-      `seedance_prompt_plan_deprecated: ${label} uses ${deprecated.join(", ")}. Move timecoded action and spoken lines into promptPlan.storyboardTimeline.`,
+      `seedance_prompt_plan_deprecated: ${label} uses ${deprecated.join(", ")}. Use request.prompt_summary and promptPlan.prompt_storyline.`,
+    );
+  }
+}
+
+function assertPromptAssemblyFields(request, label) {
+  const hasFinalPrompt = typeof request.final_prompt === "string" && request.final_prompt.trim();
+  const hasPromptSummary = typeof request.prompt_summary === "string" && request.prompt_summary.trim();
+  const hasPromptStoryline =
+    Array.isArray(request.promptPlan?.prompt_storyline) &&
+    request.promptPlan.prompt_storyline.length > 0;
+
+  if (!hasFinalPrompt && (!hasPromptSummary || !hasPromptStoryline)) {
+    throw new Error(
+      `seedance_prompt_fields_missing: ${label} requires request.prompt_summary and promptPlan.prompt_storyline, unless request.final_prompt is provided.`,
     );
   }
 }
@@ -241,7 +292,6 @@ function normalizeContinuityEntry(key, value, request) {
   const entry = value && typeof value === "object" ? value : {};
   const requestedEvidenceMode = toTrimmedString(entry.evidenceMode) || "text-only";
   const requiredRefs = stringList(entry.requiredRefs);
-  const promptPlan = request.promptPlan || {};
   const hasImageEvidence = Boolean(request.image) || stringList(request.referenceImages).length > 0;
   const hasAudioEvidence =
     Boolean(request.audio) ||
@@ -271,9 +321,7 @@ function normalizeContinuityEntry(key, value, request) {
   }
 
   const target = toTrimmedString(entry.target) || key;
-  const subjectText = collectPromptText(request);
   const targetType = toTrimmedString(entry.targetType || key);
-  const mentionsTarget = target.length > 0 && subjectText.toLowerCase().includes(target.toLowerCase());
   const expectedImageBound = new Set(["character", "persona", "product", "environment", "background", "scene"]);
   const expectedAudioBound = new Set(["voice", "audio"]);
 
@@ -287,10 +335,6 @@ function normalizeContinuityEntry(key, value, request) {
       `${key}: ${target} has no audio-bound evidence. Add referenceAudios, audio, voiceTakeId, or upstreamRefs.audio.`,
     );
   }
-  if (!mentionsTarget && promptPlan && requestedEvidenceMode !== "text-only") {
-    warnings.push(`${key}: target is not clearly restated in prompt text for this segment.`);
-  }
-
   return {
     target,
     targetType,
@@ -391,12 +435,12 @@ function validateSegmentContract(request, durationSeconds, label) {
   }
 }
 
-function validateStoryboardTimelineAgainstTarget(
+function validatePromptStorylineAgainstTarget(
   request,
   targetEditDurationSeconds,
   label,
 ) {
-  const rawTimeline = request.promptPlan?.storyboardTimeline;
+  const rawTimeline = request.promptPlan?.prompt_storyline;
   const timeline = Array.isArray(rawTimeline)
     ? rawTimeline
     : typeof rawTimeline === "string"
@@ -419,7 +463,7 @@ function validateStoryboardTimelineAgainstTarget(
     }
 
     throw new Error(
-      `seedance_target_edit_timeline_overrun: ${label}.promptPlan.storyboardTimeline[${index}] ends at ${range.endSeconds}s after targetEditDurationSeconds ${targetEditDurationSeconds}s and is not marked as tail/hold.`,
+      `seedance_target_edit_timeline_overrun: ${label}.promptPlan.prompt_storyline[${index}] ends at ${range.endSeconds}s after targetEditDurationSeconds ${targetEditDurationSeconds}s and is not marked as tail/hold.`,
     );
   });
 }
@@ -493,7 +537,7 @@ function validateTargetEditContract(request, durationSeconds, label) {
     }
   }
 
-  validateStoryboardTimelineAgainstTarget(
+  validatePromptStorylineAgainstTarget(
     request,
     targetEditDurationSeconds,
     label,
@@ -533,6 +577,7 @@ export function validateSeedanceRequestContract(request, label = "request") {
   }
 
   assertNoCrossSegmentShorthand(request, label);
+  assertPromptAssemblyFields(request, label);
   validateSegmentContract(request, durationSeconds, label);
   const targetEditContract = validateTargetEditContract(
     request,
