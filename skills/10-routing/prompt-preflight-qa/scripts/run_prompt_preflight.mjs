@@ -37,7 +37,7 @@ export function runPromptPreflight(brief = {}) {
 
 function usage() {
   console.error(
-    "Usage: node run_prompt_preflight.mjs [--input <brief.json>] [--output <report.json>]",
+    "Usage: node run_prompt_preflight.mjs --input <brief.json> [--output <report.json>]",
   );
 }
 
@@ -49,8 +49,13 @@ async function main() {
     process.exitCode = 0;
     return;
   }
+  if (!args.input) {
+    usage();
+    process.exitCode = 1;
+    return;
+  }
 
-  const input = args.input ? readJson(args.input) : {};
+  const input = readJson(args.input);
   const payload = runPromptPreflight(input);
   printOrWriteJson(args.output, payload);
 }

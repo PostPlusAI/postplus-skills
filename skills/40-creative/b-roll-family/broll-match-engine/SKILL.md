@@ -49,17 +49,17 @@ Do not use this skill when the user still lacks a usable B-roll inventory.
 
 Route that first to:
 
-- `skills/40-creative/b-roll-family/broll-catalog-builder`
+- `broll-catalog-builder`
 
 ## Read These References
 
-- family architecture: `../references/skill-architecture.md`
-- shared contracts: `../references/contracts.md`
+- family architecture: `/_postplus_shared/40-creative/b-roll-family/references/skill-architecture.md`
+- shared contracts: `/_postplus_shared/40-creative/b-roll-family/references/contracts.md`
 
 Use these existing local skills when helpful:
 
 - a dedicated visual analysis workflow
-- `skills/40-creative/editing-decision-engine`
+- `editing-decision-engine`
 
 ## Core Principle
 

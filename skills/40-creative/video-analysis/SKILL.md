@@ -68,7 +68,7 @@ Do not use this skill as a substitute for broad TikTok trend discovery when no s
 ## Core Resources
 
 - Prompt and JSON schema: embedded in `scripts/run_video_analysis_batch.mjs`
-- Downloader: `../../00-core/shared-runtime/scripts/download_videos_from_manifest_with_ytdlp.mjs`
+- Downloader: `${CLAUDE_SKILL_DIR}/_postplus_shared/00-core/shared-runtime/scripts/download_videos_from_manifest_with_ytdlp.mjs`
 - Batch runner: `scripts/run_video_analysis_batch.mjs`
 - Manifest builder: `scripts/build_manifest_from_master_table.mjs`
 - Backfill helper: `scripts/backfill_master_table_with_script.mjs`
@@ -97,7 +97,7 @@ If the user request is broad or ambiguous, ask one short question before running
 
 - "Do you want to first find breakout samples worth inspecting, or do you already have videos for direct objective timeline and shot breakdown?"
 
-If the user appears to want a broader TikTok research outcome, proactively mention that `skills/20-research/tiktok-research` can first build the shortlist this skill should analyze.
+If the user appears to want a broader TikTok research outcome, proactively mention that `tiktok-research` can first build the shortlist this skill should analyze.
 
 ## Output Shape
 
@@ -136,7 +136,8 @@ In the PostPlus runtime:
 
 - `gemini-3.5-flash`
 
-Do not use `gemini-3-pro-preview`; it has been shut down.
+Do not use another Gemini video-analysis model unless this skill's runner and
+fixtures are updated first.
 
 ## First Run
 

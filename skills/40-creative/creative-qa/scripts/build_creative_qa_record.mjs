@@ -55,6 +55,7 @@ function buildQaReport(input) {
   if (!['approved', 'revise', 'reject'].includes(verdict)) {
     throw new Error('creative-qa verdict must be approved, revise, or reject.');
   }
+  const requiresIssueReasons = verdict !== 'approved';
 
   return {
     qaReportId: readRequiredString(input, 'qaReportId'),
@@ -68,8 +69,12 @@ function buildQaReport(input) {
     reviewedAt: readRequiredString(input, 'reviewedAt'),
     verdict,
     goodReasons: readRequiredStringArray(input, 'goodReasons'),
-    badReasons: readRequiredStringArray(input, 'badReasons'),
-    issueCategories: readRequiredStringArray(input, 'issueCategories'),
+    badReasons: requiresIssueReasons
+      ? readRequiredStringArray(input, 'badReasons')
+      : readOptionalStringArray(input, 'badReasons'),
+    issueCategories: requiresIssueReasons
+      ? readRequiredStringArray(input, 'issueCategories')
+      : readOptionalStringArray(input, 'issueCategories'),
     blameStage: readOptionalStringArray(input, 'blameStage'),
     scores:
       input.scores && typeof input.scores === 'object' ? input.scores : {},
@@ -104,7 +109,7 @@ function buildFeedbackHandoff(input, qaReport) {
 
 function usage() {
   console.error(
-    'Usage: node build_creative_qa_record.mjs [--input <input.json>] [--output <qa-record.json>]',
+    'Usage: node build_creative_qa_record.mjs --input <input.json> [--output <qa-record.json>]',
   );
 }
 
@@ -117,7 +122,13 @@ async function main() {
     return;
   }
 
-  const input = args.input ? readJson(args.input) : {};
+  if (!args.input) {
+    usage();
+    process.exitCode = 1;
+    return;
+  }
+
+  const input = readJson(args.input);
   const payload = buildCreativeQaRecord(input);
   printOrWriteJson(args.output, payload);
 }

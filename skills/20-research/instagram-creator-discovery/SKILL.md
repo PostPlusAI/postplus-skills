@@ -24,11 +24,9 @@ Use this skill when the user wants to:
 Read these references before implementation:
 
 - `postplus-shared` research preferences
-- `skills/10-routing/creator-discovery-router/references/candidate-schema.md`
-- `skills/10-routing/creator-discovery-router/references/instagram-candidate-mapping.md`
-- `skills/20-research/instagram-references/actor-selection.md`
-- `skills/20-research/instagram-references/normalized-schema.md`
-- `skills/20-research/instagram-references/tool-contracts.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-references/actor-selection.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-references/normalized-schema.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-references/tool-contracts.md`
 
 ## Core Rule
 
@@ -61,11 +59,11 @@ Released enrichment:
 
 ## Local Tools
 
-- `skills/20-research/instagram-tools/scripts/build_instagram_actor_input.mjs`
-- `skills/20-research/instagram-tools/scripts/run_instagram_actor.mjs`
-- `skills/20-research/instagram-tools/scripts/normalize_instagram_dataset.mjs`
-- `skills/20-research/instagram-tools/scripts/extract_instagram_candidate_usernames.mjs`
-- `skills/20-research/instagram-tools/scripts/rank_instagram_creators.mjs`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-tools/scripts/build_instagram_actor_input.mjs`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-tools/scripts/run_instagram_actor.mjs`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-tools/scripts/normalize_instagram_dataset.mjs`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-tools/scripts/extract_instagram_candidate_usernames.mjs`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-tools/scripts/rank_instagram_creators.mjs`
 
 ## Route Guidance
 
@@ -91,7 +89,7 @@ Use `mixed` when:
 ### 1. Build actor input from a brief
 
 ```bash
-node ${CLAUDE_SKILL_DIR}/../instagram-tools/scripts/build_instagram_actor_input.mjs \
+node ${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-tools/scripts/build_instagram_actor_input.mjs \
   --brief <work-folder>/.postplus/instagram-brief.json \
   --actor instagram-search \
   --output <work-folder>/.postplus/instagram-search-input.json
@@ -100,7 +98,7 @@ node ${CLAUDE_SKILL_DIR}/../instagram-tools/scripts/build_instagram_actor_input.
 ### 2. Run the collection actor
 
 ```bash
-node ${CLAUDE_SKILL_DIR}/../instagram-tools/scripts/run_instagram_actor.mjs \
+node ${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-tools/scripts/run_instagram_actor.mjs \
   --collection-key instagram-search \
   --input <work-folder>/.postplus/instagram-search-envelope.json \
   --output <work-folder>/.postplus/instagram-search-raw.json
@@ -113,7 +111,7 @@ file to `--input`.
 ### 3. Normalize the dataset
 
 ```bash
-node ${CLAUDE_SKILL_DIR}/../instagram-tools/scripts/normalize_instagram_dataset.mjs \
+node ${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-tools/scripts/normalize_instagram_dataset.mjs \
   --input <work-folder>/.postplus/instagram-search-raw.json \
   --actor instagram-search \
   --dataset-type posts \
@@ -123,7 +121,7 @@ node ${CLAUDE_SKILL_DIR}/../instagram-tools/scripts/normalize_instagram_dataset.
 ### 4. Extract candidate usernames
 
 ```bash
-node ${CLAUDE_SKILL_DIR}/../instagram-tools/scripts/extract_instagram_candidate_usernames.mjs \
+node ${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-tools/scripts/extract_instagram_candidate_usernames.mjs \
   --input <work-folder>/.postplus/instagram-search-normalized.json \
   --route content-first \
   --output <work-folder>/.postplus/instagram-candidate-usernames.json
@@ -132,7 +130,7 @@ node ${CLAUDE_SKILL_DIR}/../instagram-tools/scripts/extract_instagram_candidate_
 ### 5. Enrich profiles
 
 ```bash
-node ${CLAUDE_SKILL_DIR}/../instagram-tools/scripts/run_instagram_actor.mjs \
+node ${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-tools/scripts/run_instagram_actor.mjs \
   --collection-key instagram-profiles \
   --input <work-folder>/.postplus/instagram-profile-envelope.json \
   --output <work-folder>/.postplus/instagram-profiles-raw.json
@@ -141,7 +139,7 @@ node ${CLAUDE_SKILL_DIR}/../instagram-tools/scripts/run_instagram_actor.mjs \
 Then normalize:
 
 ```bash
-node ${CLAUDE_SKILL_DIR}/../instagram-tools/scripts/normalize_instagram_dataset.mjs \
+node ${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-tools/scripts/normalize_instagram_dataset.mjs \
   --input <work-folder>/.postplus/instagram-profiles-raw.json \
   --actor instagram-profiles \
   --dataset-type profiles \
@@ -151,7 +149,7 @@ node ${CLAUDE_SKILL_DIR}/../instagram-tools/scripts/normalize_instagram_dataset.
 ### 6. Rank creators
 
 ```bash
-node ${CLAUDE_SKILL_DIR}/../instagram-tools/scripts/rank_instagram_creators.mjs \
+node ${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-tools/scripts/rank_instagram_creators.mjs \
   --profiles <work-folder>/.postplus/instagram-profiles-normalized.json \
   --content <work-folder>/.postplus/instagram-search-normalized.json \
   --candidates <work-folder>/.postplus/instagram-candidate-usernames.json \

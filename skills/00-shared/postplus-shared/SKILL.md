@@ -33,3 +33,4 @@ business skill's `_postplus_shared/` directory.
    details.
 3. If a downstream skill and this shared rule conflict, fail fast and surface
    the conflict instead of inventing a fallback.
+4. Do not run provider scripts from this shared skill, and do not mutate registry or release metadata from a shared-rule handoff.

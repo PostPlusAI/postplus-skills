@@ -49,16 +49,16 @@ Do not use this skill when the user already has a good catalog and needs final b
 
 Route that to:
 
-- `skills/40-creative/b-roll-family/broll-match-engine`
+- `broll-match-engine`
 
 ## Read These References
 
-- family architecture: `../references/skill-architecture.md`
-- shared contracts: `../references/contracts.md`
+- family architecture: `/_postplus_shared/40-creative/b-roll-family/references/skill-architecture.md`
+- shared contracts: `/_postplus_shared/40-creative/b-roll-family/references/contracts.md`
 
 Use these existing local skills when helpful:
 
-- `skills/40-creative/frame-extraction`
+- `frame-extraction`
 - a dedicated visual analysis workflow
 
 ## Core Principle
@@ -189,7 +189,7 @@ If the output is only a file list with vague tags, it is not enough.
 Prefer:
 
 - local file scanning
-- ffmpeg metadata
+- ffprobe metadata
 - frame extraction when needed
 - markdown and JSON packaging
 

@@ -20,7 +20,9 @@ export function routePatternJob(brief = {}) {
     nextSkill:
       brief.target === "request"
         ? "video-request-architect"
-        : "reference-decode",
+        : segmentType === "hook"
+          ? "visual-hook"
+          : "reference-decode",
     openingMechanism:
       segmentType === "hook"
         ? "show the visible friction before the solution"
@@ -39,7 +41,7 @@ export function routePatternJob(brief = {}) {
 
 function usage() {
   console.error(
-    "Usage: node route_pattern_job.mjs [--input <brief.json>] [--output <route.json>]",
+    "Usage: node route_pattern_job.mjs --input <brief.json> [--output <route.json>]",
   );
 }
 
@@ -51,8 +53,13 @@ async function main() {
     process.exitCode = 0;
     return;
   }
+  if (!args.input) {
+    usage();
+    process.exitCode = 1;
+    return;
+  }
 
-  const input = args.input ? readJson(args.input) : {};
+  const input = readJson(args.input);
   const payload = routePatternJob(input);
   printOrWriteJson(args.output, payload);
 }

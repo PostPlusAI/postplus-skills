@@ -87,7 +87,7 @@ Use for:
 - large handle lists
 - extracting bio and outbound-link fields at lower cost
 
-Prefer this when throughput matters more than matching a previous Clockworks-specific payload.
+Prefer this when throughput matters more than preserving a previous payload shape.
 
 ### `tiktok-scraper`
 
@@ -98,7 +98,7 @@ Use for:
 - keyword search with `location` and `sortType`
 - mixed scraping across search, hashtag, profile, music, or location surfaces
 
-Prefer this when sample size and unit economics matter more than matching Clockworks payloads.
+Prefer this when sample size and unit economics matter more than preserving a previous payload shape.
 
 ### `tiktok-scraper-api`
 
@@ -169,7 +169,7 @@ Do not mix this actor into generic organic creator discovery. Treat it as ad int
 Status: unsupported in the current hosted release.
 
 Do not route user requests to `tiktok-shop-creators`. PostPlus Cloud does not
-expose this as a hosted collection key, and the provider input contract is not a
+expose this as a hosted collection key, and the local input contract is not a
 keyword-discovery surface.
 
 ## Routing Guidance
@@ -199,11 +199,11 @@ Prefer a two-step escalation path instead of one actor for everything:
 
 Practical defaults:
 
-- small sample, higher certainty -> Clockworks
-- larger sample, lower cost -> ApiDojo
-- direct URL enrichment -> dedicated video/comments/profile actor
-- ad intelligence -> Codebyte
-- shop creator analytics -> Lemur, U.S. only
+- small sample, higher certainty -> choose the narrowest released hosted key
+- larger sample, lower cost -> use the broad hosted discovery key with tight limits
+- direct URL enrichment -> use the released video, comments, or profile key
+- ad intelligence -> route to `tiktok-ad-research`
+- shop creator analytics -> unsupported in the current hosted release
 
 ## Cost Discipline
 

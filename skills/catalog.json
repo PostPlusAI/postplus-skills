@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-1-a0dc985c96336a43",
+  "releaseId": "skills-1-5c02125779dfc16c",
   "source": "PostPlusAI/postplus-skills",
   "primaryIndex": "skills/INDEX.md",
   "skills": [
@@ -237,7 +237,8 @@
         "endpointKeys": [],
         "hostedCapabilities": [],
         "localDependencies": [
-          "ffmpeg"
+          "ffmpeg",
+          "ffprobe"
         ],
         "modelKeys": [],
         "sourceKeys": []
@@ -925,6 +926,10 @@
         "endpointKeys": [
           "video-infinitetalk",
           "video-kling-v2-6-pro-motion-control",
+          "video-kling-v3-0-pro-image",
+          "video-kling-v3-0-pro-text",
+          "video-kling-v3-0-std-image",
+          "video-kling-v3-0-std-text",
           "video-seedance-2-image",
           "video-seedance-2-image-turbo",
           "video-seedance-2-text",
@@ -948,6 +953,26 @@
         {
           "key": "video-kling-v2-6-pro-motion-control",
           "name": "Kwaivgi Kling v2.6 Pro Motion Control",
+          "source": "endpointKey"
+        },
+        {
+          "key": "video-kling-v3-0-pro-image",
+          "name": "Kwaivgi Kling v3.0 Pro Image To Video",
+          "source": "endpointKey"
+        },
+        {
+          "key": "video-kling-v3-0-pro-text",
+          "name": "Kwaivgi Kling v3.0 Pro Text To Video",
+          "source": "endpointKey"
+        },
+        {
+          "key": "video-kling-v3-0-std-image",
+          "name": "Kwaivgi Kling v3.0 Std Image To Video",
+          "source": "endpointKey"
+        },
+        {
+          "key": "video-kling-v3-0-std-text",
+          "name": "Kwaivgi Kling v3.0 Std Text To Video",
           "source": "endpointKey"
         },
         {

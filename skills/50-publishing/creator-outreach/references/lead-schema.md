@@ -92,7 +92,7 @@ Do not try to encode every possible platform detail at the top level.
   "lastContactedAt": null,
   "source": {
     "inputPaths": ["<work-folder>/.postplus/tiktok-candidates.json"],
-    "collectionPaths": ["tiktok/scraper"],
+    "sourceIds": ["tiktok-profiles"],
     "sourceUrls": ["https://www.tiktok.com/@setups_ai"],
     "scrapedAt": ["2026-03-27T12:00:00.000Z"]
   }

@@ -391,8 +391,6 @@ function buildContinuityReport(request) {
 }
 
 function validateSegmentContract(request, durationSeconds, label) {
-  assertNoDeprecatedPromptPlanFields(request, label);
-
   const contract = request.segmentContract;
   const totalDurationSeconds = Number(contract?.totalDurationSeconds ?? request.totalDurationSeconds ?? durationSeconds);
 
@@ -577,6 +575,7 @@ export function validateSeedanceRequestContract(request, label = "request") {
   }
 
   assertNoCrossSegmentShorthand(request, label);
+  assertNoDeprecatedPromptPlanFields(request, label);
   assertPromptAssemblyFields(request, label);
   validateSegmentContract(request, durationSeconds, label);
   const targetEditContract = validateTargetEditContract(

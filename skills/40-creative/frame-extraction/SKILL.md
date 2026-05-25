@@ -21,7 +21,7 @@ Follow shared routing rules in:
 
 - `postplus-shared` research preferences
 
-Use `skills/40-creative/video-analysis` before or alongside this skill when shot-level understanding already exists or would materially improve frame selection.
+Use `video-analysis` before or alongside this skill when shot-level understanding already exists or would materially improve frame selection.
 
 ## Use For
 
@@ -54,7 +54,7 @@ Do not use this skill when the user only wants:
 - spoken-line breakdown
 - adaptation ideas without frame output
 
-Those are usually better routed to `skills/40-creative/video-analysis`.
+Those are usually better routed to `video-analysis`.
 
 ## Core Principle
 
@@ -176,6 +176,8 @@ Long-video boundary:
   extraction by default
 - derive duration before extraction, usually with `ffprobe`
 - run `scripts/plan_frame_extraction.mjs` before extracting frames
+- the planning script consumes an already-probed duration; it does not run
+  `ffprobe` or extract frames itself
 - for videos above 5 minutes, the preflight plan caps the first pass to a
   maximum frame budget of 60 selected frames
 - tell the user: "This video is longer than 5 minutes, so I will extract a limited number of key frames based on the target range to avoid generating thousands of unusable images."
@@ -200,14 +202,41 @@ Match the packaging to the downstream task:
 - keep only final user-facing frame exports, contact sheets, or review packs
   outside `.postplus/`
 - use small, task-shaped extraction scopes before broad full-video pulls
-- this skill requires `ffmpeg`; follow the `postplus-shared` Local Dependency
-  Bootstrap Rule before extraction
+- this skill requires both `ffmpeg` and `ffprobe`; follow the `postplus-shared`
+  Local Dependency Bootstrap Rule before probing duration or extracting frames
 - if local dependency bootstrap fails, stop immediately instead of switching to
   ad hoc shell glue
 
 ## Scripts
 
 - `scripts/plan_frame_extraction.mjs`
+
+Command:
+
+```bash
+node scripts/plan_frame_extraction.mjs --input <request.json> --output <plan.json>
+```
+
+`--input` is required. The request JSON must include:
+
+- `durationSeconds`: positive number from `ffprobe`
+
+Optional:
+
+- `frameBudget`: positive maximum frame count requested for the first pass
+- `scope`: extraction scope such as `full-video`, `hook-first`, or a timestamp range
+
+The plan script only returns the bounded first-pass plan. Run `ffmpeg` extraction
+after this preflight plan confirms the scope and frame budget.
+
+The output JSON includes:
+
+- `durationSeconds`
+- `isLongVideo`
+- `maximumSelectedFrames`
+- `requiresBoundedFirstPass`
+- `scope`
+- `userMessage`
 
 ## Default Sequence
 

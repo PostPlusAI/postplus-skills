@@ -8,6 +8,8 @@ import http from "node:http";
 import os from "node:os";
 import path from "node:path";
 
+import { runLocalDependencyCommandSync } from "./local_dependencies.mjs";
+
 export const POSTPLUS_STUDIO_DIRECTORY_NAME = "PostPlus Studio";
 
 export const ASSET_ROLES = new Set([
@@ -1874,6 +1876,112 @@ export class PostPlusWorkspaceRuntime {
     };
   }
 
+  createWorkflowNodeRun(input = {}) {
+    const instanceId = safeIdentifier(input.instanceId ?? input.instance_id, "instance_id");
+    const nodeId = safeIdentifier(input.nodeId ?? input.node_id, "node_id");
+    const templateId = safeIdentifier(input.templateId ?? input.template_id, "template_id");
+    const title = String(input.title ?? "").trim();
+    const instanceLabel = String(input.instanceLabel ?? input.instance_label ?? "").trim();
+    const expectedOutput = String(input.expectedOutput ?? input.expected_output ?? "").trim();
+    const prompt = String(input.prompt ?? "").trim();
+    const skillNames = normalizeStringArray(input.skillNames ?? input.skill_names);
+    const inputSummary = normalizeStringArray(input.inputSummary ?? input.input_summary);
+    const approvalGateIds = normalizeStringArray(input.approvalGateIds ?? input.approval_gate_ids);
+    const requestedCount = normalizeWorkflowRequestedCount(input.requestedCount ?? input.requested_count ?? 1);
+    const logicalInstanceIds = normalizeWorkflowLogicalInstanceIds(input.logicalInstanceIds ?? input.logical_instance_ids, requestedCount);
+    const evidence = normalizeWorkflowEvidence(input.evidence);
+    const preflight = normalizeWorkflowPreflight(input.preflight);
+
+    if (!title) throw new Error("Workflow node run title is required.");
+    if (!instanceLabel) throw new Error("Workflow node run instance label is required.");
+    if (!expectedOutput) throw new Error("Workflow node run expected output is required.");
+    if (!prompt) throw new Error("Workflow node run prompt is required.");
+    if (skillNames.length === 0) throw new Error("Workflow node run requires at least one executor skill.");
+
+    const createdAt = nowIso();
+    const status = approvalGateIds.length > 0 ? "waiting_approval" : "running";
+    const logicalInstanceRuns = buildWorkflowLogicalInstanceRuns(
+      logicalInstanceIds,
+      status,
+      title,
+      createdAt,
+    );
+    const run = {
+      approvalGateIds,
+      createdAt,
+      evidence,
+      expectedOutput,
+      id: safeIdentifier(
+        `workflow_run_${safeFileStem(instanceId)}_${safeFileStem(nodeId)}_${Date.now()}`,
+        "workflow_node_run_id",
+      ),
+      inputSummary,
+      instanceId,
+      instanceLabel,
+      logicalInstanceIds,
+      logicalInstanceRuns,
+      nodeId,
+      ...(preflight ? { preflight } : {}),
+      prompt,
+      requestedCount,
+      skillNames,
+      status,
+      templateId,
+      title,
+      updatedAt: createdAt,
+    };
+
+    const context = this.lockManager.withLock("context", () => {
+      const current = this.readContext();
+      const runs = Array.isArray(current.dashboard_workflow_node_runs)
+        ? current.dashboard_workflow_node_runs
+        : [];
+      const next = {
+        ...current,
+        dashboard_workflow_node_runs: [
+          run,
+          ...runs.filter((item) => item?.id !== run.id),
+        ],
+        updated_at: createdAt,
+      };
+      this.writeContextUnlocked(next);
+      return next;
+    });
+
+    const provenance = this.provenance.append("workflow_node_run_created", {
+      approval_gate_ids: approvalGateIds,
+      evidence_count: evidence.length,
+      expected_output: expectedOutput,
+      node_id: nodeId,
+      logical_instance_count: logicalInstanceIds.length,
+      logical_instance_run_count: logicalInstanceRuns.length,
+      preflight_quote_count: preflight?.quoteEvidence?.length ?? 0,
+      provider: preflight?.provider ?? null,
+      requested_count: requestedCount,
+      run_id: run.id,
+      skill_names: skillNames,
+      template_id: templateId,
+      workflow_instance_id: instanceId,
+    });
+    const activity = this.activity.append(`Workflow node run queued: ${title}`, {
+      event: "workflow_node_run_created",
+      node_id: nodeId,
+      logical_instance_count: logicalInstanceIds.length,
+      logical_instance_run_count: logicalInstanceRuns.length,
+      run_id: run.id,
+      status: run.status,
+      requested_count: requestedCount,
+      template_id: templateId,
+      workflow_instance_id: instanceId,
+    });
+
+    this.notifier.send("context.updated", { context });
+    this.notifier.send("provenance.created", { provenance });
+    this.notifier.send("activity.created", { activity });
+
+    return { activity, context, provenance, run };
+  }
+
   copyFileIntoAssets(type, sourceFile, options = {}) {
     const assetDir = ASSET_TYPE_DIRS[type];
     if (!assetDir) {
@@ -2235,6 +2343,45 @@ async function handleDashboardRequest(state, request, response) {
     return;
   }
 
+  if (request.method === "POST" && pathname === "/api/project/open-directory") {
+    const body = await readRequestJson(request);
+    const directory = String(
+      body.directory ?? body.projectRoot ?? body.project_root ?? body.path ?? "",
+    ).trim();
+    if (!directory) {
+      sendJson(response, 400, {
+        error: "Campaign directory path is required.",
+        ok: false,
+      });
+      return;
+    }
+
+    const projectRoot = path.resolve(expandHome(directory));
+    initializeProject({
+      name: body.name,
+      projectRoot,
+      projectSlug: body.project_id ?? body.projectId,
+      status: body.status,
+    });
+
+    state.watcher?.close();
+    state.projectWatcher?.close();
+    runtime.switchProjectRoot(projectRoot);
+    state.watcher = state.watchMarkdown ? runtime.startMarkdownWatcher() : null;
+    state.projectWatcher = state.watchProjectState ? new ProjectStateWatcher(runtime).start() : null;
+    runtime.notifier.send("project.updated", {
+      project_id: runtime.readProject().project_id ?? null,
+      reason: "project_opened",
+    });
+
+    sendJson(response, 200, {
+      ok: true,
+      projects: listWorkspaceProjects(state.projectsRoot, runtime.projectRoot),
+      snapshot: runtime.getProjectSnapshot(),
+    });
+    return;
+  }
+
   const projectResourceMatch = pathname.match(/^\/api\/projects\/([^/]+)$/u);
   if (projectResourceMatch && request.method === "PATCH") {
     const projectId = decodeURIComponent(projectResourceMatch[1]);
@@ -2368,6 +2515,13 @@ async function handleDashboardRequest(state, request, response) {
     const body = await readRequestJson(request);
     const context = runtime.context.updateContext(body);
     sendJson(response, 200, { context, ok: true });
+    return;
+  }
+
+  if (request.method === "POST" && pathname === "/api/workflow/node-run") {
+    const body = await readRequestJson(request);
+    const result = runtime.createWorkflowNodeRun(body);
+    sendJson(response, 200, { ok: true, ...result });
     return;
   }
 
@@ -2637,32 +2791,56 @@ function listWorkspaceProjects(projectsRoot, activeProjectRoot) {
     return [];
   }
 
-  return fs
+  const projects = fs
     .readdirSync(root, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
     .map((entry) => {
       const projectRoot = path.join(root, entry.name);
-      const projectPath = path.join(projectRoot, "project.json");
-      if (!fs.existsSync(projectPath)) {
-        return null;
-      }
-
-      const project = readJsonFile(projectPath, {});
-      return {
-        active: active === path.resolve(projectRoot),
-        goal: project.goal ?? "",
-        name: project.name ?? titleizeSlug(entry.name),
-        project_id: project.project_id ?? entry.name,
-        status: project.status ?? "active",
-        updated_at: project.updated_at ?? project.created_at ?? null,
-      };
+      return readWorkspaceProjectSummary(projectRoot, active, false);
     })
-    .filter(Boolean)
-    .sort((left, right) => {
-      if (left.active) return -1;
-      if (right.active) return 1;
-      return String(left.name).localeCompare(String(right.name));
-    });
+    .filter(Boolean);
+
+  if (active && !projects.some((project) => project.active)) {
+    const activeProject = readWorkspaceProjectSummary(
+      active,
+      active,
+      !isPathInside(active, root),
+    );
+    if (activeProject) {
+      projects.push(activeProject);
+    }
+  }
+
+  return projects.sort((left, right) => {
+    if (left.active) return -1;
+    if (right.active) return 1;
+    return String(left.name).localeCompare(String(right.name));
+  });
+}
+
+function readWorkspaceProjectSummary(projectRoot, activeProjectRoot, external) {
+  const projectPath = path.join(projectRoot, "project.json");
+  if (!fs.existsSync(projectPath)) {
+    return null;
+  }
+
+  const project = readJsonFile(projectPath, {});
+  return {
+    active: activeProjectRoot
+      ? path.resolve(activeProjectRoot) === path.resolve(projectRoot)
+      : false,
+    goal: project.goal ?? "",
+    name: project.name ?? titleizeSlug(path.basename(projectRoot)),
+    project_id: project.project_id ?? path.basename(projectRoot),
+    status: project.status ?? "active",
+    updated_at: project.updated_at ?? project.created_at ?? null,
+    ...(external ? { external: true } : {}),
+  };
+}
+
+function isPathInside(childPath, parentPath) {
+  const relative = path.relative(path.resolve(parentPath), path.resolve(childPath));
+  return relative === "" || (relative && !relative.startsWith("..") && !path.isAbsolute(relative));
 }
 
 function nextAvailableProjectSlug(baseSlug, projectsRoot) {
@@ -3255,28 +3433,27 @@ function renderDashboardHtml() {
 
 function generateFixtureVideo(outputPath) {
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-  try {
-    execFileSync(
-      "ffmpeg",
-      [
-        "-y",
-        "-f",
-        "lavfi",
-        "-i",
-        "testsrc2=duration=5:size=720x1280:rate=24",
-        "-pix_fmt",
-        "yuv420p",
-        outputPath,
-      ],
-      {
-        stdio: "ignore",
-      },
-    );
-  } catch (error) {
+  const result = runLocalDependencyCommandSync(
+    "ffmpeg",
+    [
+      "-y",
+      "-f",
+      "lavfi",
+      "-i",
+      "testsrc2=duration=5:size=720x1280:rate=24",
+      "-pix_fmt",
+      "yuv420p",
+      outputPath,
+    ],
+    {
+      missingMessage: "ffmpeg is required to generate the 5s fixture video.",
+      stdio: "ignore",
+    },
+  );
+
+  if (result.status !== 0) {
     throw new Error(
-      `ffmpeg is required to generate the 5s fixture video: ${
-        error instanceof Error ? error.message : String(error)
-      }`,
+      `ffmpeg is required to generate the 5s fixture video: exit code ${result.status}`,
     );
   }
 }
@@ -3783,6 +3960,15 @@ function filterContextPatch(patch) {
     "visible_panel",
     "playhead_time",
     "related_script_block",
+    "dashboard_workflows",
+    "dashboard_workflow_node_runs",
+    "dashboard_workflow_human_approvals",
+    "dashboard_workflow_cost_approvals",
+    "dashboard_workflow_feedback_records",
+    "dashboard_workflow_qa_packets",
+    "dashboard_workflow_final_handoff_manifests",
+    "dashboard_workflow_conversation_requests",
+    "dashboard_workflow_templates",
   ]);
   const next = {};
   for (const [key, value] of Object.entries(patch ?? {})) {
@@ -3801,6 +3987,106 @@ function normalizeStringArray(value) {
     return value.split(",").map((item) => item.trim()).filter(Boolean);
   }
   return [];
+}
+
+function normalizeWorkflowEvidence(value) {
+  if (!Array.isArray(value)) {
+    throw new Error("Workflow evidence must be an array.");
+  }
+  return value.map((item, index) => {
+    if (!item || typeof item !== "object") {
+      throw new Error(`Workflow evidence item ${index + 1} must be an object.`);
+    }
+    const id = String(item.id ?? "").trim();
+    const label = String(item.label ?? "").trim();
+    const source = String(item.source ?? "").trim();
+    if (!id || !label || !source) {
+      throw new Error(`Workflow evidence item ${index + 1} requires id, label, and source.`);
+    }
+    return { id, label, source };
+  });
+}
+
+function normalizeWorkflowPreflight(value) {
+  if (!value || typeof value !== "object") return null;
+  const aspectRatio = String(value.aspectRatio ?? value.aspect_ratio ?? "").trim();
+  const durationSeconds = Number(value.durationSeconds ?? value.duration_seconds);
+  const estimatedCostUsd = Number(value.estimatedCostUsd ?? value.estimated_cost_usd);
+  const model = String(value.model ?? "").trim();
+  const prompt = String(value.prompt ?? "").trim();
+  const provider = String(value.provider ?? "").trim();
+  const resolution = String(value.resolution ?? "").trim();
+  if (
+    !aspectRatio ||
+    !Number.isFinite(durationSeconds) ||
+    !Number.isFinite(estimatedCostUsd) ||
+    !model ||
+    !prompt ||
+    !provider ||
+    !resolution
+  ) {
+    throw new Error("Workflow preflight requires provider, model, duration, aspect ratio, resolution, prompt, and estimated cost.");
+  }
+  return {
+    aspectRatio,
+    durationSeconds,
+    estimatedCostUsd,
+    model,
+    prompt,
+    provider,
+    quoteEvidence: normalizeWorkflowEvidence(value.quoteEvidence ?? value.quote_evidence ?? []),
+    referenceAudio: normalizeWorkflowEvidence(value.referenceAudio ?? value.reference_audio ?? []),
+    referenceImages: normalizeWorkflowEvidence(value.referenceImages ?? value.reference_images ?? []),
+    resolution,
+  };
+}
+
+function normalizeWorkflowRequestedCount(value) {
+  const count = Number(value);
+  if (!Number.isFinite(count) || !Number.isInteger(count) || count < 1 || count > 300) {
+    throw new Error("Workflow requested count must be an integer from 1 to 300.");
+  }
+  return count;
+}
+
+const WORKFLOW_LOGICAL_INSTANCE_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$/u;
+
+function workflowLogicalInstanceIdFallback(index) {
+  return `item-${String(index + 1).padStart(3, "0")}`;
+}
+
+function normalizeWorkflowLogicalInstanceIds(value, count) {
+  if (value == null) {
+    return Array.from({ length: count }, (_, index) => workflowLogicalInstanceIdFallback(index));
+  }
+  const ids = normalizeStringArray(value);
+  if (ids.length !== count) {
+    throw new Error("Workflow logical instance ids must match requested count.");
+  }
+  return ids.map((id, index) => {
+    if (!WORKFLOW_LOGICAL_INSTANCE_ID_PATTERN.test(id)) {
+      throw new Error(`Workflow logical instance id ${index + 1} is invalid.`);
+    }
+    return id;
+  });
+}
+
+function buildWorkflowLogicalInstanceRuns(logicalInstanceIds, runStatus, title, updatedAt) {
+  const status = workflowLogicalInstanceStatusFromRunStatus(runStatus);
+  return logicalInstanceIds.map((logicalInstanceId, index) => ({
+    artifact: `${title} ${String(index + 1).padStart(3, "0")}`,
+    logicalInstanceId,
+    status,
+    updatedAt,
+  }));
+}
+
+function workflowLogicalInstanceStatusFromRunStatus(status) {
+  if (status === "approved" || status === "completed") return "completed";
+  if (status === "rejected") return "rejected";
+  if (status === "failed") return "failed";
+  if (status === "waiting_approval") return "waiting_review";
+  return status === "running" ? "running" : "queued";
 }
 
 function mergeUnique(values) {

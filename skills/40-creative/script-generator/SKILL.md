@@ -374,9 +374,19 @@ Suggest one next skill only.
 
 Typical next steps:
 
-- `storyboard-grid-writer` when scene logic should become panels
 - `video-request-architect` when the script is stable enough for request planning
 - `prompt-preflight-qa` when a prompt draft already exists and needs diagnosis
+
+## Public Skill Execution Contract
+
+This released skill is instruction-only. It has no local script ABI. The stable
+output contract is the structured response blocks below, especially `Script
+Strategy Block`, `Source Context`, selected variants, QA block, and one
+downstream handoff.
+
+Because there is no executable validator in this skill, do not imply that the
+output has been mechanically tested. Mark the confidence level as `grounded`,
+`partially_grounded`, or `provisional` based on the actual source basis.
 
 ## Output Shapes
 

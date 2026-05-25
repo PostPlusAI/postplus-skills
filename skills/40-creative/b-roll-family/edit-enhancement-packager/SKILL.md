@@ -55,19 +55,19 @@ Do not use this skill when the user still lacks:
 
 Route those first to:
 
-- `skills/40-creative/b-roll-family/broll-catalog-builder`
-- `skills/40-creative/b-roll-family/broll-match-engine`
+- `broll-catalog-builder`
+- `broll-match-engine`
 
 ## Read These References
 
-- family architecture: `../references/skill-architecture.md`
-- shared contracts: `../references/contracts.md`
-- edit enhancement contract: `../references/edit-enhancement-contract.md`
+- family architecture: `/_postplus_shared/40-creative/b-roll-family/references/skill-architecture.md`
+- shared contracts: `/_postplus_shared/40-creative/b-roll-family/references/contracts.md`
+- edit enhancement contract: `/_postplus_shared/40-creative/b-roll-family/references/edit-enhancement-contract.md`
 
 Use existing local skills when useful:
 
-- `skills/40-creative/subtitle-packager`
-- `skills/40-creative/editing-decision-engine`
+- `subtitle-packager`
+- `editing-decision-engine`
 
 ## Core Principle
 

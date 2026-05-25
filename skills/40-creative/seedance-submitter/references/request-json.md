@@ -250,7 +250,7 @@ If the report contains warnings, user-facing copy should prefer wording such as:
 Do not say `same owner locked` or equivalent when the report is only
 `text-only`.
 
-## Storyboard Timeline Rule
+## Prompt Storyline Rule
 
 The exact voiceover must live inside `promptPlan.prompt_storyline`, on the
 same timeline as the visible action.

@@ -40,13 +40,13 @@ different source of truth before collecting.
 
 ## PostPlus Cloud Boundary
 
-This skill depends on host-managed collection capability for the corresponding collection paths.
+This skill depends on host-managed collection capability for the corresponding source keys.
 
 In the PostPlus runtime:
 
-- do not probe or print provider secrets
+- do not probe or print host-managed service secrets
 - do not ask the user to export them inside chat
-- if a collection path returns a stable capability/network hard error, stop
+- if a source key returns a stable capability/network hard error, stop
   immediately instead of trying alternate shell commands
 
 ## Default Collection Path
@@ -99,12 +99,12 @@ Do not treat public Facebook post evidence as a guaranteed audience export.
 
 Read before implementation:
 
-- `skills/20-research/facebook-research/references/normalized-schema.md`
+- `${CLAUDE_SKILL_DIR}/references/normalized-schema.md`
 
 Use these entrypoints:
 
-- `skills/20-research/facebook-research/scripts/run_facebook_post_collection.mjs`
-- `skills/20-research/facebook-research/scripts/poll_facebook_post_collection.mjs`
+- `${CLAUDE_SKILL_DIR}/scripts/run_facebook_post_collection.mjs`
+- `${CLAUDE_SKILL_DIR}/scripts/poll_facebook_post_collection.mjs`
 
 If `run_facebook_post_collection.mjs` returns `pending > 0`, keep the emitted
 `collection-report.json` and resume with `poll_facebook_post_collection.mjs
@@ -117,9 +117,10 @@ continue independent brief structure, source review, or next-step planning.
 
 ## Hosted Collection Note
 
-Use the shared hosted collection runner for actor calls:
+Use the installed public-content collection entrypoint for Facebook calls:
 
-- `${CLAUDE_SKILL_DIR}/_postplus_shared/00-core/shared-collection/scripts/collection_actor_run.mjs`
+- `${CLAUDE_SKILL_DIR}/scripts/run_facebook_post_collection.mjs`
 
-The runner's `--input` file must be a `schemaVersion: 1` hosted execution
-envelope whose `input` field contains the compiled collection request.
+The entrypoint maps public Facebook URLs onto the released source keys
+`facebook-profile-posts`, `facebook-group-posts`, and `facebook-post-by-url`.
+Do not bypass it with repo-local shared runner paths from an installed skill.

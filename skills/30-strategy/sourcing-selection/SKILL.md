@@ -187,7 +187,7 @@ Use for:
 
 Current preferred routes:
 
-- Amazon search-led demand -> `skills/20-research/amazon-research`
+- Amazon search-led demand -> `amazon-research`
 
 ### Search-Intent Source
 
@@ -200,7 +200,7 @@ Use for:
 
 Current preferred route:
 
-- Google search-intent -> `skills/20-research/google-trends-research`
+- Google search-intent -> `google-trends-research`
 
 Treat this as an early signal layer.
 Do not confuse it with transaction demand or channel-native competition proof.
@@ -215,11 +215,11 @@ Use when content-led selling matters:
 
 Current preferred route:
 
-- `skills/20-research/tiktok-research`
+- `tiktok-research`
 
 If the request is broader than one named platform and the goal is to compare social proof or audience language across networks, route first through:
 
-- `skills/10-routing/social-media-extractor`
+- `social-media-extractor`
 
 Use this layer only when it changes the decision.
 Do not force it into every sourcing task.
@@ -274,6 +274,35 @@ If the result is going to move into execution, keep the handoff explicit:
 
 Do not blur evidence collection, business judgment, and execution prep into one opaque step.
 
+## Executable ABI
+
+Use the local script only after the sourcing evidence and decision frame already exist.
+It packages a source-backed memo; it does not collect marketplace data and does
+not invent missing demand, supply, or rationale.
+
+Command:
+
+```bash
+node ${CLAUDE_SKILL_DIR}/scripts/build_sourcing_selection.mjs --input <input.json> --output <decision.json>
+```
+
+`--input` is required. The input JSON must include:
+
+- `decision`: provisional decision label or short judgment
+- `demandSignals`: non-empty evidence strings from demand-side sources
+- `supplySignals`: non-empty evidence strings from supply-side sources
+- `rationale`: non-empty reasoning strings tied to those signals
+- `missingLayers`: non-empty list of missing or unresolved decision layers
+
+Optional fields:
+
+- `productOrNiche`
+- `targetChannel`
+- `recommendedNextStep`
+
+If any required field is missing, stop instead of generating a default sourcing
+judgment.
+
 ## Failure Modes To Avoid
 
 Do not:
@@ -292,8 +321,8 @@ Current building blocks:
 
 - supply-side: user-provided supplier sheets, quotations, or approved
   marketplace data
-- search-intent: `skills/20-research/google-trends-research`
-- search-led demand: `skills/20-research/amazon-research`
-- content-language fit: `skills/20-research/tiktok-research`
+- search-intent: `google-trends-research`
+- search-led demand: `amazon-research`
+- content-language fit: `tiktok-research`
 
 Future sources should be slotted into the same roles.

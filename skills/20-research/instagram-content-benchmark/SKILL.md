@@ -20,11 +20,14 @@ Use this skill when the user wants to:
 - identify repeatable hooks, caption structures, or format patterns
 - decide what type of Instagram content to recreate or adapt
 
-Read these references before implementation:
+Use embedded `instagram-tools` support scripts for local execution. When this
+skill needs to run Instagram collection, normalization, or ranking scripts from
+an installed public skill, call them through installed-safe embedded support paths such
+as:
 
-- `skills/20-research/instagram-references/actor-selection.md`
-- `skills/20-research/instagram-references/normalized-schema.md`
-- `skills/20-research/instagram-references/tool-contracts.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-tools/scripts/run_instagram_actor.mjs`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-tools/scripts/normalize_instagram_dataset.mjs`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-tools/scripts/rank_instagram_posts.mjs`
 
 ## Primary Hosted Collection Keys
 

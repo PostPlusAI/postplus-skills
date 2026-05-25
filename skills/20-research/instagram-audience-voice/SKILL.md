@@ -22,9 +22,15 @@ Use this skill when the user wants to:
 
 Read these references before implementation:
 
-- `skills/20-research/instagram-references/actor-selection.md`
-- `skills/20-research/instagram-references/normalized-schema.md`
-- `skills/20-research/instagram-references/tool-contracts.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-references/actor-selection.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-references/normalized-schema.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-references/tool-contracts.md`
+
+Use these embedded support scripts when a local execution step is needed:
+
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-tools/scripts/run_instagram_actor.mjs`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-tools/scripts/normalize_instagram_dataset.mjs`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-tools/scripts/cluster_instagram_comments.mjs`
 
 ## Primary Hosted Collection Key
 

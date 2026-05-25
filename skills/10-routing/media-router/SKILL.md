@@ -70,19 +70,19 @@ The route should be chosen from five dimensions:
 
 ### `audio -> transcript`
 
-Use `skills/40-creative/audio-transcription`.
+Use `audio-transcription`.
 
 ### `video -> transcript/subtitles`
 
-Use `skills/40-creative/video-transcription`.
+Use `video-transcription`.
 
 ### `transcript with timestamps -> subtitle files`
 
-Use `skills/40-creative/subtitle-packager`.
+Use `subtitle-packager`.
 
 ### `transcript + assets -> cut logic / B-roll plan`
 
-Use `skills/40-creative/editing-decision-engine`.
+Use `editing-decision-engine`.
 
 ### `video -> edit-ready plan`
 

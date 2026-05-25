@@ -25,7 +25,7 @@ This skill is for:
 
 This skill is not for:
 
-- choosing the hook opening or stop-scroll mechanism (use `hook-design` if available, or `pattern-router`)
+- choosing the hook opening or stop-scroll mechanism (use `pattern-router`)
 - writing the final storyboard grid or prompt
 - visual execution or frame-one design (use `visual-hook`)
 - pre-generation approval (use `prompt-preflight-qa`)
@@ -40,7 +40,8 @@ Do not introduce the product before the narrative has deepened the viewer's prob
 
 Use the upstream hook context as the input to narrative design.
 
-The preferred upstream input is a Hook Brief produced by `hook-design`. If `hook-design` has not been run, provide at minimum:
+The preferred upstream input is a Hook Brief or route decision produced by
+`pattern-router`. Provide at minimum:
 
 - the viewer question the opening creates
 - the hook mechanism in use
@@ -492,7 +493,9 @@ Do not hand off to storyboard or prompt work with a vague arc or unresolved prod
 
 When stuck, default to `expertExplainer`. It is the most forgiving arc: it does not require a specific emotional precondition in the viewer, does not require product reveal timing to be precise, and has the highest completion rate of all arc types. If the hook context and product are clear, `expertExplainer` can always produce a valid Narrative Brief.
 
-If the upstream hook context itself is under-specified, return to `hook-design` or `pattern-router` before proceeding. Do not resolve hook ambiguity inside narrative design.
+If the upstream hook context itself is under-specified, return to
+`pattern-router` before proceeding. Do not resolve hook ambiguity inside
+narrative design.
 
 ## Limitations
 
@@ -500,7 +503,7 @@ This skill handles arc selection, beat sequencing, product timing, emotional arc
 
 It does not handle:
 
-- hook mechanism selection (use `hook-design` or `pattern-router`)
+- hook mechanism selection (use `pattern-router`)
 - frame-one visual execution (use `visual-hook`)
 - benchmark reference decoding (use `reference-decode`)
 - pre-generation prompt validation (use `prompt-preflight-qa`)
@@ -510,10 +513,9 @@ It does not handle:
 The full skill chain for a short-form video is:
 
 1. `pattern-router` — choose opening route and segment type
-2. `hook-design` — lock hook mechanism and Hook Brief (use `pattern-router` output directly if `hook-design` is not available)
-3. **`narrative-design`** — lock Narrative Brief ← this skill
-4. `reference-decode` or `visual-hook` — when references or visual execution need work
-5. `prompt-preflight-qa` — validate before generation
+2. **`narrative-design`** — lock Narrative Brief from the route and hook context
+3. `reference-decode` or `visual-hook` — when references or visual execution need work
+4. `prompt-preflight-qa` — validate before generation
 
 Without narrative design, a strong hook context frequently hands off to prompts that introduce the product too early, lose the viewer question, or arrive at a CTA the viewer is not ready for.
 

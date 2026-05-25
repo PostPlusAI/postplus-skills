@@ -141,6 +141,33 @@ Common outputs:
 - image prompt pack
 - negative prompt pack
 
+## Executable ABI
+
+Use the local script only after benchmark-supported persona evidence has already
+been selected. It packages a persona lock; it does not design a persona from an
+empty prompt.
+
+Command:
+
+```bash
+node scripts/build_persona_pack.mjs --input <input.json> --output <personas.json>
+```
+
+`--input` is required. The input JSON must contain either one persona object at
+the top level or a `personas` array. Each persona must include:
+
+- `name`
+- `keyPain`
+- `proofNeed`
+- `sourceBasis`: non-empty benchmark ids, report rows, source URLs, or evidence notes
+
+Optional:
+
+- `personaId`
+
+If `sourceBasis` cannot be supplied, stop and ask for benchmark evidence instead
+of generating a default persona.
+
 ### Persona Recommendation Memo
 
 Include:

@@ -7,28 +7,45 @@ import {
   readJson,
 } from "../_postplus_shared/00-core/shared-runtime/scripts/lib/local_skill_cli.mjs";
 
-export function buildBenchmarkBrief(input = {}) {
+function readRequiredString(input, fieldName) {
+  const value = input?.[fieldName];
+  if (typeof value !== "string" || !value.trim()) {
+    throw new Error(`benchmark-to-brief requires ${fieldName}.`);
+  }
+  return value.trim();
+}
+
+function readRequiredStringArray(input, fieldName) {
+  const value = input?.[fieldName];
+  if (!Array.isArray(value) || value.length === 0) {
+    throw new Error(`benchmark-to-brief requires non-empty ${fieldName}.`);
+  }
+
+  const strings = value.filter(
+    (item) => typeof item === "string" && item.trim(),
+  );
+  if (strings.length === 0) {
+    throw new Error(`benchmark-to-brief requires non-empty ${fieldName}.`);
+  }
+
+  return strings;
+}
+
+export function buildBenchmarkBrief(input) {
   return {
     brief: {
-      corePromise:
-        input.corePromise ||
-        "Keep the workflow in context instead of switching tabs.",
-      hookOptions:
-        Array.isArray(input.hookOptions) && input.hookOptions.length > 0
-          ? input.hookOptions
-          : ["Stop switching tabs to write one email."],
-      workflow: input.workflow || "tutorial-led",
+      corePromise: readRequiredString(input, "corePromise"),
+      hookOptions: readRequiredStringArray(input, "hookOptions"),
+      workflow: readRequiredString(input, "workflow"),
     },
-    sourceFacts:
-      Array.isArray(input.sourceFacts) && input.sourceFacts.length > 0
-        ? input.sourceFacts
-        : ["operators want in-context workflow proof"],
+    sourceFacts: readRequiredStringArray(input, "sourceFacts"),
+    sourceBasis: readRequiredStringArray(input, "sourceBasis"),
   };
 }
 
 function usage() {
   console.error(
-    "Usage: node build_benchmark_brief.mjs [--input <input.json>] [--output <brief.json>]",
+    "Usage: node build_benchmark_brief.mjs --input <input.json> [--output <brief.json>]",
   );
 }
 
@@ -41,7 +58,13 @@ async function main() {
     return;
   }
 
-  const input = args.input ? readJson(args.input) : {};
+  if (!args.input) {
+    usage();
+    process.exitCode = 1;
+    return;
+  }
+
+  const input = readJson(args.input);
   const payload = buildBenchmarkBrief(input);
   printOrWriteJson(args.output, payload);
 }

@@ -172,7 +172,7 @@ function resolveBoundedPerSurfaceCount(input) {
   return clampInteger(estimated, input.min, input.max);
 }
 
-function normalizeClockworksSearchSection(value, fallback) {
+function normalizeSearchSection(value, fallback) {
   const normalized = cleanString(value)?.toLowerCase();
 
   if (!normalized) {
@@ -226,11 +226,11 @@ function normalizeSourceIdForInput(sourceId) {
   const actor = String(sourceId || "").toLowerCase();
 
   if (actor === "tiktok-scraper") {
-    return "clockworks/tiktok-scraper";
+    return "tiktok-scraper";
   }
 
   if (actor === "tiktok-scraper-api") {
-    return "apidojo/tiktok-scraper-api";
+    return "tiktok-scraper-api";
   }
 
   return actor;
@@ -357,7 +357,7 @@ export function buildInput(brief, sourceId) {
       targetLimit: DEFAULT_BOUNDED_PROFILE_RESULTS
     });
 
-    if (actor.includes("apidojo/")) {
+    if (actor.includes("start-url-")) {
       return {
         ...extra,
         startUrls: [
@@ -399,7 +399,7 @@ export function buildInput(brief, sourceId) {
   }
 
   if (actor.includes("comments-scraper")) {
-    if (actor.includes("apidojo/")) {
+    if (actor.includes("start-url-")) {
       return {
         ...extra,
         startUrls: urls.map((url) => ({ url })),
@@ -431,7 +431,7 @@ export function buildInput(brief, sourceId) {
     };
   }
 
-  if (actor.includes("apidojo/tiktok-scraper-api")) {
+  if (actor.includes("tiktok-scraper-api")) {
     if (task === "profile-enrichment") {
       return {
         ...extra,
@@ -454,7 +454,7 @@ export function buildInput(brief, sourceId) {
     };
   }
 
-  if (actor.includes("apidojo/tiktok-scraper")) {
+  if (actor.includes("tiktok-start-url-scraper")) {
     const startUrls = [
       ...urls.map((url) => ({ url })),
       ...hashtags.map((hashtag) => ({ url: hashtagUrl(hashtag) })),
@@ -475,7 +475,7 @@ export function buildInput(brief, sourceId) {
     return input;
   }
 
-  if (actor.includes("clockworks/tiktok-scraper")) {
+  if (actor.includes("tiktok-scraper")) {
     const resultsPerPage = resolveBoundedPerSurfaceCount({
       costMode,
       expandedDefault: limit,
@@ -485,7 +485,7 @@ export function buildInput(brief, sourceId) {
       surfaceCount: discoverySurfaceCount,
       targetLimit: limit
     });
-    const searchSection = normalizeClockworksSearchSection(
+    const searchSection = normalizeSearchSection(
       brief.searchSection,
       queries.length > 0 ? "/video" : ""
     );

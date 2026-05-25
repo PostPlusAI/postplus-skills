@@ -125,7 +125,7 @@ Transcription, video analysis, B-roll planning, prompt architecture, generation,
   - Supported models: Nano Banana 2 Edit, Nano Banana 2 Text To Image, Nano Banana Pro Edit, Nano Banana Pro Edit, Nano Banana Pro Edit, Nano Banana Pro Text To Image, Nano Banana Pro Text To Image, Nano Banana Pro Text To Image, Openai Gpt Image 2 Edit, Openai Gpt Image 2 Text To Image, Seedream v5.0 Lite, Seedream v5.0 Lite Edit, Seedream v5.0 Lite Edit Sequential, Seedream v5.0 Lite Sequential
 - `video-batch-runner`
   - Path: `skills/40-creative/video-batch-runner/SKILL.md`
-  - Supported models: InfiniteTalk, Kwaivgi Kling v2.6 Pro Motion Control, Seedance 2.0 Image To Video, Seedance 2.0 Image To Video Turbo, Seedance 2.0 Text To Video, Seedance 2.0 Text To Video Turbo
+  - Supported models: InfiniteTalk, Kwaivgi Kling v2.6 Pro Motion Control, Kwaivgi Kling v3.0 Pro Image To Video, Kwaivgi Kling v3.0 Pro Text To Video, Kwaivgi Kling v3.0 Std Image To Video, Kwaivgi Kling v3.0 Std Text To Video, Seedance 2.0 Image To Video, Seedance 2.0 Image To Video Turbo, Seedance 2.0 Text To Video, Seedance 2.0 Text To Video Turbo
 - `seedance-submitter`
   - Path: `skills/40-creative/seedance-submitter/SKILL.md`
   - Supported models: Seedance 2.0 Image To Video, Seedance 2.0 Image To Video Turbo, Seedance 2.0 Text To Video, Seedance 2.0 Text To Video Turbo

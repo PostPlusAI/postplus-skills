@@ -20,13 +20,15 @@ Use this skill when the user wants to:
 - inspect a brand account's profile, output, and rough momentum
 - build a shortlist of accounts worth deeper content analysis
 
-Do not use this as the default first pass for open-ended creator discovery when the user cares about follower bands, topical fit, or audience fit inferred from actual content. In those cases, route to `skills/20-research/instagram-creator-discovery/SKILL.md` first.
+Do not use this as the default first pass for open-ended creator discovery when the user cares about follower bands, topical fit, or audience fit inferred from actual content. In those cases, route to `instagram-creator-discovery` first.
 
-Read these references before implementation:
+Use embedded `instagram-tools` support scripts for local execution. When this
+skill needs to run Instagram collection or normalization scripts from an
+installed public skill, call them through installed-safe embedded support paths such as:
 
-- `skills/20-research/instagram-references/actor-selection.md`
-- `skills/20-research/instagram-references/normalized-schema.md`
-- `skills/20-research/instagram-references/tool-contracts.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-tools/scripts/run_instagram_actor.mjs`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-tools/scripts/normalize_instagram_dataset.mjs`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-tools/scripts/rank_instagram_accounts.mjs`
 
 ## Primary Hosted Collection Keys
 

@@ -336,23 +336,17 @@ export function normalizeImageOutputFormat(value) {
 export function normalizeGenerationInput(input, mode) {
   assertNoProviderFieldAliases(input);
   const creativeFormat = resolveCreativeFormat(input);
-  const assetId = input?.assetId || input?.jobId || null;
-  const runId = input?.runId || input?.jobId || null;
-  const localAssetDir = input?.localAssetDir || input?.localOutputDir || null;
+  const assetId = input?.assetId || null;
+  const runId = input?.runId || null;
+  const localAssetDir = input?.localAssetDir || null;
   if (!assetId) {
-    throw new Error(
-      'request.assetId is required. Legacy fallback: request.jobId.',
-    );
+    throw new Error('request.assetId is required.');
   }
   if (!runId) {
-    throw new Error(
-      'request.runId is required. Legacy fallback: request.jobId.',
-    );
+    throw new Error('request.runId is required.');
   }
   if (!localAssetDir) {
-    throw new Error(
-      'request.localAssetDir is required. Legacy fallback: request.localOutputDir.',
-    );
+    throw new Error('request.localAssetDir is required.');
   }
   if (!input?.prompt) {
     throw new Error('request.prompt is required.');

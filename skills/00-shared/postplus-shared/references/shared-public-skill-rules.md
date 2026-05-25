@@ -25,6 +25,21 @@ artifacts, or a compile step before provider execution.
 - If a supported script returns a stable proxy, DNS, network, or
   infrastructure error, stop immediately and report that failure directly.
 
+## Parallel Request Rule
+
+- When multiple tool calls, file reads, script requests, provider submissions,
+  or data-collection requests are independent, prepare their inputs first and
+  dispatch them as a bounded parallel batch instead of running them one by one.
+- Do not serialize independent requests just because they target different
+  files, accounts, URLs, keywords, assets, platforms, or scripts.
+- Keep steps serial only when a later request depends on an earlier result, a
+  skill explicitly requires a serial queue, approval or quote confirmation is
+  still missing, or the skill's own cost/rate-limit boundary requires smaller
+  batches.
+- For approved side-effecting or provider-backed work, submit approved
+  independent items concurrently within the skill's stated batch or concurrency
+  limit. Do not create duplicate requests to mask slow or failing providers.
+
 ## Async Provider Task Rule
 
 - When a supported script returns `pending`, `processing`, `generationHandle`,
@@ -111,6 +126,12 @@ artifacts, or a compile step before provider execution.
   - `yt_dlp`
   - `ffmpeg`
   - `ffprobe`
+- Skill scripts must call the shared-runtime local dependency resolver for
+  these dependencies. Individual skills must not hard-code OS-specific binary
+  names, shell syntax, or install paths.
+- The resolver owns platform command selection. It keeps macOS/Linux on the
+  canonical `python3` path and uses the Windows Python launcher / Python 3
+  command candidates when the host platform is Windows.
 - `PostPlus CLI` itself is not the installer for those tools.
 - Do not ask a non-technical end user to install those tools manually or to
   interpret tool names such as `ffprobe`.

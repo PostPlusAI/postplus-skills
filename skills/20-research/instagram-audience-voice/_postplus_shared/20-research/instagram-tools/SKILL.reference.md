@@ -17,15 +17,15 @@ Use this skill when implementing or running the local execution layer for the In
 
 Main scripts:
 
-- `scripts/build_instagram_actor_input.mjs`
-- `scripts/run_instagram_actor.mjs`
-- `scripts/normalize_instagram_dataset.mjs`
-- `scripts/extract_instagram_candidate_usernames.mjs`
-- `scripts/rank_instagram_creators.mjs`
-- `scripts/rank_instagram_accounts.mjs`
-- `scripts/rank_instagram_posts.mjs`
-- `scripts/cluster_instagram_comments.mjs`
-- `scripts/build_instagram_watchlist.mjs`
+- `${CLAUDE_SKILL_DIR}/scripts/build_instagram_actor_input.mjs`
+- `${CLAUDE_SKILL_DIR}/scripts/run_instagram_actor.mjs`
+- `${CLAUDE_SKILL_DIR}/scripts/normalize_instagram_dataset.mjs`
+- `${CLAUDE_SKILL_DIR}/scripts/extract_instagram_candidate_usernames.mjs`
+- `${CLAUDE_SKILL_DIR}/scripts/rank_instagram_creators.mjs`
+- `${CLAUDE_SKILL_DIR}/scripts/rank_instagram_accounts.mjs`
+- `${CLAUDE_SKILL_DIR}/scripts/rank_instagram_posts.mjs`
+- `${CLAUDE_SKILL_DIR}/scripts/cluster_instagram_comments.mjs`
+- `${CLAUDE_SKILL_DIR}/scripts/build_instagram_watchlist.mjs`
 
 ## Script To Skill Map
 
@@ -60,12 +60,11 @@ artifact log and failure copy.
 
 Shared helpers:
 
-- `scripts/lib/instagram_common.mjs`
+- `${CLAUDE_SKILL_DIR}/scripts/lib/instagram_common.mjs`
 
-Reference contracts:
-
-- `../instagram-references/tool-contracts.md`
-- `../instagram-references/normalized-schema.md`
+This installed support skill is self-contained. Do not read external Instagram
+reference directories from the installed skill tree unless they are packaged
+with the calling business skill.
 
 ## Public Skill Execution Contract
 
@@ -73,10 +72,10 @@ Reference contracts:
   ranking files, and watchlist caches under `<work-folder>/.postplus/instagram-tools/`
 - keep only final user-facing summaries or shortlist exports outside
   `.postplus/`
-- use `scripts/build_instagram_actor_input.mjs` or a small real input file
+- use `${CLAUDE_SKILL_DIR}/scripts/build_instagram_actor_input.mjs` or a small real input file
   before the expensive collection step
 - wrap any compiled actor input in a `schemaVersion: 1` hosted execution
-  envelope before passing it to `scripts/run_instagram_actor.mjs`; the builder's
+  envelope before passing it to `${CLAUDE_SKILL_DIR}/scripts/run_instagram_actor.mjs`; the builder's
   raw actor-input output is not an executable runner input
 - start with a bounded first pass before broadening the crawl
 - use PostPlus-supported scripts plus the shared collection runner only; do not switch to

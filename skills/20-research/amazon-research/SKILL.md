@@ -83,7 +83,7 @@ Tell the user:
 - compile the request into a small input JSON before the expensive collection
   step when URLs, ASINs, or keyword seeds need shaping
 - for product discovery with `amazon-products`, build from
-  `templates/junglee-amazon-crawler-search.json`: put category or search URLs
+  `${CLAUDE_SKILL_DIR}/templates/amazon-products-search.json`: put category or search URLs
   in `categoryOrProductUrls` as `{ "url": "..." }` entries and bound the first
   pass with `maxItemsPerStartUrl`
 - start with a bounded first pass:
@@ -96,13 +96,13 @@ Tell the user:
 
 Normalized schema:
 
-- `schemas/amazon-dataset.schema.json`
+- `${CLAUDE_SKILL_DIR}/schemas/amazon-dataset.schema.json`
 
 Main scripts:
 
 - `${CLAUDE_SKILL_DIR}/_postplus_shared/00-core/shared-collection/scripts/collection_actor_run.mjs`
-- `scripts/normalize_amazon_dataset.mjs`
-- `scripts/analyze_amazon_dataset.mjs`
+- `${CLAUDE_SKILL_DIR}/scripts/normalize_amazon_dataset.mjs`
+- `${CLAUDE_SKILL_DIR}/scripts/analyze_amazon_dataset.mjs`
 
 The collection runner's `--input` file must be a `schemaVersion: 1` hosted
 execution envelope whose `input` field contains the compiled collection

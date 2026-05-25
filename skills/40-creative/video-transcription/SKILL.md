@@ -72,7 +72,7 @@ Persist:
 
 Polling support is shared with:
 
-- `skills/40-creative/audio-transcription/scripts/poll_transcription.mjs`
+- `audio-transcription` polling support
 
 ## Read These References
 

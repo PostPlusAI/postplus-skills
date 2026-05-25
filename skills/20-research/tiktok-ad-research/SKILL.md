@@ -147,5 +147,5 @@ Separate:
 Escalate after this skill when needed:
 
 - ad video structure or spoken-line breakdown -> a dedicated visual analysis workflow
-- ad creative review after humans inspect outputs -> `skills/40-creative/creative-qa`
-- organic TikTok benchmark comparison -> `skills/20-research/tiktok-research`
+- ad creative review after humans inspect outputs -> `creative-qa`
+- organic TikTok benchmark comparison -> `tiktok-research`

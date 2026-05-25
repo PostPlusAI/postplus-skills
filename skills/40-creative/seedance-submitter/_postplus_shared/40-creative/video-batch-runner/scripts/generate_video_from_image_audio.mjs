@@ -58,6 +58,7 @@ async function main() {
   manifest.providerTaskId = null;
   manifest.providerStatus = result?.status || null;
   manifest.providerUrls = result?.urls || null;
+  manifest.providerBilling = result?.billing || null;
   manifest.hasNsfwContents = Array.isArray(result?.has_nsfw_contents)
     ? result.has_nsfw_contents
     : [];

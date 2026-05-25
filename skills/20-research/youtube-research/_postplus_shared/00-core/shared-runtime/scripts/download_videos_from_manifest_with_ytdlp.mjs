@@ -2,8 +2,11 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { spawn } from "node:child_process";
 import { formatCliError } from "./lib/network_runtime.mjs";
+import {
+  resolveLocalDependencyCommand,
+  runResolvedLocalDependencyCommand,
+} from "./lib/local_dependencies.mjs";
 
 function parseArgs(argv) {
   const args = {};
@@ -24,35 +27,6 @@ function parseArgs(argv) {
 
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(path.resolve(filePath), "utf8"));
-}
-
-function runCommand(command, args) {
-  return new Promise((resolve) => {
-    const child = spawn(command, args, {
-      stdio: ["ignore", "pipe", "pipe"],
-      env: process.env
-    });
-
-    let stdout = "";
-    let stderr = "";
-    child.stdout.on("data", (chunk) => {
-      stdout += String(chunk);
-    });
-    child.stderr.on("data", (chunk) => {
-      stderr += String(chunk);
-    });
-    child.on("error", (error) => {
-      resolve({
-        code: null,
-        errorCode: error.code || null,
-        stdout,
-        stderr: error.message || String(error),
-      });
-    });
-    child.on("close", (code) => {
-      resolve({ code, errorCode: null, stdout, stderr });
-    });
-  });
 }
 
 function sleep(ms) {
@@ -82,11 +56,11 @@ async function findDownloadedPath(outputTemplate) {
   return found ? path.join(dir, found) : null;
 }
 
-async function downloadOne(item, outputTemplate, attempts) {
+async function downloadOne(item, outputTemplate, attempts, downloaderCommand) {
   let lastResult = null;
 
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
-    const result = await runCommand("python3", [
+    const result = await runResolvedLocalDependencyCommand(downloaderCommand, [
       "-m",
       "yt_dlp",
       "--no-playlist",
@@ -99,17 +73,6 @@ async function downloadOne(item, outputTemplate, attempts) {
       item.sourceUrl
     ]);
     lastResult = { ...result, attempt };
-
-    if (result.errorCode === "ENOENT") {
-      const error = new Error("python3 with yt_dlp is required in the environment.");
-      error.code = "video_downloader_unavailable";
-      throw error;
-    }
-    if (String(result.stderr).includes("No module named yt_dlp")) {
-      const error = new Error("python3 module yt_dlp is required in the environment.");
-      error.code = "video_downloader_unavailable";
-      throw error;
-    }
 
     const filePath = await findDownloadedPath(outputTemplate);
     if (result.code === 0 && filePath && fs.existsSync(filePath) && fs.statSync(filePath).size > 0) {
@@ -151,6 +114,10 @@ async function main() {
   const reportPath = path.resolve(args.report || path.join(outputDir, "_download-report.json"));
   const concurrency = Math.max(1, Number(args.concurrency || 2));
   const attempts = Math.max(1, Number(args.attempts || 3));
+  const downloaderCommand = await resolveLocalDependencyCommand("python3:yt_dlp", {
+    missingMessage:
+      "python3 with yt_dlp is required for TikTok video downloads.",
+  });
 
   fs.mkdirSync(outputDir, { recursive: true });
 
@@ -178,7 +145,12 @@ async function main() {
         continue;
       }
 
-      const run = await downloadOne(item, outputTemplate, attempts);
+      const run = await downloadOne(
+        item,
+        outputTemplate,
+        attempts,
+        downloaderCommand,
+      );
       results.push({
         ...(run.failure
           ? {

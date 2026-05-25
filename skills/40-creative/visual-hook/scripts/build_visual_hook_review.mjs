@@ -7,24 +7,52 @@ import {
   readJson,
 } from "../_postplus_shared/00-core/shared-runtime/scripts/lib/local_skill_cli.mjs";
 
-export function buildVisualHookReview(input = {}) {
+function readRequiredString(input, fieldName) {
+  const value = input?.[fieldName];
+  if (typeof value !== "string" || !value.trim()) {
+    throw new Error(`visual-hook requires ${fieldName}.`);
+  }
+  return value.trim();
+}
+
+function readOptionalString(input, fieldName) {
+  const value = input?.[fieldName];
+  return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function readRequiredStringArray(input, fieldName) {
+  const value = input?.[fieldName];
+  if (!Array.isArray(value) || value.length === 0) {
+    throw new Error(`visual-hook requires non-empty ${fieldName}.`);
+  }
+
+  const strings = value.filter(
+    (item) => typeof item === "string" && item.trim(),
+  );
+  if (strings.length === 0) {
+    throw new Error(`visual-hook requires non-empty ${fieldName}.`);
+  }
+
+  return strings;
+}
+
+export function buildVisualHookReview(input) {
   return {
-    doNext:
-      Array.isArray(input.doNext) && input.doNext.length > 0
-        ? input.doNext
-        : ["show the device loading step immediately", "cut the generic intro"],
-    strongestHook:
-      input.strongestHook || "visible workflow contrast in first frame",
-    visualProof:
-      Array.isArray(input.visualProof) && input.visualProof.length > 0
-        ? input.visualProof
-        : ["device", "screen state", "result state"],
+    strongestHook: readRequiredString(input, "strongestHook"),
+    firstFrame: readRequiredString(input, "firstFrame"),
+    actionInProgress: readRequiredString(input, "actionInProgress"),
+    evidenceDetail: readRequiredString(input, "evidenceDetail"),
+    viewerQuestion: readRequiredString(input, "viewerQuestion"),
+    nextShot: readRequiredString(input, "nextShot"),
+    avoid: readOptionalString(input, "avoid"),
+    visualProof: readRequiredStringArray(input, "visualProof"),
+    doNext: readRequiredStringArray(input, "doNext"),
   };
 }
 
 function usage() {
   console.error(
-    "Usage: node build_visual_hook_review.mjs [--input <input.json>] [--output <review.json>]",
+    "Usage: node build_visual_hook_review.mjs --input <input.json> [--output <review.json>]",
   );
 }
 
@@ -37,7 +65,13 @@ async function main() {
     return;
   }
 
-  const input = args.input ? readJson(args.input) : {};
+  if (!args.input) {
+    usage();
+    process.exitCode = 1;
+    return;
+  }
+
+  const input = readJson(args.input);
   const payload = buildVisualHookReview(input);
   printOrWriteJson(args.output, payload);
 }

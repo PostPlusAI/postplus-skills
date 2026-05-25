@@ -39,23 +39,23 @@ Default execution order:
 
 ## Preferred Routes
 
-- broad cross-platform social research routing -> `skills/10-routing/social-media-extractor`
-- cross-platform creator discovery routing -> `skills/10-routing/creator-discovery-router`
-- Google search-intent and topic momentum -> `skills/20-research/google-trends-research`
-- TikTok platform data -> `skills/20-research/tiktok-research`
-- TikTok ad creative research -> `skills/20-research/tiktok-ad-research`
-- Amazon platform data -> `skills/20-research/amazon-research`
+- broad cross-platform social research routing -> `social-media-extractor`
+- cross-platform creator discovery routing -> `creator-discovery-router`
+- Google search-intent and topic momentum -> `google-trends-research`
+- TikTok platform data -> `tiktok-research`
+- TikTok ad creative research -> `tiktok-ad-research`
+- Amazon platform data -> `amazon-research`
 - supply-side product or supplier data -> user-provided supplier sheets,
   quotations, or approved marketplace exports
-- Instagram creator discovery -> `skills/20-research/instagram-creator-discovery`
-- Instagram creator/account research -> `skills/20-research/instagram-account-research`
-- Instagram content benchmark -> `skills/20-research/instagram-content-benchmark`
-- Instagram audience language -> `skills/20-research/instagram-audience-voice`
-- Instagram hashtag/tagged campaign scouting -> `skills/20-research/instagram-campaign-scout`
-- X account/topic graph research -> `skills/20-research/x-tools`
-- YouTube channel and video research -> `skills/20-research/youtube-research`
-- Facebook page and post research -> `skills/20-research/facebook-research`
-- Hook, structure, and why content works -> `skills/40-creative/video-analysis`
+- Instagram creator discovery -> `instagram-creator-discovery`
+- Instagram creator/account research -> `instagram-account-research`
+- Instagram content benchmark -> `instagram-content-benchmark`
+- Instagram audience language -> `instagram-audience-voice`
+- Instagram hashtag/tagged campaign scouting -> `instagram-campaign-scout`
+- X account/topic graph research -> `x-tools`
+- YouTube channel and video research -> `youtube-research`
+- Facebook page and post research -> `facebook-research`
+- Hook, structure, and why content works -> `video-analysis`
 
 ## Chaining Rule
 
@@ -127,7 +127,7 @@ Creator-discovery-specific mistake:
 Better response:
 
 - recognize that follower band + niche fit usually needs routing
-- use `skills/10-routing/creator-discovery-router`
+- use `creator-discovery-router`
 - prefer `content-first` or `graph-first` when account search is likely to over-rank large accounts
 - use wider recall and tighter shortlist instead of strict first-pass filtering
 - classify `individual creator` vs `brand/product` vs `educator/consultant` vs `aggregator` before producing outreach-ready leads
@@ -141,5 +141,5 @@ Cross-platform mistake:
 Better response:
 
 - recognize when the request is about social direction rather than one named platform
-- start with `skills/10-routing/social-media-extractor`
+- start with `social-media-extractor`
 - use platform-specific skills only after the route is clear

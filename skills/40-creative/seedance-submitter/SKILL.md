@@ -32,8 +32,8 @@ node ${CLAUDE_SKILL_DIR}/scripts/validate_seedance_request_contract.mjs \
   --input <request.seed.json>
 ```
 
-8. Submit with `skills/40-creative/video-batch-runner/scripts/generate_video_from_image_audio.mjs` using a `schemaVersion: 1` hosted execution envelope whose `input` is the Seedance request.
-9. Poll with `skills/40-creative/video-batch-runner/scripts/poll_prediction.mjs` using the same hosted envelope shape until completed.
+8. Submit with `${CLAUDE_SKILL_DIR}/_postplus_shared/40-creative/video-batch-runner/scripts/generate_video_from_image_audio.mjs` using a `schemaVersion: 1` hosted execution envelope whose `input` is the Seedance request.
+9. Poll with `${CLAUDE_SKILL_DIR}/_postplus_shared/40-creative/video-batch-runner/scripts/poll_prediction.mjs` using the same hosted envelope shape until completed.
 10. Report local `renders/render-001.mp4` paths and prediction ids.
 
 If a segment render is still pending, do not block the user's conversation just

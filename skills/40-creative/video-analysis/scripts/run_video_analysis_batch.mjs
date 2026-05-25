@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
@@ -11,6 +10,9 @@ import {
   HOSTED_CAPABILITY_JSON_PAYLOAD_BYTE_LIMIT,
   runHostedCapabilityRequest,
 } from "../_postplus_shared/00-core/shared-runtime/scripts/lib/postplus_cloud_client.mjs";
+import {
+  runLocalDependencyCommandSync,
+} from "../_postplus_shared/00-core/shared-runtime/scripts/lib/local_dependencies.mjs";
 import { uploadHostedMediaFileReference } from "../_postplus_shared/00-core/shared-runtime/scripts/lib/hosted_media_generation_bridge.mjs";
 import { readDomainSkillExecutionInput } from "../_postplus_shared/00-core/shared-runtime/scripts/lib/hosted_execution_protocol.mjs";
 
@@ -85,7 +87,7 @@ export function buildVideoInputBoundary(fileSizeBytes) {
 }
 
 function detectVideoDurationSeconds(filePath) {
-  const result = spawnSync(
+  const result = runLocalDependencyCommandSync(
     "ffprobe",
     [
       "-v",
@@ -98,14 +100,10 @@ function detectVideoDurationSeconds(filePath) {
     ],
     {
       encoding: "utf8",
+      missingMessage:
+        "ffprobe is required for video-analysis duration estimation.",
     },
   );
-
-  if (result.error?.code === "ENOENT") {
-    throw new Error(
-      "local_dependency_missing: ffprobe is required for video-analysis duration estimation. Follow the postplus-shared Local Dependency Bootstrap Rule, then rerun this script.",
-    );
-  }
 
   if (result.status !== 0 || !result.stdout.trim()) {
     return null;

@@ -28,7 +28,7 @@ function readJson(filePath) {
 }
 
 function usage() {
-  console.error('Usage: node route_media_job.mjs --brief <brief.json>');
+  console.error('Usage: node route_media_job.mjs --input <brief.json>');
 }
 
 function inferNeedsTimestamps(brief) {
@@ -159,13 +159,13 @@ function routeBrief(brief) {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
-  if (!args.brief) {
+  if (!args.input) {
     usage();
     process.exitCode = 1;
     return;
   }
 
-  const brief = readJson(args.brief);
+  const brief = readJson(args.input);
   const route = routeBrief(brief);
   console.log(JSON.stringify(route, null, 2));
 }

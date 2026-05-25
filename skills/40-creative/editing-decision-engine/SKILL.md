@@ -60,8 +60,8 @@ Do not use this skill when the user only needs:
 Route those to:
 
 - a dedicated visual analysis workflow
-- `skills/40-creative/frame-extraction`
-- `skills/40-creative/video-batch-runner`
+- `frame-extraction`
+- `video-batch-runner`
 
 ## Core Principle
 
@@ -91,15 +91,16 @@ depending on the spoken beat around it.
 
 ## Required Inputs
 
-The skill works best when at least these exist:
+The script ABI requires:
 
-- script text or spoken transcript
-- local A-roll file or a reliable description of the A-roll performance
-- local B-roll files or a usable B-roll shot inventory
-- intended output length or target platform
+- `editThesis`
+- `beats`: non-empty array of spoken or scripted beats
 
 Optional but high-value inputs:
 
+- local A-roll file or a reliable description of the A-roll performance
+- local B-roll files or a usable B-roll shot inventory
+- intended output length or target platform
 - one or more reference videos
 - subtitle draft or transcript with timestamps
 - previous edit notes
@@ -198,7 +199,42 @@ Default output should include:
 - start with a bounded first pass on one sequence or one short video before
   broader edit planning
 - if required inputs such as transcript, A-roll context, or B-roll inventory
-  are missing, stop immediately instead of switching to ad hoc shell glue
+  are missing, mark the affected decisions as provisional; if `editThesis` or
+  `beats` are missing, stop immediately instead of switching to ad hoc shell glue
+
+## Executable ABI
+
+Command:
+
+```bash
+node scripts/build_editing_decision_package.mjs --input <input.json> --output <decision-package.json>
+```
+
+`--input` is required. The input JSON must include:
+
+- `editThesis`: one sentence describing the edit's proof logic
+- `beats`: non-empty array; each beat must include `spokenText` or `text`
+
+Optional:
+
+- `videoId`
+- `mode`
+- `targetLength`
+- `referenceBasis`
+- `aRollContext`
+- `assetInventory` or `brollAssets`
+- `risks`
+
+An empty `assetInventory` is allowed only when the output explicitly records the
+missing B-roll risk. Missing `editThesis` or `beats` is a hard failure.
+
+The output JSON uses these public field names:
+
+- `editBrief`
+- `beatMap`
+- `assetInventory`
+- `decisionTimeline`
+- `riskLog`
 
 ## First-Version Boundary
 

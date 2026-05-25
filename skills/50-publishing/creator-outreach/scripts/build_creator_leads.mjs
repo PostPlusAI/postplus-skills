@@ -221,7 +221,7 @@ function leadFromItem(item, dataset, inputPath) {
     lastContactedAt: cleanString(item.lastContactedAt),
     source: {
       inputPaths: [inputPath],
-      sourceIds: mergeTextList(dataset.sourceId, item?.source?.sourceId),
+      sourceIds: mergeTextList(dataset.sourceId, item?.source?.sourceId, item?.source?.sourceIds),
       sourceUrls: mergeTextList(item?.source?.sourceUrl, item.profileUrl),
       scrapedAt: mergeTextList(item?.source?.scrapedAt)
     }

@@ -157,3 +157,37 @@ The QA layer should answer:
 - what should happen next
 
 Read [`references/qa-schema.md`](references/qa-schema.md) when creating or updating these files.
+
+## Executable ABI
+
+Use the local script only after a human reviewer has supplied a verdict and
+reasons. It packages confirmed review data; it does not infer approval or
+rejection.
+
+Command:
+
+```bash
+node scripts/build_creative_qa_record.mjs --input <input.json> --output <qa-record.json>
+```
+
+`--input` is required. The input JSON must include:
+
+- `qaReportId`
+- `targetObjectType`
+- `targetObjectId`
+- `targetVersion`
+- `reviewer`
+- `reviewedAt`
+- `verdict`: `approved`, `revise`, or `reject`
+- `goodReasons`: non-empty array
+- `proposedAction`
+
+When `verdict` is `revise` or `reject`, the input must also include:
+
+- `badReasons`: non-empty array
+- `issueCategories`: non-empty array
+
+For `approved`, `badReasons` and `issueCategories` may be empty arrays.
+
+If `feedbackText` is provided, the input must also include `rerunTarget`, and
+`rerunTarget` must name the rerunnable skill rather than a vague stage label.

@@ -59,7 +59,7 @@ This object is the executable envelope's `input` value.
 
 Hosted execution mapping:
 
-- The CLI skill calls the PostPlus Cloud PostPlus Cloud video service endpoint.
+- The CLI skill calls the PostPlus Cloud video service endpoint.
 - The server selects the underlying provider and model.
 - Request body minimum: `{ "image": "...", "audio": "..." }`
 - Response fields to preserve raw:
@@ -89,11 +89,22 @@ Use when:
   "model": "video-seedance-2-text",
   "creativeFormat": "short_form_vertical",
   "targetAspectRatio": "9:16",
+  "prompt_summary": "Creator opens and demonstrates the product in one clear UGC beat.",
   "promptPlan": {
     "subject": "a realistic creator in front of a natural background",
-    "storyboardTimeline": [
-      "0.0-2.0s: the creator opens the product and brings it into frame. Dialogue: \"first spoken line.\"",
-      "2.0-5.0s: the creator demonstrates it, then looks at camera. Dialogue: \"second spoken line.\""
+    "prompt_storyline": [
+      {
+        "shot": "shot 1",
+        "time": "0.0-2.0s",
+        "visual": "the creator opens the product and brings it into frame.",
+        "dialogue": "first spoken line."
+      },
+      {
+        "shot": "shot 2",
+        "time": "2.0-5.0s",
+        "visual": "the creator demonstrates it, then looks at camera.",
+        "dialogue": "second spoken line."
+      }
     ],
     "scene": "clean home setting, natural light",
     "style": "real UGC, not a polished studio ad",
@@ -132,22 +143,66 @@ This object is the executable envelope's `input` value.
 
 - `request.content` can be passed directly when you need full control.
 - If `request.content` is omitted, the adapter will synthesize it from:
-  - `prompt` or `promptPlan`
+  - `final_prompt`, or `prompt_summary` plus `promptPlan.prompt_storyline`
   - `images[]`
   - `videos[]`
   - `audios[]`
   - `draftTaskId`
-- `promptPlan.storyboardTimeline` is the canonical place for timecoded action and spoken lines.
+- `promptPlan.prompt_storyline` is the canonical place for timecoded action and spoken lines.
 - `promptPlan.referenceMap` is converted into `[image 1]...，[image 2]...` style prompt text to better match reference-image guidance.
 - `promptPlan.camera`, `promptPlan.shotType`, and `promptPlan.motion` are prompt-planning text only.
 - For Seedance, `duration` remains the provider duration bucket. Use
   `targetEditDurationSeconds` plus `timeline.activePerformanceEndSeconds` and
   `timeline.tailStrategy` when the final edit should trim shorter than the
   provider bucket.
+- Kling 3.0 hosted models are explicit model routes:
+  `video-kling-v3-0-std-text`, `video-kling-v3-0-std-image`,
+  `video-kling-v3-0-pro-text`, and `video-kling-v3-0-pro-image`.
+- Kling 3.0 `duration` must be an integer from 3 through 15 seconds.
+- Kling 3.0 text-to-video accepts `aspectRatio` / `ratio` values `16:9`,
+  `9:16`, and `1:1`; Kling 3.0 image-to-video does not accept aspect-ratio
+  fields because the provider follows the input frame.
+- Kling 3.0 `sound` / `generateAudio` maps to provider `sound` and drives the
+  hosted billing `audioMode`.
 - Camera trajectory, object trajectory, motion brush, and brush mask fields are not supported by the current runner and must fail before provider submission.
 - For Instagram Meta Ads creative production, set
   `creativeFormat: "instagram_meta_ads"` or `aspectRatio: "3:4"` so the request
   carries the selected PostPlus creative format outside the prompt text.
+
+### Kling 3.0 image-to-video example
+
+```json
+{
+  "jobId": "example-co-2026-05-kling-v3-image-001",
+  "campaignId": "example-co-outreach-2026-05",
+  "conceptId": "product-motion-v1",
+  "assetPurpose": "ugc_variation",
+  "provider": "hosted-media",
+  "model": "video-kling-v3-0-pro-image",
+  "image": "customers/<customer-id>/campaigns/<campaign-id>/images/start-frame.png",
+  "endImage": "customers/<customer-id>/campaigns/<campaign-id>/images/end-frame.png",
+  "prompt": "animate the product with a smooth push-in and realistic hand movement",
+  "negativePrompt": "warped label, extra fingers",
+  "duration": 8,
+  "generateAudio": false,
+  "cfgScale": 0.5,
+  "shotType": "customize",
+  "localOutputDir": "customers/<customer-id>/campaigns/example-co-outreach-2026-05/videos/example-co-2026-05-kling-v3-image-001",
+  "sourceBasis": [],
+  "mustKeep": [],
+  "canVary": [],
+  "feedback": []
+}
+```
+
+Provider mapping:
+
+- `image` maps to provider `image`.
+- `endImage` maps to provider `end_image`.
+- `negativePrompt` maps to provider `negative_prompt`.
+- `generateAudio` maps to provider `sound`.
+- `cfgScale` maps to provider `cfg_scale`.
+- `shotType` maps to provider `shot_type`.
 
 ## 3. `generate_video` reference-motion transfer
 

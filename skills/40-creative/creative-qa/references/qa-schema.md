@@ -64,6 +64,8 @@ This file defines the intended structure for human review records in the first v
 
 - `reviewer` should name the human role or reviewer when possible
 - `verdict` should be one of `approved`, `revise`, `reject`
+- `badReasons` and `issueCategories` are required for `revise` or `reject`;
+  they may be empty arrays for `approved`
 - `status` should distinguish draft notes from final confirmed review if needed
 - `scores` are optional and should never replace `goodReasons` and `badReasons`
 - `rerunTarget` should name the original rerunnable skill, not a vague stage

@@ -54,7 +54,13 @@ script-generator (slideshow mode)
 
 ## Local Dependencies
 
-- `python3` with Pillow (`PIL`) is required for `scripts/composite-text.mjs`.
+- `python3` with Pillow is required for `scripts/composite-text.mjs`; the
+  import module checked by the script is `PIL`.
+- Verify the active runtime with:
+
+```bash
+python3 -c "from PIL import Image, ImageDraw, ImageFont"
+```
 
 ## Reference Image Routing Rule
 

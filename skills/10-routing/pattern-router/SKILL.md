@@ -98,7 +98,7 @@ This block is the handoff to `visual-hook`, `reference-decode`, or
 For `hook` segments:
 
 - this skill decides segment route and opening job
-- `hook-design` decides the dominant hook mechanism and downstream handoff
+- `visual-hook` decides the dominant hook mechanism and downstream handoff
 - do not let multiple downstream skills guess the hook mechanism independently
 
 ## Failure Mode

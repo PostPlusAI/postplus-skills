@@ -55,9 +55,10 @@ A strong visual hook should usually have:
 
 If the hook requires the caption, voiceover, or product claim to make sense, the visual is probably too weak.
 
-## Relationship To Hook Design
+## Relationship To Opening Route
 
-Use `hook-design` first when the main uncertainty is which stop-scroll mechanism should carry the opening.
+Use `pattern-router` first when the main uncertainty is which stop-scroll
+mechanism should carry the opening.
 
 This skill is the visual translator for mechanisms that need visible frame-one proof.
 
@@ -326,3 +327,33 @@ What weakens the stop-scroll:
 Specific fix:
 Rerun prompt note:
 ```
+
+## Executable ABI
+
+Use the local review script only after there is a concrete visual hook, first
+frame, first slide, or storyboard opening to inspect. It packages a critique; it
+does not create default hook advice from an empty prompt.
+
+Command:
+
+```bash
+node scripts/build_visual_hook_review.mjs --input <input.json> --output <review.json>
+```
+
+`--input` is required. The input JSON must include:
+
+- `strongestHook`: the strongest hook family or mechanism being evaluated
+- `firstFrame`: the exact first frame, first slide, or opening shot description
+- `actionInProgress`: what is already happening in the first frame
+- `evidenceDetail`: the visible proof detail that makes the hook believable
+- `viewerQuestion`: the concrete question created by the first frame
+- `nextShot`: what the next shot should answer
+- `visualProof`: non-empty list of proof elements present or required
+- `doNext`: non-empty list of concrete fix or continuation actions
+
+Optional:
+
+- `avoid`
+
+If the first frame or evidence detail is unknown, stop and ask for that visual
+input instead of emitting generic hook guidance.

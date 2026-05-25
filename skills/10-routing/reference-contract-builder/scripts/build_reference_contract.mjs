@@ -18,7 +18,7 @@ export function buildReferenceContract(input = {}) {
 
 function usage() {
   console.error(
-    "Usage: node build_reference_contract.mjs [--input <brief.json>] [--output <contract.json>]",
+    "Usage: node build_reference_contract.mjs --input <brief.json> [--output <contract.json>]",
   );
 }
 
@@ -30,8 +30,13 @@ async function main() {
     process.exitCode = 0;
     return;
   }
+  if (!args.input) {
+    usage();
+    process.exitCode = 1;
+    return;
+  }
 
-  const input = args.input ? readJson(args.input) : {};
+  const input = readJson(args.input);
   const payload = buildReferenceContract(input);
   printOrWriteJson(args.output, payload);
 }

@@ -25,7 +25,7 @@ It decides:
 - what kind of discovery problem this is
 - which platform skill should collect first
 - whether to start from handles, content, or creator graph expansion
-- when to hand off to `skills/50-publishing/creator-outreach`
+- when to hand off to `creator-outreach`
 
 Follow shared public skill and research rules in:
 
@@ -70,16 +70,16 @@ When the request is about finding TikTok creators/KOLs with topical fit plus a f
 
 - default to `content-first`
 - explain the plan in plain business language
-- hand off directly to `skills/20-research/tiktok-research` in the same turn
+- hand off directly to `tiktok-research` in the same turn
 
 For requests like:
 
 - `Find 20 TikTok skincare device KOLs, prioritizing micro and mid-tier accounts`
 - `Find TikTok beauty device creators suitable for collaboration`
 
-do not pause after reading `brief-schema.md`. Route to `skills/20-research/tiktok-research` immediately unless a missing detail would genuinely change the route.
+do not pause after reading `brief-schema.md`. Route to `tiktok-research` immediately unless a missing detail would genuinely change the route.
 Do not treat a missing local reference file as a reason to stop or fail this handoff.
-If the route is already clear from the user request, skip extra reference reads and continue into `skills/20-research/tiktok-research`.
+If the route is already clear from the user request, skip extra reference reads and continue into `tiktok-research`.
 
 ## User-Facing Explanation Rule
 
@@ -110,12 +110,12 @@ Internal route labels are for system reasoning, not for user-facing communicatio
 Read these references before implementation:
 
 - `postplus-shared` research preferences
-- `skills/10-routing/creator-discovery-router/references/brief-schema.md`
-- `skills/10-routing/creator-discovery-router/references/routing-modes.md`
-- `skills/10-routing/creator-discovery-router/references/iteration-loop.md`
-- `skills/10-routing/creator-discovery-router/references/candidate-schema.md`
-- `skills/10-routing/creator-discovery-router/references/instagram-candidate-mapping.md`
-- `skills/10-routing/creator-discovery-router/references/x-candidate-mapping.md`
+- `/references/brief-schema.md`
+- `/references/routing-modes.md`
+- `/references/iteration-loop.md`
+- `/references/candidate-schema.md`
+- `/references/instagram-candidate-mapping.md`
+- `/references/x-candidate-mapping.md`
 
 ## Core Rule
 
@@ -251,10 +251,10 @@ If the user wants contact-ready leads:
 
 Use the narrowest useful platform skill:
 
-- TikTok data -> `skills/20-research/tiktok-research`
-- Instagram accounts -> `skills/20-research/instagram-account-research`
-- X accounts -> `skills/20-research/x-tools`
-- Outreach prep -> `skills/50-publishing/creator-outreach`
+- TikTok data -> `tiktok-research`
+- Instagram accounts -> `instagram-account-research`
+- X accounts -> `x-tools`
+- Outreach prep -> `creator-outreach`
 
 Do not use public web search as the primary route for platform creator discovery unless platform collection is blocked.
 

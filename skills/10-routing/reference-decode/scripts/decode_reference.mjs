@@ -27,7 +27,7 @@ export function decodeReference(brief = {}) {
 
 function usage() {
   console.error(
-    "Usage: node decode_reference.mjs [--input <brief.json>] [--output <decode.json>]",
+    "Usage: node decode_reference.mjs --input <brief.json> [--output <decode.json>]",
   );
 }
 
@@ -39,8 +39,13 @@ async function main() {
     process.exitCode = 0;
     return;
   }
+  if (!args.input) {
+    usage();
+    process.exitCode = 1;
+    return;
+  }
 
-  const input = args.input ? readJson(args.input) : {};
+  const input = readJson(args.input);
   const payload = decodeReference(input);
   printOrWriteJson(args.output, payload);
 }

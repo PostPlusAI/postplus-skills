@@ -168,20 +168,17 @@ Example brief:
 }
 ```
 
-Output:
+Output file:
 
 ```json
 {
-  "sourceId": "tiktok-scraper",
-  "input": {
-    "keywords": ["ai tools", "gmail workflow"],
-    "startUrls": [
-      "https://www.tiktok.com/tag/aitools",
-      "https://www.tiktok.com/tag/productivity"
-    ],
-    "maxItems": 20,
-    "location": "MY",
-    "sortType": "DATE_POSTED"
-  }
+  "keywords": ["ai tools", "gmail workflow"],
+  "startUrls": [
+    "https://www.tiktok.com/tag/aitools",
+    "https://www.tiktok.com/tag/productivity"
+  ],
+  "maxItems": 20,
+  "location": "MY",
+  "sortType": "DATE_POSTED"
 }
 ```

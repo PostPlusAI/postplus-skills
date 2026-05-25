@@ -19,6 +19,7 @@ import {
   createHostedMediaGenerationFailedError,
   fetchJson,
   finalizeImageRun,
+  HOSTED_IMAGE_MODELS,
   isHostedMediaGenerationFailedResult,
   materializeCompletedImageOutputs,
   parseArgs,
@@ -60,7 +61,10 @@ function isCompletedProviderResponse(responsePayload) {
 }
 
 function resolveImageOperation(request) {
-  return request.mode === "edit" ? "edit" : "text-to-image";
+  if (request.mode === "edit" || request.mode === "text-to-image") {
+    return request.mode;
+  }
+  return HOSTED_IMAGE_MODELS[request.model]?.operation || "text-to-image";
 }
 
 export async function runPollPrediction(argv = process.argv.slice(2)) {

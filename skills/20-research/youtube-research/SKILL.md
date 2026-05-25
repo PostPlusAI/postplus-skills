@@ -45,7 +45,7 @@ This skill depends on host-managed collection capability for the corresponding c
 
 In the PostPlus runtime:
 
-- do not probe or print provider secrets
+- do not probe or print host-managed service secrets
 - do not ask the user to export them inside chat
 - if a collection key returns a stable capability/network hard error, stop
   immediately instead of trying alternate shell commands
@@ -87,7 +87,7 @@ Use these hosted collection keys by default:
 
 - downloadable video records
   - collection key: `youtube-video-download`
-  - use when the workflow needs the rented downloader-backed record for explicit video URLs
+  - use when the workflow needs a hosted video record for explicit video URLs
 
 Use comments as an audience proxy when subscriber identities are not public.
 
@@ -124,12 +124,12 @@ Do not present comment authors as a full subscriber list.
 
 Read before implementation:
 
-- `skills/20-research/youtube-research/references/normalized-schema.md`
+- `${CLAUDE_SKILL_DIR}/references/normalized-schema.md`
 
 Use these entrypoints:
 
-- `skills/20-research/youtube-research/scripts/run_youtube_video_collection.mjs`
-- `skills/20-research/youtube-research/scripts/poll_youtube_video_collection.mjs`
+- `${CLAUDE_SKILL_DIR}/scripts/run_youtube_video_collection.mjs`
+- `${CLAUDE_SKILL_DIR}/scripts/poll_youtube_video_collection.mjs`
 
 If `run_youtube_video_collection.mjs` returns `pending > 0`, keep the emitted
 `collection-report.json` and resume with `poll_youtube_video_collection.mjs
@@ -142,9 +142,17 @@ continue independent brief structure, source review, or next-step planning.
 
 ## Hosted Collection Note
 
-Use the shared hosted collection runner for actor calls:
+Use the installed shared collection runner for hosted collection keys
+`youtube-channel-summary`, `youtube-comments`, and `youtube-video-download`:
 
 - `${CLAUDE_SKILL_DIR}/_postplus_shared/00-core/shared-collection/scripts/collection_actor_run.mjs`
 
-The runner's `--input` file must be a `schemaVersion: 1` hosted execution
-envelope whose `input` field contains the compiled collection request.
+Always pass `--skill-name youtube-research` when calling `collection_actor_run.mjs`.
+
+Use the installed public-content collection entrypoint for YouTube public-video calls:
+
+- `${CLAUDE_SKILL_DIR}/scripts/run_youtube_video_collection.mjs`
+
+The entrypoint maps public YouTube video URLs onto the released source key
+`youtube-videos`. Do not bypass it with repo-local shared runner paths from an
+installed skill.

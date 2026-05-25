@@ -50,7 +50,7 @@ async function main() {
   }
 
   const collectionKey = args['collection-key'] || 'tiktok-comments';
-  const sourceId = 'clockworks/tiktok-comments-scraper';
+  const sourceId = 'tiktok-comments';
   const topCount = Number(args.top || 8);
   const commentsPerPost = Number(
     args['comments-per-post'] || args['max-comments'] || 40,

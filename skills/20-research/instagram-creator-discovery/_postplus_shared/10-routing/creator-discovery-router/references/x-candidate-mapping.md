@@ -4,8 +4,8 @@ Use this file to map X normalized datasets into the shared candidate schema.
 
 Read with:
 
-- `skills/20-research/x-references/normalized-schema.md`
-- `skills/10-routing/creator-discovery-router/references/candidate-schema.md`
+- `/references/x-normalized-schema.md`
+- `/references/candidate-schema.md`
 
 ## Typical Inputs
 

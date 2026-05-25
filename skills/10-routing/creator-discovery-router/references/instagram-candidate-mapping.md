@@ -4,8 +4,8 @@ Use this file to map Instagram normalized datasets into the shared candidate sch
 
 Read with:
 
-- `skills/20-research/instagram-references/normalized-schema.md`
-- `skills/10-routing/creator-discovery-router/references/candidate-schema.md`
+- `/references/instagram-normalized-schema.md`
+- `/references/candidate-schema.md`
 
 ## Typical Inputs
 

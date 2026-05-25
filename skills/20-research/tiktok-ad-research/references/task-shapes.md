@@ -77,4 +77,4 @@ If the user really wants:
 - comments
 - hooks from organic UGC
 
-then switch to `skills/20-research/tiktok-research`.
+then switch to `tiktok-research`.

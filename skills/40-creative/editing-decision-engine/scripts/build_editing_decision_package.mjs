@@ -177,7 +177,7 @@ function normalizeRiskLog(risks, { assetInventory }) {
 
 function usage() {
   console.error(
-    'Usage: node build_editing_decision_package.mjs [--input <input.json>] [--output <decision-package.json>]',
+    'Usage: node build_editing_decision_package.mjs --input <input.json> [--output <decision-package.json>]',
   );
 }
 
@@ -190,7 +190,13 @@ async function main() {
     return;
   }
 
-  const input = args.input ? readJson(args.input) : {};
+  if (!args.input) {
+    usage();
+    process.exitCode = 1;
+    return;
+  }
+
+  const input = readJson(args.input);
   const payload = buildEditingDecisionPackage(input);
   printOrWriteJson(args.output, payload);
 }

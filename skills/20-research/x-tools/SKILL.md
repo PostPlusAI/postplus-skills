@@ -17,21 +17,21 @@ Use this skill when implementing or running the local execution layer for the X 
 
 Main scripts:
 
-- `scripts/run_x_actor.mjs`
-- `scripts/normalize_x_dataset.mjs`
-- `scripts/rank_x_accounts.mjs`
-- `scripts/rank_x_posts.mjs`
-- `scripts/build_x_audience_graph.mjs`
-- `scripts/cluster_x_bios_and_posts.mjs`
+- `${CLAUDE_SKILL_DIR}/scripts/run_x_actor.mjs`
+- `${CLAUDE_SKILL_DIR}/scripts/normalize_x_dataset.mjs`
+- `${CLAUDE_SKILL_DIR}/scripts/rank_x_accounts.mjs`
+- `${CLAUDE_SKILL_DIR}/scripts/rank_x_posts.mjs`
+- `${CLAUDE_SKILL_DIR}/scripts/build_x_audience_graph.mjs`
+- `${CLAUDE_SKILL_DIR}/scripts/cluster_x_bios_and_posts.mjs`
 
 Shared helpers:
 
-- `scripts/lib/x_common.mjs`
+- `${CLAUDE_SKILL_DIR}/scripts/lib/x_common.mjs`
 
 Reference contracts:
 
-- `../x-references/tool-contracts.md`
-- `../x-references/normalized-schema.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/x-references/tool-contracts.md`
+- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/x-references/normalized-schema.md`
 
 ## Execution Rule
 
@@ -39,7 +39,7 @@ Do not invent a separate actor runner unless the shared collection runner is not
 
 Prefer:
 
-- `${CLAUDE_SKILL_DIR}/_postplus_shared/00-core/shared-collection/scripts/collection_actor_run.mjs`
+- `${CLAUDE_SKILL_DIR}/scripts/run_x_actor.mjs`
 
 The runner's `--input` file must be a `schemaVersion: 1` hosted execution
 envelope whose `input` field contains the compiled collection request.
@@ -67,7 +67,7 @@ node ${CLAUDE_SKILL_DIR}/scripts/run_x_actor.mjs \
   --output <work-folder>/.postplus/x-tools/x-profiles-raw.json
 ```
 
-Do not pass provider-specific collection names or unpublished keys.
+Do not pass non-public collection names or unpublished keys.
 
 ## Public Skill Execution Contract
 

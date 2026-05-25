@@ -9,6 +9,7 @@ import {
   fetchJson,
   isHostedMediaGenerationFailedResult,
   maybeDownloadOutputs,
+  normalizeRenderInput,
   parseArgs,
   readHostedMediaGenerationFailure,
   readHostedJson,
@@ -34,6 +35,10 @@ function inferResultUrl(request, responsePayload) {
   throw new Error('Could not infer result URL from request/response.');
 }
 
+function isCompletedProviderResponse(responsePayload) {
+  return unwrapProviderResult(responsePayload)?.status === 'completed';
+}
+
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   if (args.help || !args.request) {
@@ -42,7 +47,7 @@ async function main() {
     return;
   }
 
-  const request = readHostedJson(args.request);
+  const request = normalizeRenderInput(readHostedJson(args.request));
   if (request.provider !== 'hosted-media') {
     throw new Error(
       `unsupported_video_provider: ${request.provider}. Released video-batch-runner only supports provider "hosted-media".`,
@@ -54,12 +59,15 @@ async function main() {
     : readJson(buildRequestPaths(request.localOutputDir).responsePath);
 
   const paths = buildRequestPaths(request.localOutputDir);
-  const resultUrl =
-    args['result-url'] || inferResultUrl(request, priorResponse);
+  let rawResult = priorResponse;
 
-  const { data: rawResult } = await fetchJson(resultUrl);
-
-  writeJson(paths.responsePath, rawResult);
+  if (!isCompletedProviderResponse(priorResponse)) {
+    const resultUrl =
+      args['result-url'] || inferResultUrl(request, priorResponse);
+    const response = await fetchJson(resultUrl);
+    rawResult = response.data;
+    writeJson(paths.responsePath, rawResult);
+  }
 
   const result = unwrapProviderResult(rawResult);
 
@@ -70,6 +78,7 @@ async function main() {
   manifest.providerTaskId = null;
   manifest.providerStatus = result?.status || null;
   manifest.providerUrls = result?.urls || priorResponse?.urls || null;
+  manifest.providerBilling = result?.billing || null;
   manifest.hasNsfwContents = Array.isArray(result?.has_nsfw_contents)
     ? result.has_nsfw_contents
     : [];

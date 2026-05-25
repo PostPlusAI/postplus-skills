@@ -40,7 +40,7 @@ async function main() {
   }
 
   const collectionKey = args['collection-key'] || 'tiktok-related-videos';
-  const sourceId = 'clockworks/tiktok-scraper';
+  const sourceId = 'tiktok-related-videos';
   const top = Number(args.top || 10);
   const resultsPerSeed = Number(args['results-per-seed'] || 6);
 

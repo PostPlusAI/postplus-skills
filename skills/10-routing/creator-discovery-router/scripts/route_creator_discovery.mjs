@@ -27,7 +27,7 @@ export function routeCreatorDiscovery(brief = {}) {
       platform === "instagram"
         ? "instagram-creator-discovery"
         : platform === "x"
-          ? "x-research"
+          ? "x-tools"
           : "tiktok-research",
     route,
   };
@@ -35,7 +35,7 @@ export function routeCreatorDiscovery(brief = {}) {
 
 function usage() {
   console.error(
-    "Usage: node route_creator_discovery.mjs [--input <brief.json>] [--output <route.json>]",
+    "Usage: node route_creator_discovery.mjs --input <brief.json> [--output <route.json>]",
   );
 }
 
@@ -47,8 +47,13 @@ async function main() {
     process.exitCode = 0;
     return;
   }
+  if (!args.input) {
+    usage();
+    process.exitCode = 1;
+    return;
+  }
 
-  const input = args.input ? readJson(args.input) : {};
+  const input = readJson(args.input);
   const payload = routeCreatorDiscovery(input);
   printOrWriteJson(args.output, payload);
 }

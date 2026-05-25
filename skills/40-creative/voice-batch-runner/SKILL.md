@@ -234,6 +234,11 @@ This skill expects these tool adapters:
 - `design_voice`
 - `clone_voice_take`
 
+Polling is part of the released public surface:
+
+- `poll_design_voice.mjs` resumes pending `design_voice` jobs.
+- `poll_clone_voice.mjs` resumes pending `clone_voice_take` jobs.
+
 `clone_voice_take` accepts `referenceAudioPath` for local files and uploads it
 inside the script before calling the hosted clone endpoint.
 

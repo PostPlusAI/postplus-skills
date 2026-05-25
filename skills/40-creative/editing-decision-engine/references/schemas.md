@@ -85,7 +85,7 @@ Use them as output contracts, not rigid engineering schemas.
 
 For most jobs, produce:
 
-### 1. `edit-brief`
+### 1. `editBrief`
 
 ```json
 {
@@ -97,19 +97,19 @@ For most jobs, produce:
 }
 ```
 
-### 2. `beat-map`
+### 2. `beatMap`
 
 Array of `script-beat`
 
-### 3. `asset-inventory`
+### 3. `assetInventory`
 
 Array of `b-roll-asset`
 
-### 4. `decision-timeline`
+### 4. `decisionTimeline`
 
 Array of `edit-decision`
 
-### 5. `risk-log`
+### 5. `riskLog`
 
 ```json
 [

@@ -17,18 +17,18 @@ Use this skill only as a high-level entry point when the user asks for cross-pla
 
 This file is intentionally lightweight. Platform-specific collection logic lives elsewhere:
 
-- TikTok: `../../20-research/tiktok-research/SKILL.md`
-- TikTok music archive downloads: `../../20-research/tiktok-music-archive-downloader/SKILL.md`
-- TikTok music chain: `../../00-shared/postplus-shared/references/shared-tiktok-music-workflow.md`
-- TikTok ads: `../../20-research/tiktok-ad-research/SKILL.md`
-- Instagram creator discovery: `../../20-research/instagram-creator-discovery/SKILL.md`
-- Instagram accounts: `../../20-research/instagram-account-research/SKILL.md`
-- Instagram content benchmark: `../../20-research/instagram-content-benchmark/SKILL.md`
-- Instagram audience voice: `../../20-research/instagram-audience-voice/SKILL.md`
-- Instagram campaign scouting: `../../20-research/instagram-campaign-scout/SKILL.md`
-- X: `../../20-research/x-tools/SKILL.md`
-- YouTube: `../../20-research/youtube-research/SKILL.md`
-- Facebook: `../../20-research/facebook-research/SKILL.md`
+- TikTok: `tiktok-research`
+- TikTok music archive downloads: `tiktok-music-archive-downloader`
+- TikTok music chain: `postplus-shared` TikTok music workflow
+- TikTok ads: `tiktok-ad-research`
+- Instagram creator discovery: `instagram-creator-discovery`
+- Instagram accounts: `instagram-account-research`
+- Instagram content benchmark: `instagram-content-benchmark`
+- Instagram audience voice: `instagram-audience-voice`
+- Instagram campaign scouting: `instagram-campaign-scout`
+- X: `x-tools`
+- YouTube: `youtube-research`
+- Facebook: `facebook-research`
 
 ## Core Rule
 
@@ -70,6 +70,11 @@ Do not stay in this skill when the request is already specific, for example:
 
 Route immediately to the narrower skill.
 
+For Instagram, choose the downstream skill from the user intent:
+
+- creator shortlist or partnership discovery -> `instagram-creator-discovery`
+- content benchmark, format study, or angle analysis -> `instagram-content-benchmark`
+
 ## Output Expectation
 
 If multiple platforms are involved, return a merged research package with:
@@ -81,6 +86,6 @@ If multiple platforms are involved, return a merged research package with:
 
 If the user wants to keep moving after research, the next layer should depend on the output:
 
-- creator shortlist or partnership path -> `skills/10-routing/creator-discovery-router` or `skills/50-publishing/creator-outreach`
-- strategy or concept handoff -> `skills/40-creative/benchmark-to-brief`
+- creator shortlist or partnership path -> `creator-discovery-router` or `creator-outreach`
+- strategy or concept handoff -> `benchmark-to-brief`
 - publishing or distribution execution -> only after the content is already packaged into publish-ready copy, assets, or approved deliverables

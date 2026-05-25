@@ -6,12 +6,12 @@ Shared routing and chaining rules for TikTok music, sound, video sample, and loc
 
 Classify the request by the object the user already has:
 
-- `No specific sound yet`: find candidates first with `skills/20-research/tiktok-research`
-- `Music URL / sound URL / musicId / song keyword`: use `skills/20-research/tiktok-research`
+- `No specific sound yet`: find candidates first with `tiktok-research`
+- `Music URL / sound URL / musicId / song keyword`: use `tiktok-research`
   when the released TikTok collection path can produce sample video URLs; if it
   cannot, ask the user for selected video URLs or an existing sample dataset
-- `Selected video URLs or sample dataset`: download videos and extract audio with `skills/20-research/tiktok-music-archive-downloader`
-- `Local video or audio files`: route through `skills/10-routing/media-router` into transcription, subtitles, or `skills/40-creative/video-analysis`
+- `Selected video URLs or sample dataset`: download videos and extract audio with `tiktok-music-archive-downloader`
+- `Local video or audio files`: route through `media-router` into transcription, subtitles, or `video-analysis`
 
 Do not start with downloading when the user has not selected a sound or sample set.
 Do not treat extracted audio as commercially cleared unless the user confirms rights or platform-licensed use.
@@ -24,13 +24,13 @@ instead of retrying broad downloads or inventing an unapproved proxy/cookie path
 
 Use this default chain for TikTok music research:
 
-1. `skills/20-research/tiktok-research`: discover candidate sounds by region, category, or campaign fit.
-2. `skills/20-research/tiktok-research`: collect or normalize selected video
+1. `tiktok-research`: discover candidate sounds by region, category, or campaign fit.
+2. `tiktok-research`: collect or normalize selected video
    samples when the released collection path supports the request.
-3. `skills/20-research/tiktok-music-archive-downloader`: download representative videos and extract reference audio.
-4. `skills/40-creative/video-analysis`: analyze video structure, hook, pacing, visual pattern, and usage context.
-5. `skills/40-creative/audio-transcription` or `skills/40-creative/video-transcription`: transcribe lyrics, speech, or voiceover when needed.
-6. `skills/40-creative/subtitle-packager`: produce SRT/ASS only after timed transcript artifacts exist.
+3. `tiktok-music-archive-downloader`: download representative videos and extract reference audio.
+4. `video-analysis`: analyze video structure, hook, pacing, visual pattern, and usage context.
+5. `audio-transcription` or `video-transcription`: transcribe lyrics, speech, or voiceover when needed.
+6. `subtitle-packager`: produce SRT/ASS only after timed transcript artifacts exist.
 
 Skip steps when the user already provides the corresponding artifact.
 

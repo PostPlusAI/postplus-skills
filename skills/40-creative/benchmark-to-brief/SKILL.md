@@ -157,6 +157,29 @@ Common outputs for this skill:
 These outputs should be treated as execution inputs, not end-user proof that the underlying research happened.
 If the upstream research is still fuzzy, thin, or contradictory, stop and surface that gap before turning it into a brief.
 
+## Executable ABI
+
+Use the local script only after validated benchmark evidence has already been
+selected. It packages an evidence-backed brief; it does not brainstorm concepts
+from an empty prompt.
+
+Command:
+
+```bash
+node scripts/build_benchmark_brief.mjs --input <input.json> --output <brief.json>
+```
+
+`--input` is required. The input JSON must include:
+
+- `corePromise`: the brief's central promise, copied or derived from evidence
+- `hookOptions`: non-empty hook options grounded in source artifacts
+- `workflow`: the selected execution workflow
+- `sourceFacts`: non-empty factual findings from benchmark artifacts
+- `sourceBasis`: non-empty source artifact names, ids, URLs, or table rows
+
+If `sourceFacts` or `sourceBasis` cannot be supplied, stop and report the
+evidence gap instead of emitting a default brief.
+
 ### Campaign Brief
 
 Include:

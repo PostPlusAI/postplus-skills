@@ -53,23 +53,19 @@ function cleanString(value) {
 }
 
 export function planFrameExtraction(input) {
+  if (!input || typeof input !== 'object') {
+    throw new Error('frame-extraction requires an input object.');
+  }
+
   const durationSeconds = Math.ceil(
-    parsePositiveNumber(
-      input?.durationSeconds ?? input?.duration,
-      'durationSeconds',
-    ),
+    parsePositiveNumber(input.durationSeconds, 'durationSeconds'),
   );
-  const requestedFrameBudget =
-    input?.maxSelectedFrames ??
-    input?.frameBudget ??
-    input?.requestedFrameCount ??
-    null;
+  const requestedFrameBudget = input.frameBudget ?? null;
   const parsedFrameBudget =
     requestedFrameBudget === null || requestedFrameBudget === undefined
       ? null
       : Math.ceil(parsePositiveNumber(requestedFrameBudget, 'frameBudget'));
-  const requestedScope =
-    cleanString(input?.scope) ?? cleanString(input?.requestedScope) ?? null;
+  const requestedScope = cleanString(input.scope);
   const isLongVideo = durationSeconds > LONG_VIDEO_SECONDS;
 
   if (!isLongVideo) {

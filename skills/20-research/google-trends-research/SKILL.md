@@ -194,14 +194,14 @@ Good recommendation shapes:
 
 Escalate to platform research skills when search intent should be validated against actual content or commerce evidence:
 
-- TikTok content heat or hook patterns -> `skills/20-research/tiktok-research`
-- Instagram creator, account, or campaign scouting -> `skills/20-research/instagram-account-research` or `skills/20-research/instagram-campaign-scout`
-- Amazon marketplace demand -> `skills/20-research/amazon-research`
-- marketplace demand -> `skills/20-research/amazon-research`
+- TikTok content heat or hook patterns -> `tiktok-research`
+- Instagram creator, account, or campaign scouting -> `instagram-account-research` or `instagram-campaign-scout`
+- Amazon marketplace demand -> `amazon-research`
+- marketplace demand -> `amazon-research`
 
 Escalate to higher synthesis when the user is making a real business decision:
 
-- cross-source sourcing or selection judgment -> `skills/30-strategy/sourcing-selection`
+- cross-source sourcing or selection judgment -> `sourcing-selection`
 
 ## Failure Modes To Avoid
 

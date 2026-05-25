@@ -3,8 +3,7 @@
 /**
  * Composite overlay text onto generated slide images.
  *
- * Uses Python PIL (Pillow), which must be available in the active python3
- * environment.
+ * Uses the shared local dependency resolver for Python Pillow.
  *
  * Usage:
  *   node composite-text.mjs --manifest <path-to-manifest.json>
@@ -15,9 +14,12 @@
 
 import { readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
-import { spawn } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import {
+  resolveLocalDependencyCommand,
+  runResolvedLocalDependencyCommand,
+} from '../_postplus_shared/00-core/shared-runtime/scripts/lib/local_dependencies.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -37,7 +39,7 @@ async function main() {
 
   const manifest = JSON.parse(await readFile(manifestPath, 'utf-8'));
   const baseDir = path.dirname(manifestPath);
-  await assertPythonPillowAvailable();
+  const pythonPillowCommand = await assertPythonPillowAvailable();
 
   for (const slide of manifest.slides) {
     const hasText = slide.overlayText;
@@ -78,7 +80,7 @@ async function main() {
         textStyle: { color, strokeColor, strokeWidth, fontSize, position: positionLabel },
         product,
         canvasWidth: parseCanvasWidth(manifest.canvasPx),
-      });
+      }, pythonPillowCommand);
       slide.finalImagePath = outputPath;
       console.log(`Slide ${slide.position}: composited → ${outputPath}`);
     } catch (err) {
@@ -92,40 +94,9 @@ async function main() {
 }
 
 async function assertPythonPillowAvailable() {
-  return new Promise((resolve, reject) => {
-    const proc = spawn('python3', ['-c', 'from PIL import Image, ImageDraw, ImageFont'], {
-      stdio: ['ignore', 'ignore', 'pipe'],
-    });
-
-    let stderr = '';
-    proc.stderr.on('data', (data) => {
-      stderr += data.toString();
-    });
-    proc.on('error', (error) => {
-      reject(
-        new Error(
-          `Failed to start python3 for slideshow text compositing: ${error.message}`,
-        ),
-      );
-    });
-    proc.on('close', (code) => {
-      if (code === 0) {
-        resolve();
-        return;
-      }
-
-      reject(
-        new Error(
-          [
-            'python3 with Pillow is required for slideshow text compositing.',
-            'Install Pillow in the python3 environment used by this skill, then retry.',
-            stderr.trim(),
-          ]
-            .filter(Boolean)
-            .join(' '),
-        ),
-      );
-    });
+  return await resolveLocalDependencyCommand('python3:PIL', {
+    missingMessage:
+      'python3 with Pillow is required for slideshow text compositing.',
   });
 }
 
@@ -136,7 +107,7 @@ function parseCanvasWidth(canvasPx) {
 }
 
 
-async function compositeWithPil(inputPath, outputPath, opts) {
+async function compositeWithPil(inputPath, outputPath, opts, pythonPillowCommand) {
   const canvasW = opts.canvasWidth;
   const text = opts.text;
   const ts = opts.textStyle;
@@ -267,32 +238,16 @@ img.save(${JSON.stringify(outputPath)})
 print("OK")
 `.trim();
 
-  return new Promise((resolve, reject) => {
-    const proc = spawn('python3', ['-c', script], {
-      stdio: ['pipe', 'pipe', 'pipe'],
-    });
+  const result = await runResolvedLocalDependencyCommand(
+    pythonPillowCommand,
+    ['-c', script],
+  );
 
-    let stdout = '';
-    let stderr = '';
+  if (result.code === 0 && result.stdout.includes('OK')) {
+    return;
+  }
 
-    proc.stdout.on('data', (d) => { stdout += d.toString(); });
-    proc.stderr.on('data', (d) => { stderr += d.toString(); });
-    proc.on('error', (error) => {
-      reject(
-        new Error(
-          `Failed to start python3 for slideshow text compositing: ${error.message}`,
-        ),
-      );
-    });
-
-    proc.on('close', (code) => {
-      if (code === 0 && stdout.includes('OK')) {
-        resolve();
-      } else {
-        reject(new Error(stderr || stdout || `exit code ${code}`));
-      }
-    });
-  });
+  throw new Error(result.stderr || result.stdout || `exit code ${result.code}`);
 }
 
 main().catch((err) => {

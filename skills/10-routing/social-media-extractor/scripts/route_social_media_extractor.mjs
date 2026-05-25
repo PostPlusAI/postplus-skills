@@ -11,6 +11,7 @@ export function routeSocialMediaExtractor(brief = {}) {
   const requestedPlatforms = Array.isArray(brief.platforms)
     ? brief.platforms
     : ["tiktok", "instagram", "x"];
+  const goal = brief.goal || "benchmark";
 
   const routePlan = requestedPlatforms.map((platform) => ({
     platform,
@@ -18,16 +19,18 @@ export function routeSocialMediaExtractor(brief = {}) {
       platform === "tiktok"
         ? "tiktok-research"
         : platform === "instagram"
-          ? "instagram-content-benchmark"
+          ? goal === "creator-shortlist"
+            ? "instagram-creator-discovery"
+            : "instagram-content-benchmark"
           : platform === "x"
-            ? "x-research"
+            ? "x-tools"
             : `${platform}-research`,
   }));
 
   return {
     mergedSummaryAfterNormalization: true,
     nextSkill:
-      brief.goal === "creator-shortlist"
+      goal === "creator-shortlist"
         ? "creator-discovery-router"
         : "benchmark-to-brief",
     requestedPlatforms,
@@ -41,7 +44,7 @@ export function routeSocialMediaExtractor(brief = {}) {
 
 function usage() {
   console.error(
-    "Usage: node route_social_media_extractor.mjs [--input <brief.json>] [--output <route.json>]",
+    "Usage: node route_social_media_extractor.mjs --input <brief.json> [--output <route.json>]",
   );
 }
 
@@ -53,8 +56,13 @@ async function main() {
     process.exitCode = 0;
     return;
   }
+  if (!args.input) {
+    usage();
+    process.exitCode = 1;
+    return;
+  }
 
-  const input = args.input ? readJson(args.input) : {};
+  const input = readJson(args.input);
   const payload = routeSocialMediaExtractor(input);
   printOrWriteJson(args.output, payload);
 }

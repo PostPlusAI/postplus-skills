@@ -92,7 +92,8 @@ Required upstream inputs depend on route:
   - render purpose
   - local output directory
 - `seedance`
-  - prompt or `promptPlan`
+  - `request.prompt_summary` plus `promptPlan.prompt_storyline`, or an
+    intentional `request.final_prompt`
   - any required media refs for the chosen mode
   - concept reference
   - render purpose
@@ -148,7 +149,7 @@ Read [`references/hosted-video-talking-head.md`](references/hosted-video-talking
 Read [`references/hosted-video-generative.md`](references/hosted-video-generative.md) before designing hosted Seedance requests.
 Read [`references/hosted-video-generative.md`](references/hosted-video-generative.md) before designing Seedance requests.
 
-If the project should keep related image, audio, and video files under one asset root, use the shared asset model in [`../image-batch-runner/references/unified-asset-contract-v1.md`](../image-batch-runner/references/unified-asset-contract-v1.md).
+If the project should keep related image, audio, and video files under one asset root, use the `image-batch-runner` unified asset contract.
 
 ## PostPlus Cloud Rule
 
@@ -252,7 +253,8 @@ At minimum record:
 - provider route
 - PostPlus creative format
 - model
-- prompt or prompt plan
+- provider prompt source: `final_prompt`, or `prompt_summary` plus
+  `promptPlan.prompt_storyline`
 - media refs used by the route
 - optional mask image
 - resolution
@@ -352,7 +354,7 @@ Before calling a video provider, verify:
 - for `seedance` (hosted), request mode is explicit and required media exists
 - `provider` is `hosted-media`
 - media roles match the intended hosted model
-- prompt or prompt plan is concrete enough to constrain the generation
+- provider prompt source is concrete enough to constrain the generation
 - render request is tied to a real concept or asset purpose
 - local output path is explicit
 
@@ -370,9 +372,11 @@ Stop and say the request is under-specified if any of these are missing:
 
 - for `talking-head`, no approved image asset
 - for `talking-head`, no approved voice take
-- for `seedance` (hosted), no prompt or no required first image
+- for `seedance` (hosted), no `prompt_summary` plus
+  `promptPlan.prompt_storyline`, no intentional `final_prompt`, or no required
+  first image for image-to-video modes
 - unsupported provider values outside `hosted-media`
-- no prompt or no usable media for the selected hosted model
+- no provider prompt source or no usable media for the selected hosted model
 - no asset purpose
 - no source basis
 - no local output path

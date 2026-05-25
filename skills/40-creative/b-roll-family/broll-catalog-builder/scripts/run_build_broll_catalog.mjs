@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { runLocalDependencyCommandSync } from '../_postplus_shared/00-core/shared-runtime/scripts/lib/local_dependencies.mjs';
 import { formatCliError } from '../_postplus_shared/00-core/shared-runtime/scripts/lib/network_runtime.mjs';
 
 const SUPPORTED_VIDEO_EXTS = new Set(['.mp4', '.mov', '.m4v', '.webm']);
@@ -147,29 +147,29 @@ function roundSeconds(value) {
 }
 
 function ffprobeJson(filePath) {
-  try {
-    const stdout = execFileSync(
-      'ffprobe',
-      [
-        '-v',
-        'error',
-        '-print_format',
-        'json',
-        '-show_streams',
-        '-show_format',
-        path.resolve(filePath),
-      ],
-      { encoding: 'utf8', maxBuffer: 10 * 1024 * 1024 },
-    );
-    return JSON.parse(stdout);
-  } catch (error) {
-    if (error?.code === 'ENOENT') {
-      throw new Error(
-        'local_dependency_missing: ffprobe is required for broll-catalog-builder. Follow the postplus-shared Local Dependency Bootstrap Rule, then rerun this script.',
-      );
-    }
-    throw error;
+  const result = runLocalDependencyCommandSync(
+    'ffprobe',
+    [
+      '-v',
+      'error',
+      '-print_format',
+      'json',
+      '-show_streams',
+      '-show_format',
+      path.resolve(filePath),
+    ],
+    {
+      encoding: 'utf8',
+      maxBuffer: 10 * 1024 * 1024,
+      missingMessage: 'ffprobe is required for broll-catalog-builder.',
+    },
+  );
+
+  if (result.status !== 0) {
+    throw new Error(result.stderr || `ffprobe exited with ${result.status}`);
   }
+
+  return JSON.parse(result.stdout);
 }
 
 function inferMediaType(filePath) {

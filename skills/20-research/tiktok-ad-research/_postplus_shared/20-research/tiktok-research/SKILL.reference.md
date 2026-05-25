@@ -70,30 +70,30 @@ In the PostPlus runtime, follow `postplus-shared` public skill rules.
 
 TikTok-specific runtime notes:
 
-- when this skill references its own scripts, references, or templates, use absolute paths anchored at `${CLAUDE_SKILL_DIR}`; do not rely on bare `scripts/...`, `references/...`, `templates/...`, or `skills/20-research/tiktok-research/...` paths that depend on the current working directory
+- when this skill references its own scripts, references, or templates, use absolute paths anchored at `${CLAUDE_SKILL_DIR}`; do not rely on bare paths or repo-relative skill paths that depend on the current working directory
 - when extracting creator handles from a normalized video dataset, use `.items[].authorUsername`
 - if PostPlus Cloud service is unavailable, unauthorized, or returns a stable
   network error, stop immediately instead of switching to ad hoc shell glue
 
 Node 18+ is required. This workspace already has Node available.
 
-## Hosted Collection Keys And Actor Aliases
+## Hosted Collection Keys And Local Input Shapes
 
 Use PostPlus hosted collection keys only with `collection_actor_run.mjs
---collection-key`. Use actor aliases only with `build_tiktok_actor_input.mjs
+--collection-key`. Use local input-shape names only with `build_tiktok_actor_input.mjs
 --actor` or local normalization `--actor`.
 
 Released hosted collection keys:
 
 - `tiktok-videos` - keyword, hashtag, profile URL, music URL, location, direct
-  video, and content-first creator discovery; actor alias `tiktok-scraper`
-- `tiktok-users` - keyword account-search supplement; actor alias
+  video, and content-first creator discovery; local input shape `tiktok-scraper`
+- `tiktok-users` - keyword account-search supplement; local input shape
   `tiktok-user-search-scraper`
-- `tiktok-profiles` - profile enrichment from known handles; actor alias
+- `tiktok-profiles` - profile enrichment from known handles; local input shape
   `tiktok-profile-scraper`
 - `tiktok-related-videos` - graph expansion from shortlisted video URLs; actor
-  alias `tiktok-scraper` with `postURLs` and `scrapeRelatedVideos`
-- `tiktok-comments` - focused comment collection; actor alias
+  input shape `tiktok-scraper` with `postURLs` and `scrapeRelatedVideos`
+- `tiktok-comments` - focused comment collection; local input shape
   `tiktok-comments-scraper`
 
 `tiktok-scraper`, `tiktok-user-search-scraper`, `tiktok-profile-scraper`,
@@ -102,31 +102,31 @@ keys. Do not pass them to `collection_actor_run.mjs --collection-key`.
 
 PostPlus runtime note:
 
-- `tiktok-profile-scraper` (secondary provider) remains shelved for current PostPlus runtime
-  runs. Do not route to it until billing adds and verifies a provider cost
-  rule.
+- profile enrichment is released through hosted collection key `tiktok-profiles`
+  only. Do not route profile enrichment through unpublished keys or
+  implementation names.
 
 ## Routing Rules
 
 Start from the user's real collection surface, not from one favorite actor.
 
 - creator search with follower-band or content-fit constraints -> hosted key
-  `tiktok-videos`, actor alias `tiktok-scraper` first
+  `tiktok-videos`, local input shape `tiktok-scraper` first
 - creator search as account-search supplement -> hosted key `tiktok-users`,
-  actor alias `tiktok-user-search-scraper`
-- profile enrichment -> hosted key `tiktok-profiles`, actor alias
+  local input shape `tiktok-user-search-scraper`
+- profile enrichment -> hosted key `tiktok-profiles`, local input shape
   `tiktok-profile-scraper`
 - bulk profile enrichment stays on hosted key `tiktok-profiles`
-- topic/search video discovery -> hosted key `tiktok-videos`, actor alias
+- topic/search video discovery -> hosted key `tiktok-videos`, local input shape
   `tiktok-scraper`
-- hashtag-only sampling -> hosted key `tiktok-videos`, actor alias
+- hashtag-only sampling -> hosted key `tiktok-videos`, local input shape
   `tiktok-scraper`
-- known video URL enrichment -> hosted key `tiktok-videos`, actor alias
+- known video URL enrichment -> hosted key `tiktok-videos`, local input shape
   `tiktok-scraper`
-- focused comments -> hosted key `tiktok-comments`, actor alias
+- focused comments -> hosted key `tiktok-comments`, local input shape
   `tiktok-comments-scraper`
 - larger or cheaper comment runs -> hosted key `tiktok-comments`
-- region-aware low-cost discovery -> hosted key `tiktok-videos`, actor alias
+- region-aware low-cost discovery -> hosted key `tiktok-videos`, local input shape
   `tiktok-scraper`
 - shop creator analytics -> unsupported in the current hosted release
 
@@ -138,7 +138,8 @@ If the user wants paid ad intelligence, route to `tiktok-ad-research`.
 If the user specifically wants TikTok music or sound discovery, route to:
 
 - trending music by region -> use the music-discovery path within `tiktok-research`
-- videos under a specific music/sound -> `tiktok-music-sound-collector` when released
+- videos under a specific music/sound -> use the released `tiktok-research`
+  collection path when it supports the request; otherwise ask for selected video URLs
 - local download and audio extraction -> `tiktok-music-archive-downloader`
 
 For multi-step TikTok music workflows, read `postplus-shared` TikTok music workflow.
@@ -242,7 +243,7 @@ node ${CLAUDE_SKILL_DIR}/scripts/collection_actor_run.mjs \
   --skill-name tiktok-research
 ```
 
-In this example, `--actor tiktok-scraper` selects the provider actor input
+In this example, `--actor tiktok-scraper` selects the local actor-input
 shape. `--collection-key tiktok-videos` selects the released PostPlus hosted
 collection route.
 
@@ -489,7 +490,7 @@ node ${CLAUDE_SKILL_DIR}/scripts/generate_tiktok_report.mjs \
 
 ## Skill Handoff
 
-Escalate to `skills/40-creative/video-analysis` when:
+Escalate to `video-analysis` when:
 
 - the user wants hook or structure breakdowns
 - the user asks why specific videos work
@@ -502,7 +503,7 @@ When the request is broad, ask one short guiding question before running:
 
 Mention that this skill finds good samples first, and `video-analysis` can read the actual videos later.
 
-Escalate to `skills/20-research/tiktok-ad-research` when:
+Escalate to `tiktok-ad-research` when:
 
 - the user wants Creative Center top ads
 - the user wants paid ad hooks, objectives, or ad brief inputs

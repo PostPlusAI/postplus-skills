@@ -23,8 +23,8 @@ Use this skill when the user wants to:
 
 Read these references before implementation:
 
-- `skills/50-publishing/creator-outreach/references/lead-schema.md`
-- `skills/50-publishing/creator-outreach/references/routing.md`
+- `references/lead-schema.md`
+- `references/routing.md`
 
 ## Core Method
 
@@ -248,9 +248,9 @@ Do not scrape raw platform data directly from this skill unless the platform ski
 
 Use:
 
-- `skills/20-research/tiktok-research`
-- `skills/20-research/instagram-account-research`
-- `skills/20-research/x-tools`
+- `tiktok-research`
+- `instagram-account-research`
+- `x-tools`
 
 The expected input to this skill is normalized profile data or normalized profile-like exports from those platform skills.
 

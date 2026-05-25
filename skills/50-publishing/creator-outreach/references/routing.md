@@ -87,15 +87,14 @@ Use when:
 
 Use:
 
-- `skills/20-research/tiktok-research`
+- `tiktok-research`
 
-Preferred actor routes:
+Preferred PostPlus routes:
 
-- creator discovery by keyword -> `clockworks/tiktok-user-search-scraper`
-- profile enrichment -> `clockworks/tiktok-profile-scraper`
-- bulk profile enrichment fallback -> `apidojo/tiktok-profile-scraper`
-- content-first creator discovery -> `clockworks/tiktok-scraper`
-- TikTok Shop creator scouting -> unsupported in the current hosted release
+- creator discovery by keyword -> use `tiktok-research` search or profile enrichment flow
+- profile enrichment -> use `tiktok-profiles`
+- content-first creator discovery -> use `tiktok-posts`, then enrich author profiles
+- TikTok Shop creator scouting -> unavailable in the current hosted release
 
 Use for:
 
@@ -107,10 +106,10 @@ Use for:
 
 Use:
 
-- `skills/20-research/instagram-account-research`
-- `skills/20-research/instagram-tools`
+- `instagram-account-research`
+- `instagram-tools`
 
-Preferred actor routes:
+Preferred PostPlus routes:
 
 - account snapshot -> `instagram-profiles`
 - mention scouting -> `instagram-search`
@@ -126,9 +125,9 @@ Use for:
 
 Use:
 
-- `skills/20-research/x-tools`
+- `x-tools`
 
-Preferred actor routes:
+Preferred PostPlus routes:
 
 - account snapshot -> `x-profiles`
 - post or topic evidence -> `x-posts`

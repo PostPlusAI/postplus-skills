@@ -3,21 +3,19 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import {
-  createHostedMediaGenerationFailedError,
-  downloadHostedMediaFile,
-  isHostedMediaGenerationFailedResult,
-  requestHostedMediaGenerationJson,
-  readHostedMediaGenerationFailure,
-  uploadHostedMediaFile,
-} from '../_postplus_shared/00-core/shared-runtime/scripts/lib/hosted_media_generation_bridge.mjs';
+import { resolveCreativeFormat } from '../_postplus_shared/00-core/shared-runtime/scripts/lib/creative_format.mjs';
 import {
   readDomainSkillExecutionInput,
   readHostedSkillExecutionInput,
 } from '../_postplus_shared/00-core/shared-runtime/scripts/lib/hosted_execution_protocol.mjs';
 import {
-  resolveCreativeFormat,
-} from '../_postplus_shared/00-core/shared-runtime/scripts/lib/creative_format.mjs';
+  createHostedMediaGenerationFailedError,
+  downloadHostedMediaFile,
+  isHostedMediaGenerationFailedResult,
+  readHostedMediaGenerationFailure,
+  requestHostedMediaGenerationJson,
+  uploadHostedMediaFile,
+} from '../_postplus_shared/00-core/shared-runtime/scripts/lib/hosted_media_generation_bridge.mjs';
 
 export const DEFAULT_PROVIDER = 'hosted-media';
 export const DEFAULT_MODEL = 'video-infinitetalk';
@@ -36,6 +34,10 @@ export const SEEDANCE_TAIL_STRATEGY_PROMPTS = {
   loopable_tail: 'loopable tail with no new action',
 };
 const SEEDANCE_PROVIDER_DURATION_VALUES_SECONDS = [5, 10, 15];
+const KLING_V3_PROVIDER_DURATION_VALUES_SECONDS = [
+  3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+];
+const KLING_V3_TEXT_ASPECT_RATIOS = ['16:9', '9:16', '1:1'];
 const VIDEO_RUNNER_ARCHIVED_REQUEST_ERROR_CODE =
   'postplus_video_batch_runner_archived_request_not_executable';
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
@@ -51,6 +53,36 @@ export const HOSTED_VIDEO_MODELS = {
     modelGroup: 'kling-reference-motion-transfer',
     endpointKey: 'video-kling-v2-6-pro-motion-control',
     requiredFields: ['image', 'motionVideo', 'characterOrientation'],
+    supportsSeed: false,
+  },
+  'video-kling-v3-0-pro-image': {
+    modelGroup: 'kling-v3.0',
+    endpointKey: 'video-kling-v3-0-pro-image',
+    mode: 'image-to-video',
+    requiredFields: ['prompt', 'image'],
+    supportsSeed: false,
+  },
+  'video-kling-v3-0-pro-text': {
+    modelGroup: 'kling-v3.0',
+    endpointKey: 'video-kling-v3-0-pro-text',
+    mode: 'text-to-video',
+    requiredFields: ['prompt'],
+    supportsAspectRatio: true,
+    supportsSeed: false,
+  },
+  'video-kling-v3-0-std-image': {
+    modelGroup: 'kling-v3.0',
+    endpointKey: 'video-kling-v3-0-std-image',
+    mode: 'image-to-video',
+    requiredFields: ['prompt', 'image'],
+    supportsSeed: false,
+  },
+  'video-kling-v3-0-std-text': {
+    modelGroup: 'kling-v3.0',
+    endpointKey: 'video-kling-v3-0-std-text',
+    mode: 'text-to-video',
+    requiredFields: ['prompt'],
+    supportsAspectRatio: true,
     supportsSeed: false,
   },
   'video-seedance-2-image': {
@@ -144,7 +176,10 @@ export function nowIso() {
 }
 
 function resolveBillableVideoDuration(body) {
-  const value = Number(body?.duration ?? body?.durationSeconds ?? 5);
+  if (body?.durationSeconds !== undefined) {
+    throw new Error('request.durationSeconds is not supported. Use request.duration.');
+  }
+  const value = Number(body?.duration ?? 5);
   if (!Number.isFinite(value) || value <= 0) {
     throw new Error('Hosted video billing requires a positive duration.');
   }
@@ -153,8 +188,12 @@ function resolveBillableVideoDuration(body) {
 
 export function buildHostedVideoRequestDimensions(endpointKey, body) {
   const requestBody = body ?? {};
+  const audioMode =
+    endpointKey.startsWith('video-kling-v3-0-') && requestBody.sound !== true
+      ? 'off'
+      : 'on';
   const dimensions = {
-    audioMode: 'on',
+    audioMode,
     billableUnitCount: 1,
     duration: resolveBillableVideoDuration(requestBody),
     operationKey: endpointKey,
@@ -237,8 +276,14 @@ export function buildRequestPaths(localOutputDir) {
     requestPath,
     responsePath,
     manifestPath,
-    mediaUploadRequestPath: path.join(absoluteOutputDir, 'media-upload.request.json'),
-    mediaUploadResponsePath: path.join(absoluteOutputDir, 'media-upload.response.json'),
+    mediaUploadRequestPath: path.join(
+      absoluteOutputDir,
+      'media-upload.request.json',
+    ),
+    mediaUploadResponsePath: path.join(
+      absoluteOutputDir,
+      'media-upload.response.json',
+    ),
     rendersDir,
     qaDir,
   };
@@ -274,7 +319,8 @@ function enhanceHostedEnvelopeError(error, payload, absolutePath) {
 
   const archivedRequestError = new Error(lines.join('\n'));
   archivedRequestError.code = VIDEO_RUNNER_ARCHIVED_REQUEST_ERROR_CODE;
-  archivedRequestError.productErrorCode = VIDEO_RUNNER_ARCHIVED_REQUEST_ERROR_CODE;
+  archivedRequestError.productErrorCode =
+    VIDEO_RUNNER_ARCHIVED_REQUEST_ERROR_CODE;
   archivedRequestError.status = 400;
   archivedRequestError.archivedRequestPath = absolutePath;
   archivedRequestError.executionEnvelopePath = executionEnvelopePath;
@@ -373,7 +419,10 @@ async function uploadHostedMedia(filePath, paths) {
   writeJson(paths.mediaUploadResponsePath, data);
 
   const uploadResult =
-    data && typeof data === 'object' && data.data && typeof data.data === 'object'
+    data &&
+    typeof data === 'object' &&
+    data.data &&
+    typeof data.data === 'object'
       ? data.data
       : data;
   const uploadedUrl =
@@ -441,30 +490,29 @@ function formatPromptStoryline(promptStoryline) {
     );
   }
 
-  const lines = promptStoryline
-    .map((entry, index) => {
-      if (!entry || typeof entry !== 'object') {
-        throw new Error(
-          `Seedance promptPlan.prompt_storyline[${index}] must be an object.`,
-        );
-      }
+  const lines = promptStoryline.map((entry, index) => {
+    if (!entry || typeof entry !== 'object') {
+      throw new Error(
+        `Seedance promptPlan.prompt_storyline[${index}] must be an object.`,
+      );
+    }
 
-      const shot = typeof entry.shot === 'string' ? entry.shot.trim() : '';
-      const time = typeof entry.time === 'string' ? entry.time.trim() : '';
-      const visual = typeof entry.visual === 'string' ? entry.visual.trim() : '';
-      const dialogue =
-        typeof entry.dialogue === 'string' ? entry.dialogue.trim() : '';
+    const shot = typeof entry.shot === 'string' ? entry.shot.trim() : '';
+    const time = typeof entry.time === 'string' ? entry.time.trim() : '';
+    const visual = typeof entry.visual === 'string' ? entry.visual.trim() : '';
+    const dialogue =
+      typeof entry.dialogue === 'string' ? entry.dialogue.trim() : '';
 
-      if (!shot || !time || !visual) {
-        throw new Error(
-          `Seedance promptPlan.prompt_storyline[${index}] requires shot, time, and visual.`,
-        );
-      }
+    if (!shot || !time || !visual) {
+      throw new Error(
+        `Seedance promptPlan.prompt_storyline[${index}] requires shot, time, and visual.`,
+      );
+    }
 
-      return dialogue
-        ? `${shot} | ${time}: ${visual} Dialogue: "${dialogue}"`
-        : `${shot} | ${time}: ${visual}`;
-    });
+    return dialogue
+      ? `${shot} | ${time}: ${visual} Dialogue: "${dialogue}"`
+      : `${shot} | ${time}: ${visual}`;
+  });
 
   return lines.join('\n');
 }
@@ -500,7 +548,9 @@ function formatReferenceMap(referenceMap) {
 }
 
 function formatPromptSeconds(value) {
-  return Number(value).toFixed(3).replace(/\.?0+$/u, '');
+  return Number(value)
+    .toFixed(3)
+    .replace(/\.?0+$/u, '');
 }
 
 function toPositiveSeconds(value, fieldName) {
@@ -511,7 +561,11 @@ function toPositiveSeconds(value, fieldName) {
   return seconds;
 }
 
-function normalizeSeedanceEditTiming(input, providerDurationSeconds, modelGroup) {
+function normalizeSeedanceEditTiming(
+  input,
+  providerDurationSeconds,
+  modelGroup,
+) {
   if (modelGroup !== 'seedance-2.0') {
     return {
       targetEditDurationSeconds: null,
@@ -522,9 +576,7 @@ function normalizeSeedanceEditTiming(input, providerDurationSeconds, modelGroup)
   }
 
   const timeline =
-    input.timeline && typeof input.timeline === 'object'
-      ? input.timeline
-      : {};
+    input.timeline && typeof input.timeline === 'object' ? input.timeline : {};
   const targetEditRaw =
     input.targetEditDurationSeconds ?? input.target_edit_duration_seconds;
   const activeEndRaw =
@@ -629,6 +681,21 @@ function assertSeedanceProviderDuration(providerDurationSeconds, modelGroup) {
   );
 }
 
+function assertKlingV3ProviderDuration(providerDurationSeconds, modelGroup) {
+  if (modelGroup !== 'kling-v3.0' || providerDurationSeconds == null) {
+    return;
+  }
+  if (
+    KLING_V3_PROVIDER_DURATION_VALUES_SECONDS.includes(providerDurationSeconds)
+  ) {
+    return;
+  }
+
+  throw new Error(
+    `request.duration must be an integer from 3 to 15 seconds for Kling 3.0.`,
+  );
+}
+
 function buildSeedanceTailInstruction(timing, providerDurationSeconds) {
   if (
     !timing?.targetEditDurationSeconds ||
@@ -673,7 +740,10 @@ function buildSeedanceFinalPrompt(
     sections.push(promptStoryline);
   }
 
-  const tailInstruction = buildSeedanceTailInstruction(timing, providerDurationSeconds);
+  const tailInstruction = buildSeedanceTailInstruction(
+    timing,
+    providerDurationSeconds,
+  );
   if (tailInstruction) {
     sections.push(tailInstruction);
   }
@@ -699,11 +769,7 @@ function buildSeedanceFinalPrompt(
     sections.push(environment.join(' '));
   }
 
-  const audio = dedupeStrings([
-    plan.audio,
-    plan.music,
-    plan.soundEffects,
-  ]);
+  const audio = dedupeStrings([plan.audio, plan.music, plan.soundEffects]);
   if (audio.length > 0) {
     sections.push(audio.join(' '));
   }
@@ -733,8 +799,10 @@ function buildSeedanceFinalPrompt(
 }
 
 function hasPromptStoryline(input) {
-  return Array.isArray(input.promptPlan?.prompt_storyline) &&
-    input.promptPlan.prompt_storyline.length > 0;
+  return (
+    Array.isArray(input.promptPlan?.prompt_storyline) &&
+    input.promptPlan.prompt_storyline.length > 0
+  );
 }
 
 function assertNoDeprecatedPromptPlanFields(plan) {
@@ -749,10 +817,16 @@ function assertNoDeprecatedPromptPlanFields(plan) {
   if (typeof plan.intent === 'string' && plan.intent.trim()) {
     deprecated.push('promptPlan.intent');
   }
-  if (typeof plan.storyboardTimeline === 'string' || Array.isArray(plan.storyboardTimeline)) {
+  if (
+    typeof plan.storyboardTimeline === 'string' ||
+    Array.isArray(plan.storyboardTimeline)
+  ) {
     deprecated.push('promptPlan.storyboardTimeline');
   }
-  if (typeof plan.promptStoryline === 'string' || Array.isArray(plan.promptStoryline)) {
+  if (
+    typeof plan.promptStoryline === 'string' ||
+    Array.isArray(plan.promptStoryline)
+  ) {
     deprecated.push('promptPlan.promptStoryline');
   }
   if (typeof plan.action === 'string' && plan.action.trim()) {
@@ -936,6 +1010,128 @@ function assertNoUnsupportedHostedStructuredMotionControls(input, model) {
   );
 }
 
+function hasAnyOwnPath(input, fieldPaths) {
+  return collectExistingPaths(input, fieldPaths).length > 0;
+}
+
+function assertKlingV3RequestContract(input, model, hostedModelConfig) {
+  if (hostedModelConfig.modelGroup !== 'kling-v3.0') {
+    return;
+  }
+
+  if (
+    hasAnyOwnPath(input, [
+      'resolution',
+      'reference_images',
+      'referenceImages',
+      'reference_videos',
+      'referenceVideos',
+      'reference_audios',
+      'referenceAudios',
+      'images',
+      'videos',
+      'audios',
+      'audio',
+      'keep_original_sound',
+      'keepOriginalSound',
+    ])
+  ) {
+    throw new Error(
+      `Hosted video model ${model} only supports prompt, optional negativePrompt, duration, cfgScale, shotType, sound/generateAudio, and image/endImage for image-to-video.`,
+    );
+  }
+
+  const cfgScale = input.cfg_scale ?? input.cfgScale;
+  if (
+    cfgScale != null &&
+    (typeof cfgScale !== 'number' ||
+      !Number.isFinite(cfgScale) ||
+      cfgScale < 0 ||
+      cfgScale > 1)
+  ) {
+    throw new Error(
+      `Hosted video model ${model} requires cfgScale between 0 and 1.`,
+    );
+  }
+
+  const shotType = input.shot_type ?? input.shotType;
+  if (
+    shotType != null &&
+    !['customize', 'intelligent'].includes(String(shotType))
+  ) {
+    throw new Error(
+      `Hosted video model ${model} requires shotType to be customize or intelligent.`,
+    );
+  }
+
+  if (hostedModelConfig.mode === 'text-to-video') {
+    if (
+      hasAnyOwnPath(input, [
+        'image',
+        'end_image',
+        'endImage',
+        'last_image',
+        'lastImage',
+        'motionVideo',
+        'motion_video',
+        'video',
+      ])
+    ) {
+      throw new Error(
+        `Hosted video model ${model} is text-to-video and does not accept image, video, or endImage inputs.`,
+      );
+    }
+
+    const ratio =
+      input.aspect_ratio ??
+      input.aspectRatio ??
+      input.ratio ??
+      input.targetAspectRatio;
+    if (ratio != null && !KLING_V3_TEXT_ASPECT_RATIOS.includes(String(ratio))) {
+      throw new Error(
+        `Hosted video model ${model} requires aspectRatio to be one of ${KLING_V3_TEXT_ASPECT_RATIOS.join(', ')}.`,
+      );
+    }
+  }
+
+  if (
+    hostedModelConfig.mode === 'image-to-video' &&
+    hasAnyOwnPath(input, [
+      'aspect_ratio',
+      'aspectRatio',
+      'ratio',
+      'targetAspectRatio',
+    ])
+  ) {
+    throw new Error(
+      `Hosted video model ${model} is image-to-video and does not accept aspectRatio; output ratio follows the input frame.`,
+    );
+  }
+}
+
+function resolveHostedPromptRequiredMessage(model, hostedModelConfig) {
+  if (hostedModelConfig.modelGroup === 'seedance-2.0') {
+    return `Hosted video model ${model} requires request.prompt_summary and promptPlan.prompt_storyline, or request.final_prompt.`;
+  }
+
+  return `Hosted video model ${model} requires request.prompt, request.text, or request.final_prompt.`;
+}
+
+function readOptionalIntegerSeconds(input, fieldName) {
+  if (fieldName === 'duration' && input.durationSeconds !== undefined) {
+    throw new Error('request.durationSeconds is not supported. Use request.duration.');
+  }
+  const value = input[fieldName];
+  if (value == null) {
+    return null;
+  }
+  if (Number.isInteger(value)) {
+    return value;
+  }
+
+  throw new Error(`request.${fieldName} must be an integer number of seconds.`);
+}
+
 function readHostedRequiredInput(input, field) {
   if (field === 'motionVideo') {
     return input.motionVideo || input.motion_video || input.video || null;
@@ -963,11 +1159,14 @@ export function normalizeRenderInput(input) {
   const model = input.model || DEFAULT_MODEL;
   const hostedModelConfig = getHostedVideoModelConfig(model);
   const creativeFormat = resolveCreativeFormat(input);
-  const modelSupportsAspectRatio = hostedModelConfig.supportsAspectRatio === true;
-  const providerDurationSeconds = Number.isInteger(input.duration)
-    ? input.duration
-    : null;
+  const modelSupportsAspectRatio =
+    hostedModelConfig.supportsAspectRatio === true;
+  const providerDurationSeconds = readOptionalIntegerSeconds(input, 'duration');
   assertSeedanceProviderDuration(
+    providerDurationSeconds,
+    hostedModelConfig.modelGroup,
+  );
+  assertKlingV3ProviderDuration(
     providerDurationSeconds,
     hostedModelConfig.modelGroup,
   );
@@ -981,7 +1180,9 @@ export function normalizeRenderInput(input) {
     assertNoDeprecatedPromptPlanFields(input.promptPlan);
   }
   const promptSummary =
-    typeof input.prompt_summary === 'string' ? input.prompt_summary.trim() : null;
+    typeof input.prompt_summary === 'string'
+      ? input.prompt_summary.trim()
+      : null;
   const finalPrompt =
     typeof input.final_prompt === 'string' && input.final_prompt.trim()
       ? input.final_prompt.trim()
@@ -1005,15 +1206,18 @@ export function normalizeRenderInput(input) {
 
   if (provider === 'hosted-media') {
     assertNoUnsupportedHostedStructuredMotionControls(input, model);
+    assertKlingV3RequestContract(input, model, hostedModelConfig);
 
     for (const field of hostedModelConfig.requiredFields) {
       if (field === 'prompt' && !finalPrompt) {
         throw new Error(
-          `Hosted video model ${model} requires request.prompt_summary and promptPlan.prompt_storyline, or request.final_prompt.`,
+          resolveHostedPromptRequiredMessage(model, hostedModelConfig),
         );
       }
       if (field !== 'prompt' && !readHostedRequiredInput(input, field)) {
-        throw new Error(`Hosted video model ${model} requires request.${field}.`);
+        throw new Error(
+          `Hosted video model ${model} requires request.${field}.`,
+        );
       }
     }
   }
@@ -1039,6 +1243,18 @@ export function normalizeRenderInput(input) {
     finalPrompt,
     prompt: finalPrompt,
     negativePrompt: input.negativePrompt || input.negative_prompt || null,
+    cfgScale:
+      typeof input.cfg_scale === 'number'
+        ? input.cfg_scale
+        : typeof input.cfgScale === 'number'
+          ? input.cfgScale
+          : null,
+    shotType:
+      typeof input.shot_type === 'string' && input.shot_type.trim()
+        ? input.shot_type.trim()
+        : typeof input.shotType === 'string' && input.shotType.trim()
+          ? input.shotType.trim()
+          : null,
     promptPlan: input.promptPlan || null,
     resolution: input.resolution || DEFAULT_RESOLUTION,
     characterOrientation:
@@ -1061,11 +1277,13 @@ export function normalizeRenderInput(input) {
           ? input.returnLastFrame
           : false,
     generateAudio:
-      typeof input.generate_audio === 'boolean'
-        ? input.generate_audio
-        : typeof input.generateAudio === 'boolean'
-          ? input.generateAudio
-          : null,
+      typeof input.sound === 'boolean'
+        ? input.sound
+        : typeof input.generate_audio === 'boolean'
+          ? input.generate_audio
+          : typeof input.generateAudio === 'boolean'
+            ? input.generateAudio
+            : null,
     keepOriginalSound:
       typeof input.keep_original_sound === 'boolean'
         ? input.keep_original_sound
@@ -1080,11 +1298,15 @@ export function normalizeRenderInput(input) {
           : null,
     providerDurationSeconds,
     targetEditDurationSeconds: seedanceEditTiming.targetEditDurationSeconds,
-    activePerformanceEndSeconds:
-      seedanceEditTiming.activePerformanceEndSeconds,
+    activePerformanceEndSeconds: seedanceEditTiming.activePerformanceEndSeconds,
     tailStrategy: seedanceEditTiming.tailStrategy,
     timeline: seedanceEditTiming.timeline,
-    lastImage: input.last_image || input.lastImage || null,
+    lastImage:
+      input.end_image ||
+      input.endImage ||
+      input.last_image ||
+      input.lastImage ||
+      null,
     referenceImages: stringList(
       input.reference_images || input.referenceImages || input.images,
     ),
@@ -1278,6 +1500,42 @@ export async function toProviderPayload(normalized, { paths } = {}) {
     }
     if (typeof normalized.keepOriginalSound === 'boolean') {
       payload.keep_original_sound = normalized.keepOriginalSound;
+    }
+
+    return payload;
+  }
+
+  if (hostedModelConfig.modelGroup === 'kling-v3.0') {
+    const payload = {
+      prompt: normalized.prompt,
+    };
+
+    if (hostedModelConfig.mode === 'image-to-video') {
+      payload.image = await resolveProviderMediaInput(normalized.image, paths);
+      if (normalized.lastImage) {
+        payload.end_image = await resolveProviderMediaInput(
+          normalized.lastImage,
+          paths,
+        );
+      }
+    } else if (normalized.ratio) {
+      payload.aspect_ratio = normalized.ratio;
+    }
+
+    if (Number.isInteger(normalized.duration)) {
+      payload.duration = normalized.duration;
+    }
+    if (normalized.negativePrompt) {
+      payload.negative_prompt = normalized.negativePrompt;
+    }
+    if (typeof normalized.generateAudio === 'boolean') {
+      payload.sound = normalized.generateAudio;
+    }
+    if (typeof normalized.cfgScale === 'number') {
+      payload.cfg_scale = normalized.cfgScale;
+    }
+    if (normalized.shotType) {
+      payload.shot_type = normalized.shotType;
     }
 
     return payload;
