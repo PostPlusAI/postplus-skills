@@ -173,6 +173,11 @@ for (const markdownFile of markdownFiles) {
       message: "uses hosted research collect without the public schema discovery command.",
     },
     {
+      command: /\bpostplus research capability\b/,
+      schema: /\bpostplus research schema\b/,
+      message: "uses hosted research capability without the public schema discovery command.",
+    },
+    {
       command: /\bpostplus media capability\b/,
       schema: /\bpostplus media schema\b/,
       message: "uses hosted media capability without the public schema discovery command.",

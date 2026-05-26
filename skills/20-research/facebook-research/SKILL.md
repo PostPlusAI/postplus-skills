@@ -72,8 +72,8 @@ cross-platform synthesis. Publishing belongs in `social-media-publisher`.
 ## Public Command Boundary
 
 - Check readiness first: `postplus doctor --skill facebook-research`.
-- Input schema: `postplus research schema --collection-key <collection-key> --json`.
-- Hosted collection: `postplus research collect --skill facebook-research --collection-key <collection-key> --input <hosted-envelope.json> --output <collection-result.json>`.
-- Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
+- Input schema: `postplus research schema --json`.
+- Public content collection: `postplus research capability --request <hosted-capability-request.json> --output <collection-result.json>`.
+- Use `public-content-collection` with `sourceKey` `facebook-profile-posts`, `facebook-group-posts`, or `facebook-post-by-url`.
 - Keep the first pass bounded; expand only after inspecting the first result.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

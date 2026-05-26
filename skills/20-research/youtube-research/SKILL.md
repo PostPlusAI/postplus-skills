@@ -73,6 +73,7 @@ cross-platform synthesis.
 - Check readiness first: `postplus doctor --skill youtube-research`.
 - Input schema: `postplus research schema --collection-key youtube-channel-summary --json`.
 - Hosted collection: `postplus research collect --skill youtube-research --collection-key youtube-channel-summary --input <hosted-envelope.json> --output <collection-result.json>`.
+- Public video collection: `postplus research capability --request <hosted-capability-request.json> --output <collection-result.json>` with `public-content-collection` sourceKey `youtube-videos`.
 - Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
 - Keep the first pass bounded; expand only after inspecting the first result.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.
