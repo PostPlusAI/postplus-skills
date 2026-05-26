@@ -20,7 +20,7 @@ metadata:
 
 ## Required Input
 - Validated evidence such as benchmark reports, master tables, pattern tables, strategy tables, comment analyses, or performance findings.
-- For the local script, input JSON with `corePromise`, `hookOptions`, `workflow`, `sourceFacts`, and `sourceBasis`.
+- For the structured artifact, input JSON with `corePromise`, `hookOptions`, `workflow`, `sourceFacts`, and `sourceBasis`.
 
 ## Fact Rule
 Everything produced by this skill must be grounded in available evidence.
@@ -95,11 +95,12 @@ Concept candidate fields:
 - passing raw research directly into publishing
 
 ## Handoff
-- Return the script output or an explicit evidence blocker. Hand off only explicit execution objects to `script-generator`, `persona-pack`, asset generation workflows, or content packaging.
+- Return the structured output or an explicit evidence blocker. Hand off only explicit execution objects to `script-generator`, `persona-pack`, asset generation workflows, or content packaging.
 
 ## Public Command Boundary
 
 - Check readiness first: `postplus doctor --skill benchmark-to-brief`.
+- Request schema: `postplus media schema --json`; add `--endpoint <endpoint-key>` for media-generation examples.
 - Hosted media capability: `postplus media capability --request <hosted-capability-request.json> --output <result.json>`.
 - Use the capability request shape required by the selected workflow; do not call provider APIs directly.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

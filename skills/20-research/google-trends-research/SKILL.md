@@ -94,6 +94,7 @@ missing evidence layer.
 ## Public Command Boundary
 
 - Check readiness first: `postplus doctor --skill google-trends-research`.
+- Input schema: `postplus research schema --json`.
 - Hosted collection: `postplus research collect --skill google-trends-research --collection-key google-trends-fast --input <hosted-envelope.json> --output <collection-result.json>`.
 - Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
 - Preview and approval boundaries stay explicit; do not execute irreversible publishing without the required approval artifact.

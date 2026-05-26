@@ -31,7 +31,7 @@ metadata:
   already completed.
 
 ## Source And Path
-- Include `durationSeconds` in the hosted envelope input for billing/preflight.
+- Include `durationSeconds` in the hosted capability request input for billing/preflight.
 - Use `enableTimestamps` when output will feed subtitles or edit decisions.
 - Start with one source file before larger batches.
 - Keep internal requests, responses, manifests, normalized transcripts, and
@@ -45,7 +45,7 @@ metadata:
   to `subtitle-packager` if SRT/ASS is needed.
 
 ## Fail Fast
-- Missing hosted envelope, audio input, `durationSeconds`, output path, auth,
+- Missing hosted capability request, audio input, `durationSeconds`, output path, auth,
   hosted capability, provider status URL, or stable provider/network access.
 - Do not switch to ad hoc STT providers or fake timing when hosted transcription
   is unavailable.
@@ -53,6 +53,7 @@ metadata:
 ## Public Command Boundary
 
 - Check readiness first: `postplus doctor --skill audio-transcription`.
+- Request schema: `postplus media schema --json`; add `--endpoint <endpoint-key>` for media-generation examples.
 - Hosted media capability: `postplus media capability --request <hosted-capability-request.json> --output <result.json>`.
 - Use the capability request shape required by the selected workflow; do not call provider APIs directly.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

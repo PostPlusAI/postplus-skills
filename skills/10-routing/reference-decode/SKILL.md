@@ -37,7 +37,7 @@ chemistry". Extract four objects:
    exact visual structure that makes the promise legible.
 3. Separate structure from identity. Keep camera grammar, shot order, object
    logic, timing, and relationship logic; do not keep exact identity details.
-4. Run the local script when a compact decode artifact is useful.
+4. Create a compact decode artifact when it is useful.
 5. Print or return the decode block before storyboard or request writing.
 
 ## No-Reference Mode
@@ -50,7 +50,7 @@ When no usable reference exists, operate in proxy mode:
 - state that the output is brief-derived, not observed from footage
 
 ## Output Shape
-The script emits `hookEssence`, `viewerQuestion`, `mustCopyVisualGrammar`, and
+The artifact contains `hookEssence`, `viewerQuestion`, `mustCopyVisualGrammar`, and
 `forbiddenDrift`.
 
 ## Fail Fast
@@ -67,5 +67,5 @@ The script emits `hookEssence`, `viewerQuestion`, `mustCopyVisualGrammar`, and
 
 - Check readiness first: `postplus doctor --skill reference-decode`.
 - This public skill is instruction-driven. Produce the artifact described by the workflow directly from the available evidence.
-- Do not call unpublished local scripts or private provider/runtime paths.
+- Do not call private provider/runtime paths or unpublished local tools.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

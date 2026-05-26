@@ -20,7 +20,7 @@ metadata:
 
 ## Required Input
 - For design: product or story context, intended platform, desired first-frame job, and any evidence or constraints.
-- For critique or the local script: a concrete first frame, first slide, or opening shot to inspect.
+- For critique or the structured artifact: a concrete first frame, first slide, or opening shot to inspect.
 
 ## Core Rule
 The first image or first 1-3 seconds must make the viewer ask a concrete question before they decide whether to keep watching.
@@ -85,7 +85,7 @@ Do not start with "beautiful cinematic shot" unless beauty itself is the tension
 - What should the next shot answer?
 
 ## Fail Fast
-- If the first frame, action, or evidence detail is unknown, ask for that visual input before using the script.
+- If the first frame, action, or evidence detail is unknown, ask for that visual input before producing the artifact.
 - Do not package a review that cannot identify the viewer question.
 - Do not turn a pretty but conflict-free frame into an approved hook.
 
@@ -111,6 +111,7 @@ For critique:
 ## Public Command Boundary
 
 - Check readiness first: `postplus doctor --skill visual-hook`.
+- Request schema: `postplus media schema --json`; add `--endpoint <endpoint-key>` for media-generation examples.
 - Hosted media capability: `postplus media capability --request <hosted-capability-request.json> --output <result.json>`.
 - Use the capability request shape required by the selected workflow; do not call provider APIs directly.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

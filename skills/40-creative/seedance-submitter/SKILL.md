@@ -42,7 +42,7 @@ metadata:
 - Bind references explicitly: say what `[image 1]`, `[image 2]`, `[audio 1]`,
   or `[video 1]` controls. Do not rely on `same as previous`, `content above`,
   or unbound local handles in final requests.
-- Upload local reference images with the shared image-batch upload script before
+- Upload local reference images with the hosted media-file upload flow before
   submission and pass uploaded URLs into the Seedance request.
 
 ## Review And Handoff
@@ -63,6 +63,7 @@ metadata:
 ## Public Command Boundary
 
 - Check readiness first: `postplus doctor --skill seedance-submitter`.
+- Request schema: `postplus media schema --json`; add `--endpoint <endpoint-key>` for media-generation examples.
 - Hosted media capability: `postplus media capability --request <hosted-capability-request.json> --output <result.json>`.
 - Use the capability request shape required by the selected workflow; do not call provider APIs directly.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

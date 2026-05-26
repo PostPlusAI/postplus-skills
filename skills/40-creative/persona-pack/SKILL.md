@@ -20,7 +20,7 @@ metadata:
 
 ## Required Input
 - Benchmark-supported persona evidence such as creator type, protagonist descriptions, visual style, hook patterns, lane distribution, strong sample subsets, or report conclusions.
-- For the local script, one persona object or `personas` array with `name`, `keyPain`, `proofNeed`, and non-empty `sourceBasis`.
+- For the structured artifact, one persona object or `personas` array with `name`, `keyPain`, `proofNeed`, and non-empty `sourceBasis`.
 
 ## Fact Rule
 Personas must be built from observed benchmark evidence. Do not fabricate demographic precision, audience fit claims, or visual traits chosen only because they look good.
@@ -96,11 +96,12 @@ Prompt pack:
 - no negative constraints
 
 ## Handoff
-- Return the script output or an explicit evidence blocker. Persona locks can feed image generation, `script-generator`, `visual-hook`, or batch production planning.
+- Return the structured output or an explicit evidence blocker. Persona locks can feed image generation, `script-generator`, `visual-hook`, or batch production planning.
 
 ## Public Command Boundary
 
 - Check readiness first: `postplus doctor --skill persona-pack`.
+- Request schema: `postplus media schema --json`; add `--endpoint <endpoint-key>` for media-generation examples.
 - Hosted media capability: `postplus media capability --request <hosted-capability-request.json> --output <result.json>`.
 - Use the capability request shape required by the selected workflow; do not call provider APIs directly.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

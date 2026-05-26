@@ -50,7 +50,7 @@ segment contract, and final render request.
    duration, aspect ratio, media references, quality, and resolution.
 
 ## Output Shape
-The script emits a JSON architecture with:
+The artifact contains a JSON architecture with:
 
 - `creativeFormat`, `targetAspectRatio`, and `duration`
 - `segmentType`, `goal`, `hookLogic`, and `viewerQuestion`
@@ -73,5 +73,5 @@ The script emits a JSON architecture with:
 
 - Check readiness first: `postplus doctor --skill video-request-architect`.
 - This public skill is instruction-driven. Produce the artifact described by the workflow directly from the available evidence.
-- Do not call unpublished local scripts or private provider/runtime paths.
+- Do not call private provider/runtime paths or unpublished local tools.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

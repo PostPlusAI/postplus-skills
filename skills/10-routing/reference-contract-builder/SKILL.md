@@ -38,11 +38,11 @@ unless the user explicitly marks them loose, benchmark-only, or weak guidance.
    continuity, or another narrow target.
 3. Classify each reference as `binding`, `inspiration-only`, or
    `excluded for now`.
-4. Run the local script when a compact machine-readable contract is useful.
+4. Create a compact machine-readable contract when it is useful.
 5. Print or return the contract before final prompt writing.
 
 ## Output Shape
-The script emits `testPurpose`, `mayLearn`, `mustNotCopy`, and
+The artifact contains `testPurpose`, `mayLearn`, `mustNotCopy`, and
 `excludedReferences`. Add user-specific binding notes around that output when
 the prompt has real product, persona, or audio references.
 
@@ -60,5 +60,5 @@ the prompt has real product, persona, or audio references.
 
 - Check readiness first: `postplus doctor --skill reference-contract-builder`.
 - This public skill is instruction-driven. Produce the artifact described by the workflow directly from the available evidence.
-- Do not call unpublished local scripts or private provider/runtime paths.
+- Do not call private provider/runtime paths or unpublished local tools.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

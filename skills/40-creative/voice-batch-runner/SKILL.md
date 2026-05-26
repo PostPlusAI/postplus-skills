@@ -54,7 +54,7 @@ metadata:
   command. Do not keep polling in the conversation.
 
 ## Fail Fast
-- Missing hosted envelope, persona registry, voice baseline, text,
+- Missing hosted capability request, persona registry, voice baseline, text,
   voiceDescription for design, reference audio for clone, source basis, output
   path, auth, hosted capability, or provider network access.
 - Do not solve missing voice strategy by randomly changing the TTS description.
@@ -62,6 +62,7 @@ metadata:
 ## Public Command Boundary
 
 - Check readiness first: `postplus doctor --skill voice-batch-runner`.
+- Request schema: `postplus media schema --json`; add `--endpoint <endpoint-key>` for media-generation examples.
 - Hosted media capability: `postplus media capability --request <hosted-capability-request.json> --output <result.json>`.
 - Use the capability request shape required by the selected workflow; do not call provider APIs directly.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

@@ -11,7 +11,7 @@ metadata:
 
 Use this skill first when another PostPlus skill asks for shared rules or shared workflow preferences.
 
-This skill is the single source of truth for principle-level PostPlus skill documents. It is instruction-only: do not run provider scripts, mutate registry or release metadata, or invent alternate execution paths from this shared-rule handoff.
+This skill is the single source of truth for principle-level PostPlus skill documents. It is instruction-only: do not run provider runtimes, mutate registry or release metadata, or invent alternate execution paths from this shared-rule handoff.
 
 ## References
 

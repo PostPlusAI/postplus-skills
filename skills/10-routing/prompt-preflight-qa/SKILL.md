@@ -30,7 +30,7 @@ Judge prompt quality by controllability, not by impressive prose.
    visible evidence, promise delivery, product timing, negative constraints,
    reference contract, explicit reference bindings, UGC realism, output format,
    and long-video segment plan.
-3. Run the local script when a machine-readable preflight report is useful.
+3. Create a machine-readable preflight report when it is useful.
 4. Return a concise verdict with risks, missing fields, likely drift, fixes, and
    whether the prompt can run now.
 
@@ -44,7 +44,7 @@ Point the weakness to the correct upstream stage:
 - unclear learn/do-not-copy boundaries -> `reference-contract-builder`
 
 ## Output Shape
-The script emits `verdict`, `canRunNow`, `missingFields`, `majorRisks`,
+The artifact contains `verdict`, `canRunNow`, `missingFields`, `majorRisks`,
 `likelyDrift`, and `fixNow`.
 
 ## Fail Fast
@@ -60,5 +60,5 @@ The script emits `verdict`, `canRunNow`, `missingFields`, `majorRisks`,
 
 - Check readiness first: `postplus doctor --skill prompt-preflight-qa`.
 - This public skill is instruction-driven. Produce the artifact described by the workflow directly from the available evidence.
-- Do not call unpublished local scripts or private provider/runtime paths.
+- Do not call private provider/runtime paths or unpublished local tools.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

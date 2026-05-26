@@ -31,7 +31,7 @@ Released hosted collection keys:
 - `instagram-search`: branded keyword, account, or topic discovery.
 - `instagram-posts`: post sampling from known URLs or accounts.
 
-Use installed-safe embedded Instagram support scripts:
+Use hosted collection outputs and the workflow below.
 
 ## Default Workflow
 
@@ -76,6 +76,7 @@ watchlist of usernames, hashtags, and tagged mentions.
 ## Public Command Boundary
 
 - Check readiness first: `postplus doctor --skill instagram-campaign-scout`.
+- Input schema: `postplus research schema --json`.
 - Hosted collection: `postplus research collect --skill instagram-campaign-scout --collection-key instagram-hashtags --input <hosted-envelope.json> --output <collection-result.json>`.
 - Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
 - Keep the first pass bounded; expand only after inspecting the first result.

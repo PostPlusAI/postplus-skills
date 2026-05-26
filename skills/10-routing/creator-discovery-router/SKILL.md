@@ -51,13 +51,13 @@ tighten the shortlist later.
 
 ## Default Workflow
 1. Normalize the brief internally.
-2. Run the local route script when a machine-readable route artifact is useful.
+2. Create a machine-readable route artifact when it is useful.
 3. Explain the plan in plain business language.
 4. Hand off in the same turn when platform and route are clear.
 5. Ask one short clarification only when the answer changes the route.
 
 ## Output Shape
-The script emits `platform`, `route`, `primarySkill`, `explanation`, and
+The artifact contains `platform`, `route`, `primarySkill`, `explanation`, and
 `handoffReady`. Use that output as the route artifact, then carry the user's
 business constraints into the downstream collector.
 
@@ -78,5 +78,5 @@ business constraints into the downstream collector.
 
 - Check readiness first: `postplus doctor --skill creator-discovery-router`.
 - This public skill is instruction-driven. Produce the artifact described by the workflow directly from the available evidence.
-- Do not call unpublished local scripts or private provider/runtime paths.
+- Do not call private provider/runtime paths or unpublished local tools.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

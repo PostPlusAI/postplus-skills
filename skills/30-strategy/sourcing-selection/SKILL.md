@@ -65,7 +65,7 @@ Use this order unless the user asks otherwise:
   the platform-specific collector.
 
 ## Output Shape
-The script packages the decision memo as JSON with product or niche, target
+The artifact packages the decision memo as JSON with product or niche, target
 channel, decision, demand signals, supply signals, rationale, missing layers,
 and recommended next step when provided.
 
@@ -84,5 +84,5 @@ and recommended next step when provided.
 
 - Check readiness first: `postplus doctor --skill sourcing-selection`.
 - This public skill is instruction-driven. Produce the artifact described by the workflow directly from the available evidence.
-- Do not call unpublished local scripts or private provider/runtime paths.
+- Do not call private provider/runtime paths or unpublished local tools.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

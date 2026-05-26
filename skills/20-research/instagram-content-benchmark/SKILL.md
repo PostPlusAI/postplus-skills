@@ -30,7 +30,7 @@ Released hosted collection keys:
 - `instagram-posts`: post or Reel samples from known accounts or URLs.
 - `instagram-hashtags`: hashtag-derived benchmark pools.
 
-Use installed-safe embedded Instagram support scripts:
+Use hosted collection outputs and the workflow below.
 
 ## Default Workflow
 
@@ -69,6 +69,7 @@ deeper.
 ## Public Command Boundary
 
 - Check readiness first: `postplus doctor --skill instagram-content-benchmark`.
+- Input schema: `postplus research schema --json`.
 - Hosted collection: `postplus research collect --skill instagram-content-benchmark --collection-key instagram-hashtags --input <hosted-envelope.json> --output <collection-result.json>`.
 - Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
 - Keep the first pass bounded; expand only after inspecting the first result.

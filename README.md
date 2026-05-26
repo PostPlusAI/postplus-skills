@@ -51,6 +51,20 @@ postplus status
 npx -y skills add PostPlusAI/postplus-skills --global --list
 ```
 
+Hosted request schema discovery:
+
+```bash
+postplus research schema --json
+postplus media schema --endpoint <endpoint-key> --json
+postplus publish schema --json
+postplus mobile schema --json
+```
+
+Use these schema commands before an agent writes a `--input` or `--request`
+JSON file for a hosted PostPlus command. For media work, run
+`postplus media schema --json` first to list `endpointKeys`, then rerun with
+the selected `--endpoint`.
+
 ## Local Studio
 
 For heavier skills that benefit from a visual workspace, use the CLI-managed

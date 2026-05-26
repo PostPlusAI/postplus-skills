@@ -1,6 +1,6 @@
 ---
 name: x-tools
-description: Local execution tools for X/Twitter hosted collection workflows, including actor runs, dataset normalization, tweet ranking, account ranking, audience graph construction, and language clustering.
+description: Hosted collection support guidance for X/Twitter workflows, including dataset normalization, tweet ranking, account ranking, audience graph construction, and language clustering.
 metadata:
   postplus:
     familyId: x
@@ -10,7 +10,7 @@ metadata:
 # X Tools
 
 ## Use When
-- Local execution tools for X/Twitter hosted collection workflows, including actor runs, dataset normalization, tweet ranking, account ranking, audience graph construction, and language clustering.
+- Hosted collection support guidance for X/Twitter workflows, including dataset normalization, tweet ranking, account ranking, audience graph construction, and language clustering.
 
 ## Do Not Use When
 - The task belongs to ideation, QA, or another released skill listed in the handoff section.
@@ -26,11 +26,12 @@ metadata:
 - Do not invent fallback execution paths or private provider calls.
 
 ## Handoff
-- Return the script output, hosted result, poll command, or explicit blocker.
+- Return the structured output, hosted result, poll command, or explicit blocker.
 
 ## Public Command Boundary
 
 - Check readiness first: `postplus doctor --skill x-tools`.
+- Input schema: `postplus research schema --json`.
 - Hosted collection: `postplus research collect --skill x-tools --collection-key x-posts --input <hosted-envelope.json> --output <collection-result.json>`.
 - Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
 - Keep the first pass bounded; expand only after inspecting the first result.

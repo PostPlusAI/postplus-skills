@@ -124,7 +124,7 @@ Use readable labels in the response: Segment type, Hook context, Narrative arc, 
 - treating CTA as a polished line instead of a behavior mechanism
 
 ## Execution Contract
-This released skill is instruction-only. It has no local script ABI. The stable output is the Narrative Brief.
+This released skill is instruction-only. It has no local execution ABI. The stable output is the Narrative Brief.
 
 ## Handoff
 - Send approved narrative plans to `script-generator`, `video-request-architect`, or `creative-qa`.
@@ -132,6 +132,7 @@ This released skill is instruction-only. It has no local script ABI. The stable 
 ## Public Command Boundary
 
 - Check readiness first: `postplus doctor --skill narrative-design`.
+- Request schema: `postplus media schema --json`; add `--endpoint <endpoint-key>` for media-generation examples.
 - Hosted media capability: `postplus media capability --request <hosted-capability-request.json> --output <result.json>`.
 - Use the capability request shape required by the selected workflow; do not call provider APIs directly.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

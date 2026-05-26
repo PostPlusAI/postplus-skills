@@ -53,11 +53,16 @@ const PUBLIC_SKILL_FORBIDDEN_PATTERNS = [
   },
   {
     label: "unpublished local script dependency",
-    pattern: /\bthis skill's local scripts?\b|\brun local scripts?\b|\bcall local scripts?\b/i,
+    pattern:
+      /\bthis skill's local scripts?\b|\brun local scripts?\b|\bcall local scripts?\b|\brun the local\b|\blocal script\b|\bthe script emits\b|\bscript output\b|\bscript contract\b|\binstalled-safe\b|\bembedded .*scripts\b/i,
   },
   {
     label: "hosted script wording",
     pattern: /\bhosted scripts?\b/i,
+  },
+  {
+    label: "private script polling path",
+    pattern: /\barchivedRequestPath\b|\bexecutionEnvelopePath\b/,
   },
 ];
 
@@ -160,6 +165,33 @@ for (const markdownFile of markdownFiles) {
     /\bpostplus publish capability\b/.test(text)
   ) {
     report(errors, `${repoPath}: research skills must not route through publish capability.`);
+  }
+  const hostedCommandRules = [
+    {
+      command: /\bpostplus research collect\b/,
+      schema: /\bpostplus research schema\b/,
+      message: "uses hosted research collect without the public schema discovery command.",
+    },
+    {
+      command: /\bpostplus media capability\b/,
+      schema: /\bpostplus media schema\b/,
+      message: "uses hosted media capability without the public schema discovery command.",
+    },
+    {
+      command: /\bpostplus publish capability\b/,
+      schema: /\bpostplus publish schema\b/,
+      message: "uses hosted publish capability without the public schema discovery command.",
+    },
+    {
+      command: /\bpostplus mobile capability\b/,
+      schema: /\bpostplus mobile schema\b/,
+      message: "uses hosted mobile capability without the public schema discovery command.",
+    },
+  ];
+  for (const rule of hostedCommandRules) {
+    if (rule.command.test(text) && !rule.schema.test(text)) {
+      report(errors, `${repoPath}: ${rule.message}`);
+    }
   }
   const skillsPath = toSkillsPath(markdownFile);
   if (

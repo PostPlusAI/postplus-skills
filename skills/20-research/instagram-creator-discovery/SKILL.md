@@ -36,8 +36,8 @@ Released hosted collection keys:
 - `instagram-email-search`: released enrichment when contact-oriented search is
   explicitly needed.
 
-Use installed-safe embedded Instagram support scripts when local execution is
-needed:
+Use hosted collection outputs and the workflow below when collection,
+normalization, or ranking is needed.
 
 ## Route Guidance
 
@@ -85,6 +85,7 @@ contact signals when available.
 ## Public Command Boundary
 
 - Check readiness first: `postplus doctor --skill instagram-creator-discovery`.
+- Input schema: `postplus research schema --json`.
 - Hosted collection: `postplus research collect --skill instagram-creator-discovery --collection-key instagram-email-search --input <hosted-envelope.json> --output <collection-result.json>`.
 - Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
 - Keep the first pass bounded; expand only after inspecting the first result.

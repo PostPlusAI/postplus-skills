@@ -59,7 +59,7 @@ metadata:
 
 ## Fail Fast
 - Missing canonical asset/run fields, prompt, source basis, asset purpose, local
-  output path, supported model, uploaded edit URL, hosted envelope, auth, hosted
+  output path, supported model, uploaded edit URL, hosted capability request, auth, hosted
   service, or local media path.
 - Do not invent visual strategy, silently downgrade quality, or use a fallback
   provider path to hide the failure.
@@ -67,6 +67,7 @@ metadata:
 ## Public Command Boundary
 
 - Check readiness first: `postplus doctor --skill image-batch-runner`.
+- Request schema: `postplus media schema --json`; add `--endpoint <endpoint-key>` for media-generation examples.
 - Hosted media capability: `postplus media capability --request <hosted-capability-request.json> --output <result.json>`.
 - Use the capability request shape required by the selected workflow; do not call provider APIs directly.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

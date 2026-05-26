@@ -131,6 +131,7 @@ for human review or a separate delivery tool.
 ## Public Command Boundary
 
 - Check readiness first: `postplus doctor --skill creator-outreach`.
+- Request schema: `postplus publish schema --json`.
 - Hosted publishing capability: `postplus publish capability --request <hosted-capability-request.json> --output <result.json>`.
 - Preview and approval boundaries stay explicit; do not execute irreversible publishing without the required approval artifact.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

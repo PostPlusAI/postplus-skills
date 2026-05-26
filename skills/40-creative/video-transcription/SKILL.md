@@ -29,7 +29,7 @@ metadata:
 
 ## Source And Path
 - Before submit, derive `durationSeconds` from the source video and include it in
-  the hosted envelope input for billing/preflight.
+  the hosted capability request input for billing/preflight.
 - Start with one source file before larger batches.
 - Keep internal requests, responses, normalized transcripts, and downloaded
   artifacts under `.postplus/video-transcription`; keep final user-facing
@@ -42,7 +42,7 @@ metadata:
   final transcript paths to `subtitle-packager` if SRT/ASS is needed.
 
 ## Fail Fast
-- Missing hosted envelope, video path/URL input, `durationSeconds`, output path,
+- Missing hosted capability request, video path/URL input, `durationSeconds`, output path,
   auth, hosted capability, provider status URL, or stable provider/network
   access.
 - Do not switch to ad hoc STT providers or fake timing when hosted transcription
@@ -51,6 +51,7 @@ metadata:
 ## Public Command Boundary
 
 - Check readiness first: `postplus doctor --skill video-transcription`.
+- Request schema: `postplus media schema --json`; add `--endpoint <endpoint-key>` for media-generation examples.
 - Hosted media capability: `postplus media capability --request <hosted-capability-request.json> --output <result.json>`.
 - Use the capability request shape required by the selected workflow; do not call provider APIs directly.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

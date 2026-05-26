@@ -78,11 +78,12 @@ Optional `feedbackHandoff`:
 - preserving subjective chat notes without structured reasons
 
 ## Handoff
-- Return the structured QA record script output or an explicit blocker. If feedback is present, hand off to the named rerun target with the QA record attached.
+- Return the structured QA record structured output or an explicit blocker. If feedback is present, hand off to the named rerun target with the QA record attached.
 
 ## Public Command Boundary
 
 - Check readiness first: `postplus doctor --skill creative-qa`.
+- Request schema: `postplus media schema --json`; add `--endpoint <endpoint-key>` for media-generation examples.
 - Hosted media capability: `postplus media capability --request <hosted-capability-request.json> --output <result.json>`.
 - Use the capability request shape required by the selected workflow; do not call provider APIs directly.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

@@ -78,6 +78,9 @@ artifacts, or a compile step before provider execution.
 - `postplus media|publish|mobile capability --request` receives a hosted
   capability request with explicit `capability`, `operation`, `operationId`,
   and the domain payload fields required by that operation.
+- Before writing a hosted request file, read the public schema with
+  `postplus research schema --json`, `postplus media schema --json`,
+  `postplus publish schema --json`, or `postplus mobile schema --json`.
 - The skill-specific normalized/domain request belongs under `input` when the
   selected hosted route expects an input object. Do not pass a bare normalized
   request when the command asks for an envelope or capability request.

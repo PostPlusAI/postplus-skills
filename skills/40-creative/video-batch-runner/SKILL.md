@@ -11,7 +11,9 @@ metadata:
 
 ## Use When
 - Approved image, script, voice, or prompt-plan inputs already exist and the next step is a hosted talking-head, Seedance, or reference-motion render.
-- The output must preserve a local render manifest, source basis, hosted handles, downloaded video files, and a pollable checkpoint.
+- The output must preserve a local render manifest, source basis, hosted handles,
+  output URLs, downloaded video files when the host can fetch them, and a
+  pollable checkpoint.
 
 ## Do Not Use When
 - The task belongs to ideation, QA, or another released skill listed in the handoff section.
@@ -30,7 +32,7 @@ metadata:
 ## Source And Route
 - Source from the active project/client manifests first. Do not reuse another
   client directory as the default source basis.
-- Required for all routes: hosted envelope, `jobId`, `assetPurpose`,
+- Required for all routes: hosted capability request, `jobId`, `assetPurpose`,
   `sourceBasis`, `localOutputDir`, `provider: "hosted-media"`, and `model`.
 - Talking head requires approved `image`, approved `audio`, and script/concept
   source. Seedance requires intentional `final_prompt` or `prompt_summary` plus
@@ -41,8 +43,8 @@ metadata:
 ## Request Boundary
 - `--request` must point to a hosted capability request JSON with explicit
   `capability`, `operation`, `operationId`, and normalized video `input`.
-- The script archives normalized `request.json` for review, but polling must use
-  `executionEnvelopePath` or `pollRequestPath`, not `archivedRequestPath`.
+- The agent writes normalized `request.json` and `poll-request.json` under
+  `.postplus`; polling must use the poll request built from `output.data.id`.
 - Keep internal requests/responses under `.postplus` when they are not final
   handoff artifacts; keep final renders/manifests in the active render folder.
 
@@ -65,14 +67,15 @@ metadata:
   immediately. Do not keep thinking or polling in the conversation.
 
 ## Fail Fast
-- Missing hosted envelope, unsupported provider/model, missing approved media,
+- Missing hosted capability request, unsupported provider/model, missing approved media,
   missing prompt source, missing source basis, missing output path, deprecated or
-  unsupported motion fields, or archived request path used for polling.
+  unsupported motion fields, or stale request path used for polling.
 - Do not compensate for missing approvals by letting the render model improvise.
 
 ## Public Command Boundary
 
 - Check readiness first: `postplus doctor --skill video-batch-runner`.
+- Request schema: `postplus media schema --endpoint <endpoint-key> --json`.
 - Hosted media capability: `postplus media capability --request <hosted-capability-request.json> --output <result.json>`.
 - Use the capability request shape required by the selected workflow; do not call provider APIs directly.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

@@ -33,7 +33,7 @@ Begin from structure:
    `testimonial`, or the nearest working type.
 2. Pick one primary pattern family and at most one support pattern. Do not mix
    many patterns unless the timing clearly supports it.
-3. Run the local route script when a JSON route artifact is useful.
+3. Create a JSON route artifact when it is useful.
 4. Lock the routing summary before prompt writing: segment type, primary
    pattern, support pattern, viewer question, opening mechanism, product reveal
    rule, next skill, and why the route fits.
@@ -48,7 +48,7 @@ Begin from structure:
 - `testimonial`: optimize for proof plus human specificity.
 
 ## Output Shape
-The script emits `segmentType`, `primaryPattern`, `supportPattern`,
+The artifact contains `segmentType`, `primaryPattern`, `supportPattern`,
 `openingMechanism`, `productRevealRule`, `viewerQuestion`, and `nextSkill`.
 
 ## Fail Fast
@@ -66,5 +66,5 @@ The script emits `segmentType`, `primaryPattern`, `supportPattern`,
 
 - Check readiness first: `postplus doctor --skill pattern-router`.
 - This public skill is instruction-driven. Produce the artifact described by the workflow directly from the available evidence.
-- Do not call unpublished local scripts or private provider/runtime paths.
+- Do not call private provider/runtime paths or unpublished local tools.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

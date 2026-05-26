@@ -30,8 +30,7 @@ Released hosted collection keys:
 - `instagram-profiles`: profile snapshots for known usernames or profile URLs.
 - `instagram-posts`: recent public posts for shortlisted accounts only.
 
-Use installed-safe embedded Instagram support scripts when collection,
-normalization, or ranking is needed:
+Use hosted collection outputs and the workflow below when collection, normalization, or ranking is needed.
 
 ## Default Workflow
 
@@ -78,6 +77,7 @@ engagement, inactive posting, or weak topical fit.
 ## Public Command Boundary
 
 - Check readiness first: `postplus doctor --skill instagram-account-research`.
+- Input schema: `postplus research schema --json`.
 - Hosted collection: `postplus research collect --skill instagram-account-research --collection-key instagram-posts --input <hosted-envelope.json> --output <collection-result.json>`.
 - Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
 - Keep the first pass bounded; expand only after inspecting the first result.

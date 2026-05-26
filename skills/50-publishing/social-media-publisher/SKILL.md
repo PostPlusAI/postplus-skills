@@ -52,7 +52,7 @@ or publishing an existing draft.
   a supported `operation`, `operationId`, and publishing `input`.
 - A bare customer config JSON with `allowedIntegrationIds` at the top level.
 - Workspace/account identity, integration id, content/media, and post or group
-  ids required by the selected script.
+  ids required by the selected operation.
 
 Do not wrap the customer config in the hosted capability request.
 
@@ -88,6 +88,7 @@ command when required, or the exact product error and next boundary.
 ## Public Command Boundary
 
 - Check readiness first: `postplus doctor --skill social-media-publisher`.
+- Request schema: `postplus publish schema --json`.
 - Hosted publishing capability: `postplus publish capability --request <hosted-capability-request.json> --output <result.json>`.
 - Preview and approval boundaries stay explicit; do not execute irreversible publishing without the required approval artifact.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

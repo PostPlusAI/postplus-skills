@@ -104,7 +104,7 @@ Each variant should include `variantId`, `angle`, `whatIsBeingTested`, `hook`, `
 QA block must check viewer question clarity, ad-feeling delay, reveal timing, message focus, mechanism legibility, proof concreteness, CTA softness, format fit, and main drift risk.
 
 ## Execution Contract
-This released skill is instruction-only. It has no local script ABI. Do not imply mechanical validation; set confidence to `grounded`, `partially_grounded`, or `provisional` based on actual source basis.
+This released skill is instruction-only. It has no local execution ABI. Do not imply mechanical validation; set confidence to `grounded`, `partially_grounded`, or `provisional` based on actual source basis.
 
 ## Handoff
 - Approved scripts can go to `narrative-design` for body arc refinement, `video-request-architect` for request planning, or production runners after human approval.
@@ -112,6 +112,7 @@ This released skill is instruction-only. It has no local script ABI. Do not impl
 ## Public Command Boundary
 
 - Check readiness first: `postplus doctor --skill script-generator`.
+- Request schema: `postplus media schema --json`; add `--endpoint <endpoint-key>` for media-generation examples.
 - Hosted media capability: `postplus media capability --request <hosted-capability-request.json> --output <result.json>`.
 - Use the capability request shape required by the selected workflow; do not call provider APIs directly.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

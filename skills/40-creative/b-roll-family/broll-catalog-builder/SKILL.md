@@ -24,11 +24,12 @@ metadata:
 - Do not invent fallback execution paths or private provider calls.
 
 ## Handoff
-- Return the script output, hosted result, poll command, or explicit blocker.
+- Return the structured output, hosted result, poll command, or explicit blocker.
 
 ## Public Command Boundary
 
 - Check readiness first: `postplus doctor --skill broll-catalog-builder`.
+- Request schema: `postplus media schema --json`; add `--endpoint <endpoint-key>` for media-generation examples.
 - Hosted media capability: `postplus media capability --request <hosted-capability-request.json> --output <result.json>`.
 - Use the capability request shape required by the selected workflow; do not call provider APIs directly.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

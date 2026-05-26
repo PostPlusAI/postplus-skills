@@ -49,7 +49,7 @@ Choose from five dimensions:
   proof matters.
 
 ## Output Shape
-The script emits:
+The artifact contains:
 
 - `route` and `why`
 - `primarySkill`
@@ -74,5 +74,5 @@ The script emits:
 
 - Check readiness first: `postplus doctor --skill media-router`.
 - This public skill is instruction-driven. Produce the artifact described by the workflow directly from the available evidence.
-- Do not call unpublished local scripts or private provider/runtime paths.
+- Do not call private provider/runtime paths or unpublished local tools.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

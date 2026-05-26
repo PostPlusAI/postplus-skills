@@ -89,7 +89,7 @@ reports or shortlist exports outside `.postplus/` when the user needs them.
 - Do not use paid ad data as organic creator or content evidence.
 - Do not route profile enrichment through unpublished keys or implementation
   names.
-- Do not pass bare local input JSON to hosted collection scripts.
+- Do not pass bare local input JSON to hosted collection commands.
 - Stop on missing auth, unavailable PostPlus Cloud service, stable network
   failure, malformed collection output, or unsupported collection keys.
 
@@ -104,6 +104,7 @@ reports or shortlist exports outside `.postplus/` when the user needs them.
 ## Public Command Boundary
 
 - Check readiness first: `postplus doctor --skill tiktok-research`.
+- Input schema: `postplus research schema --json`.
 - Hosted collection: `postplus research collect --skill tiktok-research --collection-key tiktok-comments --input <hosted-envelope.json> --output <collection-result.json>`.
 - Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
 - Keep the first pass bounded; expand only after inspecting the first result.

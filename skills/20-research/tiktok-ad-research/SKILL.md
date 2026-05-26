@@ -81,6 +81,7 @@ which metrics were actually present in the sample.
 ## Public Command Boundary
 
 - Check readiness first: `postplus doctor --skill tiktok-ad-research`.
+- Input schema: `postplus research schema --json`.
 - Hosted collection: `postplus research collect --skill tiktok-ad-research --collection-key tiktok-ads-top --input <hosted-envelope.json> --output <collection-result.json>`.
 - Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
 - Keep the first pass bounded; expand only after inspecting the first result.

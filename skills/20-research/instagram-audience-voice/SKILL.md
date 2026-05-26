@@ -29,7 +29,7 @@ Released hosted collection key:
 - `instagram-comments`: comments for a bounded set of shortlisted posts or
   Reels.
 
-Use installed-safe embedded Instagram support scripts:
+Use hosted collection outputs and the workflow below.
 
 The hosted input must be a `schemaVersion: 1` execution envelope whose `input`
 field contains the bounded comment collection request.
@@ -77,6 +77,7 @@ the relevant campaign, copy, or creative workflow.
 ## Public Command Boundary
 
 - Check readiness first: `postplus doctor --skill instagram-audience-voice`.
+- Input schema: `postplus research schema --json`.
 - Hosted collection: `postplus research collect --skill instagram-audience-voice --collection-key instagram-comments --input <hosted-envelope.json> --output <collection-result.json>`.
 - Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
 - Keep the first pass bounded; expand only after inspecting the first result.
