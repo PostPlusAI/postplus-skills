@@ -85,7 +85,7 @@ contact signals when available.
 ## Public Command Boundary
 
 - Check readiness first: `postplus doctor --skill instagram-creator-discovery`.
-- Input schema: `postplus research schema --json`.
+- Input schema: `postplus research schema --collection-key instagram-email-search --json`.
 - Hosted collection: `postplus research collect --skill instagram-creator-discovery --collection-key instagram-email-search --input <hosted-envelope.json> --output <collection-result.json>`.
 - Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
 - Keep the first pass bounded; expand only after inspecting the first result.

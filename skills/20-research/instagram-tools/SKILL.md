@@ -28,7 +28,7 @@ metadata:
 ## Public Command Boundary
 
 - Check readiness first: `postplus doctor --skill instagram-tools`.
-- Input schema: `postplus research schema --json`.
+- Input schema: `postplus research schema --collection-key instagram-comments --json`.
 - Hosted collection: `postplus research collect --skill instagram-tools --collection-key instagram-comments --input <hosted-envelope.json> --output <collection-result.json>`.
 - Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
 - Keep the first pass bounded; expand only after inspecting the first result.

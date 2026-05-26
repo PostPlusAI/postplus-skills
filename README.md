@@ -33,7 +33,10 @@ Requires Node.js and npm.
 ```bash
 npm install -g @postplus/cli@latest
 postplus auth login
-npx -y skills add PostPlusAI/postplus-skills --global --full-depth --skill '*' --agent claude-code codex cursor github-copilot windsurf trae trae-cn openclaw hermes-agent --yes
+POSTPLUS_AGENT_TARGETS="claude-code codex cursor github-copilot windsurf trae trae-cn openclaw hermes-agent"
+for agent in $POSTPLUS_AGENT_TARGETS; do
+  npx -y skills add PostPlusAI/postplus-skills --global --full-depth --skill '*' --agent "$agent" --yes
+done
 postplus skills verify
 ```
 
@@ -41,7 +44,10 @@ If you explicitly do not want global skills, run the install from the target
 project directory and omit `--global`:
 
 ```bash
-npx -y skills add PostPlusAI/postplus-skills --full-depth --skill '*' --agent claude-code codex cursor github-copilot windsurf trae trae-cn openclaw hermes-agent --yes
+POSTPLUS_AGENT_TARGETS="claude-code codex cursor github-copilot windsurf trae trae-cn openclaw hermes-agent"
+for agent in $POSTPLUS_AGENT_TARGETS; do
+  npx -y skills add PostPlusAI/postplus-skills --full-depth --skill '*' --agent "$agent" --yes
+done
 ```
 
 Useful checks:
@@ -54,7 +60,7 @@ npx -y skills add PostPlusAI/postplus-skills --global --list
 Hosted request schema discovery:
 
 ```bash
-postplus research schema --json
+postplus research schema --collection-key <collection-key> --json
 postplus media schema --endpoint <endpoint-key> --json
 postplus publish schema --json
 postplus mobile schema --json
@@ -63,7 +69,9 @@ postplus mobile schema --json
 Use these schema commands before an agent writes a `--input` or `--request`
 JSON file for a hosted PostPlus command. For media work, run
 `postplus media schema --json` first to list `endpointKeys`, then rerun with
-the selected `--endpoint`.
+the selected `--endpoint`. For research work, run
+`postplus research schema --json` first to list `collectionKeys`, then rerun
+with the selected `--collection-key`.
 
 ## Local Studio
 

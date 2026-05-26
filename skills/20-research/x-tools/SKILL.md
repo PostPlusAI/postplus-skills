@@ -31,7 +31,7 @@ metadata:
 ## Public Command Boundary
 
 - Check readiness first: `postplus doctor --skill x-tools`.
-- Input schema: `postplus research schema --json`.
+- Input schema: `postplus research schema --collection-key x-posts --json`.
 - Hosted collection: `postplus research collect --skill x-tools --collection-key x-posts --input <hosted-envelope.json> --output <collection-result.json>`.
 - Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
 - Keep the first pass bounded; expand only after inspecting the first result.

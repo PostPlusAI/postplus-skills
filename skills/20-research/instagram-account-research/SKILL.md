@@ -77,7 +77,7 @@ engagement, inactive posting, or weak topical fit.
 ## Public Command Boundary
 
 - Check readiness first: `postplus doctor --skill instagram-account-research`.
-- Input schema: `postplus research schema --json`.
+- Input schema: `postplus research schema --collection-key instagram-posts --json`.
 - Hosted collection: `postplus research collect --skill instagram-account-research --collection-key instagram-posts --input <hosted-envelope.json> --output <collection-result.json>`.
 - Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
 - Keep the first pass bounded; expand only after inspecting the first result.

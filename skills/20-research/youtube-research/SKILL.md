@@ -71,7 +71,7 @@ cross-platform synthesis.
 ## Public Command Boundary
 
 - Check readiness first: `postplus doctor --skill youtube-research`.
-- Input schema: `postplus research schema --json`.
+- Input schema: `postplus research schema --collection-key youtube-channel-summary --json`.
 - Hosted collection: `postplus research collect --skill youtube-research --collection-key youtube-channel-summary --input <hosted-envelope.json> --output <collection-result.json>`.
 - Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
 - Keep the first pass bounded; expand only after inspecting the first result.

@@ -99,7 +99,7 @@ cleared for commercial reuse.
 ## Public Command Boundary
 
 - Check readiness first: `postplus doctor --skill tiktok-music-archive-downloader`.
-- Input schema: `postplus research schema --json`.
+- Input schema: `postplus research schema --collection-key <collection-key> --json`.
 - Hosted collection: `postplus research collect --skill tiktok-music-archive-downloader --collection-key <collection-key> --input <hosted-envelope.json> --output <collection-result.json>`.
 - Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
 - Keep the first pass bounded; expand only after inspecting the first result.

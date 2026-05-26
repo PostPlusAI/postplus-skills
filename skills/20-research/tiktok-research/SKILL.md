@@ -104,7 +104,7 @@ reports or shortlist exports outside `.postplus/` when the user needs them.
 ## Public Command Boundary
 
 - Check readiness first: `postplus doctor --skill tiktok-research`.
-- Input schema: `postplus research schema --json`.
+- Input schema: `postplus research schema --collection-key tiktok-comments --json`.
 - Hosted collection: `postplus research collect --skill tiktok-research --collection-key tiktok-comments --input <hosted-envelope.json> --output <collection-result.json>`.
 - Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
 - Keep the first pass bounded; expand only after inspecting the first result.

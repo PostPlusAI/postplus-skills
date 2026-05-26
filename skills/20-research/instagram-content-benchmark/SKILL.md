@@ -69,7 +69,7 @@ deeper.
 ## Public Command Boundary
 
 - Check readiness first: `postplus doctor --skill instagram-content-benchmark`.
-- Input schema: `postplus research schema --json`.
+- Input schema: `postplus research schema --collection-key instagram-hashtags --json`.
 - Hosted collection: `postplus research collect --skill instagram-content-benchmark --collection-key instagram-hashtags --input <hosted-envelope.json> --output <collection-result.json>`.
 - Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
 - Keep the first pass bounded; expand only after inspecting the first result.

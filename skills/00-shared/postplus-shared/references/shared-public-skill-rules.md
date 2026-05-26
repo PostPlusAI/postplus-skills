@@ -79,7 +79,8 @@ artifacts, or a compile step before provider execution.
   capability request with explicit `capability`, `operation`, `operationId`,
   and the domain payload fields required by that operation.
 - Before writing a hosted request file, read the public schema with
-  `postplus research schema --json`, `postplus media schema --json`,
+  `postplus research schema --collection-key <key> --json`,
+  `postplus media schema --endpoint <endpoint-key> --json`,
   `postplus publish schema --json`, or `postplus mobile schema --json`.
 - The skill-specific normalized/domain request belongs under `input` when the
   selected hosted route expects an input object. Do not pass a bare normalized
@@ -96,6 +97,9 @@ artifacts, or a compile step before provider execution.
 - When quote confirmation, hosted operation id, or resume state is needed, keep
   those shared execution fields at the command-supported top level, not inside
   the skill-specific `input` object.
+- If a hosted command prints `Quote confirmation challenge: <path>`, run the
+  exact `postplus quote confirm --json --challenge-file <path>` command, then
+  rerun the same hosted command with `--quote-confirmation-token <token>`.
 
 ## Conversation Media Rule
 
