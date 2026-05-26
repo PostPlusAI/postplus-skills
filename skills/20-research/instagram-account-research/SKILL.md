@@ -43,7 +43,7 @@ Use hosted collection outputs and the workflow below when collection, normalizat
    topical relevance.
 7. Return a shortlist plus account notes.
 
-Run profile and post collection serially as one queue. Do not start profile and
+Run profile and post collection as one serial queue. Do not start profile and
 post enrichment in parallel. If a request requires a broad profile pass plus a
 broad post pass, stop before collection and ask the user to narrow the handle
 list or research theme.

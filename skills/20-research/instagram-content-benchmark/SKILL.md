@@ -35,13 +35,13 @@ Use hosted collection outputs and the workflow below.
 ## Default Workflow
 
 1. Define seeds: usernames, post URLs, Reel URLs, hashtags, or themes.
-2. Collect the first candidate pool at 10-15 posts or Reels per theme.
+2. Collect the first candidate pool at 10-15 posts or reels per theme.
 3. Normalize post and Reel-like results into one comparable dataset.
 4. Rank by engagement proxy, relevance, recency, and format fit.
 5. Produce a benchmark shortlist.
 6. Summarize repeated hooks, visual formats, caption patterns, and hashtag use.
 
-Treat 10-15 posts or Reels per theme as the first-pass boundary. Do not compile
+Treat 10-15 posts or reels per theme as the first-pass boundary. Do not compile
 a wider first input from broad wording like "as many as possible." Expand only
 after the first shortlist proves seed quality and the user approves a second
 pass.

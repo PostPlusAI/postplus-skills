@@ -16,8 +16,8 @@ Apply shared rulebook and user-guidance rules from `postplus-shared`.
 
 ## Before Collection Boundary
 
-Confirm the task can be answered from public Facebook page, group, or post
-content. If the goal requires follower, following, private audience, login-only,
+Confirm the task can be answered from public Facebook page, group, or post content.
+If the goal requires follower, following, private audience, login-only,
 or exhaustive audience data, stop and ask for a different source of truth.
 
 ## Collection Route

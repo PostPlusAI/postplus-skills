@@ -19,9 +19,9 @@ Apply shared rulebook and user-guidance rules from `postplus-shared`.
 
 ## Before Collection Boundary
 
-YouTube subscriber identities are not exposed through the released collection
-surface. Use channel metadata and comments as public proxies, and do not present
-comment authors as the subscriber base.
+The released collection does not expose subscriber identities. Use channel
+metadata and comments as public proxies, and do not present comment authors as
+the subscriber base.
 
 ## Collection Key Routing
 
