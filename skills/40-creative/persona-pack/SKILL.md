@@ -9,106 +9,67 @@ metadata:
 
 # Persona Pack
 
-Follow shared public skill rules in:
+## Use When
+- Build fact-grounded short-form video personas, creator archetypes, visual identity locks, and image prompt packs from validated benchmark evidence.
+- Use when production needs a repeatable persona system for 10+ videos, not a one-off character idea.
 
-- `postplus-shared` public skill rules
+## Do Not Use When
+- The user wants unconstrained character design or aesthetic exploration without evidence.
+- The user needs campaign concept strategy; use `benchmark-to-brief`.
+- The user needs script variants; use `script-generator`.
 
-Use this skill when a production workflow needs:
-
-- a creator persona recommendation
-- persona comparison options
-- a locked visual identity for repeated content
-- image prompt packs for batch generation
-
-This skill is not for unconstrained character design.
+## Required Input
+- Benchmark-supported persona evidence such as creator type, protagonist descriptions, visual style, hook patterns, lane distribution, strong sample subsets, or report conclusions.
+- For the local script, one persona object or `personas` array with `name`, `keyPain`, `proofNeed`, and non-empty `sourceBasis`.
 
 ## Fact Rule
+Personas must be built from observed benchmark evidence. Do not fabricate demographic precision, audience fit claims, or visual traits chosen only because they look good.
 
-Personas must be built from observed benchmark evidence.
+Separate:
+- `Observed from benchmarks`
+- `Inference`
+- `Prompt translation`
 
-Use source-backed fields such as:
-
-- `videoCreatorType`
-- `videoProtagonist`
-- `videoVisualStyle`
-- `videoHook`
-- lane distribution
-- strong benchmark subsets
-- final report conclusions
-
-Do not fabricate:
-
-- demographic precision not present in sources
-- audience fit claims without behavioral evidence
-- visual traits chosen only because they "look good"
-
-If a detail is inferred rather than directly observed, label it as inference.
+This prevents generation guidance from being mistaken for research fact.
 
 ## Default Workflow
+1. Start from the strongest benchmark subsets, not the full pool alone.
+2. Extract persona evidence: creator roles, life-stage feel when directly implied, wardrobe, environment, camera pattern, speaking style, and authority style.
+3. Recommend the narrowest viable persona that fits strongest lanes, repeats across many videos, stays visually consistent, and is credible for the product.
+4. Reject personas that are too broad, too aspirational, too polished, too ad-like, or unsupported.
+5. Convert the chosen persona into a stable persona lock.
+6. Define negative constraints so generation does not drift into generic ad polish.
 
-### 1. Start from strong benchmark subsets
+## Persona Judgment
+Before recommending a persona, answer:
+- Which strong benchmarks support this archetype?
+- Which lane does it serve first?
+- What proof need does this persona make believable?
+- Which details are observed and which are inferred?
+- What must stay fixed across a batch?
+- What can vary without breaking continuity?
+- What visual or behavioral drift must be avoided?
 
-Do not define a persona from the full pool alone if strong benchmark subsets exist.
+## Fail Fast
+- Stop if `sourceBasis` cannot be supplied.
+- Stop if the requested persona is not supported by benchmark evidence.
+- Return the closest evidence-backed persona and what research would be needed to support the requested one.
 
-Prefer:
+## Output Shape
+Common outputs:
+- persona recommendation memo
+- 3-way persona comparison
+- final chosen persona lock
+- image prompt pack
+- negative prompt pack
 
-1. strong benchmark talking-head videos
-2. lane-specific strong samples
-3. pattern table summaries
-4. final report conclusions
+Persona recommendation memo:
+- `recommendedFirstPersona`
+- `rejectedAlternatives`
+- `evidenceBasis`
+- `whyThisFitsFirstTenVideos`
 
-## Source Selection Rule
-
-Start from the active project's strongest benchmark artifacts.
-
-If the task clearly belongs to one project or client folder, read from that folder first.
-
-Do not assume one client folder is the default source base for all persona work.
-
-
-Use the master table and shortlist to extract:
-
-- recurring creator types
-- protagonist descriptors
-- visual-style descriptors
-- strong benchmark handles and URLs
-
-Do not let image-model aesthetics override benchmark-supported appearance patterns.
-
-### 2. Extract persona evidence
-
-Before proposing any persona, collect:
-
-- common creator roles
-- common age feel or life-stage feel if directly implied
-- recurring wardrobe patterns
-- recurring environment patterns
-- recurring camera patterns
-- recurring speaking style
-- recurring authority style
-
-Write these as evidence notes first.
-
-### 3. Recommend the narrowest viable persona
-
-The first persona should maximize:
-
-- fit with strongest lanes
-- repeatability across 10+ videos
-- visual consistency
-- credibility for the product
-
-Avoid personas that are:
-
-- too broad
-- too aspirational
-- too polished and ad-like
-- unsupported by evidence
-
-### 4. Produce a persona lock
-
-Every chosen persona should be converted into a stable pack with:
-
+Persona lock:
 - `personaId`
 - `archetype`
 - `sourceBasis`
@@ -120,100 +81,26 @@ Every chosen persona should be converted into a stable pack with:
 - `behavioralConstraints`
 - `negativeConstraints`
 
-This becomes the upstream source for image generation.
+Prompt pack:
+- `identityPrompt`
+- `environmentPrompt`
+- `cameraPrompt`
+- `variationRules`
+- `negativePrompt`
 
-### 5. Separate direct observation from generation guidance
+## Anti-Patterns
+- demographic precision not present in evidence
+- luxury, studio, or influencer-glam drift when benchmarks are native
+- persona based on model aesthetics rather than performance evidence
+- over-broad archetypes that cannot guide image generation
+- no negative constraints
 
-Use two blocks:
+## Handoff
+- Return the script output or an explicit evidence blocker. Persona locks can feed image generation, `script-generator`, `visual-hook`, or batch production planning.
 
-- `Observed from benchmarks`
-- `Prompt translation`
+## Public Command Boundary
 
-That prevents prompt language from being mistaken as factual research.
-
-## Output Shapes
-
-Common outputs:
-
-- persona recommendation memo
-- 3-way persona comparison
-- final chosen persona lock
-- image prompt pack
-- negative prompt pack
-
-## Executable ABI
-
-Use the local script only after benchmark-supported persona evidence has already
-been selected. It packages a persona lock; it does not design a persona from an
-empty prompt.
-
-Command:
-
-```bash
-node scripts/build_persona_pack.mjs --input <input.json> --output <personas.json>
-```
-
-`--input` is required. The input JSON must contain either one persona object at
-the top level or a `personas` array. Each persona must include:
-
-- `name`
-- `keyPain`
-- `proofNeed`
-- `sourceBasis`: non-empty benchmark ids, report rows, source URLs, or evidence notes
-
-Optional:
-
-- `personaId`
-
-If `sourceBasis` cannot be supplied, stop and ask for benchmark evidence instead
-of generating a default persona.
-
-### Persona Recommendation Memo
-
-Include:
-
-- recommended first persona
-- rejected alternatives
-- evidence basis
-- why this persona best fits the first 10 videos
-
-### Persona Lock
-
-Should include:
-
-- identity summary
-- repeated visual rules
-- what must stay fixed
-- what can vary
-- what to avoid
-
-## Negative Constraints
-
-Always define what not to generate.
-
-Common examples:
-
-- too much studio polish
-- luxury lifestyle look
-- founder keynote energy
-- generic influencer glam
-- overproduced ad lighting
-
-Negative constraints are important because many image models drift toward polished ad aesthetics.
-
-
-
-## Source Basis Requirement
-
-Every persona recommendation must cite concrete support, such as:
-
-- strong talking-head lane distribution
-- creator-type counts
-- representative benchmark ids
-- visual-style descriptions
-- report conclusions
-
-If the user asks for a persona that is not supported, state that clearly and provide:
-
-- closest evidence-backed version
-- what would need to be researched to support the requested persona
+- Check readiness first: `postplus doctor --skill persona-pack`.
+- Hosted media capability: `postplus media capability --request <hosted-capability-request.json> --output <result.json>`.
+- Use the capability request shape required by the selected workflow; do not call provider APIs directly.
+- If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

@@ -1,4 +1,0 @@
-interface:
-  display_name: "TikTok Music Archive"
-  short_description: "Download TikTok music sample videos and extract reference audio."
-  default_prompt: "Use $tiktok-music-archive-downloader to archive selected TikTok music samples locally."

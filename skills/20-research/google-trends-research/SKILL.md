@@ -9,205 +9,92 @@ metadata:
 
 # Google Trends Research
 
-Follow shared public skill rules in:
+Use this skill for Google Trends platform-data work: topic discovery, keyword
+momentum, regional interest, rising queries, and search-intent watchlists.
 
-- `postplus-shared` public skill rules
-
-Use this skill for Google Trends platform-data work.
-
-Typical requests:
-
-- See which keywords or topics are heating up
-- Compare search trends across several keywords
-- See which countries or regions are warmer for a topic
-- Find rising queries or related topics
-- Provide search-intent signals for content research, product-selection research, and campaign planning
-
-Read first:
-
-- `postplus-shared` research preferences
+Apply shared rulebook and user-guidance rules from `postplus-shared`.
 
 ## Core Rule
 
-Treat Google Trends as a search-intent source, not as full demand proof.
+Treat Google Trends as a search-intent source, not full demand proof.
 
-Good uses:
+Good uses: topic discovery, keyword momentum, regional comparison,
+rising-query discovery, and watchlist monitoring.
 
-- topic discovery
-- keyword momentum tracking
-- regional interest comparison
-- rising-query discovery
-- watchlist monitoring
-
-Do not overclaim from Google Trends alone:
-
-- transaction demand
-- conversion intent
-- marketplace competitiveness
-- creator or content execution quality
-- merchant-model fit
-
-Those need to be combined with marketplace, content-platform, or business-context evidence.
+Do not overclaim transaction demand, conversion intent, marketplace
+competitiveness, creator execution quality, or merchant-model fit from Google
+Trends alone.
 
 ## Task Shapes
 
 Classify the request first:
 
-### 1. Trending Now Scan
+- Trending now scan: hot searches by country or recent lookback.
+- Keyword momentum check: trend changes across one or more terms.
+- Regional interest mapping: which markets are warmer for a topic.
+- Related query expansion: rising terms usable as seeds.
 
-Use when the user asks:
+## Collection Key Routing
 
-- What is trending on Google recently
-- What hot searches a country has today or in the past few days
-- Give me an initial set of real-time trending topics
+Released hosted collection key:
 
-Preferred hosted collection key:
+- `google-trends-fast`: keyword analysis, regional trend signals, related
+  queries, and realtime trending searches.
 
-- `google-trends-fast`
+The hosted input must be a `schemaVersion: 1` envelope whose `input` field
+contains the compiled Google Trends request.
 
-### 2. Keyword Momentum Check
-
-Use when the user asks:
-
-- Whether this keyword has heated up recently
-- Compare trend changes across several terms
-- Inspect search interest over the past months or year
-
-Preferred hosted collection keys:
-
-- `google-trends-fast`
-
-### 3. Regional Interest Mapping
-
-Use when the user asks:
-
-- Which countries or regions are more responsive to this topic
-- Where this term is warmer across markets
-- Need a geographic priority judgment
-
-Preferred hosted collection key:
-
-- `google-trends-fast`
-
-### 4. Related Query Expansion
-
-Use when the user asks:
-
-- Which related search terms this topic has
-- Whether there are rising queries usable as seeds
-- Expand a keyword pool for me
-
-Preferred hosted collection key:
-
-- `google-trends-fast`
-
-## Hosted Collection Strategy
-
-Do not expose provider selection to the user.
-
-Current defaults:
-
-- broad keyword analysis: `google-trends-fast`
-- realtime trending feed: `google-trends-fast`
-
-Choose the narrowest actor that fits the task.
-
-Use `google-trends-fast` by default when the task needs:
-
-- interest over time
-- geo comparison
-- realtime trending searches
-- regional trend signals
-
-## Hosted Collection Input Fields
-
-### `google-trends-fast`
-
-The skill compiles user requests into one of two internal input shapes:
-
-- keyword analysis: keyword, timeframe, geo, optional regional data
-- trending-search scan: country, lookback window, max item count
-
-The hosted actor's mode switch is an internal implementation detail. Do not
-ask the user to choose or edit provider fields. Classify the request, compile
-the correct actor input, and keep implementation field names inside logs or
-developer errors only.
-
-## PostPlus-Provided Runner
-
-For PostPlus runtime execution, use the PostPlus-provided collection runner:
+Primary command:
 
 ```bash
-node ${CLAUDE_SKILL_DIR}/scripts/collection_actor_run.mjs \
+postplus research collect \
+  --skill google-trends-research \
   --collection-key google-trends-fast \
-  --input <envelope.json> \
+  --input <hosted-envelope.json> \
   --output <raw-output.json>
 ```
 
-The `--input` file must be a `schemaVersion: 1` hosted execution envelope. Put
-the Google Trends collection request under the envelope's `input` field.
+## Default Workflow
 
-## Recommended Workflow
+1. Classify the request into one task shape.
+2. Compile a small keyword, country, timeframe, or geo brief.
+3. Collect a small valid sample through `google-trends-fast`.
+4. Extract trend signals that matter.
+5. Separate observation from inference.
+6. Hand off to platform or marketplace research if deeper evidence is needed.
 
-Use the lightest valid chain:
-
-1. classify the request into one task shape
-2. collect a small valid sample
-3. extract the trend signals that matter
-4. separate observation from inference
-5. hand off to other skills if deeper evidence is needed
-
-## Public Skill Execution Contract
-
-- keep query briefs, raw trend payloads, normalized outputs, and watchlist
-  caches under `<work-folder>/.postplus/google-trends/`
-- keep only final user-facing summaries or shortlist exports outside
-  `.postplus/`
-- compile a small keyword or geo brief before the expensive collection step
-- start with a bounded first pass:
-  - one topic cluster
-  - one geo scope
-  - one timeframe comparison
-- if PostPlus Cloud service is unavailable, unauthorized, or returns a stable
-  network error, stop immediately instead of switching to ad hoc shell glue
+Keep query briefs, raw trend payloads, normalized outputs, and watchlist caches
+under `.postplus/google-trends/`; keep final summaries or shortlist exports
+where the user can inspect them.
 
 ## Good Output
 
-Return:
+Return keyword or topic set, observed trend signal, timeframe, geo scope,
+strongest rising queries or related topics, provisional implication, and the
+missing evidence layer.
 
-- keyword or topic set
-- observed trend signal
-- timeframe
-- geo scope
-- strongest rising queries or related topics
-- provisional implication
-- missing layer
+## Failure Modes
 
-Good recommendation shapes:
-
-- `search interest is rising, but platform-content proof is still missing`
-- `good US search signal, weak evidence for other markets`
-- `topic is hot now, but looks news-driven rather than durable`
-- `use these rising queries as seeds for TikTok or Instagram content scouting`
+- Do not treat search spikes as proof that a product will sell.
+- Do not confuse news-driven spikes with durable category demand.
+- Do not skip geo and timeframe details when comparing terms.
+- Stop on unsupported keys, missing auth, unavailable hosted service, stable
+  network failure, or malformed collection output.
+- Do not answer Google Trends platform-data requests from generic web articles
+  when the hosted route is available.
 
 ## Handoff
 
-Escalate to platform research skills when search intent should be validated against actual content or commerce evidence:
+- TikTok content heat or hook patterns -> `tiktok-research`.
+- Instagram creator, account, or campaign scouting ->
+  `instagram-account-research` or `instagram-campaign-scout`.
+- Amazon marketplace demand -> `amazon-research`.
+- Cross-source sourcing or selection judgment -> `sourcing-selection`.
 
-- TikTok content heat or hook patterns -> `tiktok-research`
-- Instagram creator, account, or campaign scouting -> `instagram-account-research` or `instagram-campaign-scout`
-- Amazon marketplace demand -> `amazon-research`
-- marketplace demand -> `amazon-research`
+## Public Command Boundary
 
-Escalate to higher synthesis when the user is making a real business decision:
-
-- cross-source sourcing or selection judgment -> `sourcing-selection`
-
-## Failure Modes To Avoid
-
-Do not:
-
-- treat search spikes as proof that a product will sell
-- confuse news-driven spikes with durable category demand
-- skip geo and timeframe details when comparing terms
-- answer Google Trends requests from generic web articles when a platform-data route is available
+- Check readiness first: `postplus doctor --skill google-trends-research`.
+- Hosted collection: `postplus research collect --skill google-trends-research --collection-key google-trends-fast --input <hosted-envelope.json> --output <collection-result.json>`.
+- Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
+- Preview and approval boundaries stay explicit; do not execute irreversible publishing without the required approval artifact.
+- If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

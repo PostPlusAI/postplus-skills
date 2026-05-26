@@ -72,15 +72,16 @@ artifacts, or a compile step before provider execution.
 - If the input must be synthesized first, write it as a real file under
   `.postplus/` instead of passing inline JSON text.
 
-## Hosted Execution Envelope Rule
+## Hosted Request Shape Rule
 
-- Hosted, billing, and side-effecting script entrypoints must receive a
-  `schemaVersion: 1` execution envelope in the file passed to `--input`,
-  `--request`, or the equivalent script flag.
-- The skill-specific normalized/domain request is the value of the envelope's
-  `input` field. Do not pass the bare normalized request object as the final
-  executable file for hosted entrypoints.
-- Minimum executable hosted input:
+- `postplus research collect --input` receives a `schemaVersion: 1` envelope.
+- `postplus media|publish|mobile capability --request` receives a hosted
+  capability request with explicit `capability`, `operation`, `operationId`,
+  and the domain payload fields required by that operation.
+- The skill-specific normalized/domain request belongs under `input` when the
+  selected hosted route expects an input object. Do not pass a bare normalized
+  request when the command asks for an envelope or capability request.
+- Minimum research collection input:
 
 ```json
 {
@@ -89,9 +90,9 @@ artifacts, or a compile step before provider execution.
 }
 ```
 
-- When quote confirmation or hosted operation resume is needed, keep those
-  shared execution fields at the envelope level, not inside the skill-specific
-  `input` object.
+- When quote confirmation, hosted operation id, or resume state is needed, keep
+  those shared execution fields at the command-supported top level, not inside
+  the skill-specific `input` object.
 
 ## Conversation Media Rule
 
@@ -126,7 +127,7 @@ artifacts, or a compile step before provider execution.
   - `yt_dlp`
   - `ffmpeg`
   - `ffprobe`
-- Skill scripts must call the shared-runtime local dependency resolver for
+- Skill scripts must call the PostPlus CLI local dependency checks for
   these dependencies. Individual skills must not hard-code OS-specific binary
   names, shell syntax, or install paths.
 - The resolver owns platform command selection. It keeps macOS/Linux on the

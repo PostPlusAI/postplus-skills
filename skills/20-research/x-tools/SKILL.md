@@ -9,74 +9,29 @@ metadata:
 
 # X Tools
 
-Follow shared public skill rules in:
+## Use When
+- Local execution tools for X/Twitter hosted collection workflows, including actor runs, dataset normalization, tweet ranking, account ranking, audience graph construction, and language clustering.
 
-- `postplus-shared` public skill rules
+## Do Not Use When
+- The task belongs to ideation, QA, or another released skill listed in the handoff section.
+- Required inputs are missing and guessing would change the result.
 
-Use this skill when implementing or running the local execution layer for the X skill family.
+## Required Input
+- Hosted envelope with `schemaVersion: 1` and task payload under `input` when a hosted collection is used.
+- Released collection keys: `x-posts`, `x-profiles`.
+- Hosted capabilities: `hosted-collection`.
 
-Main scripts:
+## Fail Fast
+- Missing required input, unsupported released key, missing local dependency, or unavailable hosted service must fail fast.
+- Do not invent fallback execution paths or private provider calls.
 
-- `${CLAUDE_SKILL_DIR}/scripts/run_x_actor.mjs`
-- `${CLAUDE_SKILL_DIR}/scripts/normalize_x_dataset.mjs`
-- `${CLAUDE_SKILL_DIR}/scripts/rank_x_accounts.mjs`
-- `${CLAUDE_SKILL_DIR}/scripts/rank_x_posts.mjs`
-- `${CLAUDE_SKILL_DIR}/scripts/build_x_audience_graph.mjs`
-- `${CLAUDE_SKILL_DIR}/scripts/cluster_x_bios_and_posts.mjs`
+## Handoff
+- Return the script output, hosted result, poll command, or explicit blocker.
 
-Shared helpers:
+## Public Command Boundary
 
-- `${CLAUDE_SKILL_DIR}/scripts/lib/x_common.mjs`
-
-Reference contracts:
-
-- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/x-references/tool-contracts.md`
-- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/x-references/normalized-schema.md`
-
-## Execution Rule
-
-Do not invent a separate actor runner unless the shared collection runner is not enough.
-
-Prefer:
-
-- `${CLAUDE_SKILL_DIR}/scripts/run_x_actor.mjs`
-
-The runner's `--input` file must be a `schemaVersion: 1` hosted execution
-envelope whose `input` field contains the compiled collection request.
-
-This skill should stay focused on local contracts after raw data has been collected.
-
-## Supported Collection Keys
-
-This support skill may run only these PostPlus public collection keys:
-
-- `x-posts`
-- `x-profiles`
-
-Minimal runner examples:
-
-```bash
-node ${CLAUDE_SKILL_DIR}/scripts/run_x_actor.mjs \
-  --collection-key x-posts \
-  --input <work-folder>/.postplus/x-tools/x-posts-envelope.json \
-  --output <work-folder>/.postplus/x-tools/x-posts-raw.json
-
-node ${CLAUDE_SKILL_DIR}/scripts/run_x_actor.mjs \
-  --collection-key x-profiles \
-  --input <work-folder>/.postplus/x-tools/x-profiles-envelope.json \
-  --output <work-folder>/.postplus/x-tools/x-profiles-raw.json
-```
-
-Do not pass non-public collection names or unpublished keys.
-
-## Public Skill Execution Contract
-
-- keep actor inputs, raw datasets, normalized outputs, ranking files, and graph
-  caches under `<work-folder>/.postplus/x-tools/`
-- keep only final user-facing summaries or shortlist exports outside
-  `.postplus/`
-- start with a bounded first pass before broadening the crawl
-- use PostPlus-supported scripts plus the shared collection runner only; do not switch to
-  ad hoc shell glue
-- if PostPlus Cloud service is unavailable, unauthorized, or returns a stable
-  network error, stop immediately instead of switching to ad hoc shell glue
+- Check readiness first: `postplus doctor --skill x-tools`.
+- Hosted collection: `postplus research collect --skill x-tools --collection-key x-posts --input <hosted-envelope.json> --output <collection-result.json>`.
+- Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
+- Keep the first pass bounded; expand only after inspecting the first result.
+- If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

@@ -9,390 +9,64 @@ metadata:
 
 # Image Batch Runner
 
-Follow shared public skill rules in:
-
-- `postplus-shared` public skill rules
-
-Use this skill after persona and concept work already exists.
-
-This skill is for:
-
-- batch-generating persona candidates
-- generating first-frame / cover candidates
-- applying light consistency edits to approved images
-- saving local image assets plus model-call metadata
-
-This skill is not for unconstrained concept art.
-
-## Quality Default
-
-Default to GPT Image 2 across all situations unless the user explicitly overrides.
-
-Default configuration:
-
-- **model**: `image-gpt-image-2-text` (or `image-gpt-image-2-edit` for edits)
-- **PostPlus creative format**: `short_form_vertical`
-- **aspect ratio**: `9:16` (portrait, short-form video standard)
-- **quality**: `medium`
-- **resolution**: `1k`
-- **execution**: async (`enableSyncMode: false`)
-
-This applies to all asset purposes: persona candidates, cover frames, shot support, and edit fixes. The 9:16 medium 1k async default balances visual quality with cost and latency for short-form video production. Do not deviate from this default unless the user explicitly requests a different model, ratio, quality tier, resolution, or sync execution.
-
-Capture the chosen quality settings in the local request record so later QA can trace realism issues back to generation parameters.
-
-For Instagram Meta Ads production, set the PostPlus creative format to
-`instagram_meta_ads`. That format carries `aspectRatio: "3:4"` through the
-normalized image request instead of asking the user to hand-edit provider
-prompts.
-
-## Fact Rule
-
-Image generation inputs must be grounded in upstream research artifacts.
-
-Required upstream inputs:
-
-- a benchmark-backed persona lock
-- a concept or shot need
-- visual constraints derived from benchmark evidence
-
-Do not let the image model invent:
-
-- a new creator archetype
-- ad-like polish not supported by references
-- wardrobes or environments that break persona continuity
-
-If the visual request is not supported by benchmark evidence, mark it as an explicit variant test.
-
-## Source Selection Rule
-
-Use source files from the active project or client context.
-
-If a current task already lives inside one project folder, keep the evidence lookup there first.
-
-Do not assume one client's reports are the default source basis for all image work.
-
-
-## Hosted Media
-
-Current hosted image endpoint keys:
-
-- `image-gpt-image-2-text`
-- `image-gpt-image-2-edit`
-- `image-nano-banana-2-text`
-- `image-nano-banana-2-edit`
-- `image-nano-banana-pro-text-1k`
-- `image-nano-banana-pro-text-2k`
-- `image-nano-banana-pro-text-4k`
-- `image-nano-banana-pro-edit-1k`
-- `image-nano-banana-pro-edit-2k`
-- `image-nano-banana-pro-edit-4k`
-- `image-seedream-v5-lite-text`
-- `image-seedream-v5-lite-edit`
-- `image-seedream-v5-lite-sequential`
-- `image-seedream-v5-lite-edit-sequential`
-
-Read [`references/hosted-image-models.md`](references/hosted-image-models.md) for endpoint request notes.
-
-If you need image and video outputs to live under one durable asset folder instead of separate job folders, also read [`references/unified-asset-contract-v1.md`](references/unified-asset-contract-v1.md).
-
-## Core Scripts
-
-- `scripts/generate_image.mjs`
-- `scripts/poll_prediction.mjs`
-- `scripts/upload_media.mjs`
-- `scripts/edit_image.mjs`
-
-These scripts are hosted media entrypoints. The file passed to `--request`
-must be a hosted execution envelope:
-
-```json
-{
-  "schemaVersion": 1,
-  "input": {
-    "...": "normalized image request"
-  }
-}
-```
-
-The normalized image request is the envelope's `input` value. Bare normalized
-request JSON is not an executable script input.
-
-These scripts write:
-
-- run metadata under `runs/image/<run-id>/` or `runs/upload/<run-id>/`
-- image generation attempt state under
-  `runs/image/<run-id>/attempts/index.json`
-- downloaded image assets under `images/candidates/`
-- asset-level records such as `asset.json` and `index.json`
-
-Image generation is attempt-aware. Once `generate_image` or `edit_image`
-records a submitted hosted handle for a `runId`, running the same submit script
-again fails fast. Use `poll_prediction` to poll or materialize the existing
-attempt. Create a new paid generation only when that is intentional by passing
-`--new-attempt`; the new attempt is appended under `runs/image/<run-id>/attempts/`.
-
-Attempt records distinguish:
-
-- `not_submitted` for failures such as `billing_balance_insufficient`
-- `submitted_processing` with next action `poll existing attempt`
-- `provider_completed` with next action `resume materialization`
-- `provider_failed` with the provider error preserved and surfaced to the agent
-- `materialization_failed` with the provider output URL preserved locally
-- `hosted_generation_handle_not_found` when hosted status can no longer find
-  the saved handle
-
-## PostPlus Cloud Rule
-
-- keep request files, raw provider responses, and polling state under
-  `<work-folder>/.postplus/image-batch-runner/` when they are internal
-  execution state
-- keep only final user-facing assets outside `.postplus/`
-- if PostPlus Cloud image service is unavailable, unauthorized, or returns a stable
-  network error, stop immediately instead of switching to ad hoc shell glue
-
-## Default Workflow
-
-### 1. Lock the generation brief
-
-Before generating any image, write down:
-
-- `assetId`
-- `runId`
-- `campaignId`
-- `personaId`
-- `conceptId` if relevant
-- `creativeFormat`
-- `targetAspectRatio`
-- `assetPurpose`
-  - `persona_candidate`
-  - `cover_frame`
-  - `shot_support`
-  - `edit_fix`
-- `sourceBasis`
-- `mustKeep`
-- `canVary`
-- `mustAvoid`
-
-Do not jump straight from prose to provider call.
-
-### 2. Produce a normalized request record
-
-For each generation job, create a local JSON request record containing:
-
-- asset id
-- run id
-- PostPlus creative format
-- prompt
-- negative prompt if supported upstream
-- model name
-- mode
-- aspect ratio
-- resolution
-- output format
-- local asset directory
-- source basis
-
-When the provider exposes multiple quality tiers or resolutions, default to the configured default (GPT Image 2, 9:16, medium, 1k) unless the job is explicitly a cheap draft or the user requests different settings.
-
-If the request is for Instagram Meta Ads, use
-`creativeFormat: "instagram_meta_ads"` or `aspectRatio: "3:4"` in the
-normalized request. Do not bury that decision only inside the prompt text.
-
-This request record is the stable local truth even if provider parameters evolve.
-When executing a hosted image script, place this normalized request under the
-hosted envelope's `input` field.
-
-### 3. Call the provider and save raw response
-
-Use the PostPlus-supported Node scripts in this skill directory for provider calls.
-Do not replace them with `curl`, inline `fetch`, `node -e`, or ad hoc shell
-glue.
-
-Always save:
-
-- raw request JSON
-- raw provider response JSON
-- normalized asset manifest JSON
-- final downloaded image files
-
-Do not treat the provider response alone as the asset store.
-
-Current first-version execution path:
-
-1. `generate_image` for new persona or cover candidates
-2. `poll_prediction` if a high-quality or async image job returns before outputs are ready
-3. `upload_media` if an edit job starts from a local file
-4. `edit_image` using uploaded URLs
-
-If a generation is still pending, do not block the user's conversation just to
-poll. Save the checkpoint, tell the user the image job is running, and continue
-independent prompt review, QA rubric, or downstream prep until the asset is
-needed.
-
-### 4. Normalize local outputs
-
-Every batch should end with a small local manifest containing:
-
-- `assetId`
-- `runId`
-- `personaId`
-- `conceptId`
-- `provider`
-- `model`
-- `mode`
-- `assets[]`
-  - local path
-  - remote URL if any
-  - prompt hash
-  - source basis
-  - created time
-
-This is the handoff to later review and render stages.
-
-### 5. Prefer edit over full regeneration once a face is approved
-
-Use `edit` mode when the user feedback is about:
-
-- wardrobe tweaks
-- desk setup tweaks
-- lighting tweaks
-- background cleanup
-- microphone / accessory adjustment
-
-Do not regenerate from scratch if the approved face and general structure are already correct.
-
-## Path Selection Rule
-
-Store outputs inside the active project's asset structure when one already exists.
-
-If no project-specific asset structure exists yet, choose a clear workspace
-asset folder and make the chosen path explicit.
-
-If the output location will become a long-lived handoff point, prefer confirming the destination with the user.
-
-## Example Persistence Convention
-
-One possible project-local layout is:
-
-```text
-assets/<asset-id>/
-  asset.json
-  index.json
-  images/
-    candidates/
-    approved/
-  runs/
-    image/<run-id>/
-      request.json
-      response.json
-      manifest.json
-      attempts/
-        index.json
-        attempt-001/
-          request.json
-          attempt.json
-          submit-response.json
-          poll-response-002.json
-          manifest.json
-    upload/<run-id>/
-      request.json
-      response.json
-      manifest.json
-```
-
-Keep the `runs/` intermediates under `<work-folder>/.postplus/image-batch-runner/`
-when they are internal execution state rather than the user-facing handoff.
-
-Do not assume this example layout is the global default.
-
-Avoid `/tmp` for final assets.
-
-## Tool Contract
-
-This skill expects three tool adapters:
-
-- `generate_image`
-- `upload_media`
-- `edit_image`
-
-The normalized request/response shapes live in [`references/tool-contracts.md`](references/tool-contracts.md).
-
-For the current hosted integration:
-
-- `generate_image` calls the selected model endpoint directly
-- `upload_media` uploads local files to hosted media storage and returns a reusable URL
-- `edit_image` must consume uploaded image URLs, not raw local file paths
-
-Model selection rule:
-
-- set `request.model` to one of the hosted image endpoint keys above
-- **default is `image-gpt-image-2-text`** with PostPlus `short_form_vertical`
-  format (9:16, medium, 1k)
-- for edits, default is `image-gpt-image-2-edit` (same ratio/quality/resolution defaults)
-- for Instagram Meta Ads creative production, set PostPlus
-  `instagram_meta_ads` format so the request carries 3:4 explicitly
-- only switch away from GPT Image 2 when the user explicitly requests a different model for a specific reason (cost, consistency, or provider constraint)
-- use Seedream sequential variants when cross-shot identity consistency matters more than single-image iteration speed
-- for Seedream models, prefer explicit `size`
-- for sequential Seedream models, set `maxImages` to the intended number of outputs
-- for GPT Image 2, set `quality` explicitly to `medium` by default; only use `low` or `high` when the user asks
-- for Nano Banana Pro, choose the endpoint key with the intended billable
-  resolution instead of relying on runtime resolution switching
-
-## Review Rule
-
-Before calling an image provider, verify:
-
-- persona is benchmark-backed
-- image request is tied to a real asset purpose
-- the job records what should stay fixed vs vary
-
-After generation, review:
-
-- realism
-- benchmark fit
-- repeatability across 10 videos
-- risk of looking like a specific copied creator
-- ad-like drift
-
-## Failure Mode
-
-Stop and say the request is under-specified if any of these are missing:
-
-- no locked persona or visual direction
-- no asset purpose
-- no source basis
-- no local output path
-
-Do not compensate for missing strategic inputs by inventing a style.
-
-## Example Commands
-
-Generate from a hosted envelope request file:
-
-```bash
-node ${CLAUDE_SKILL_DIR}/scripts/generate_image.mjs \
-  --request /path/to/request.json
-```
-
-Poll an async prediction later:
-
-```bash
-node ${CLAUDE_SKILL_DIR}/scripts/poll_prediction.mjs \
-  --request /path/to/request.json
-```
-
-Upload a local file for later edit from a hosted envelope request file:
-
-```bash
-node ${CLAUDE_SKILL_DIR}/scripts/upload_media.mjs \
-  --request /path/to/upload-request.json
-```
-
-Run an edit job using uploaded URLs from a hosted envelope request file:
-
-```bash
-node ${CLAUDE_SKILL_DIR}/scripts/edit_image.mjs \
-  --request /path/to/edit-request.json
-```
+## Use When
+- Persona, concept, or shot inputs already exist and the next step is a hosted
+  image generation, edit, upload, or poll run.
+- The output must include local image files plus request, response, attempt, and
+  manifest records for later QA or video rendering.
+
+## Do Not Use When
+- The task belongs to ideation, QA, or another released skill listed in the handoff section.
+- Required inputs are missing and guessing would change the result.
+
+## Execution Boundary
+- Default model is `image-gpt-image-2-text`; edits default to
+  `image-gpt-image-2-edit`.
+- Default creative format is `short_form_vertical` with `aspectRatio: "9:16"`,
+  `quality: "medium"`, `resolution: "1k"`, and async execution
+  (`enableSyncMode: false`).
+- For Instagram Meta Ads, set `creativeFormat: "instagram_meta_ads"` or an
+  explicit `aspectRatio: "3:4"` in the normalized request, not only in prompt
+  wording.
+- Switch model, ratio, quality, resolution, or sync mode only when the user asks
+  or the upstream brief explicitly marks a draft or provider constraint.
+
+## Source And Path
+- Ground every request in a benchmark-backed persona lock, concept or shot need,
+  visual constraints, `assetPurpose`, and `sourceBasis`.
+- Use source files from the active project/client folder first. Do not treat one
+  client directory as the default for all image work.
+- Store internal request, response, and polling state under `.postplus` when it
+  is not the user-facing handoff; keep final images and manifests in the active
+  asset folder. If no asset folder exists, choose one explicit workspace path.
+
+## Request Boundary
+- Hosted media requests require a capability request JSON with explicit
+  `capability`, `operation`, `operationId`, and normalized `input`.
+- Required request fields: `assetId`, `runId`, `localAssetDir`, `prompt`,
+  `assetPurpose`, and `sourceBasis`.
+- Use canonical fields only; do not accept `jobId` or `localOutputDir` as image
+  request fallbacks.
+  Upload or reference local source files explicitly before requesting edits.
+
+## Review And Handoff
+- Before submission, verify persona grounding, asset purpose, source basis, local
+  output path, and what must stay fixed versus vary.
+- After generation, check realism, benchmark fit, repeatability across videos,
+  copied-creator risk, and ad-like drift.
+- If processing is still pending, return the manifest/request paths and the
+  status command to poll.
+
+## Fail Fast
+- Missing canonical asset/run fields, prompt, source basis, asset purpose, local
+  output path, supported model, uploaded edit URL, hosted envelope, auth, hosted
+  service, or local media path.
+- Do not invent visual strategy, silently downgrade quality, or use a fallback
+  provider path to hide the failure.
+
+## Public Command Boundary
+
+- Check readiness first: `postplus doctor --skill image-batch-runner`.
+- Hosted media capability: `postplus media capability --request <hosted-capability-request.json> --output <result.json>`.
+- Use the capability request shape required by the selected workflow; do not call provider APIs directly.
+- If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

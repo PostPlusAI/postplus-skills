@@ -9,136 +9,85 @@ metadata:
 
 # Social Media Publisher
 
-Follow shared public skill rules in:
+Use this skill to create, update, list, delete, schedule, or publish social
+posts through the PostPlus-managed social publishing workspace.
 
-- `postplus-shared` public skill rules
+Apply shared rulebook, approval, and user-guidance rules from `postplus-shared`.
 
-Use this skill when the user wants to operate social publishing through the PostPlus-managed social publishing workspace.
+## Ownership And Auth Boundary
 
-This skill is for:
+PostPlus holds the platform-owned social publishing workspace. End users do not
+need separate publishing-service accounts and should not provide third-party
+publishing-service credentials to the agent.
 
-- guiding users through the invite-link channel onboarding flow
-- listing integrations available on the PostPlus social publishing workspace
-- preparing a local publish request draft
-- creating a social post draft only after explicit approval
-- promoting or scheduling an existing social post only when the target channel has current entitlement and live-evidence coverage for that operation
+Channel onboarding uses the PostPlus invite-link path:
 
-## Ownership model
+1. PostPlus Cloud creates an invite link for the target social platform.
+2. The user authorizes their social account on the platform OAuth screen.
+3. The resulting channel token lands in the PostPlus social publishing
+   workspace.
+4. PostPlus labels the channel with the user's PostPlus account id.
 
-PostPlus holds one platform-owned social publishing workspace.
-End users do **not** need separate publishing-service accounts.
+Scripts receive PostPlus-hosted request envelopes and customer config files,
+not hidden server credentials.
 
-Channel onboarding uses the PostPlus invite-link mechanism:
+## Safe Default
 
-1. the product asks PostPlus Cloud to create an invite link for the target
-   social platform
-2. PostPlus returns a social-platform OAuth URL
-3. the product delivers that URL to the end user (via UI or CLI)
-4. the user clicks the link and authorizes their social account on the
-   platform's own OAuth consent screen
-5. the resulting channel token lands in the PostPlus social publishing workspace
-6. the product labels the channel with the user's PostPlus account id
-
-## Safe default
-
-`create_post.mjs` defaults to preview mode.
-
-Without `--execute`, it:
-
-- validates the local request
-- enforces the integration allowlist
-- writes a local preview envelope
-- emits an `approvalRequest`
-- does not call the remote publishing service
+the local request, enforces the integration allowlist, writes a preview
+envelope, emits an approval request, and does not call the remote publishing
+service.
 
 Actual remote mutation requires:
 
-- `--execute`
-- `--approval-file <approved.json>`
-- a channel that has been onboarded via the invite-link flow above
+- `--execute`,
+- `--approval-file <approved.json>`,
+- an onboarded and allowed integration id,
+- current entitlement or channel evidence for publish-like operations.
 
-Use `change_post_status.mjs` to move a real social post draft from `draft` to
-`schedule` only after a second explicit approval and current channel evidence.
+or publishing an existing draft.
 
-## Authentication
+## Required Input
 
-Read `references/api-contract.md`.
+- A hosted capability request JSON with `capability: "social-publishing"`,
+  a supported `operation`, `operationId`, and publishing `input`.
+- A bare customer config JSON with `allowedIntegrationIds` at the top level.
+- Workspace/account identity, integration id, content/media, and post or group
+  ids required by the selected script.
 
-Release workflow rules:
+Do not wrap the customer config in the hosted capability request.
 
-- PostPlus backend holds publishing credentials server-side; scripts never
-  receive them directly
-- all remote publishing calls are proxied through the PostPlus Cloud service
-- do not ask users for third-party publishing-service credentials of any kind
+## Default Workflow
 
-## Default workflow
+1. Confirm the channel was onboarded through the invite-link flow.
+2. List integrations to confirm the exact integration id.
+3. Build the hosted capability request and bare customer config.
+4. Keep reviewable work in `draft` unless the user explicitly approves
+   scheduling or publishing.
+   approval and current channel evidence.
 
-1. User requests channel onboarding via the product UI or CLI.
-2. Product generates an invite link for the target platform.
-3. User authorizes their social account via the platform OAuth screen.
-4. Product labels the new channel integration with the user's account id.
-5. List integrations to confirm the exact integration id for the user's channel.
-6. Build the local `--request` JSON as a `schemaVersion: 1` hosted execution
-   envelope; place the social publishing request under `input`.
-7. Keep the `--customer-config` JSON as a bare customer config object with
-   `allowedIntegrationIds` at the top level. Do not wrap it in a hosted
-   execution envelope.
-8. Run `create_post.mjs` without `--execute` to produce an approval artifact.
-9. After approval, re-run `create_post.mjs --execute --approval-file ...`.
-10. If the post should stay reviewable, keep it in `draft`.
-11. Only after a second approval and current channel evidence, run
-    `change_post_status.mjs --status schedule` to queue it for publishing.
+## User-Facing Blockers
 
-## Main scripts
+Stop and explain when:
 
-- `scripts/list_integrations.mjs`
-- `scripts/integration_settings.mjs`
-- `scripts/trigger_tool.mjs`
-- `scripts/upload_media_from_url.mjs`
-- `scripts/upload_file.mjs`
-- `scripts/create_post.mjs`
-- `scripts/change_post_status.mjs`
-- `scripts/list_posts.mjs`
-- `scripts/delete_post.mjs`
-- `scripts/delete_post_group.mjs`
-- `scripts/get_missing_content.mjs`
-- `scripts/update_release_id.mjs`
-- `scripts/platform_analytics.mjs`
-- `scripts/post_analytics.mjs`
-- `scripts/list_notifications.mjs`
-- `scripts/render_publish_report.mjs`
+- no PostPlus auth/session is available,
+- the channel was not onboarded through the invite-link flow,
+- the integration id is missing or not in `allowedIntegrationIds`,
+- required content, media, post id, or group id is missing,
+- approval or quote confirmation is required,
+- entitlement or current channel evidence is missing for a publish-like action,
+- the hosted service returns a stable product error.
 
-## Command examples
+Do not expose server-side implementation names or ask for third-party publishing-service
+credentials. Do not bypass quote confirmation or approval boundaries.
 
-Prepare a publish request preview from a hosted envelope request file and a
-bare customer config file:
+## Handoff
 
-```bash
-node ${CLAUDE_SKILL_DIR}/scripts/create_post.mjs \
-  --request "<request.json>" \
-  --customer-config "<social-publishing.config.json>" \
-  --output "<create-post.preview.json>"
-```
+Return structured preview/result JSON, the approval or quote-confirmation
+command when required, or the exact product error and next boundary.
 
-Execute the approved create from the same hosted envelope request file and bare
-customer config file:
+## Public Command Boundary
 
-```bash
-node ${CLAUDE_SKILL_DIR}/scripts/create_post.mjs \
-  --request "<request.json>" \
-  --customer-config "<social-publishing.config.json>" \
-  --output "<create-post.result.json>" \
-  --execute \
-  --approval-file "<approval.json>"
-```
-
-Promote a draft into the publish queue:
-
-```bash
-node ${CLAUDE_SKILL_DIR}/scripts/change_post_status.mjs \
-  --post-id "<post-id>" \
-  --status schedule \
-  --output "<status.result.json>" \
-  --execute \
-  --approval-file "<approval.json>"
-```
+- Check readiness first: `postplus doctor --skill social-media-publisher`.
+- Hosted publishing capability: `postplus publish capability --request <hosted-capability-request.json> --output <result.json>`.
+- Preview and approval boundaries stay explicit; do not execute irreversible publishing without the required approval artifact.
+- If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

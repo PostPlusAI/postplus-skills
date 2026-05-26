@@ -9,105 +9,63 @@ metadata:
 
 # Reference Decode
 
-Follow shared public skill rules in:
+## Use When
+- A benchmark video, contact sheet, frame set, rough idea, or source material
+  needs to become promptable structure.
+- You need the hook essence, viewer question, visual grammar, and forbidden
+  drift before storyboard or request writing.
+- A no-reference brief still needs a proxy structure before prompt work.
 
-- `postplus-shared` public skill rules
-
-Use this skill before prompt writing when any source material or rough concept exists.
-
-This skill is for:
-
-- breaking a good reference into reusable logic
-- separating what should be copied from what must not be copied
-- turning vague ideas into promptable structure
-- creating a stable handoff for storyboard or provider request work
-
-This skill is not for making the final storyboard grid or provider payload.
+## Do Not Use When
+- Do not create the final storyboard grid or provider payload here.
+- Do not copy faces, exact wardrobe, creator identity, exact location, or exact
+  overlays from benchmark material.
 
 ## Core Rule
+Do not summarize references as "good vibe", "nice pacing", or "strong
+chemistry". Extract four objects:
 
-Do not summarize references as "good vibe", "nice pacing", or "strong chemistry".
-
-Extract four objects:
-
-1. `hookEssence`
-2. `viewerQuestion`
-3. `mustCopyVisualGrammar`
-4. `forbiddenDrift`
+- `hookEssence`
+- `viewerQuestion`
+- `mustCopyVisualGrammar`
+- `forbiddenDrift`
 
 ## Default Workflow
+1. Use the smallest sufficient source set: hook-first clip, first 0-5 seconds,
+   hook-first contact sheet, supporting note, or full style board only if needed.
+2. Decode the opening mechanism: first clear promise, viewer question, and the
+   exact visual structure that makes the promise legible.
+3. Separate structure from identity. Keep camera grammar, shot order, object
+   logic, timing, and relationship logic; do not keep exact identity details.
+4. Run the local script when a compact decode artifact is useful.
+5. Print or return the decode block before storyboard or request writing.
 
-### 1. Load the smallest sufficient reference set
-
-Prefer:
-
-1. hook-first clip or first 0-5 seconds
-2. hook-first contact sheet
-3. supporting benchmark note
-4. full-video style board only if hook-first material is insufficient
-
-If the task is specifically hook replication, do not default to downstream style boards or product-demo frames.
-
-### 2. Decode the opening mechanism
-
-Ask:
-
-- what is the first clear promise?
-- what question enters the viewer's head?
-- what exact visual structure makes that promise legible?
-
-### 3. Separate structure from identity
-
-Keep:
-
-- camera grammar
-- shot order
-- visible object logic
-- timing logic
-- relationship logic
-
-Do not keep:
-
-- exact faces
-- exact wardrobe
-- creator identity
-- exact text overlay
-- exact location
-
-### 4. Print the decode block before writing prompts
-
-Read [`references/output-shape.md`](references/output-shape.md).
-
-Print the decode in that exact shape first.
-
-### 5. Hand off cleanly
-
-- if the target is a grid, beat sheet, or full render request, hand off to `video-request-architect`
-- if references should be explicitly bounded, hand off to `reference-contract-builder`
-
-## No-Reference Rule
-
-If there is no usable reference, you may still use this skill in proxy mode.
-
-In proxy mode:
+## No-Reference Mode
+When no usable reference exists, operate in proxy mode:
 
 - start from the chosen segment pattern
 - infer the likely viewer question
-- write must-copy grammar as required scene anchors, not as imitation notes
-- write forbidden drift as anti-generic safeguards
+- express must-copy grammar as scene anchors, not imitation notes
+- express forbidden drift as anti-generic safeguards
+- state that the output is brief-derived, not observed from footage
 
-Make it explicit that the output is derived from the brief, not from observed benchmark footage.
+## Output Shape
+The script emits `hookEssence`, `viewerQuestion`, `mustCopyVisualGrammar`, and
+`forbiddenDrift`.
 
-## Failure Mode
+## Fail Fast
+- Stop if there is no way to determine the opening promise, first visual anchor,
+  or required scene content.
+- Ask one short question when the missing visual anchor blocks downstream prompt work.
 
-Stop and say the decode is under-specified if there is no way to determine:
+## Handoff
+- Grid, beat sheet, or full render request -> `video-request-architect`.
+- Explicit learn/do-not-copy boundary -> `reference-contract-builder`.
+- Prompt already drafted -> `prompt-preflight-qa`.
 
-- what the opening promise is
-- what the viewer should notice first
-- what the scene must visibly contain
+## Public Command Boundary
 
-Ask this when the visual anchor is missing:
-
-- "What is the most compelling visual in the first frame of the reference video?"
-
-Do not move to storyboard writing with only mood words.
+- Check readiness first: `postplus doctor --skill reference-decode`.
+- This public skill is instruction-driven. Produce the artifact described by the workflow directly from the available evidence.
+- Do not call unpublished local scripts or private provider/runtime paths.
+- If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

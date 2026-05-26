@@ -384,7 +384,7 @@ Start from the job, not the file name.
 
 1. Describe the outcome you want in natural language.
 2. If you are unsure which workflow fits, start with a router skill.
-3. Use `skills/INDEX.md` as the detailed map of active skills, boundaries, and handoffs.
+3. Use `skills/catalog.json` for machine-readable released skill metadata.
 4. Read the target `SKILL.md` before execution.
 5. Follow shared rulebooks when the task crosses platforms, products, ads, media, or publishing.
 6. Chain only the minimum skills needed to produce the next useful artifact.
@@ -392,9 +392,9 @@ Start from the job, not the file name.
 Important files:
 
 - `README.md`: this first-time onboarding page
-- `skills/INDEX.md`: detailed agent-facing navigation map
 - `skills/README.md`: short runtime catalog notes
-- `skills/shared-*.md`: shared routing and judgment rules
+- `skills/catalog.json`: released skill metadata for CLI and verification
+- `skills/00-shared/postplus-shared/references/`: shared routing and judgment rules
 - each `SKILL.md`: the workflow contract for one specific capability
 
 ## First Requests To Try

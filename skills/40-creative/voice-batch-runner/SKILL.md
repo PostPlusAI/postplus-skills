@@ -9,377 +9,59 @@ metadata:
 
 # Voice Batch Runner
 
-Follow shared public skill rules in:
-
-- `postplus-shared` public skill rules
-
-Use this skill after persona, concept, and script work already exists.
-
-This skill is for:
-
-- designing an initial voice from persona traits
-- generating script-specific audio takes
-- storing reusable voice profiles for later videos
-- preparing for future voice-identity capture or timbre-preserving generation
-
-This skill is not for unconstrained voice casting.
-
-## Core Idea
-
-Voice should be treated as a first-class persona asset, not a one-off byproduct of one script.
-
-That means the system should separate:
-
-- `voice profile`
-  - how this persona should sound
-- `voice identity`
-  - the reusable voice source or captured timbre, if available
-- `voice take`
-  - one concrete audio file generated for one script
-
-The script can change every time. The persona voice should remain stable.
-
-## PostPlus Cloud Rule
-
-- keep request files, raw provider responses, and run manifests under
-  `<work-folder>/.postplus/voice-batch-runner/` when they are internal
-  execution state
-- keep only final user-facing audio exports outside `.postplus/`
-- if hosted voice capability is unavailable, unauthorized, or returns a stable
-  network error, stop immediately instead of switching to ad hoc shell glue
-
-## Skill Family Direction
-
-This skill is the first member of a future voice skill family.
-
-The family can naturally expand into:
-
-- `voice-batch-runner`
-  - current skill; orchestrates voice generation and persistence
-- `voice-identity-capture`
-  - future skill; captures or normalizes a reusable voice identity from approved reference audio
-- `voice-review`
-  - future skill; audits realism, pacing, and persona fit
-
-For now, keep everything in `voice-batch-runner`, but design the data model so these can split later.
-
-## Fact Rule
-
-Voice generation should be grounded in persona and content evidence.
-
-Required upstream inputs:
-
-- approved persona registry
-- script text
-- persona voice baseline
-- video purpose or lane if it changes delivery style
-
-Do not let the TTS model invent:
-
-- a totally different age or authority level
-- ad-like delivery when the persona is a work-friend creator
-- high-drama acting not supported by benchmark tone
-
-## Source Selection Rule
-
-Use persona and script inputs from the active project context.
-
-If the task clearly belongs to one client or campaign folder, read from that context first.
-
-Do not assume one client directory is the default source base for all voice work.
-
-
-## Voice Objects
-
-This workflow should distinguish three object types.
-
-### 1. Voice Profile
-
-The durable description of how the persona should sound.
-
-Should include:
-
-- `voiceProfileId`
-- `personaId`
-- `style`
-- `pace`
-- `tone`
-- `language`
-- `forbiddenTraits`
-- `sourceBasis`
-
-### 2. Voice Identity
-
-An optional reusable voice source.
-
-This may later point to:
-
-- a provider voice id
-- a designed seed voice
-- a captured timbre from approved reference audio
-
-Should include:
-
-- `voiceIdentityId`
-- `voiceProfileId`
-- `provider`
-- `providerVoiceId` or equivalent
-- `referenceAudioPaths`
-- `status`
-
-### 3. Voice Take
-
-One concrete generated audio output for one script.
-
-Should include:
-
-- `voiceTakeId`
-- `voiceProfileId`
-- `voiceIdentityId` if used
-- `scriptId` or source path
-- `audioPath`
-- `requestPath`
-- `responsePath`
-- `manifestPath`
-- `reviewStatus`
-
-## Default Workflow
-
-### 1. Start from persona registry
-
-Before generating audio, confirm the persona registry contains:
-
-- voice baseline
-- approved image anchor
-- intended use cases
-
-If voice baseline is missing, write it first.
-
-### 2. Create or refine the voice profile
-
-Translate persona traits into a provider-ready voice description.
-
-Example dimensions:
-
-- calm vs energetic
-- practical vs polished
-- lightly nerdy vs polished professional
-- medium pace vs brisk pace
-- friendly and efficient vs authoritative
-
-### 3. Generate an initial voice design
-
-Use a voice-design model to generate a reference voice or first take from:
-
-- `text`
-- `voice_description`
-- `language`
-
-This first result should be reviewed before being treated as reusable.
-
-### 4. Generate script-specific voice takes
-
-Once a voice profile or voice identity exists:
-
-- keep the voice stable
-- swap in a new script text
-- generate a new take for each new video
-
-The text changes. The voice continuity should not.
-
-### 5. Review and iterate
-
-Voice assets need structured review, not vague opinions.
-
-Common review categories:
-
-- `voice_too_salesy`
-- `voice_too_slow`
-- `voice_too_fast`
-- `voice_not_young_enough`
-- `voice_not_professional_enough`
-- `voice_too_flat`
-- `voice_too_broadcast`
-- `voice_persona_drift`
-
-## Path Selection Rule
-
-Store outputs under the active project's voice asset structure when one already exists.
-
-If no such structure exists yet, use a clear workspace output path and state where files were written.
-
-If the output will become a durable client asset, prefer confirming the destination with the user.
-
-## Example Persistence Convention
-
-One possible project-local layout is:
-
-```text
-voices/<voice-take-id>/
-  request.json
-  response.json
-  manifest.json
-  audio/
-  review.json
-```
-
-Keep internal request files, raw provider responses, and run manifests under
-`<work-folder>/.postplus/voice-batch-runner/` when they are execution
-artifacts rather than the final handoff.
-
-## Tool Contract
-
-This skill expects these tool adapters:
-
-- `design_voice`
-- `clone_voice_take`
-
-Polling is part of the released public surface:
-
-- `poll_design_voice.mjs` resumes pending `design_voice` jobs.
-- `poll_clone_voice.mjs` resumes pending `clone_voice_take` jobs.
-
-`clone_voice_take` accepts `referenceAudioPath` for local files and uploads it
-inside the script before calling the hosted clone endpoint.
-
-Future extension:
-
-- `capture_voice_identity`
-
-See [`references/tool-contracts.md`](references/tool-contracts.md).
-
-## Core Scripts
-
-- `scripts/design_voice.mjs`
-- `scripts/poll_design_voice.mjs`
-- `scripts/clone_voice_take.mjs`
-- `scripts/poll_clone_voice.mjs`
-
-These scripts are hosted media entrypoints. The file passed to `--request`
-must be a hosted execution envelope:
-
-```json
-{
-  "schemaVersion": 1,
-  "input": {
-    "...": "normalized voice request"
-  }
-}
-```
-
-The normalized voice request is the envelope's `input` value. Bare normalized
-request JSON is not an executable script input.
-
-These scripts write:
-
-- `request.json`
-- `response.json`
-- `manifest.json`
-
-If the hosted provider returns `failed`, the script preserves the provider
-error in `manifest.json` and exits non-zero with the provider message and user
-action.
-- `manifest.json`
-- `review.json`
-- downloaded audio under `audio/`
-
-If a voice job is still pending, do not block the user's conversation just to
-poll. Save the checkpoint, tell the user the voice job is running, and continue
-independent script cleanup, review rubric, or downstream prep until the audio is
-needed. Resume pending voice-design jobs with `scripts/poll_design_voice.mjs`.
-Resume pending voice-clone jobs with `scripts/poll_clone_voice.mjs`.
-
-## Current Provider Direction
-
-First likely provider path:
-
-- hosted voice design capability
-
-Use it for initial voice design or first-pass takes.
-
-Also relevant:
-
-- hosted voice clone capability
-
-Use voice clone when:
-
-- you already have an approved reference audio for a persona
-- later scripts need new text but should preserve the same timbre and speaking style
-- you can provide the reference transcript for better matching
-
-This fits the future requirement of "script changes, persona voice stays stable" better than voice-design alone.
-
-Read the provider notes before implementing:
-
-- [`references/hosted-tts-voice-design.md`](references/hosted-tts-voice-design.md)
-- [`references/hosted-tts-voice-clone.md`](references/hosted-tts-voice-clone.md)
-
-Future provider path:
-
-- a second model that preserves an approved voice timbre while reading new text
-
-That future step should not change the outer workflow. It should only swap the tool adapter or voice identity backend.
-
-## Review Rule
-
-Before generating a take, verify:
-
-- persona registry exists
-- voice baseline exists
-- script text is finalized enough for review
-- output path is explicit
-
-After generating a take, review:
-
-- realism
-- persona fit
-- pacing
-- whether it sounds too much like an ad
-- whether it is reusable across many scripts
-
-When reviewing cloned voice output, also check:
-
-- how well it preserves the target timbre
-- whether accent and speaking style drift from the reference
-- whether the reference audio quality is limiting the result
-
-## Example Commands
-
-Design an initial persona-aligned voice from a hosted envelope request file:
-
-```bash
-node ${CLAUDE_SKILL_DIR}/scripts/design_voice.mjs \
-  --request /path/to/request.json
-```
-
-Resume a pending persona-aligned voice design from the same hosted envelope request file:
-
-```bash
-node ${CLAUDE_SKILL_DIR}/scripts/poll_design_voice.mjs \
-  --request /path/to/request.json
-```
-
-Generate a new take from approved reference audio from a hosted envelope request file:
-
-```bash
-node ${CLAUDE_SKILL_DIR}/scripts/clone_voice_take.mjs \
-  --request /path/to/request.json
-```
-
-Resume a pending voice-clone take from the same hosted envelope request file:
-
-```bash
-node ${CLAUDE_SKILL_DIR}/scripts/poll_clone_voice.mjs \
-  --request /path/to/request.json
-```
-
-## Failure Mode
-
-Stop and state the gap if:
-
-- no persona registry exists
-- no voice baseline exists
-- the script is still too unstable
-- the request does not specify whether this is voice design or a script-specific take
-
-Do not solve missing voice strategy by randomly changing the TTS description.
+## Use When
+- Persona, concept, and script inputs already exist and the next step is hosted
+  voice design, cloned voice take generation, or polling.
+- The voice should remain a durable persona asset across scripts, not a one-off
+  audio byproduct.
+
+## Do Not Use When
+- The task belongs to ideation, QA, or another released skill listed in the handoff section.
+- Required inputs are missing and guessing would change the result.
+
+## Execution Boundary
+- Separate the workflow into voice profile, optional voice identity, and concrete
+  voice take. The script text can change; persona voice continuity should not.
+- Voice design is for an initial persona-aligned sound from `text`,
+  `voiceDescription`, and `language`.
+- Voice clone is for new script takes when approved reference audio or an
+  uploaded reference URL should preserve timbre and speaking style.
+- Keep `provider: "hosted-media"` and persist request, response, manifest,
+  review stub, source basis, and downloaded audio.
+
+## Source And Path
+- Ground requests in the active project persona registry, voice baseline, script
+  text, and video purpose/lane.
+- Use the active project/client folder first; do not assume one client directory
+  is the source base for all voice work.
+- Keep internal request/response/run state under `.postplus` when it is not the
+  user-facing handoff. Keep final audio and review files in the active voice
+  asset folder, or state the chosen workspace path.
+
+## Request Boundary
+- Hosted media requests require a capability request JSON with explicit
+  `capability`, `operation`, `operationId`, and normalized `input`.
+- Design requires `jobId`, `text`, `voiceDescription`, and `localOutputDir`.
+- Clone requires `jobId`, `text`, `localOutputDir`, and either
+  `referenceAudioUrl` or `referenceAudioPath`; local reference audio is uploaded
+
+## Review And Handoff
+- Before generation, verify persona registry, voice baseline, script stability,
+  route (`voice_design` or `voice_clone_take`), source basis, and output path.
+- After generation, review realism, persona fit, pacing, ad-like delivery,
+  reuse potential, and for cloned output, timbre/accent drift from the reference.
+- If pending, return the saved request path, manifest path, generation handle or
+  command. Do not keep polling in the conversation.
+
+## Fail Fast
+- Missing hosted envelope, persona registry, voice baseline, text,
+  voiceDescription for design, reference audio for clone, source basis, output
+  path, auth, hosted capability, or provider network access.
+- Do not solve missing voice strategy by randomly changing the TTS description.
+
+## Public Command Boundary
+
+- Check readiness first: `postplus doctor --skill voice-batch-runner`.
+- Hosted media capability: `postplus media capability --request <hosted-capability-request.json> --output <result.json>`.
+- Use the capability request shape required by the selected workflow; do not call provider APIs directly.
+- If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

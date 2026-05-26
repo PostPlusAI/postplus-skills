@@ -9,29 +9,19 @@ metadata:
 
 # Pattern Router
 
-Follow shared public skill rules in:
+## Use When
+- Start short-form prompt design before storyboard or provider request writing.
+- A brief has segment type, duration, product reveal constraints, or references,
+  but the narrative structure is not locked.
+- You need one dominant pattern instead of freehand adjective prompting.
 
-- `postplus-shared` public skill rules
-
-Use this skill at the start of prompt design.
-
-This skill is for:
-
-- choosing the right segment pattern before writing prompts
-- mapping a brief into a concrete opening mechanism
-- reducing prompt drift when reference quality is uneven or absent
-- making later storyboard and video-request work more consistent
-
-This skill is not for writing the final storyboard or provider request.
-
-When the segment is `hook`, this skill should route the segment and opening job,
-then hand off visual mechanism selection to `visual-hook`.
+## Do Not Use When
+- Do not write the final storyboard or provider request here.
+- Do not let multiple downstream skills independently guess the hook mechanism.
+- Do not begin from vague taste words such as "premium", "viral", or "cinematic".
 
 ## Core Rule
-
-Do not begin from adjective stacks like "premium", "viral", or "cinematic".
-
-Begin from:
+Begin from structure:
 
 1. segment type
 2. viewer question
@@ -39,79 +29,42 @@ Begin from:
 4. product reveal timing
 
 ## Default Workflow
-
-### 1. Identify the segment type
-
-Classify the request as one of:
-
-- `hook`
-- `benefit`
-- `cta`
-- `creator`
-- `lifestyle`
-- `testimonial`
-
-If the user gives a custom segment, map it to the nearest working type and state the mapping.
-
-### 2. Pick the dominant pattern family
-
-Read [`references/pattern-families.md`](references/pattern-families.md).
-
-Select one primary family, then optionally one support family.
-
-Do not mix many families unless the timing clearly supports it.
-
-### 3. Lock the routing summary before writing prompts
-
-Print a short routing block first:
-
-```text
-Segment type:
-Primary pattern:
-Support pattern:
-Viewer question:
-Opening mechanism:
-Product reveal rule:
-Need explicit hook mechanism:
-Why this route fits:
-```
-
-This block is the handoff to `visual-hook`, `reference-decode`, or
-`video-request-architect`.
-
-### 4. Choose the next skill
-
-- If the segment is `hook` and the stop-scroll mechanism still needs to be chosen, hand off to `visual-hook`
-- If references exist and need decoding, hand off to `reference-decode`
-- If the target is a storyboard grid, beat sheet, or provider-ready request, hand off to `video-request-architect`
-- If the target is a provider-ready request, hand off to `video-request-architect`
+1. Classify the segment as `hook`, `benefit`, `cta`, `creator`, `lifestyle`,
+   `testimonial`, or the nearest working type.
+2. Pick one primary pattern family and at most one support pattern. Do not mix
+   many patterns unless the timing clearly supports it.
+3. Run the local route script when a JSON route artifact is useful.
+4. Lock the routing summary before prompt writing: segment type, primary
+   pattern, support pattern, viewer question, opening mechanism, product reveal
+   rule, next skill, and why the route fits.
+5. Choose the next skill from the route and user target.
 
 ## Routing Rules
+- `hook`: optimize for stop-scroll and immediate legibility.
+- `benefit`: optimize for one visible proof mechanism.
+- `cta`: optimize for payoff plus next action, not a static end card.
+- `creator`: optimize for believable human delivery and social-native behavior.
+- `lifestyle`: optimize for desirability first and explanation second.
+- `testimonial`: optimize for proof plus human specificity.
 
-- `hook`: optimize for stop-scroll and immediate legibility
-- `benefit`: optimize for one visible proof mechanism
-- `cta`: optimize for payoff plus next action, not a static end card
-- `creator`: optimize for believable human delivery and social-native behavior
-- `lifestyle`: optimize for desirability first, explanation second
-- `testimonial`: optimize for proof plus human specificity
+## Output Shape
+The script emits `segmentType`, `primaryPattern`, `supportPattern`,
+`openingMechanism`, `productRevealRule`, `viewerQuestion`, and `nextSkill`.
 
-For `hook` segments:
+## Fail Fast
+- Stop if the brief cannot answer what segment is being made, what the viewer
+  should ask, whether product can appear early, or whether references exist.
+- Ask one short question when the segment type is missing.
 
-- this skill decides segment route and opening job
-- `visual-hook` decides the dominant hook mechanism and downstream handoff
-- do not let multiple downstream skills guess the hook mechanism independently
+## Handoff
+- `hook` with unresolved mechanism -> `visual-hook`.
+- References needing decode -> `reference-decode`.
+- Storyboard grid, beat sheet, or provider-ready request -> `video-request-architect`.
+- Prompt already drafted -> `prompt-preflight-qa`.
 
-## Failure Mode
+## Public Command Boundary
 
-Stop and say the routing is under-specified if the brief does not provide enough to answer at least:
-
-- what segment is being made
-- what question the viewer should ask
-- whether the product can appear in the opening
-- whether references exist
-
-Ask this when the missing piece is the segment type:
-
-- "Is this segment a hook, benefit, or CTA?"
-
-Do not let later skills guess the structure from vague taste words alone.
+- Check readiness first: `postplus doctor --skill pattern-router`.
+- This public skill is instruction-driven. Produce the artifact described by the workflow directly from the available evidence.
+- Do not call unpublished local scripts or private provider/runtime paths.
+- If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

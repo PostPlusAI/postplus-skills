@@ -9,233 +9,55 @@ metadata:
 
 # Video Analysis
 
-> **Tip:** gemini-3.5-flash is the default video analysis model. The PostPlus
-> runner uploads local videos through the hosted `file_reference` path.
-
-Follow shared public skill rules in:
-
-- `postplus-shared` public skill rules
-
-Use this skill for video-level analysis after metadata research has already narrowed a candidate set.
-
-Follow shared routing and guidance rules in:
-
-- `postplus-shared` research preferences
-
-This skill is usually downstream of platform research, not the default first step for broad TikTok discovery.
-
-## Use For
-
-- analyze local video files through the hosted Gemini video-analysis path
-- run gemini-3.5-flash on video inputs
-- use a stable TikTok/Reels objective timeline prompt
-- request structured JSON output
-- keep analysis linked to source metadata such as TikTok URL, video id, or dataset row
-
-## Current Boundary
-
-Current script behavior:
-
-- supported local formats: `.mp4`, `.m4v`, `.mov`, `.webm`
-- before each item, the runner checks the local file size and logs the selected
-  transfer boundary
-- all videos use `media-file/create-upload-url`, upload the local file to the
-  signed upload URL, and send Gemini a `file_reference`
-- Gemini input is single-source: each request uses `file_reference`; the runtime
-  does not embed local video bytes as `inline_data`
-- no automatic compression, segmentation, resumable upload, or file URI reuse is
-  claimed in this release
-
-If signed upload or hosted `file_reference` analysis fails, stop on that error.
-Do not retry by base64 inlining the same video.
-
-## Trigger Signals
-
-When the user asks about any of the below and hasn't chosen this skill yet,
-ask before proceeding with other tools.
-
-Use this skill when the user asks for things like:
-
-- objective shot-by-shot timeline extraction
-- spoken-line and visible-caption capture
-- spoken-line or CTA capture
-- shot-level decomposition
-- visual execution analysis
-- editing, pacing, camera, caption, and audio-beat description based on actual videos
-
-Do not use this skill as a substitute for broad TikTok trend discovery when no shortlist exists yet.
-
-## Core Resources
-
-- Prompt and JSON schema: embedded in `scripts/run_video_analysis_batch.mjs`
-- Downloader: `${CLAUDE_SKILL_DIR}/_postplus_shared/00-core/shared-runtime/scripts/download_videos_from_manifest_with_ytdlp.mjs`
-- Batch runner: `scripts/run_video_analysis_batch.mjs`
-- Manifest builder: `scripts/build_manifest_from_master_table.mjs`
-- Backfill helper: `scripts/backfill_master_table_with_script.mjs`
-
-## Workflow
-
-For this workspace, use this skill after:
-
-1. metadata research identifies high-value videos
-2. the actual video files are available locally
-
-If the local video files are missing, do not stop at metadata. Recover the source video first, then run analysis.
-
-For this workspace, a practical recovery path is:
-
-1. try to locate previously downloaded local videos
-2. if downloader dependencies are missing, follow the `postplus-shared` Local
-   Dependency Bootstrap Rule first
-3. if still missing, download from the TikTok web URL with `yt-dlp`
-4. save files under a stable workspace path
-5. only then call the Gemini analysis scripts
-
-Do not start with full-market video analysis. First shortlist, then analyze.
-
-If the user request is broad or ambiguous, ask one short question before running:
-
-- "Do you want to first find breakout samples worth inspecting, or do you already have videos for direct objective timeline and shot breakdown?"
-
-If the user appears to want a broader TikTok research outcome, proactively mention that `tiktok-research` can first build the shortlist this skill should analyze.
-
-## Output Shape
-
-The runner writes one JSON file per source video. The outer `source`, `gemini`,
-and `raw` sections preserve execution evidence. The normalized `result` is an
-objective timeline record:
-
-- `sourceId`
-- `sourceUrl`
-- `videoFilePath`
-- `model`
-- `promptVersion`
-- `timeline`
-- `uncertainties`
-
-`timeline` items describe only observable and audible facts: time range, spoken
-line, spoken meaning, visible scene, subject action, camera/framing, edit,
-caption behavior, and audio pacing. The skill does not output marketing
-explanations, adaptation ideas, or production recommendations. Downstream
-skills should derive those from the objective timeline when needed.
-
-## Environment
-
-Do not store secrets in this repo.
-
-In the PostPlus runtime:
-
-- follow `postplus-shared` public skill rules
-- this skill requires `python3`, `yt_dlp`, and `ffprobe`; follow the
-  `postplus-shared` Local Dependency Bootstrap Rule before analysis
-- if the required Gemini capability is missing, or local dependency
-  bootstrap fails, or the script returns a stable network/proxy/DNS error, stop
-  immediately and report that failure
-
-## Default Model
-
-- `gemini-3.5-flash`
-
-Do not use another Gemini video-analysis model unless this skill's runner and
-fixtures are updated first.
-
-## First Run
-
-Before the first run, tell the user:
-
-- "I will first use video-analysis to run Gemini analysis on a local video and output JSON results for each sourceId. Local videos use hosted file_reference upload. The next step can go to reference-decode or benchmark-to-brief."
-
-Use a single local video and keep the first request simple:
-
-```bash
-node ${CLAUDE_SKILL_DIR}/scripts/run_video_analysis_batch.mjs \
-  --download-report <work-folder>/.postplus/download-report.json \
-  --output-dir <work-folder>/.postplus/video-analysis-results \
-  --concurrency 1 \
-  --model gemini-3.5-flash
-```
-
-The download report should contain at least:
-
-```json
-{
-  "results": [
-    {
-      "sourceId": "demo-1",
-      "sourceUrl": "https://www.tiktok.com/@demo/video/1",
-      "filePath": "/abs/path/to/video.mp4",
-      "success": true
-    }
-  ]
-}
-```
-
-## Batch Guidance
-
-When scaling to many videos:
-
-- keep provider calls concurrent but bounded
-- start with concurrency 2-4
-- all files use hosted `file_reference`
-- persist one JSON result per source video
-- include source ids and source URLs in every result
-
-## File Transfer
-
-Local files use the hosted file-reference path:
-
-1. request `media-file/create-upload-url`
-2. upload the video bytes to the returned signed URL
-3. send the returned `storageReference` as Gemini `file_reference`
-
-Segmentation, compression, and file URI reuse are not implemented by this
-script.
-
-## Keep These Assets
-
-Do not treat downloaded videos as disposable temp files if they were expensive to source.
-
-When a benchmark set matters, keep:
-
-- the local video file
-- the analysis JSON
-- the manifest or URL list that can restore the file later
-
-If you only keep the metadata table, you may lose the ability to reproduce shot-level analysis later.
-
-## Shot-Level Backfill
-
-If shot-level fields were generated by Gemini but not preserved in the master table, backfill them instead of creating duplicate records.
-
-Use:
-
-```bash
-node ${CLAUDE_SKILL_DIR}/scripts/backfill_master_table_with_script.mjs \
-  --master "reports/video-master-table.csv" \
-  --analysis-dir /path/to/analysis-dir
-```
-
-This updates matching source ids in the existing master table and preserves the single-table workflow.
-
-Batch example:
-
-```bash
-node ${CLAUDE_SKILL_DIR}/scripts/run_video_analysis_batch.mjs \
-  --download-report /path/to/download-report.json \
-  --output-dir <work-folder>/.postplus/video-results \
-  --concurrency 2 \
-  --model gemini-3.5-flash
-```
-
-## Always Keep
-
-Never treat video analysis as isolated output. Always keep these fields:
-
-- `sourceId`
-- `sourceUrl`
-- `sourceMetadataPath` or dataset path
-- `videoFilePath`
-- `model`
-- `promptVersion`
-
-That makes it possible to join Gemini output back to TikTok metadata later.
+## Use When
+- The user provides a local video file or video URL and asks to watch, inspect,
+  break down, deconstruct, analyze hooks, understand shots, capture spoken
+  lines, or explain why a video works.
+- Use this for video-level evidence beyond metadata. Do not answer actual
+  video-understanding requests from transcript guesses or general marketing
+  knowledge.
+
+## Do Not Use When
+- The task belongs to ideation, QA, or another released skill listed in the handoff section.
+- Required inputs are missing and guessing would change the result.
+
+## Execution Boundary
+- Default model is `gemini-3.5-flash` through released model key
+  `gemini-video-analysis`.
+- Supported local formats are `.mp4`, `.m4v`, `.mov`, and `.webm`.
+- Local videos are uploaded through the hosted `file_reference` path: signed
+  upload URL, local byte upload, then Gemini `file_reference`.
+- The runner does not claim inline video bytes, compression, segmentation,
+  resumable upload, or file URI reuse. If signed upload or `file_reference`
+  analysis fails, stop on that error.
+
+## Source And Path
+- A direct local file can be analyzed immediately. For a URL, first download or
+  recover the local video, then build a download report.
+- Preserve `sourceId`, `sourceUrl`, `videoFilePath`, `sourceMetadataPath` or
+  dataset path, model, prompt version, and source basis so results can be joined
+  back to source metadata.
+- Keep downloaded videos when they are expensive to source. Keep analysis JSON
+  and manifests under a stable workspace path.
+
+## Output And Handoff
+- The runner writes one JSON file per source video plus `_batch-summary.json`.
+  Normalized results should stay objective: timeline, spoken line/meaning,
+  visible scene, subject action, camera/framing, edit, caption behavior, audio
+  pacing, and uncertainties.
+- It does not output marketing recommendations. Hand off objective timelines to
+  `frame-extraction`, `reference-decode`, or strategy skills when needed.
+
+## Fail Fast
+- Missing local video/download report, missing `ffprobe`, `python3`, or
+  `python3:yt_dlp`, missing hosted `media-file`/`video-analysis` capability,
+  upload failure, DNS/proxy/network failure, unsupported model, or analysis
+  failures in the batch summary.
+- Do not retry by base64 inlining video or answering from metadata.
+
+## Public Command Boundary
+
+- Check readiness first: `postplus doctor --skill video-analysis`.
+- Hosted media capability: `postplus media capability --request <hosted-capability-request.json> --output <result.json>`.
+- Use the capability request shape required by the selected workflow; do not call provider APIs directly.
+- If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

@@ -1,8 +1,7 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-1-5c02125779dfc16c",
+  "releaseId": "skills-1-a679148158e1240a",
   "source": "PostPlusAI/postplus-skills",
-  "primaryIndex": "skills/INDEX.md",
   "skills": [
     {
       "familyId": "marketplace-sourcing",

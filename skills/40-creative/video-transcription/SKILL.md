@@ -9,86 +9,48 @@ metadata:
 
 # Video Transcription
 
-Follow shared public skill rules in:
+## Use When
+- The input is a video file and the goal is speech extraction, timed transcript,
+  caption generation, multilingual transcript, or edit-prep timestamps.
+- Use `video-analysis` instead when the user needs semantic visual analysis.
 
-- `postplus-shared` public skill rules
+## Do Not Use When
+- The task belongs to ideation, QA, or another released skill listed in the handoff section.
+- Required inputs are missing and guessing would change the result.
 
-Use this skill when the input is video and the main problem is:
+## Execution Boundary
+- Released endpoint key is `transcription-whisper-with-video` through hosted
+  `media-file` and `media-generation`.
+- Use `enableTimestamps: true` by default when results drive subtitles or edit
+  decisions.
+- Hosted video transcription is async. Submit writes request, response, manifest,
+  normalized transcript path, generation handle, provider status, provider URLs,
+  and artifacts when already completed.
 
-- spoken transcript extraction
-- subtitle timing
-- edit-prep timestamps
-- multilingual caption generation
+## Source And Path
+- Before submit, derive `durationSeconds` from the source video and include it in
+  the hosted envelope input for billing/preflight.
+- Start with one source file before larger batches.
+- Keep internal requests, responses, normalized transcripts, and downloaded
+  artifacts under `.postplus/video-transcription`; keep final user-facing
+  transcript exports outside `.postplus`.
 
-This skill is not a substitute for semantic video analysis.
+## Handoff
+- If status is pending, return the manifest path, `generationHandle`,
+  not keep the conversation open just to poll.
+- When completed, hand off `normalizedTranscriptPath`, downloaded artifacts, and
+  final transcript paths to `subtitle-packager` if SRT/ASS is needed.
 
-## Hosted Endpoint
+## Fail Fast
+- Missing hosted envelope, video path/URL input, `durationSeconds`, output path,
+  auth, hosted capability, provider status URL, or stable provider/network
+  access.
+- Do not switch to ad hoc STT providers or fake timing when hosted transcription
+  is unavailable.
 
-First-version hosted transcription endpoint:
+## Public Command Boundary
 
-- hosted transcription capability
-- `transcription-whisper-with-video`
-
-Use `enableTimestamps=true` by default when the result will drive subtitles or edit decisions.
-
-## Poll Behavior
-
-Hosted video transcription is asynchronous. `transcribe_video.mjs` submits the
-job, persists the provider response, and returns a stable `generationHandle`
-plus `providerUrls.get` when the provider is still processing. It does not
-block locally until the provider finishes.
-
-Use `audio-transcription/scripts/poll_transcription.mjs` with the same request
-file to resume the provider status check. Repeat polling until status is
-`completed` or `failed`; completed runs write the normalized transcript and
-downloaded artifacts. Failed runs preserve the provider error in
-`manifest.json` and exit non-zero with the provider message and user action.
-
-Do not block the user's conversation while the provider is still processing.
-Tell the user the transcription is running from the saved checkpoint, then
-continue any independent edit planning, subtitle planning, or downstream prep.
-Poll again when the transcript is needed or when the user asks to wait.
-
-## Preflight Boundary
-
-Before submission:
-
-- read or derive `durationSeconds` from the source video
-- include `durationSeconds` in the request JSON
-- run one source file first before larger batches
-
-## Output Contract
-
-Persist:
-
-- `request.json`
-- `response.json`
-- `manifest.json`
-- provider output artifacts under `outputs/`
-
-## Scripts
-
-- `scripts/transcribe_video.mjs`
-
-Polling support is shared with:
-
-- `audio-transcription` polling support
-
-## Read These References
-
-- `references/tool-contracts.md`
-- `references/normalized-transcript-schema.md`
-
-## Public Skill Execution Contract
-
-- keep transcription requests, provider responses, normalized transcripts, and
-  downloaded subtitle artifacts under
-  `<work-folder>/.postplus/video-transcription/`
-- keep only final user-facing transcript exports outside `.postplus/`
-- pass `scripts/transcribe_video.mjs` a `schemaVersion: 1` hosted execution
-  envelope whose `input` field is the video transcription request
-- start with a bounded first pass, usually one source file before larger
-  batches
-- if hosted transcription capability is unavailable, unauthorized, or returns a
-  stable network error, stop immediately instead of switching to ad hoc shell
-  glue
+- Check readiness first: `postplus doctor --skill video-transcription`.
+- Hosted media capability: `postplus media capability --request <hosted-capability-request.json> --output <result.json>`.
+- Use the capability request shape required by the selected workflow; do not call provider APIs directly.
+- If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.
