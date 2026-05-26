@@ -9,449 +9,73 @@ metadata:
 
 # Video Batch Runner
 
-Follow shared public skill rules in:
-
-- `postplus-shared` public skill rules
-
-Use this skill after image, script, voice, or prompt-planning work already exists.
-
-This skill is for:
-
-- generating talking-head videos from approved image and audio inputs
-- generating Seedance videos from text, images, videos, audio references, or first/last frames
-- storing render jobs as local assets with normalized manifests
-- preserving traceability from final video back to persona, concept, script, and voice take
-- keeping render providers replaceable behind a stable adapter contract
-
-This skill is not for unconstrained video ideation.
-
-## Quality Default
-
-When the goal is believable human video, default to the highest practical
-render quality the provider offers.
-
-Default quality assumption:
-
-- lower render quality can make already-imperfect source faces look more fake
-- realism-sensitive talking-head jobs should start from the best available resolution before blaming script or voice
-- only step down when the user is explicitly running a cheap draft, a latency test, or a provider-limited experiment
-
-For believable creator talking-head video, default to clean creator UGC. Native
-should mean casual, direct, and unperformed, not raw or low-quality. Prefer a
-clean iPhone front-camera feel with bright soft daylight, a clear face, fresh
-neutral color, tidy everyday surroundings, stable casual framing, and smooth but
-natural skin.
-
-The selected resolution and quality intent should always be persisted in the
-request and manifest.
-
-## Creative Format Rule
-
-Default to the PostPlus short-form vertical creative format with a `9:16`
-target aspect ratio.
-
-For Instagram Meta Ads production, set `creativeFormat: "instagram_meta_ads"`
-or an explicit `aspectRatio: "3:4"` in the normalized render request. The
-runner must preserve that selected target ratio into the request record,
-manifest, and supported generative video payloads.
-
-## Core Idea
-
-The video layer should be organized around render objects, not around one provider endpoint.
-
-Treat a video render as:
-
-- `render job`
-  - one attempt to produce a video from approved upstream assets
-- `render manifest`
-  - the normalized local record of that attempt
-- `video asset`
-  - the downloaded output file(s) produced by the render
-
-The main value is not "image plus audio becomes video". The main value is preserving the chain:
-
-- `campaign`
-- `concept`
-- `persona`
-- `script`
-- `voice take`
-- `image asset`
-- `render job`
-- `qa report`
-
-## Fact Rule
-
-Video render inputs must be grounded in approved upstream assets or an explicit prompt plan.
-
-Required upstream inputs depend on route:
-
-- `talking-head`
-  - approved image asset
-  - approved voice take
-  - script or concept reference
-  - render purpose
-  - local output directory
-- `seedance`
-  - `request.prompt_summary` plus `promptPlan.prompt_storyline`, or an
-    intentional `request.final_prompt`
-  - any required media refs for the chosen mode
-  - concept reference
-  - render purpose
-  - local output directory
-
-Do not let the render stage silently redefine:
-
-- who the persona is
-- how the voice should sound
-- what the concept is trying to test
-
-If the request is experimenting with a new render style, record that as an explicit render variant.
-
-## Source Selection Rule
-
-Start from the active project's approved upstream assets and manifests.
-
-If a current task clearly belongs to one project or client folder, stay within that context first.
-
-Do not assume one client directory is the default home for all renders.
-
-
-
-## Video Routes
-
-Current routes:
-
-- `talking-head`
-  - model: hosted talking-head capability
-  - category: image-to-video digital human
-- `seedance` (hosted)
-  - endpoint keys: `video-seedance-2-image`, `video-seedance-2-image-turbo`, `video-seedance-2-text`, `video-seedance-2-text-turbo`
-  - category: text/image/reference-media to video
-- `kling-reference-motion-transfer` (hosted)
-  - endpoint key: `video-kling-v2-6-pro-motion-control`
-  - category: reference image plus reference motion video to video
-
-Not currently released:
-
-- direct provider routes outside PostPlus hosted media
-- structured motion-control request fields mapped to provider-native parameters
-
-Current `promptPlan.camera`, `promptPlan.shotType`, and `promptPlan.motion`
-fields are prompt-planning inputs. They can constrain the generated prompt, but
-they do not map to provider-native camera trajectory, object trajectory, or
-motion-brush parameters. Hosted requests with explicit structured motion-control
-fields must fail before provider submission. Use
-`video-kling-v2-6-pro-motion-control` is reference-motion transfer, not a
-general structured motion-control API. Use it only when the user has a
-reference image and a reference motion video.
-
-Read [`references/hosted-video-talking-head.md`](references/hosted-video-talking-head.md) before implementation or request design.
-Read [`references/hosted-video-generative.md`](references/hosted-video-generative.md) before designing hosted Seedance requests.
-Read [`references/hosted-video-generative.md`](references/hosted-video-generative.md) before designing Seedance requests.
-
-If the project should keep related image, audio, and video files under one asset root, use the `image-batch-runner` unified asset contract.
-
-## PostPlus Cloud Rule
-
-- keep request files, hosted response payloads, and polling state under
-  `<work-folder>/.postplus/video-batch-runner/` when they are internal
-  execution state
-- keep only final user-facing renders outside `.postplus/`
-- if PostPlus Cloud video service is unavailable, unauthorized, or returns a stable
-  network error, stop immediately instead of switching to ad hoc shell glue
-
-## Render Objects
-
-### 1. Render Job
-
-One request to a video provider.
-
-Should include:
-
-- `jobId`
-- `campaignId`
-- `personaId`
-- `conceptId`
-- `scriptId` or source path
-- `voiceTakeId`
-- `imageAssetId`
-- `assetPurpose`
-- `creativeFormat`
-- `targetAspectRatio`
-- `provider`
-- `model`
-- `status`
-
-### 2. Render Manifest
-
-The normalized local handoff object for later review.
-
-Should include:
-
-- `jobId`
-- `campaignId`
-- `personaId`
-- `conceptId`
-- `provider`
-- `model`
-- `executionEnvelopePath`
-- `pollRequestPath`
-- `archivedRequestPath`
-- `responsePath`
-- `predictionId`
-- `providerStatus`
-- `assets[]`
-- `sourceBasis`
-- `upstreamRefs`
-
-### 3. Video Asset
-
-One downloaded output.
-
-Should include:
-
-- `assetId`
-- `localPath`
-- `remoteUrl`
-- `mimeType`
-- `sourceBasis`
-- `createdAt`
-
-## Default Workflow
-
-### 1. Lock the render brief
-
-Before calling any provider, write down:
-
-- `jobId`
-- `campaignId`
-- `personaId`
-- `conceptId`
-- `scriptId` or script source
-- `voiceTakeId`
-- `imageAssetId`
-- `assetPurpose`
-  - `talking_head`
-  - `singing_avatar`
-  - `first_pass_render`
-  - `render_fix`
-- `sourceBasis`
-- `mustKeep`
-- `canVary`
-- `feedback`
-
-Tell the user:
-
-- "I will first lock the video-batch-runner render brief and request JSON, then output a local render manifest. After completion, it can go to creative-qa, subtitle-packager, or social-media-publisher."
-
-### 2. Produce a normalized request record
-
-The local request JSON should contain stable fields even if provider fields change later.
-
-At minimum record:
-
-- provider route
-- PostPlus creative format
-- model
-- provider prompt source: `final_prompt`, or `prompt_summary` plus
-  `promptPlan.prompt_storyline`
-- media refs used by the route
-- optional mask image
-- resolution
-- ratio when relevant
-- duration or frames when relevant
-- seed
-- local output directory
-
-When the provider exposes multiple resolution tiers, default to the highest practical tier for realism-sensitive renders.
-
-### 3. Call the hosted capability and save the raw response
-
-Always save:
-
-- `request.json`
-- `response.json`
-- `manifest.json`
-- downloaded video files under `renders/`
-
-Do not use the hosted response alone as the durable store.
-
-### 4. Normalize local outputs
-
-Every run should end with a local manifest containing:
-
-- stable upstream refs
-- hosted generation ids
-- local asset paths
-- source basis
-- feedback history
-
-### 5. Hand off to human QA
-
-Do not auto-approve a render.
-
-The next stage is `creative-qa`, where a person may record:
-
-- verdict
-- what worked
-- what failed
-- which stage should be rerun
-
-If there is no human feedback yet, the render can remain in `review_pending`.
-
-## Path Selection Rule
-
-Write outputs into the active project's render structure when one already exists.
-
-If no project structure exists yet, choose a clear workspace output path and make it visible in the task summary.
-
-If the chosen location will become the long-term handoff point for a client, prefer confirming the destination with the user.
-
-## Example Persistence Convention
-
-One possible project-local layout is:
-
-```text
-videos/<job-id>/
-  request.json
-  response.json
-  manifest.json
-  renders/
-  qa/
-```
-
-Do not assume this example layout is the universal default.
-
-Keep draft request files, hosted response payloads, and polling state under
-`<work-folder>/.postplus/video-batch-runner/` when they are internal execution
-artifacts rather than the final handoff.
-
-## Tool Contract
-
-This skill expects these adapters:
-
-- `generate_video_from_image_audio`
-- `poll_prediction` for async providers
-
-For Seedance, the same `generate_video_from_image_audio` script is used as the
-normalized submit entrypoint even though the request may be text-to-video or
-multimodal. Released runs use `provider: "hosted-media"`.
-
-The normalized request and manifest shapes live in [`references/tool-contracts.md`](references/tool-contracts.md).
-
-If a render is still pending, do not block the user's conversation just to
-poll. Save the checkpoint, tell the user the render is running, and continue
-independent QA planning, segment planning, caption prep, or handoff prep until
-the render is needed.
-
-## Review Rule
-
-Before calling a video provider, verify:
-
-- for `talking-head`, persona is approved
-- for `talking-head`, image asset is approved
-- for `talking-head`, voice take is approved
-- for `seedance` (hosted), request mode is explicit and required media exists
-- `provider` is `hosted-media`
-- media roles match the intended hosted model
-- provider prompt source is concrete enough to constrain the generation
-- render request is tied to a real concept or asset purpose
-- local output path is explicit
-
-After generation, review:
-
-- lip sync acceptability
-- persona continuity
-- audio and image match
-- TikTok-native feel
-- ad-like drift
-
-## Failure Mode
-
-Stop and say the request is under-specified if any of these are missing:
-
-- for `talking-head`, no approved image asset
-- for `talking-head`, no approved voice take
-- for `seedance` (hosted), no `prompt_summary` plus
-  `promptPlan.prompt_storyline`, no intentional `final_prompt`, or no required
-  first image for image-to-video modes
-- unsupported provider values outside `hosted-media`
-- no provider prompt source or no usable media for the selected hosted model
-- no asset purpose
-- no source basis
-- no local output path
-
-Do not compensate for missing upstream approvals by letting the render model improvise.
-
-## Seedance Prompt Rule
-
-For Seedance 2.0 work, prefer a structured prompt plan over a single dense
-paragraph.
-
-For creator clips, organize each segment around one spoken idea. Visual
-instructions should support that spoken idea; they should not turn a
-talking-head script into acted emotional choreography.
-
-The adapter accepts `prompt_summary` plus `promptPlan` and turns them into a
-timeline-first `final_prompt` in this order:
-
-- subject
-- prompt summary
-- prompt storyline
-- scene / environment / style
-- camera / shot / motion
-- sound intent
-- continuity constraints
-- must-keep
-- must-avoid
-- reference bindings such as `[image 1]...，[audio 1]...，[video 1]...`
-
-This is a better default than freehand adjective stacks.
-
-For talking-head dialogue clips, choose the provider duration by spoken density,
-not by leftover visual hold. A 10-second clip should usually contain a full
-10-second spoken thought. Use a shorter supported duration bucket or rewrite the
-segment instead of padding with silent holds.
-
-The prompt plan may describe framing in natural language, but the selected
-PostPlus creative format must also be present in the normalized request as
-`creativeFormat` or `aspectRatio`. Do not rely on prompt wording alone to carry
-`3:4` Instagram Meta Ads output.
-
-Do not represent `promptPlan.motion` as provider-native motion control. If the
-user asks for motion brush, object trajectory, camera trajectory, or
-camera-control parameters, stop and say the current implementation only exposes
-reference-motion transfer through `video-kling-v2-6-pro-motion-control`.
-
-## Core Scripts
-
-- `scripts/generate_video_from_image_audio.mjs`
-- `scripts/poll_prediction.mjs`
-
-These scripts are hosted media entrypoints. The file passed to `--request`
-must be a hosted execution envelope:
-
-```json
-{
-  "schemaVersion": 1,
-  "input": {
-    "...": "normalized video request"
-  }
-}
-```
-
-The normalized video request is the envelope's `input` value. Bare normalized
-request JSON is not an executable script input.
-
-These scripts write:
-
-- `request.json` as the archived normalized request under the user-visible
-  render directory
-- `response.json`
-- `manifest.json`
-- downloaded videos under `renders/`
-
-The script output uses `executionEnvelopePath` / `pollRequestPath` for the
-file that can be passed back to `poll_prediction.mjs --request`. It uses
-`archivedRequestPath` for the user-visible normalized request record. Do not
-poll with the archived request.
+## Use When
+- Approved image, script, voice, or prompt-plan inputs already exist and the next step is a hosted talking-head, Seedance, or reference-motion render.
+- The output must preserve a local render manifest, source basis, hosted handles,
+  output URLs, downloaded video files when the host can fetch them, and a
+  pollable checkpoint.
+
+## Do Not Use When
+- The task belongs to ideation, QA, or another released skill listed in the handoff section.
+- Required inputs are missing and guessing would change the result.
+
+## Execution Boundary
+- Default to the highest practical render quality for realism-sensitive human video; step down only for an explicit cheap draft, latency test, or provider limit, and persist the choice.
+- Default creative format is short-form vertical `9:16`; use
+  `creativeFormat: "instagram_meta_ads"` or explicit `aspectRatio: "3:4"` when
+  the target is Instagram Meta Ads.
+- Released provider is `hosted-media` only. Direct provider routes, ad hoc
+  structured motion-control fields, and unbound media roles are not released.
+- `video-kling-v2-6-pro-motion-control` is only reference-motion transfer with
+  a reference image plus reference motion video.
+
+## Source And Route
+- Source from the active project/client manifests first. Do not reuse another
+  client directory as the default source basis.
+- Required for all routes: hosted capability request, `jobId`, `assetPurpose`,
+  `sourceBasis`, `localOutputDir`, `provider: "hosted-media"`, and `model`.
+- Talking head requires approved `image`, approved `audio`, and script/concept
+  source. Seedance requires intentional `final_prompt` or `prompt_summary` plus
+  `promptPlan.prompt_storyline`, and required media for the selected mode.
+- `promptPlan.camera`, `promptPlan.shotType`, and `promptPlan.motion` constrain
+  prompt text only; do not map them to provider-native trajectory fields.
+
+## Request Boundary
+- `--request` must point to a hosted capability request JSON with explicit
+  `capability`, `operation`, `operationId`, and normalized video `input`.
+- The agent writes normalized `request.json` and `poll-request.json` under
+  `.postplus`; polling must use the poll request built from `output.data.id`.
+- Keep internal requests/responses under `.postplus` when they are not final
+  handoff artifacts; keep final renders/manifests in the active render folder.
+
+## Seedance Prompt Boundary
+- Prefer `prompt_summary` plus `promptPlan.prompt_storyline` over a dense
+  paragraph. Each segment should carry subject, storyline, scene/style, camera
+  language, sound intent, continuity constraints, and explicit `[image 1]` /
+  `[audio 1]` / `[video 1]` bindings as applicable.
+- Do not use deprecated `promptPlan.storyboardTimeline`; use
+  `promptPlan.prompt_storyline`.
+- Choose duration by spoken density. Use a shorter supported bucket or rewrite
+  the segment instead of padding silent holds.
+
+## Review And Handoff
+- Before submission, verify approved upstream assets, route/mode, media roles,
+  concrete prompt source, source basis, asset purpose, and local output path.
+- After generation, keep `review_pending` until human QA checks lip sync,
+  persona continuity, audio/image match, native feel, and ad-like drift.
+- If pending, return `manifestPath`, `pollRequestPath`, and `pollCommand`
+  immediately. Do not keep thinking or polling in the conversation.
+
+## Fail Fast
+- Missing hosted capability request, unsupported provider/model, missing approved media,
+  missing prompt source, missing source basis, missing output path, deprecated or
+  unsupported motion fields, or stale request path used for polling.
+- Do not compensate for missing approvals by letting the render model improvise.
+
+## Public Command Boundary
+
+- Check readiness first: `postplus doctor --skill video-batch-runner`.
+- Request schema: `postplus media schema --endpoint <endpoint-key> --json`.
+- Hosted media capability: `postplus media capability --request <hosted-capability-request.json> --output <result.json>`.
+- Use the capability request shape required by the selected workflow; do not call provider APIs directly.
+- If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

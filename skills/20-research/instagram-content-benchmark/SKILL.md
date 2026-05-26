@@ -9,96 +9,68 @@ metadata:
 
 # Instagram Content Benchmark
 
-Follow shared public skill rules in:
+Use this skill to benchmark Instagram posts and Reels, find strong examples,
+and extract reusable hooks, caption structures, formats, and content pillars.
 
-- `postplus-shared` public skill rules
+Apply shared rulebook and user-guidance rules from `postplus-shared`.
 
-Use this skill when the user wants to:
+## Do Not Use When
 
-- find strong Instagram post or Reel examples
-- benchmark competitor content
-- identify repeatable hooks, caption structures, or format patterns
-- decide what type of Instagram content to recreate or adapt
+- The user wants to evaluate known accounts. Route to
+  `instagram-account-research`.
+- The user wants to discover creators for outreach. Route to
+  `instagram-creator-discovery`.
+- The user wants comment language. Route to `instagram-audience-voice` after a
+  shortlist exists.
 
-Use embedded `instagram-tools` support scripts for local execution. When this
-skill needs to run Instagram collection, normalization, or ranking scripts from
-an installed public skill, call them through installed-safe embedded support paths such
-as:
+## Collection Key Routing
 
-- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-tools/scripts/run_instagram_actor.mjs`
-- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-tools/scripts/normalize_instagram_dataset.mjs`
-- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-tools/scripts/rank_instagram_posts.mjs`
+Released hosted collection keys:
 
-## Primary Hosted Collection Keys
+- `instagram-posts`: post or Reel samples from known accounts or URLs.
+- `instagram-hashtags`: hashtag-derived benchmark pools.
 
-- `instagram-posts`
-- `instagram-hashtags`
+Use hosted collection outputs and the workflow below.
 
-## Recommended Workflow
+## Default Workflow
 
-1. define seeds:
-   - usernames
-   - post URLs
-   - Reel URLs
-   - hashtags
-2. scrape the first candidate pool at 10-15 posts or reels per theme
-3. normalize posts and Reel-like results into one comparable dataset
-4. rank by engagement, relevance, recency, and format fit
-5. produce a shortlist of benchmark content
-6. summarize:
-   - repeated hooks
-   - repeated visual formats
-   - caption patterns
-   - hashtag usage
+1. Define seeds: usernames, post URLs, Reel URLs, hashtags, or themes.
+2. Collect the first candidate pool at 10-15 posts or reels per theme.
+3. Normalize post and Reel-like results into one comparable dataset.
+4. Rank by engagement proxy, relevance, recency, and format fit.
+5. Produce a benchmark shortlist.
+6. Summarize repeated hooks, visual formats, caption patterns, and hashtag use.
 
-## Cost Discipline
-
-Start with:
-
-- 10-15 posts or reels per theme for the first pass
-- one or two themes at a time
-- comments only after a shortlist exists
-
-Treat `10-15` posts or reels per theme as the first-pass boundary, not a
-preference. Do not ask the user to choose a broad crawl range up front and do
-not compile a wider first actor input from broad wording like "as many as
-possible" or "scan the whole niche." Expand only after the first shortlist
-proves seed quality and the user approves a second pass.
-
-## Public Skill Execution Contract
-
-- keep benchmark briefs, actor inputs, raw datasets, normalized datasets, and
-  shortlist caches under `<work-folder>/.postplus/instagram-benchmark/`
-- keep only final user-facing summaries or shortlist exports outside
-  `.postplus/`
-- compile a small benchmark brief before the expensive collection step
-- if PostPlus Cloud service is unavailable, unauthorized, or returns a stable
-  network error, stop immediately instead of switching to ad hoc shell glue
+Treat 10-15 posts or reels per theme as the first-pass boundary. Do not compile
+a wider first input from broad wording like "as many as possible." Expand only
+after the first shortlist proves seed quality and the user approves a second
+pass.
 
 ## Good Output
 
-Return:
+Return top benchmark examples, content-type split, repeated opening patterns,
+value promises, likely content pillars, and recommended next posts to inspect
+deeper.
 
-- top benchmark shortlist
-- content-type split:
-  - Reel
-  - static post
-  - carousel
-- repeated opening patterns
-- repeated value promises
-- likely content pillars
-- recommended next posts to inspect deeper
+## Failure Modes
+
+- Stop if no usable benchmark seeds exist.
+- Stop on unsupported keys, missing auth, unavailable hosted service, or stable
+  network failure.
+- Do not treat benchmark content as permission to contact creators directly;
+  lead work belongs in `creator-outreach`.
 
 ## Handoff
 
-Escalate to `instagram-audience-voice` when:
+- Need creator pool from benchmark content -> `instagram-creator-discovery`.
+- Need comment sentiment or audience language -> `instagram-audience-voice`.
+- Need shot-level video breakdown -> `video-analysis`.
 
-- the user wants to read comment sentiment and language
+## Public Command Boundary
 
-Escalate to video or creative analysis workflows outside this skill family when:
-
-- the user wants shot-level breakdowns of the actual videos
-
-Escalate to `instagram-creator-discovery` when:
-
-- the user wants to turn benchmark content into a creator pool
+- Check readiness first: `postplus doctor --skill instagram-content-benchmark`.
+- Input schema: `postplus research schema --collection-key instagram-hashtags --json`.
+- Hosted collection: `postplus research collect --skill instagram-content-benchmark --collection-key instagram-hashtags --input <hosted-envelope.json> --output <collection-result.json>`.
+- Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
+- Keep the first pass bounded; expand only after inspecting the first result.
+- If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

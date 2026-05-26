@@ -9,120 +9,81 @@ metadata:
 
 # Amazon Research
 
-Follow shared public skill rules in:
+Use this skill only when the request explicitly needs Amazon platform evidence:
+ASINs, reviews, best sellers, seller listings, marketplace pricing, or Amazon
+competitor data.
 
-- `postplus-shared` public skill rules
+Apply shared rulebook and user-guidance rules from `postplus-shared`.
 
-Use this skill only when the request explicitly needs Amazon platform data.
+## Do Not Use When
+
 Generic category, market, or positioning questions should start with cheaper
-web/search or strategy skills unless the user names Amazon, ASINs, reviews,
-seller listings, best sellers, or marketplace price evidence.
+general research or strategy skills unless the user names Amazon, provides
+Amazon URLs or ASINs, or asks for marketplace price/review evidence.
 
-Default use cases:
-
-- Inspect Amazon competitors
-- Check price bands
-- Collect reviews and negative reviews
-- Inspect best sellers / new releases
-- Judge how to position a product on Amazon
-
-Do not start a hosted Amazon collection just because the user asks broad
-category questions like "what are this category's traits?" First clarify that
-Amazon evidence is needed or route to a lighter research skill.
-
-## Task Shapes
+## Task Shapes And Keys
 
 Classify the request first:
 
 1. Product discovery
-- keywords
-- category pages
-- search URLs
-- collection key: `amazon-products`
-- alternate collection key: `amazon-free-products`
-
+   - keywords, category pages, search URLs
+   - collection key: `amazon-products`
+   - alternate key: `amazon-free-products`
 2. ASIN enrichment
-- known ASIN list
-- need titles, prices, ratings, seller details
-- collection key: `amazon-asins`
-
+   - known ASIN list, title/price/rating/seller details
+   - collection key: `amazon-asins`
 3. Review mining
-- need reviews, complaints, low-star patterns
-- collection key: `amazon-reviews`
-- alternate collection key: `amazon-reviews-v2`
-
+   - reviews, complaints, low-star patterns
+   - collection keys: `amazon-reviews`, `amazon-reviews-v2`
 4. Bestseller mapping
-- need trend products or leaderboard products
-- collection key: `amazon-bestsellers`
+   - trend products or leaderboard products
+   - collection key: `amazon-bestsellers`
+
+Hosted collection input must be a `schemaVersion: 1` envelope whose `input`
+field contains the compiled Amazon request.
 
 ## Default Workflow
 
 Use the lightest valid chain:
 
-1. collect
-2. normalize
-3. analyze
-4. synthesize
+1. compile a small request from keywords, URLs, or ASINs,
+3. normalize the dataset,
+4. analyze ranking, pricing, reviews, or seller signals,
+5. synthesize the result and name missing evidence.
 
-Prefer:
+Start with one keyword set, one ASIN batch, one bestseller page, or at most 20
+product-discovery items per start URL. Expand only after the first pass proves
+useful.
 
-- small sample first
-- URL input when URLs are known
-- ASIN input for review work
+Keep request files, raw datasets, normalized datasets, and caches under
+`.postplus/amazon/`; keep only final summaries or shortlisted exports outside
+`.postplus/`.
 
-Tell the user:
+## Good Output
 
-- "I will first use a small set of keywords or ASINs for the first Amazon collection pass and output ranking tables, detail tables, review summaries, or lists; if the signal is strong enough, I will pass it to sourcing-selection for cross-evidence judgment."
+Return ranking tables, detail tables, review summaries, price bands, negative
+review patterns, strongest product examples, and the exact Amazon evidence
+source behind each conclusion.
 
-## Public Skill Execution Contract
+## Failure Modes
 
-- keep request files, raw datasets, normalized datasets, and analysis caches
-  under `<work-folder>/.postplus/amazon/`
-- keep only final user-facing summaries or shortlisted exports outside
-  `.postplus/`
-- compile the request into a small input JSON before the expensive collection
-  step when URLs, ASINs, or keyword seeds need shaping
-- for product discovery with `amazon-products`, build from
-  `${CLAUDE_SKILL_DIR}/templates/amazon-products-search.json`: put category or search URLs
-  in `categoryOrProductUrls` as `{ "url": "..." }` entries and bound the first
-  pass with `maxItemsPerStartUrl`
-- start with a bounded first pass:
-  - one keyword set
-  - one ASIN batch
-  - one bestseller page
-  - at most 20 product-discovery items per start URL
-- if PostPlus Cloud service is unavailable, unauthorized, or returns a stable
-  network error, stop immediately instead of switching to ad hoc shell glue
+- Stop if the user has not asked for Amazon evidence and no Amazon identifiers
+  were provided.
+- Stop on unsupported keys, missing auth, unavailable hosted service, stable
+  network failure, or malformed collection output.
+- Do not switch to ad hoc scraping, private backend calls, or generic web
+  articles for Amazon platform-data collection.
 
-Normalized schema:
+## Handoff
 
-- `${CLAUDE_SKILL_DIR}/schemas/amazon-dataset.schema.json`
+After delivering results, hand off to `sourcing-selection` for supply-side
+validation or continue deeper review mining for a specific ASIN.
 
-Main scripts:
+## Public Command Boundary
 
-- `${CLAUDE_SKILL_DIR}/_postplus_shared/00-core/shared-collection/scripts/collection_actor_run.mjs`
-- `${CLAUDE_SKILL_DIR}/scripts/normalize_amazon_dataset.mjs`
-- `${CLAUDE_SKILL_DIR}/scripts/analyze_amazon_dataset.mjs`
-
-The collection runner's `--input` file must be a `schemaVersion: 1` hosted
-execution envelope whose `input` field contains the compiled collection
-request.
-
-## Routing Reminder
-
-If the user asks strategic Amazon questions like:
-
-- Which competitors are closest
-- What the price anchors are
-- What problems appear most often in reviews
-- How we should position against them
-
-Treat them as Amazon platform-data questions only when the user explicitly
-asks for Amazon evidence or provides Amazon identifiers/URLs. Otherwise keep
-the first pass on cheaper general research and mention Amazon as an optional
-deeper marketplace check.
-
-## Downstream Handoff
-
-After delivering results, offer to hand off to `sourcing-selection` for supply-side
-validation or to drill deeper into a specific ASIN's reviews.
+- Check readiness first: `postplus doctor --skill amazon-research`.
+- Input schema: `postplus research schema --collection-key amazon-asins --json`.
+- Hosted collection: `postplus research collect --skill amazon-research --collection-key amazon-asins --input <hosted-envelope.json> --output <collection-result.json>`.
+- Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
+- Keep the first pass bounded; expand only after inspecting the first result.
+- If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

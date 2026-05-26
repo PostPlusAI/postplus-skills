@@ -1,4 +1,0 @@
-interface:
-  display_name: "Creator Outreach"
-  short_description: "Find creators, extract contacts, draft outreach."
-  default_prompt: "Use $creator-outreach to find creator leads, extract contact signals, and draft outreach messages."
