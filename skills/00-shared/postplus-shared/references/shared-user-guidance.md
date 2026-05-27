@@ -68,7 +68,7 @@ asked to wait.
 
 Before an expensive collection, media generation, transcription, publishing, or
 large local processing step, inspect the skill's own boundary section and
-`registry.json` release requirements. If the request crosses a known limit, do
+public metadata requirements. If the request crosses a known limit, do
 one of these before execution:
 
 - internalize the boundary into the request shape, such as bounded first passes,
@@ -92,9 +92,9 @@ Common decomposition templates:
 
 | User intent | Decomposition |
 |---|---|
-| "Promote this product" | ① competitive research (amazon-research) → ② audience persona (persona-pack) → ③ creator outreach (creator-discovery) |
-| "Make a viral video" | ① trend collection (tiktok-research) → ② hook breakdown (video-analysis) → ③ storyboard generation (pattern-router) → ④ video render (video-batch-runner) |
-| "Build a social presence for this brand" | ① cross-platform audit (social-media-extractor) → ② content strategy (benchmark-to-brief) → ③ creative production (visual-hook / script-generator) |
+| "Promote this product" | ① competitive research (amazon-research) → ② campaign brief (benchmark-to-brief) → ③ creator outreach (creator-discovery) |
+| "Make a viral video" | ① trend collection (tiktok-research) → ② hook breakdown (video-analysis) → ③ request planning (video-request-architect) → ④ video render (video-batch-runner) |
+| "Build a social presence for this brand" | ① cross-platform audit (social-media-extractor) → ② content strategy (benchmark-to-brief) → ③ creative QA and production planning (creative-qa) |
 | "Analyze this account" | ① account research (instagram-account-research) → ② audience voice (audience-voice) → ③ content benchmark (content-benchmark) |
 
 Use these as reference, not a rigid checklist. Adapt to the user's actual scope.
@@ -107,8 +107,7 @@ next step. One suggestion at a time. Don't list all possibilities.
 Examples:
 - tiktok-research done → "Want me to break down the hooks and structure of these videos with video-analysis?"
 - video-analysis done → "These insights could feed into a campaign brief via benchmark-to-brief."
-- persona-pack done → "Now we can generate voice assets (voice-batch-runner) or images (image-batch-runner)."
-- benchmark-to-brief done → "Brief is ready. Want to move into creative production with visual-hook?"
+- benchmark-to-brief done → "Brief is ready. Want me to turn it into a video request plan?"
 
 ## First-Use Mini Onboarding
 

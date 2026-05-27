@@ -102,8 +102,8 @@ Creative skills should not each reinvent their own local equivalent.
 Typical pattern:
 
 - shared or project setup creates or maintains the files
-- `script-generator` consumes them for scripts
-- storyboard and render skills consume the resulting script objects downstream
+- script review consumes them for scripts
+- storyboard and render skills consume the approved script objects downstream
 
 ## User-Facing Framing
 

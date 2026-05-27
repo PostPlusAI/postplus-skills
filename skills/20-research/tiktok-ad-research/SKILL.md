@@ -9,143 +9,80 @@ metadata:
 
 # TikTok Ad Research
 
-Follow shared public skill rules in:
+Use this skill for paid TikTok ad intelligence, not organic creator or content
+discovery.
 
-- `postplus-shared` public skill rules
+Apply shared rulebook and user-guidance rules from `postplus-shared`.
 
-Use this skill when the user wants paid TikTok ad intelligence, not organic creator or content discovery.
+## Task Shapes
 
-Typical requests:
+Use this skill when the user wants to:
 
-- Find TikTok ad creatives that are performing well
-- Inspect top ads for a category, country, or objective
-- Study how competitor ads handle hooks, selling points, and CTAs
-- Extract ad briefs from Creative Center data
+- find paid TikTok ad creatives that are performing well,
+- inspect top ads for a category, country, region, language, or objective,
+- study competitor paid hooks, selling points, and CTAs,
+- turn ad examples into ad briefs or creative implications.
 
-Read first:
+Do not use this skill for creator discovery, community comments research,
+organic content lane mapping, or TikTok music workflows.
 
-- `postplus-shared` research preferences
-- `${CLAUDE_SKILL_DIR}/references/task-shapes.md`
-- `${CLAUDE_SKILL_DIR}/references/input-notes.md`
-- `${CLAUDE_SKILL_DIR}/references/normalized-schema.md`
+## Collection Key Routing
 
-## Core Rule
+Released hosted collection key:
 
-Do not treat ad data as if it were organic creator data.
+- `tiktok-ads-top`: top paid ad examples and optional ad-level metrics.
 
-This skill is for:
+The hosted input must be a `schemaVersion: 1` execution envelope whose `input`
+field contains the paid-ad collection request.
 
-- paid creative benchmarking
-- hook and offer analysis
-- objective / region / language comparisons
-- ad-creative sourcing for briefs
-
-This skill is not for:
-
-- creator discovery
-- community comments research
-- organic content lane mapping
-
-If the user wants organic content or creator research, route to:
-
-- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/tiktok-research/SKILL.reference.md`
-
-## Preferred Actor
-
-Current default:
-
-- `tiktok-creative-center-top-ads`
-
-Use this actor when the user wants top-performing Creative Center ads and optional analytics or keyframe metrics.
-
-## Minimal Toolchain
-
-Use these pieces in combination:
-
-- scrape:
-  - `${CLAUDE_SKILL_DIR}/scripts/collection_actor_run.mjs`
-- normalize:
-  - `${CLAUDE_SKILL_DIR}/scripts/normalize_tiktok_ads_dataset.mjs`
-- analyze:
-  - `${CLAUDE_SKILL_DIR}/scripts/analyze_tiktok_ads_dataset.mjs`
-
-## Public Skill Execution Contract
-
-- keep actor input JSON, raw datasets, normalized datasets, and analysis caches
-  under `<work-folder>/.postplus/tiktok-ads/`
-- keep only final user-facing summaries or shortlisted exports outside
-  `.postplus/`
-- start with a bounded first pass before broader ad pulls
-- if PostPlus Cloud service is unavailable, unauthorized, or returns a stable
-  network error, stop immediately instead of switching to ad hoc shell glue
-
-## Recommended Workflow
-
-1. classify the request into a paid-ad task shape
-2. write a small actor input JSON
-3. wrap the actor input as a `schemaVersion: 1` hosted execution envelope
-4. run the actor with a narrow scope first
-5. normalize into the local ad schema
-6. analyze repeated hooks, brands, objectives, regions, and CTA language
-7. only then turn it into a brief or recommendation
-
-## Example
-
-Run the actor:
+Primary command:
 
 ```bash
-node ${CLAUDE_SKILL_DIR}/scripts/collection_actor_run.mjs \
+postplus research collect \
+  --skill tiktok-ad-research \
   --collection-key tiktok-ads-top \
-  --input <work-folder>/.postplus/tiktok-top-ads-envelope.json \
-  --output <work-folder>/.postplus/tiktok-top-ads-raw.json
+  --input <hosted-envelope.json> \
+  --output <raw-output.json>
 ```
 
-The `--input` file must be a `schemaVersion: 1` hosted execution envelope. Put
-the top-ads actor request under the envelope's `input` field. If starting from
-`${CLAUDE_SKILL_DIR}/templates/top-ads-sample.json`, copy that template payload
-under `input` instead of passing the template file directly.
+## Default Workflow
 
-Normalize:
+1. Classify the request into a paid-ad task shape.
+2. Build a narrow first-pass request for the category, region, objective, or
+   competitor scope.
+3. Wrap the request under `schemaVersion: 1` + `input`.
+4. Run the hosted collection and normalize the result into observed ad facts.
+5. Separate observed ad facts from inferred creative implications.
 
-```bash
-node ${CLAUDE_SKILL_DIR}/scripts/normalize_tiktok_ads_dataset.mjs \
-  --input <work-folder>/.postplus/tiktok-top-ads-raw.json \
-  --actor tiktok-creative-center-top-ads \
-  --output <work-folder>/.postplus/tiktok-top-ads-normalized.json
-```
-
-Analyze:
-
-```bash
-node ${CLAUDE_SKILL_DIR}/scripts/analyze_tiktok_ads_dataset.mjs \
-  --input <work-folder>/.postplus/tiktok-top-ads-normalized.json \
-  --output <work-folder>/.postplus/tiktok-top-ads-analysis.json
-```
+Keep raw datasets and intermediate files under `.postplus/tiktok-ads/`; keep
+final shortlists, summaries, or briefs where the user can inspect them.
 
 ## Good Output
 
-Return:
+Return top brands or advertisers, dominant objectives, repeated hook and offer
+language, CTA patterns, region or language scope, duration distribution, and
+which metrics were actually present in the sample.
 
-- top brands or advertisers in the sample
-- dominant objectives
-- repeated hook language
-- repeated offer language
-- repeated regions / geo scope
-- CTA patterns
-- duration distribution
-- top ads by likes or CTR when available
-- whether the sample is spotlight-curated or filter-driven
+## Failure Modes
 
-Separate:
-
-- observed ad facts
-- likely creative implications
-- missing evidence
+- Stop if the request is organic creator/content research; route to
+  `tiktok-research` instead.
+- Stop on missing required input, unsupported key, missing auth, unavailable
+  hosted service, or stable network failure.
+- Do not invent fallback execution paths, private backend calls, or web-search
+  replacements for paid ad collection.
 
 ## Handoff
 
-Escalate after this skill when needed:
+- Organic TikTok benchmark comparison -> `tiktok-research`.
+- Ad creative review after humans inspect outputs -> `creative-qa`.
+- Shot-level or spoken-line breakdown -> `video-analysis`.
 
-- ad video structure or spoken-line breakdown -> a dedicated visual analysis workflow
-- ad creative review after humans inspect outputs -> `creative-qa`
-- organic TikTok benchmark comparison -> `tiktok-research`
+## Public Command Boundary
+
+- Check readiness first: `postplus doctor --skill tiktok-ad-research`.
+- Input schema: `postplus research schema --collection-key tiktok-ads-top --json`.
+- Hosted collection: `postplus research collect --skill tiktok-ad-research --collection-key tiktok-ads-top --input <hosted-envelope.json> --output <collection-result.json>`.
+- Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
+- Keep the first pass bounded; expand only after inspecting the first result.
+- If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

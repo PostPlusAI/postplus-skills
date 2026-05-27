@@ -1,4 +1,0 @@
-interface:
-  display_name: "Amazon Research"
-  short_description: "Research Amazon products, pricing, and reviews."
-  default_prompt: "Use $amazon-research to collect and analyze Amazon platform data."

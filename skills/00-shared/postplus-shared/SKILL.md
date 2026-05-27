@@ -1,6 +1,6 @@
 ---
 name: postplus-shared
-description: Shared rules, routing preferences, execution boundaries, and workflow references for released PostPlus skills. Use this before any PostPlus skill that mentions shared public skill rules, research preferences, product-selection preferences, TikTok music workflow, or ads workflow.
+description: Shared rules, routing preferences, execution boundaries, and workflow references for released PostPlus skills. Use this before any PostPlus skill that mentions shared public skill rules, research preferences, product-selection preferences, source-of-truth files, TikTok music workflow, ads workflow, or user guidance.
 metadata:
   postplus:
     familyId: shared-rules
@@ -9,12 +9,9 @@ metadata:
 
 # PostPlus Shared
 
-Use this skill first when another PostPlus skill asks for shared rules or
-shared workflow preferences.
+Use this skill first when another PostPlus skill asks for shared rules or shared workflow preferences.
 
-This skill is the single source of truth for principle-level PostPlus skill
-documents. Runtime scripts and executable adapters remain vendored inside each
-business skill's `_postplus_shared/` directory.
+This skill is the single source of truth for principle-level PostPlus skill documents. It is instruction-only: do not run provider runtimes, mutate public metadata or release metadata, or invent alternate execution paths from this shared-rule handoff.
 
 ## References
 
@@ -29,8 +26,6 @@ business skill's `_postplus_shared/` directory.
 ## Default Workflow
 
 1. Read the reference named by the downstream skill.
-2. Apply the shared rule before reading platform- or production-specific
-   details.
-3. If a downstream skill and this shared rule conflict, fail fast and surface
-   the conflict instead of inventing a fallback.
-4. Do not run provider scripts from this shared skill, and do not mutate registry or release metadata from a shared-rule handoff.
+2. Apply the shared rule before reading platform- or production-specific details.
+3. If a downstream skill and this shared rule conflict, fail fast and surface the conflict instead of inventing a fallback.
+4. Keep executable work in the downstream skill or PostPlus CLI boundary; this shared skill only owns the principle-level rule.

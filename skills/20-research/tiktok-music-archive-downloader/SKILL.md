@@ -9,41 +9,44 @@ metadata:
 
 # TikTok Music Archive Downloader
 
-Follow shared public skill rules in:
+Use this skill after TikTok music or sound candidates have already been
+selected and the user needs local sample files, audio references, and a
+reproducible archive manifest.
 
-- `postplus-shared` public skill rules
+Apply shared local-dependency and user-guidance rules from `postplus-shared`.
 
-Use this skill when TikTok music or sound candidates have already been selected and the user needs local files.
+## Do Not Use When
 
-Good fits:
+- The user is still discovering trending music. Start with `tiktok-research`.
+- The user needs hosted TikTok metadata collection.
+- The user asks whether an audio is legally cleared for public posting.
 
-- "Download representative videos for these sounds"
-- "Extract audio from TikTok videos as references"
-- "Build a local asset library for these trending music tracks"
-- "Download samples and keep a source manifest"
+## Required Input
 
-Do not use this skill for:
+- A small download manifest with TikTok post page URLs.
+- Local dependencies: `python3` with `yt_dlp`, and `ffmpeg`.
+- A work folder where the archive can be written under `.postplus/`.
 
-- discovering trending music
-- collecting metadata from hosted collection
-- deciding whether an audio is legally usable for public posting
+When a normalized upstream dataset includes both `postPageUrl` and direct video
+fields, prefer the canonical TikTok post page URL for `sourceUrl`.
 
-## Read First
+## Access Boundary
 
-- Shared chain: `postplus-shared` TikTok music workflow
+Downloads are supported only for TikTok post URLs reachable from the user's
+current local browser/IP environment after dependency checks pass. Local tools
+are necessary but not sufficient when TikTok gates a post by IP, browser
+access, login, or cookies.
 
-## Source Skills
+If the download report contains `failureCode: "tiktok_ip_blocked"`, report the
+blocker with the preserved `sourceUrl`, stderr, and report path. Do not retry
+broad downloads, switch proxies, or invent a cookie/browser bootstrap path.
 
-Expected inputs usually come from:
+## Default Workflow
 
-- `../tiktok-research/SKILL.md`
-
-## Downloader
-
-Use the shared TikTok downloader:
+1. Build a bounded manifest from selected videos or sounds.
+2. Run the shared downloader:
 
 ```bash
-node ${CLAUDE_SKILL_DIR}/_postplus_shared/00-core/shared-runtime/scripts/download_videos_from_manifest_with_ytdlp.mjs \
   --manifest <download-manifest.json> \
   --output-dir <videos-dir> \
   --report <download-report.json> \
@@ -51,119 +54,53 @@ node ${CLAUDE_SKILL_DIR}/_postplus_shared/00-core/shared-runtime/scripts/downloa
   --attempts 3
 ```
 
-The manifest should contain:
-
-```json
-{
-  "items": [
-    {
-      "sourceId": "musicid-videoid",
-      "sourceUrl": "https://www.tiktok.com/@user/video/123"
-    }
-  ]
-}
-```
-
-When the upstream normalized dataset includes both `postPageUrl` and direct
-video fields, prefer the canonical TikTok post page URL for `sourceUrl`.
-That keeps `yt_dlp` on the stable page surface instead of an expiring CDN URL.
-
-## TikTok Access Boundary
-
-This skill downloads only TikTok post URLs that are reachable from the user's
-current local browser/IP environment after the approved local dependency
-bootstrap passes. A working `python3`, `yt_dlp`, and `ffmpeg` setup is necessary
-but not sufficient when TikTok gates the post by IP, browser access, login, or
-cookies.
-
-When the download report contains `failureCode: "tiktok_ip_blocked"`:
-
-- report the blocker directly with the preserved `sourceUrl`, `stderr`, and
-  report path
-- stop the archive and audio-extraction chain for that source set
-- do not retry broad downloads, switch to a proxy, or invent a cookie/browser
-  bootstrap path
-- continue only after the user provides a TikTok URL or sample file that is
-  reachable from their current local browser/IP environment, or after an
-  approved access path is added to this skill contract
-
-## Audio Extraction
-
-After videos are downloaded, extract audio with `ffmpeg`.
-
-Prefer `m4a` for compact review assets:
-
-```bash
-ffmpeg -y -i <video.mp4> -vn -c:a aac -b:a 192k <audio.m4a>
-```
-
-Use `wav` only when a downstream model or editor needs uncompressed audio:
-
-```bash
-ffmpeg -y -i <video.mp4> -vn -ac 1 -ar 48000 <audio.wav>
-```
+3. Stop on download blockers before audio extraction.
+4. Extract audio from successful downloads with `ffmpeg`.
+5. Write an `index.json` that links each local file to `musicId`,
+   `musicTitle`, `sourceVideoUrl`, source collection path, download status,
+   local video path, and local audio path.
 
 ## Archive Layout
 
-Use a stable layout:
+Use:
 
 ```text
 <work-folder>/.postplus/tiktok-music-archive-downloader/<run-id>/
   manifest/
-    download-manifest.json
-    download-report.json
   videos/
   audio/
   index.json
 ```
 
-`index.json` should link every local file back to:
-
-- `musicId`
-- `musicTitle`
-- `sourceVideoUrl`
-- `sourceCollectionPath`
-- local video path
-- local audio path
-- download status
+Keep final archive summaries or selected exports outside `.postplus/` only
+when the user needs to inspect or pass them onward.
 
 ## Verification
 
-Before reporting success:
-
-- confirm downloaded files exist and are non-empty
-- confirm audio files exist and are non-empty
-- report failures separately instead of hiding them
-- keep source URLs in the manifest even when download fails
-- if a report item has `failureCode: "tiktok_ip_blocked"`, treat it as a
-  supported fail-fast blocker and do not proceed to audio extraction for that
-  source set
-
-## Handoff
-
-- Need video-level breakdown: run a dedicated visual analysis workflow on the downloaded files
-- Need transcription or lyrics/voice extraction: `../audio-transcription/SKILL.md` or `../video-transcription/SKILL.md`
-- Need subtitle files: `../subtitle-packager/SKILL.md`
+- Confirm downloaded files exist and are non-empty.
+- Confirm audio files exist and are non-empty.
+- Report failures separately instead of hiding them.
+- Keep source URLs in the manifest even when download fails.
+- Do not proceed to audio extraction for a source set blocked by TikTok access.
 
 ## Rights Posture
 
-Treat downloaded TikTok music as research/reference material unless the user confirms rights or platform-licensed use. Do not present extracted audio as cleared for commercial reuse.
+Treat downloaded TikTok music as research or reference material unless the user
+confirms rights or platform-licensed use. Do not present extracted audio as
+cleared for commercial reuse.
 
-## Public Skill Execution Contract
+## Handoff
 
-- keep download manifests, reports, extracted videos, and extracted audio under
-  `<work-folder>/.postplus/tiktok-music-archive-downloader/`
-- keep only final user-facing archive summaries or selected exports outside
-  `.postplus/`
-- start with a bounded first pass on a very small manifest before broader
-  archive pulls
-- this skill currently depends on explicit host-installed local tools:
-  - `python3` with `yt_dlp`
-  - `ffmpeg`
-- follow the `postplus-shared` Local Dependency Bootstrap Rule before the first
-  download or extraction
-- if local dependency bootstrap fails, stop immediately instead of switching to
-  ad hoc shell glue
-- downloads are supported only for TikTok post URLs reachable from the user's
-  current local browser/IP environment; TikTok IP/browser/cookie gating is a
-  hard blocker unless this contract later adds an approved access bootstrap
+- Need more TikTok music or source candidates -> `tiktok-research`.
+- Need video-level breakdown -> `video-analysis`.
+- Need transcription or voice extraction -> `audio-transcription` or
+  `video-transcription`.
+
+## Public Command Boundary
+
+- Check readiness first: `postplus doctor --skill tiktok-music-archive-downloader`.
+- Input schema: `postplus research schema --collection-key <collection-key> --json`.
+- Hosted collection: `postplus research collect --skill tiktok-music-archive-downloader --collection-key <collection-key> --input <hosted-envelope.json> --output <collection-result.json>`.
+- Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
+- Keep the first pass bounded; expand only after inspecting the first result.
+- If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

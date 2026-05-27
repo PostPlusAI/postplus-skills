@@ -9,101 +9,75 @@ metadata:
 
 # Instagram Campaign Scout
 
-Follow shared public skill rules in:
+Use this skill to scout Instagram hashtag opportunities, branded mentions, UGC,
+and campaign spread from public content.
 
-- `postplus-shared` public skill rules
+Apply shared rulebook and user-guidance rules from `postplus-shared`.
+
+## Task Shapes
 
 Use this skill when the user wants to:
 
-- monitor a branded hashtag
-- find UGC or creator posts tagging a brand
-- inspect campaign spread on Instagram
-- map related hashtags around a topic or campaign
+- monitor a branded hashtag,
+- find UGC or creator posts tagging a brand,
+- inspect campaign spread on Instagram,
+- map related hashtags around a topic or campaign.
 
-Read these references before implementation:
+## Collection Key Routing
 
-- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-references/actor-selection.md`
-- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-references/normalized-schema.md`
-- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-references/tool-contracts.md`
+Released hosted collection keys:
 
-Use these embedded support scripts when a local execution step is needed:
+- `instagram-hashtags`: hashtag post collection.
+- `instagram-search`: branded keyword, account, or topic discovery.
+- `instagram-posts`: post sampling from known URLs or accounts.
 
-- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-tools/scripts/build_instagram_actor_input.mjs`
-- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-tools/scripts/run_instagram_actor.mjs`
-- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-tools/scripts/normalize_instagram_dataset.mjs`
-- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-tools/scripts/rank_instagram_posts.mjs`
-- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-tools/scripts/build_instagram_watchlist.mjs`
+Use hosted collection outputs and the workflow below.
 
-## Primary Hosted Collection Keys
+## Default Workflow
 
-- `instagram-hashtags`
-- `instagram-search`
-- `instagram-posts`
+1. Choose the campaign object: hashtag, target username, or brand keyword.
+2. Compile a small hashtag, search, or post request.
+3. Wrap hosted collection input under `schemaVersion: 1` + `input`.
+4. Collect hashtag, search, or post data.
+5. Normalize outputs into comparable datasets.
+6. Identify volume signals, related hashtags, top tagged creators, and UGC
+   examples.
+7. Build a watchlist when repeated monitoring is needed.
 
-Current verified public skill path:
+## First-Pass Bounds
 
-- hashtag post collection via `instagram-hashtags`
-- branded keyword or account discovery via `instagram-search`
-- watchlist synthesis from normalized hashtag/search/post datasets
-
-## Recommended Workflow
-
-1. choose a campaign object:
-   - hashtag
-   - target username
-   - brand keyword
-2. collect hashtag, search, or post data
-3. normalize outputs into hashtag/search/post datasets
-4. identify:
-   - volume signals
-   - related hashtags
-   - top tagged creators
-   - UGC examples
-5. build a watchlist for repeated monitoring if needed
-
-## Cost Discipline
-
-Start with:
-
-- 1-3 branded hashtags
-- 1-5 target usernames
-- a small tagged-post sample
-
-Avoid turning this into a full social-listening crawl on the first pass.
-
-## Public Skill Execution Contract
-
-- keep scout briefs, actor inputs, raw datasets, normalized outputs, and
-  watchlist caches under `<work-folder>/.postplus/instagram-campaign-scout/`
-- keep only final user-facing summaries or watchlists outside `.postplus/`
-- compile the campaign object into a small hashtag or username brief before the
-  expensive collection step
-- if PostPlus Cloud service is unavailable, unauthorized, or returns a stable
-  network error, stop immediately instead of switching to ad hoc shell glue
+- 1-3 branded hashtags.
+- 1-5 target usernames.
+- A small tagged-post sample.
+- No full social-listening crawl on the first pass.
 
 ## Good Output
 
-Return:
+Return a branded hashtag opportunity map, top tagged or mentioning posts,
+likely creators driving visibility, related hashtag clusters, and a recommended
+watchlist of usernames, hashtags, and tagged mentions.
 
-- branded hashtag opportunity map
-- top tagged or mentioning posts
-- likely creators driving visibility
-- related hashtag clusters
-- recommended watchlist:
-  - usernames
-  - hashtags
-  - tagged mentions
+## Failure Modes
+
+- Stop if the request cannot be answered from public Instagram campaign
+  surfaces.
+- Stop on unsupported keys, missing auth, unavailable hosted service, or stable
+  network failure.
+- Do not inflate campaign spread from a small public sample; label the sample
+  scope.
 
 ## Handoff
 
-Escalate to `instagram-account-research` when:
+- Tagged creators needing partnership evaluation -> `instagram-account-research`.
+- Hashtag or tagged surfaces becoming a broader creator pool ->
+  `instagram-creator-discovery`.
+- Tagged posts needing deeper benchmark analysis -> `instagram-content-benchmark`.
 
-- tagged creators should be evaluated as partnership candidates
+## Public Command Boundary
 
-Escalate to `instagram-creator-discovery` when:
-
-- hashtag or tagged surfaces should become a broader creator pool
-
-Escalate to `instagram-content-benchmark` when:
-
-- tagged or hashtag-derived posts look worth deeper benchmark analysis
+- Check readiness first: `postplus doctor --skill instagram-campaign-scout`.
+- Input schema: `postplus research schema --collection-key instagram-hashtags --json`.
+- Hosted collection: `postplus research collect --skill instagram-campaign-scout --collection-key instagram-hashtags --input <hosted-envelope.json> --output <collection-result.json>`.
+- Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
+- Keep the first pass bounded; expand only after inspecting the first result.
+- If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

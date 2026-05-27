@@ -33,7 +33,10 @@ Requires Node.js and npm.
 ```bash
 npm install -g @postplus/cli@latest
 postplus auth login
-npx -y skills add PostPlusAI/postplus-skills --global --full-depth --skill '*' --agent claude-code codex cursor github-copilot windsurf trae trae-cn openclaw hermes-agent --yes
+POSTPLUS_AGENT_TARGETS="claude-code codex cursor github-copilot windsurf trae trae-cn openclaw hermes-agent"
+for agent in $POSTPLUS_AGENT_TARGETS; do
+  npx -y skills add PostPlusAI/postplus-skills --global --full-depth --skill '*' --agent "$agent" --yes
+done
 postplus skills verify
 ```
 
@@ -41,7 +44,10 @@ If you explicitly do not want global skills, run the install from the target
 project directory and omit `--global`:
 
 ```bash
-npx -y skills add PostPlusAI/postplus-skills --full-depth --skill '*' --agent claude-code codex cursor github-copilot windsurf trae trae-cn openclaw hermes-agent --yes
+POSTPLUS_AGENT_TARGETS="claude-code codex cursor github-copilot windsurf trae trae-cn openclaw hermes-agent"
+for agent in $POSTPLUS_AGENT_TARGETS; do
+  npx -y skills add PostPlusAI/postplus-skills --full-depth --skill '*' --agent "$agent" --yes
+done
 ```
 
 Useful checks:
@@ -50,6 +56,22 @@ Useful checks:
 postplus status
 npx -y skills add PostPlusAI/postplus-skills --global --list
 ```
+
+Hosted request schema discovery:
+
+```bash
+postplus research schema --collection-key <collection-key> --json
+postplus media schema --endpoint <endpoint-key> --json
+postplus publish schema --json
+postplus mobile schema --json
+```
+
+Use these schema commands before an agent writes a `--input` or `--request`
+JSON file for a hosted PostPlus command. For media work, run
+`postplus media schema --json` first to list `endpointKeys`, then rerun with
+the selected `--endpoint`. For research work, run
+`postplus research schema --json` first to list `collectionKeys`, then rerun
+with the selected `--collection-key`.
 
 ## Local Studio
 
@@ -209,6 +231,7 @@ Example requests:
 "Generate a storyboard for a 15-second hook."
 "Transcribe this video, create subtitles, and suggest B-roll placements."
 "Prepare provider-ready image or video generation requests."
+"Turn this product into a UGC-style video workflow with image, voice, clip, montage, and QA handoffs."
 ```
 
 Typical outputs:
@@ -218,6 +241,7 @@ Typical outputs:
 - hook and pattern breakdowns
 - storyboards and prompt requests
 - B-roll plans and edit-ready packages
+- image, video, audio, and UGC workflow controller handoffs
 - generated media candidates and manifests
 
 ### Strategy, Copy, SEO, and Growth
@@ -384,7 +408,7 @@ Start from the job, not the file name.
 
 1. Describe the outcome you want in natural language.
 2. If you are unsure which workflow fits, start with a router skill.
-3. Use `skills/INDEX.md` as the detailed map of active skills, boundaries, and handoffs.
+3. Use `skills/catalog.json` for machine-readable released skill metadata.
 4. Read the target `SKILL.md` before execution.
 5. Follow shared rulebooks when the task crosses platforms, products, ads, media, or publishing.
 6. Chain only the minimum skills needed to produce the next useful artifact.
@@ -392,9 +416,9 @@ Start from the job, not the file name.
 Important files:
 
 - `README.md`: this first-time onboarding page
-- `skills/INDEX.md`: detailed agent-facing navigation map
 - `skills/README.md`: short runtime catalog notes
-- `skills/shared-*.md`: shared routing and judgment rules
+- `skills/catalog.json`: released skill metadata for CLI and verification
+- `skills/00-shared/postplus-shared/references/`: shared routing and judgment rules
 - each `SKILL.md`: the workflow contract for one specific capability
 
 ## First Requests To Try
