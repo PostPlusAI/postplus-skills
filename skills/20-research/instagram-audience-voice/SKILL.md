@@ -9,74 +9,42 @@ metadata:
 
 # Instagram Audience Voice
 
-Follow shared public skill rules in:
+Use this skill to mine Instagram comments for audience language, pain points,
+objections, FAQs, purchase intent, and reusable copy phrases.
 
-- `postplus-shared` public skill rules
-
-Use this skill when the user wants to:
-
-- understand what people say in Instagram comments
-- extract pain points, objections, and FAQs
-- find real language for ads, captions, or scripts
-- compare audience reaction across shortlisted content
-
-Read these references before implementation:
-
-- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-references/actor-selection.md`
-- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-references/normalized-schema.md`
-- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-references/tool-contracts.md`
-
-Use these embedded support scripts when a local execution step is needed:
-
-- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-tools/scripts/run_instagram_actor.mjs`
-- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-tools/scripts/normalize_instagram_dataset.mjs`
-- `${CLAUDE_SKILL_DIR}/_postplus_shared/20-research/instagram-tools/scripts/cluster_instagram_comments.mjs`
-
-## Primary Hosted Collection Key
-
-- `instagram-comments`
+Apply shared rulebook and user-guidance rules from `postplus-shared`.
 
 ## Entry Requirement
 
-Do not start from a huge blind set of posts.
+Do not start from a huge blind post set. Prefer one of these first:
 
-Prefer one of these first:
+- a benchmark shortlist from `instagram-content-benchmark`,
+- manually provided post or Reel URLs,
+- a small set of competitor top posts.
 
-- benchmark shortlist from `instagram-content-benchmark`
-- manually provided post URLs
-- a small set of competitor top posts
+## Collection Key Routing
 
-## Recommended Workflow
+Released hosted collection key:
 
-1. collect comments from a shortlisted set of posts or reels
-2. normalize comments
-3. cluster comments by theme and intent
-4. separate high-signal language from low-signal reactions
-5. summarize actionable audience voice
+- `instagram-comments`: comments for a bounded set of shortlisted posts or
+  Reels.
 
-## Public Skill Execution Contract
+Use hosted collection outputs and the workflow below.
 
-- keep shortlisted post inputs, raw comment datasets, normalized outputs, and
-  clustering caches under `<work-folder>/.postplus/instagram-audience-voice/`
-- keep only final user-facing summaries or reusable copy notes outside
-  `.postplus/`
-- start from a bounded first pass:
-  - a small shortlist of posts
-  - one or two themes
-  - comments only after the shortlist exists
-- if PostPlus Cloud service is unavailable, unauthorized, or returns a stable
-  network error, stop immediately instead of switching to ad hoc shell glue
+The hosted input must be a `schemaVersion: 1` execution envelope whose `input`
+field contains the bounded comment collection request.
 
-## Good Output
+## Default Workflow
 
-Return:
+1. Confirm the post or Reel shortlist.
+2. Collect comments with `instagram-comments`.
+3. Normalize comments.
+4. Cluster comments by theme and intent.
+5. Separate high-signal language from low-signal reactions.
+6. Summarize actionable audience voice.
 
-- top comment themes
-- repeated questions
-- objections or skepticism
-- purchase or trial intent signals
-- exact phrases worth reusing in copy
-- comments that suggest unmet needs
+Keep raw comments and clustering caches under `.postplus/`; return reusable
+copy notes or summaries where the user can inspect them.
 
 ## Suggested Buckets
 
@@ -87,8 +55,30 @@ Return:
 - request-for-details
 - low-signal / meme
 
+## Good Output
+
+Return top comment themes, repeated questions, objections, skepticism, purchase
+or trial intent signals, exact phrases worth reusing in copy, and comments that
+suggest unmet needs.
+
+## Failure Modes
+
+- Stop if no shortlist or post URLs are available.
+- Stop on unsupported keys, missing auth, unavailable hosted service, or stable
+  network failure.
+- Do not infer full audience truth from comments without naming that comments
+  are a public proxy.
+
 ## Handoff
 
-Escalate to campaign or content strategy workflows when:
+Turn audience language into hooks, offers, captions, or creative briefs through
+the relevant campaign, copy, or creative workflow.
 
-- the user wants to turn audience language into hooks, offers, or creative briefs
+## Public Command Boundary
+
+- Check readiness first: `postplus doctor --skill instagram-audience-voice`.
+- Input schema: `postplus research schema --collection-key instagram-comments --json`.
+- Hosted collection: `postplus research collect --skill instagram-audience-voice --collection-key instagram-comments --input <hosted-envelope.json> --output <collection-result.json>`.
+- Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
+- Keep the first pass bounded; expand only after inspecting the first result.
+- If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

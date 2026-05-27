@@ -9,193 +9,74 @@ metadata:
 
 # Benchmark To Brief
 
-Follow shared public skill rules in:
+## Use When
+- Turn validated benchmark research into campaign briefs, concept candidates, hook libraries, lane priorities, or test matrices.
+- Use after research already exists; this is the strategy handoff between evidence and execution.
 
-- `postplus-shared` public skill rules
+## Do Not Use When
+- The task is greenfield brainstorming without source evidence.
+- The user needs final scripts; return a script-ready brief and send it to the human script review gate.
+- The user needs visual generation; hand off to asset generation workflows after the evidence-backed brief exists.
 
-Use this skill after research already exists.
-
-This skill is the strategy and creative handoff layer between research and execution.
-It should consume validated findings and turn them into usable planning inputs before copywriting, production, outreach, or publishing moves forward.
-
-This skill is for converting structured evidence into:
-
-- campaign briefs
-- concept candidates
-- hook families
-- test matrices
-- variable-control plans
-
-It is not for greenfield brainstorming.
+## Required Input
+- Validated evidence such as benchmark reports, master tables, pattern tables, strategy tables, comment analyses, or performance findings.
+- For the structured artifact, input JSON with `corePromise`, `hookOptions`, `workflow`, `sourceFacts`, and `sourceBasis`.
 
 ## Fact Rule
-
 Everything produced by this skill must be grounded in available evidence.
 
-Allowed evidence sources include:
-
-- benchmark reports
-- master tables
-- pattern tables
-- strategy tables
-- comment analyses
-- validated performance data
-
 Do not invent:
-
 - target personas with no source basis
 - hooks that contradict benchmark wording
 - unsupported product claims
 - audience motivations not reflected in data
 
-If the evidence is incomplete, say so explicitly and separate:
-
+If evidence is incomplete, separate:
 - `Observed from sources`
 - `Inference`
 - `Open question`
 
 ## Default Workflow
+1. Use the smallest sufficient evidence set already supplied or explicitly identified by the user.
+2. Prefer structured artifacts first: final report, strategy table, pattern table, master table, then comment summaries.
+3. Extract facts before proposing: winning lanes, repeated hook shells, repeated structure types, visual format tendencies, user-language patterns, and strong examples.
+4. Map facts to brief fields: source artifact, benchmark ids or examples, why the pattern fits the product, and variable being tested.
+5. Keep each concept narrow: one problem, one hook family, one format, one test variable.
+6. Preserve benchmark language when adapting hooks unless the user asks for variant testing.
+7. Return an execution object: brief, concept list, hook set, script input, or approved copy.
 
-### 1. Load the smallest sufficient evidence set
+## Judgment Flow
+For every recommendation, answer:
+- what problem is being cut?
+- what hook shell is being reused?
+- what content lane does it belong to?
+- what variable is being tested?
+- which source evidence supports it?
+- what claim or audience motivation is only inference?
 
-Prefer the most structured sources first:
+## Fail Fast
+- Stop if `sourceFacts` or `sourceBasis` cannot be supplied.
+- Stop if the requested claim is not supported by evidence.
+- Stop if available data is too thin for the requested direction; give the closest evidence-backed option and the missing research needed.
 
-1. final report
-2. strategy table
-3. pattern table
-4. video master table
-5. comment summaries
-
-Do not read everything by default if the answer is already supported.
-
-## Source Selection Rule
-
-Prefer the smallest sufficient evidence set already present in the active project.
-If the current task clearly belongs to one client or project folder, start there.
-Do not assume one client folder is the global default for all future work.
-
-
-
-When the master table contains shot-level fields, treat them as a stronger source than your own rewrite instincts:
-
-- `videoOpeningLineExact`
-- `videoClosingLineApprox`
-- `videoShotTimeline`
-- `videoSpokenAudioFlow`
-
-Those fields should guide the opening shell, information order, pacing, and closing style of any derived concept or script brief.
-
-### 2. Extract facts before proposing
-
-Always extract:
-
-- winning lanes
-- repeated hook shells
-- repeated structure types
-- visual format tendencies
-- repeated user-language patterns
-- strong benchmark examples
-
-Before writing concepts, write down what is actually true.
-
-### 3. Map facts to brief fields
-
-For each concept or brief recommendation, tie it back to:
-
-- source artifact
-- relevant benchmark ids or examples
-- reason this pattern fits the product
-
-Each concept should answer:
-
-- what problem is being cut
-- what hook shell is being reused
-- what content lane it belongs to
-- what variable is being tested
-- which research evidence supports it
-
-### 4. Keep concept scope narrow
-
-Do not generate vague ideas like:
-
-- "make a productivity video"
-- "do a relatable AI ad"
-
-Prefer:
-
-- one problem
-- one hook family
-- one format
-- one test variable
-
-### 5. Preserve benchmark language
-
-When adapting hooks, preserve the source shell whenever possible.
-
-Do not "improve" benchmark phrasing unless the user asks for a variant test.
-
-Good adaptation:
-
-- benchmark: `Here is a Gmail trick I guarantee you didn't know.`
-- adapted: `Here is a Gmail reply shortcut I guarantee you didn't know.`
-
-Bad adaptation:
-
-- rewriting into abstract brand language
-- replacing concrete pain with generic value claims
-
-## Output Shapes
-
-Common outputs for this skill:
-
+## Output Shape
+Common outputs:
 - campaign brief
-- 10 concept candidates
+- concept candidates
 - hook library
 - lane prioritization
 - AB test matrix
 
-These outputs should be treated as execution inputs, not end-user proof that the underlying research happened.
-If the upstream research is still fuzzy, thin, or contradictory, stop and surface that gap before turning it into a brief.
+Campaign brief fields:
+- `objective`
+- `priorityLanes`
+- `personaConstraints`
+- `approvedHookFamilies`
+- `prohibitedDirections`
+- `variablesToTest`
+- `sourceBasis`
 
-## Executable ABI
-
-Use the local script only after validated benchmark evidence has already been
-selected. It packages an evidence-backed brief; it does not brainstorm concepts
-from an empty prompt.
-
-Command:
-
-```bash
-node scripts/build_benchmark_brief.mjs --input <input.json> --output <brief.json>
-```
-
-`--input` is required. The input JSON must include:
-
-- `corePromise`: the brief's central promise, copied or derived from evidence
-- `hookOptions`: non-empty hook options grounded in source artifacts
-- `workflow`: the selected execution workflow
-- `sourceFacts`: non-empty factual findings from benchmark artifacts
-- `sourceBasis`: non-empty source artifact names, ids, URLs, or table rows
-
-If `sourceFacts` or `sourceBasis` cannot be supplied, stop and report the
-evidence gap instead of emitting a default brief.
-
-### Campaign Brief
-
-Include:
-
-- objective
-- priority lanes
-- persona constraints if supported by data
-- approved hook families
-- prohibited directions
-- variables to test
-- source basis
-
-### Concept Candidate
-
-Each concept should include:
-
+Concept candidate fields:
 - `conceptId`
 - `problemToCut`
 - `hookType`
@@ -206,43 +87,20 @@ Each concept should include:
 - `sourceBasis`
 - `testVariable`
 
-## Source Basis Requirement
+## Anti-Patterns
+- vague ideas like "make a productivity video"
+- copying benchmark content without adapting the concrete product variable
+- rewriting concrete benchmark language into abstract brand claims
+- treating raw research as execution-ready without a brief or concept object
+- passing raw research directly into publishing
 
-Every concept list should include a `sourceBasis` section.
+## Handoff
+- Return the structured output or an explicit evidence blocker. Hand off only explicit execution objects to script review, asset generation workflows, or content packaging.
 
-Example:
+## Public Command Boundary
 
-- final report says `workflow` is the top-priority lane
-- final report says high-value language includes `Stop switching tabs`
-- pattern table shows `gmail_fix_or_hidden_setting` is high fit
-- master table contains strong Gmail pain/tutorial examples
-
-If you cannot cite source basis, do not present the idea as recommended.
-
-## Downstream Handoff Rule
-
-This skill should usually hand off to one of these next layers:
-
-- script, concept, or production planning
-- asset generation workflows
-- content packaging workflows
-- outreach or publishing only when the content has already been turned into approved execution-ready material
-
-Do not hand raw research directly into publishing from this skill.
-First make the execution object explicit: brief, concept list, hook set, script, or approved copy.
-
-## Project-Specific Guidance（if user specificly state a project preference when using this skills, wirting down and memory it）
-
-
-## Failure Mode
-
-Stop and state the gap if:
-
-- the available data is too thin
-- strong benchmarks do not exist for the requested direction
-- the user asks for a claim the evidence does not support
-
-Then offer:
-
-- the closest evidence-backed option
-- what additional research would be needed
+- Check readiness first: `postplus doctor --skill benchmark-to-brief`.
+- Request schema: `postplus media schema --json`; add `--endpoint <endpoint-key>` for media-generation examples.
+- Hosted media capability: `postplus media capability --request <hosted-capability-request.json> --output <result.json>`.
+- Use the capability request shape required by the selected workflow; do not call provider APIs directly.
+- If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

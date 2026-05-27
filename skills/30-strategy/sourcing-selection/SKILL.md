@@ -9,78 +9,31 @@ metadata:
 
 # Sourcing Selection
 
-Follow shared public skill rules in:
+## Use When
+- The user wants a sourcing or product-selection judgment, not just raw platform data.
+- Supply-side evidence and demand-side evidence need to be combined.
+- A product idea, supplier signal, channel opportunity, or shortlist needs a
+  cautious go/no-go or next-step memo.
 
-- `postplus-shared` public skill rules
-
-Use this skill when the user is not just asking for platform data, but for a real sourcing or product-selection judgment.
-
-Typical requests:
-
-- Whether this product is worth sourcing
-- Whether to start with Amazon or TikTok Shop
-- There is supply on 1688, but whether demand-side evidence supports it
-- Combine supply-side and demand-side evidence for a judgment
-- Give me a sourcing conclusion closer to a real decision
-
-This skill is an orchestration and synthesis layer.
-
-It should not replace platform skills.
-It should decide which evidence to collect, in what order, and how much judgment is justified.
-
-Read first:
-
-- `postplus-shared` product-selection preferences
-
-## Design Goal
-
-Keep the current version simple, but make the interface extensible.
-
-The skill should think in capability groups, not hard-coded platforms:
-
-- `supply-side source`
-- `search-intent source`
-- `demand-side source`
-- `content-language source`
-- `finance layer`
-- `compliance layer`
-
-Today, these groups may map to:
-
-- `1688` for supply-side
-- `Google Trends` for search-intent
-- `Amazon` for search-led demand
-- `TikTok Shop` for marketplace demand
-- `TikTok` for content and audience language
-
-In the future, the same groups may map to:
-
-- `Alibaba`, `Made-in-China`, `GlobalSources`, `Temu supplier-side`, offline vendor lists
-- `Google Trends`, `Baidu Index`, ad-library, search-console-like, `Shopee`, `Etsy`, `Temu`, `independent-site`
-
-Do not write the skill as if `1688 + Amazon + TikTok Shop` are permanent.
+## Do Not Use When
+- Do not replace platform collection skills.
+- Do not claim hosted supplier collection from this released skill surface.
+- Do not turn incomplete evidence into a confident sourcing recommendation.
 
 ## Core Rule
-
 A sourcing judgment is only as strong as its weakest missing layer.
 
 Always separate:
 
-- `Observed from evidence`
-- `Inference`
-- `Missing layer`
+- observed evidence
+- inference
+- missing layer
 
-If the user asks for a yes/no decision and the evidence is incomplete, return:
-
-- the provisional judgment
-- what supports it
-- what is still missing
-
-Do not fake certainty.
+If evidence is incomplete, return a provisional judgment, supporting signals,
+and the missing layer instead of fake certainty.
 
 ## Minimal Decision Model
-
-Use this order unless the user explicitly asks otherwise:
+Use this order unless the user asks otherwise:
 
 1. demand proof
 2. competition shape
@@ -90,239 +43,46 @@ Use this order unless the user explicitly asks otherwise:
 6. unit-economics pressure
 7. compliance or operational risk
 
-This is intentionally simple.
-Do not turn it into a giant scorecard unless the user asks.
-
 ## Input Shapes
-
-Classify the request first:
-
-### 1. Product Idea Validation
-
-Use when the user asks:
-
-- Whether this product is worth pursuing
-- Whether this direction can be sourced and sold
-
-Default route:
-
-1. collect demand-side proof
-2. collect supply-side feasibility
-3. synthesize
-
-### 2. Supply-Led Opportunity Check
-
-Use when the user already has a supply-side signal:
-
-- I see a lot of supply on 1688
-- A factory or category looks cheap
-- There is already a batch of candidate suppliers
-
-Default route:
-
-1. inspect supply-side evidence
-2. collect matching demand-side proof
-3. test channel fit
-4. synthesize
-
-### 3. Demand-Led Sourcing Check
-
-Use when the user already has a demand-side signal:
-
-- It sells well on Amazon
-- Many sellers are selling it on TikTok Shop
-- A type of content is hot on TikTok
-
-Default route:
-
-1. inspect demand-side proof
-2. collect supply-side feasibility
-3. synthesize
-
-### 4. Shortlist Comparison
-
-Use when the user has:
-
-- several products
-- several niches
-- several supplier options
-
-Default route:
-
-1. normalize each candidate into the same decision frame
-2. compare strongest evidence and biggest gaps
-3. rank cautiously
+- Product idea validation: demand proof, supply feasibility, then synthesis.
+- Supply-led opportunity check: supplier or cheap-supply signal first, then
+  matching demand proof and channel fit.
+- Demand-led sourcing check: marketplace, search, or content demand first, then
+  supply feasibility.
+- Shortlist comparison: normalize candidates into one decision frame, compare
+  strongest evidence and biggest gaps, then rank cautiously.
 
 ## Capability Routing
+- Supply-side source: user-provided supplier sheets, quotations, or approved
+  marketplace data. Do not imply a released hosted 1688 collector.
+- Search-intent source: use `google-trends-research` for early momentum and
+  rising-query signals.
+- Search-led demand: use `amazon-research` for listings, reviews, price bands,
+  and channel-native competition.
+- Content-language fit: use `tiktok-research` when demos, hooks, audience
+  language, or content-led selling matter.
+- Cross-platform social proof: use `social-media-extractor` before choosing
+  the platform-specific collector.
 
-Choose sources by role, not by habit.
+## Output Shape
+The artifact packages the decision memo as JSON with product or niche, target
+channel, decision, demand signals, supply signals, rationale, missing layers,
+and recommended next step when provided.
 
-### Supply-Side Source
+## Fail Fast
+- Stop if required evidence arrays are empty.
+- Do not invent missing demand, supply, rationale, finance, compliance, or
+  channel-fit layers.
+- Do not treat one platform's popularity as universal demand proof.
 
-Use for:
+## Handoff
+- Evidence missing -> route to the right collection skill first.
+- Memo complete -> hand `decision.json` to research expansion, supplier
+  outreach, channel decision, or brief creation.
 
-- factory options
-- supplier variety
-- MOQ
-- tiered pricing
-- customization
-- location
+## Public Command Boundary
 
-Current public release route:
-
-- use user-provided supplier sheets, quotations, or approved marketplace data
-  as supply-side evidence
-- do not claim hosted 1688 collection from the released skill surface
-
-### Demand-Side Source
-
-Use for:
-
-- listings
-- pricing
-- reviews
-- order or ranking proof
-- bestseller shape
-- channel-native competition
-
-Current preferred routes:
-
-- Amazon search-led demand -> `amazon-research`
-
-### Search-Intent Source
-
-Use for:
-
-- early demand signals
-- topic or keyword momentum
-- geo search interest
-- rising-query discovery
-
-Current preferred route:
-
-- Google search-intent -> `google-trends-research`
-
-Treat this as an early signal layer.
-Do not confuse it with transaction demand or channel-native competition proof.
-
-### Content-Language Source
-
-Use when content-led selling matters:
-
-- what hooks are working
-- what user language repeats
-- what visual demo style fits the product
-
-Current preferred route:
-
-- `tiktok-research`
-
-If the request is broader than one named platform and the goal is to compare social proof or audience language across networks, route first through:
-
-- `social-media-extractor`
-
-Use this layer only when it changes the decision.
-Do not force it into every sourcing task.
-
-When social proof is cross-platform, do not let one familiar network stand in for the whole market.
-Use the extractor to decide which platform-specific research skill should collect first.
-
-## Extensibility Rule
-
-When a new platform appears, do not rewrite the decision model.
-
-Instead, map it into one of these roles:
-
-- `supply-side`
-- `search-intent`
-- `demand-side`
-- `content-language`
-- `finance`
-- `compliance`
-
-Then state:
-
-- what role the source covers
-- what role is still missing
-
-This keeps the skill stable while letting the source set expand.
-
-## Good Output
-
-Return a compact decision memo with:
-
-- product or niche
-- target merchant model
-- target channel
-- observed evidence
-- provisional judgment
-- biggest risks
-- missing layer
-- recommended next step
-
-Good recommendation shapes:
-
-- `promising, but demand proof still thin`
-- `good Amazon search fit, weak TikTok demo fit`
-- `cheap supply exists, but competition is commodity-price-led`
-- `strong demand and workable sourcing, but returns or compliance may kill margin`
-
-If the result is going to move into execution, keep the handoff explicit:
-
-- sourcing judgment -> merchant or channel decision
-- merchant or channel decision -> research expansion, supplier outreach, or brief creation
-
-Do not blur evidence collection, business judgment, and execution prep into one opaque step.
-
-## Executable ABI
-
-Use the local script only after the sourcing evidence and decision frame already exist.
-It packages a source-backed memo; it does not collect marketplace data and does
-not invent missing demand, supply, or rationale.
-
-Command:
-
-```bash
-node ${CLAUDE_SKILL_DIR}/scripts/build_sourcing_selection.mjs --input <input.json> --output <decision.json>
-```
-
-`--input` is required. The input JSON must include:
-
-- `decision`: provisional decision label or short judgment
-- `demandSignals`: non-empty evidence strings from demand-side sources
-- `supplySignals`: non-empty evidence strings from supply-side sources
-- `rationale`: non-empty reasoning strings tied to those signals
-- `missingLayers`: non-empty list of missing or unresolved decision layers
-
-Optional fields:
-
-- `productOrNiche`
-- `targetChannel`
-- `recommendedNextStep`
-
-If any required field is missing, stop instead of generating a default sourcing
-judgment.
-
-## Failure Modes To Avoid
-
-Do not:
-
-- treat one platform's popularity as universal demand proof
-- treat cheap 1688 supply as a recommendation by itself
-- jump from TikTok content heat to Amazon launch logic without search proof
-- jump from Amazon demand to TikTok Shop without content-demo fit
-- hide missing finance or compliance layers
-
-## Current Workspace Default
-
-At the moment, this skill should usually compose existing skills rather than create a brand-new collection workflow.
-
-Current building blocks:
-
-- supply-side: user-provided supplier sheets, quotations, or approved
-  marketplace data
-- search-intent: `google-trends-research`
-- search-led demand: `amazon-research`
-- content-language fit: `tiktok-research`
-
-Future sources should be slotted into the same roles.
+- Check readiness first: `postplus doctor --skill sourcing-selection`.
+- This public skill is instruction-driven. Produce the artifact described by the workflow directly from the available evidence.
+- Do not call private provider/runtime paths or unpublished local tools.
+- If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

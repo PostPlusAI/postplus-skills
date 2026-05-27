@@ -7,152 +7,73 @@ metadata:
     familyName: LinkedIn, Facebook, and YouTube
 ---
 
+# Youtube Research
+
 # YouTube Research
 
-Follow shared public skill rules in:
+Use this skill for public YouTube channel summaries, audience comment samples,
+downloadable video records, and public video metrics through PostPlus hosted
+collection.
 
-- `postplus-shared` public skill rules
-
-Use this skill when the request is about YouTube channels, audience proxies, or public videos.
-
-This skill is for:
-
-- collecting channel metadata and subscriber counts
-- collecting audience comment samples from a specific video
-- collecting one or more public YouTube video URLs
-- discovering a small YouTube video set from a broad query
-- normalizing YouTube video metrics into local artifacts
-- writing local raw payloads, normalized datasets, and short markdown summaries
-
-This skill is not for:
-
-- LinkedIn collection
-- Facebook collection
-- TikTok, Instagram, or X workflows
-- publishing, deleting, or scheduling posts
-- promising a subscriber list that YouTube does not expose publicly
+Apply shared rulebook and user-guidance rules from `postplus-shared`.
 
 ## Before Collection Boundary
 
-Before audience research, tell the user that YouTube does not expose subscriber
-identities through the released collection surface. Use channel metadata and
-comments as public proxies, and do not present comment authors as the
-subscriber base.
+The released collection does not expose subscriber identities. Use channel
+metadata and comments as public proxies, and do not present comment authors as
+the subscriber base.
 
-## PostPlus Cloud Boundary
+## Collection Key Routing
 
-This skill depends on host-managed collection capability for the corresponding collection keys.
+Released hosted collection keys:
 
-In the PostPlus runtime:
+- `youtube-channel-summary`: channel metadata and subscriber counts.
+- `youtube-comments`: audience proxy research from comments on a specific video
+  or Shorts URL.
+- `youtube-video-download`: hosted video record for explicit video URLs.
+- `youtube-videos`: public-video collection through the installed public-video
+  entrypoint.
 
-- do not probe or print host-managed service secrets
-- do not ask the user to export them inside chat
-- if a collection key returns a stable capability/network hard error, stop
-  immediately instead of trying alternate shell commands
-
-## Default Collection Keys
-
-Use these hosted collection keys by default:
-
-- channel metadata and subscriber counts
-  - collection key: `youtube-channel-summary`
-  - use for channel metadata and subscriber counts
-  - tested input shape:
-    - `channels = ["@Google"]`
-    - `maxVideosPerChannel = 0`
-    - `includeChannelInfo = true`
-    - `includeVideos = false`
-  - current observed output fields include:
-    - `channelId`
-    - `channelName`
-    - `channelHandle`
-    - `subscriberCount`
-    - `totalVideos`
-    - `avatarUrl`
-    - `bannerUrl`
-- audience comments collection
-  - collection key: `youtube-comments`
-  - use for audience proxy research from comments on a specific video or Shorts URL
-  - tested input shape:
-    - `startUrls = ["https://www.youtube.com/watch?v=<video-id>"]`
-    - `sort`
-    - `maxItems`
-  - current observed output fields include:
-    - `id`
-    - `text`
-    - `likeCount`
-    - `replyCount`
-    - `publishedTime`
-    - `author`
-
-- downloadable video records
-  - collection key: `youtube-video-download`
-  - use when the workflow needs a hosted video record for explicit video URLs
-
-Use comments as an audience proxy when subscriber identities are not public.
-
-## Failure Posture
-
-- fail if the request includes non-YouTube platforms
-- fail if no YouTube public URLs can be discovered
-- fail if hosted content collection returns malformed items without stable URL or id fields
-- fail if the channel collection cannot resolve the channel handle or URL
-- keep raw responses for debugging
-
-## Recommended Workflow
+## Default Workflow
 
 1. For channel research, start with `youtube-channel-summary`.
-2. For audience research, collect a small comments sample from representative videos with `youtube-comments`.
-3. For broad public video discovery, use the hosted content collection scripts below.
+2. For audience research, collect a small comments sample with
+   `youtube-comments`.
+3. For broad public video discovery, compile a small public-video plan and run
+   the installed public-video collection entrypoint.
+4. If the public-video run is pending, preserve `collection-report.json` and
+   resume with the emitted poll command.
+5. Keep observation separate from inference, especially for audience claims.
 
-Do not present comment authors as a full subscriber list.
+While collection is pending, tell the user the public collection is running
+from a saved checkpoint and continue independent brief or source-review work.
 
-## Public Skill Execution Contract
+## Output
 
-- keep collection briefs, raw datasets, normalized outputs, and summary caches
-  under `<work-folder>/.postplus/youtube-research/`
-- keep only final user-facing summaries or shortlist exports outside
-  `.postplus/`
-- compile a small channel, comment, or public-video brief before the expensive
-  collection step
-- start with a bounded first pass:
-  - one channel batch
-  - one comments batch
-  - one public video plan
+Return channel metadata, public video records, comment-sample findings, source
+URLs, metric fields that were present, and clear notes about unavailable
+subscriber identities.
 
-## Public Video Implementation
+## Failure Modes
 
-Read before implementation:
+- Stop if the request includes non-YouTube platforms.
+- Stop if no public YouTube URL, channel, or query can be used.
+- Stop if hosted collection cannot resolve the channel handle or URL.
+- Stop on hosted capability, auth, DNS, proxy, network, or malformed-output
+  hard errors.
+- Do not promise private audience identities or logged-in analytics.
 
-- `${CLAUDE_SKILL_DIR}/references/normalized-schema.md`
+## Handoff
 
-Use these entrypoints:
+Benchmark findings can feed `benchmark-to-brief`, `video-analysis`, or broader
+cross-platform synthesis.
 
-- `${CLAUDE_SKILL_DIR}/scripts/run_youtube_video_collection.mjs`
-- `${CLAUDE_SKILL_DIR}/scripts/poll_youtube_video_collection.mjs`
+## Public Command Boundary
 
-If `run_youtube_video_collection.mjs` returns `pending > 0`, keep the emitted
-`collection-report.json` and resume with `poll_youtube_video_collection.mjs
---collection-report <path>`. Repeat the poll command until `pending` is `0`;
-do not replace it with local blocking waits.
-
-While the collection is pending, do not block the user's conversation just to
-poll. Tell the user the public collection is running from a saved checkpoint and
-continue independent brief structure, source review, or next-step planning.
-
-## Hosted Collection Note
-
-Use the installed shared collection runner for hosted collection keys
-`youtube-channel-summary`, `youtube-comments`, and `youtube-video-download`:
-
-- `${CLAUDE_SKILL_DIR}/_postplus_shared/00-core/shared-collection/scripts/collection_actor_run.mjs`
-
-Always pass `--skill-name youtube-research` when calling `collection_actor_run.mjs`.
-
-Use the installed public-content collection entrypoint for YouTube public-video calls:
-
-- `${CLAUDE_SKILL_DIR}/scripts/run_youtube_video_collection.mjs`
-
-The entrypoint maps public YouTube video URLs onto the released source key
-`youtube-videos`. Do not bypass it with repo-local shared runner paths from an
-installed skill.
+- Check readiness first: `postplus doctor --skill youtube-research`.
+- Input schema: `postplus research schema --collection-key youtube-channel-summary --json`.
+- Hosted collection: `postplus research collect --skill youtube-research --collection-key youtube-channel-summary --input <hosted-envelope.json> --output <collection-result.json>`.
+- Public video collection: `postplus research capability --request <hosted-capability-request.json> --output <collection-result.json>` with `public-content-collection` sourceKey `youtube-videos`.
+- Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
+- Keep the first pass bounded; expand only after inspecting the first result.
+- If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

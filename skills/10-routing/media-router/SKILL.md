@@ -9,150 +9,70 @@ metadata:
 
 # Media Router
 
-Follow shared public skill rules in:
+## Use When
+- The user has audio, video, transcript, subtitle, A-roll, or B-roll material.
+- The first decision is whether to transcribe, package subtitles, add semantic
+  understanding, or build an edit-ready plan.
+- The output quality target is rough, subtitle-ready, or edit-ready.
 
-- `postplus-shared` public skill rules
-
-Use this skill when the user wants to do something with:
-
-- audio
-- video
-- transcripts
-- subtitles
-- A-roll / B-roll edit prep
-
-This skill is a routing layer.
-
-It should decide:
-
-- what the actual task is
-- what output shape is required
-- whether the job is rough, subtitle-ready, or edit-ready
-- whether cost or quality should dominate
-- which downstream skill or skill chain should execute
-
-This skill should not pretend every request is "just transcription".
-
-## Use For
-
-- deciding whether to call audio STT or video STT
-- deciding when timestamps are required
-- deciding when subtitle packaging is enough
-- deciding when semantic video understanding must be added
-- deciding when editing-decision-engine should run
-- deciding whether a batch workflow should be used
-
-## Read These References
-
-- `references/brief-schema.md`
-- `references/routing-modes.md`
+## Do Not Use When
+- Do not treat every media request as plain transcription.
+- Do not execute downstream collection or editing work in this router.
+- Do not choose a costly model chain when rough output is enough.
 
 ## Core Rule
-
 Route by job intent, not by input file type alone.
 
-A video input may still be:
+Choose from five dimensions:
 
-- plain transcription
-- subtitle generation
-- transcript plus semantic understanding
-- edit-beat planning
-
-The route should be chosen from five dimensions:
-
-- input type
-- output goal
-- required precision
-- scale
-- cost mode
+- `inputType`: audio, video, transcript, or transcript+assets
+- `goal`: transcript, subtitles, semantic-analysis, beats, broll-map, or edit-plan
+- `quality`: rough, subtitle-ready, or edit-ready
+- `scale`: single or batch
+- `costMode`: cheap-first or quality-first
 
 ## Default Routing Logic
-
-### `audio -> transcript`
-
-Use `audio-transcription`.
-
-### `video -> transcript/subtitles`
-
-Use `video-transcription`.
-
-### `transcript with timestamps -> subtitle files`
-
-Use `subtitle-packager`.
-
-### `transcript + assets -> cut logic / B-roll plan`
-
-Use `editing-decision-engine`.
-
-### `video -> edit-ready plan`
-
-Chain:
-
-1. `video-transcription`
-2. `subtitle-packager` if subtitle files are needed
-3. `frame-extraction` if visual-proof snapshots are needed
-4. `editing-decision-engine`
+- Audio to transcript -> `audio-transcription`.
+- Video to transcript or subtitles -> `video-transcription`.
+- Existing transcript to subtitle files -> `subtitle-packager`.
+- Transcript plus assets to cut logic or B-roll plan -> `editing-decision-engine`.
+- Video to edit-ready plan -> transcription first, optional subtitle packaging,
+  optional semantic video analysis, then `editing-decision-engine`.
 
 ## Quality Thresholds
+- `rough`: quick review, search, logging, or candidate beat spotting. Prefer
+  cheaper transcription and fewer enrichments.
+- `subtitle-ready`: captions, SRT/VTT, and reliable sentence or word timing.
+  Timestamps are mandatory.
+- `edit-ready`: A-roll/B-roll decisions, cutaway placement, and beat-level
+  planning. Use timestamped transcript plus semantic understanding when visual
+  proof matters.
 
-### `rough`
+## Output Shape
+The artifact contains:
 
-Good enough for:
+- `route` and `why`
+- `primarySkill`
+- `supportingSkills`
+- `modelPlan`
+- `outputArtifacts`
+- `needsTimestamps`
+- `executionMode`
 
-- search
-- quick review
-- rough logging
-- candidate beat spotting
+## Fail Fast
+- Ask for the missing media type or goal when the route would change.
+- Stop if the user expects edit-ready output but no transcript, timestamps, or
+  visual proof path is available.
+- Do not invent provider calls or hidden model chains.
 
-Prefer:
+## Handoff
+- Hand the route JSON to the named `primarySkill`.
+- Preserve expected artifacts so downstream skills know whether to produce
+  `transcript.json`, `timed-transcript.json`, subtitles, beat maps, or edit plans.
 
-- cheaper models
-- fewer enrichments
+## Public Command Boundary
 
-### `subtitle-ready`
-
-Good enough for:
-
-- human-readable captions
-- SRT / VTT generation
-- reliable sentence or word timestamps
-
-Prefer:
-
-- Whisper with timestamps
-
-### `edit-ready`
-
-Good enough for:
-
-- A-roll/B-roll decision making
-- cutaway placement
-- beat-level planning
-
-Prefer:
-
-- Whisper with timestamps
-- semantic video understanding when proof footage matters
-- editing-decision-engine downstream
-
-## User-Facing Explanation Rule
-
-Do not expose internal route labels unless the user is explicitly designing the system.
-
-Normal user-facing language should say:
-
-- what will be extracted first
-- what will be aligned second
-- what editing decisions become possible afterward
-
-## Default Output
-
-Return:
-
-- chosen route
-- why it fits the task
-- primary skill
-- supporting skills
-- model plan
-- expected output artifacts
-- whether timestamps are mandatory
+- Check readiness first: `postplus doctor --skill media-router`.
+- This public skill is instruction-driven. Produce the artifact described by the workflow directly from the available evidence.
+- Do not call private provider/runtime paths or unpublished local tools.
+- If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

@@ -9,49 +9,43 @@ metadata:
 
 # Subtitle Packager
 
-Follow shared public skill rules in:
+## Use When
+- A stable timed transcript already exists and the job is subtitle chunking,
+  SRT/ASS generation, readable caption packaging, or editor handoff.
+- This skill packages transcripts. It must not call speech-to-text or video
+  analysis models.
 
-- `postplus-shared` public skill rules
+## Do Not Use When
+- The task belongs to ideation, QA, or another released skill listed in the handoff section.
+- Required inputs are missing and guessing would change the result.
 
-Use this skill when the transcript already exists and the next problem is:
+## Input Boundary
+- Primary input is `normalized-transcript.json` from `audio-transcription` or
+  `video-transcription` with stable timing.
+- If timing is missing or invalid, stop and say so plainly. Do not invent timing
+  unless the user explicitly asks for heuristic timing.
+- Preserve source transcript path, subtitle mode, output path, and source basis
+  in handoff notes or intermediate JSON.
 
-- chunking a normalized transcript into subtitle-sized units
-- ASS generation
-- SRT generation
-- readable caption chunking
-- packaging timed transcript data for editors
+## Path And Handoff
+- Keep chunking inputs, intermediate subtitle JSON, and render artifacts under
+  `.postplus/subtitle-packager` when they are internal state.
+- Keep final user-facing `.srt`, `.ass`, and editor handoff files outside
+  `.postplus`.
+- Start with one normalized transcript before broader batch packaging.
+- Return final subtitle paths, source transcript path, selected chunk mode, and
+  any profile path used.
 
-This skill should not call STT models itself.
+## Fail Fast
+- Missing normalized transcript, invalid `subtitle-normalized/v1` schema, missing
+  timing, missing output path, or unsupported profile/chunk mode.
+- Do not fake timing or switch to ad hoc subtitle generation to hide invalid
+  transcript input.
 
-## Input Rule
+## Public Command Boundary
 
-Expect:
-
-- a `normalized-transcript.json` file produced by `video-transcription`
-
-If timing is missing, say so plainly.
-
-Do not fake subtitle timing unless the user explicitly asks for heuristic timing.
-
-## Scripts
-
-- `scripts/chunk_normalized_transcript.mjs`
-- `scripts/render_ass_from_normalized.mjs`
-- `scripts/transcript_json_to_srt.mjs`
-- `scripts/text_to_srt.mjs`
-
-## Read These References
-
-- `references/ass-contract.md`
-- `references/chunk-modes.md`
-- `references/output-shape.md`
-
-## Public Skill Execution Contract
-
-- keep chunking inputs, intermediate subtitle JSON, and render artifacts under
-  `<work-folder>/.postplus/subtitle-packager/`
-- keep only final user-facing subtitle exports outside `.postplus/`
-- start with a bounded first pass on one normalized transcript before broader
-  batch packaging
-- if normalized timing is missing or invalid, stop immediately instead of
-  inventing subtitle timing or switching to ad hoc shell glue
+- Check readiness first: `postplus doctor --skill subtitle-packager`.
+- Request schema: `postplus media schema --json`; add `--endpoint <endpoint-key>` for media-generation examples.
+- Hosted media capability: `postplus media capability --request <hosted-capability-request.json> --output <result.json>`.
+- Use the capability request shape required by the selected workflow; do not call provider APIs directly.
+- If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.
