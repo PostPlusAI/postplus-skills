@@ -98,8 +98,12 @@ cleared for commercial reuse.
 
 ## Public Command Boundary
 
-- Check readiness first: `postplus doctor --skill tiktok-music-archive-downloader`.
-- Input schema: `postplus research schema --collection-key <collection-key> --json`.
+- Choose the smallest matching command or workflow from the user input and run
+  it directly.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
+- Use `postplus research schema --collection-key <collection-key> --json` only when constructing or repairing an unknown request shape.
 - Hosted collection: `postplus research collect --skill tiktok-music-archive-downloader --collection-key <collection-key> --input <hosted-envelope.json> --output <collection-result.json>`.
 - Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
 - Keep the first pass bounded; expand only after inspecting the first result.

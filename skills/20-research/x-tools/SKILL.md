@@ -21,17 +21,25 @@ metadata:
 - Released collection keys: `x-posts`, `x-profiles`.
 - Hosted capabilities: `hosted-collection`.
 
-## Fail Fast
-- Missing required input, unsupported released key, missing local dependency, or unavailable hosted service must fail fast.
-- Do not invent fallback execution paths or private provider calls.
+## Stop Conditions
+- Stop when required user intent, source evidence, or owned input artifacts are
+  missing and guessing would change the result.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
 
 ## Handoff
 - Return the structured output, hosted result, poll command, or explicit blocker.
 
 ## Public Command Boundary
 
-- Check readiness first: `postplus doctor --skill x-tools`.
-- Input schema: `postplus research schema --collection-key x-posts --json`.
+- Choose the smallest matching command or workflow from the user input and run
+  it directly.
+- Readiness diagnostics: `postplus doctor --skill x-tools`.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
+- Use `postplus research schema --collection-key x-posts --json` only when constructing or repairing an unknown request shape.
 - Hosted collection: `postplus research collect --skill x-tools --collection-key x-posts --input <hosted-envelope.json> --output <collection-result.json>`.
 - Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
 - Keep the first pass bounded; expand only after inspecting the first result.

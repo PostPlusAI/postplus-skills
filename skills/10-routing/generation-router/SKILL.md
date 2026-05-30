@@ -59,11 +59,14 @@ Return a compact route artifact:
 - `handoffNotes`
 - `mustNotDo`
 
-## Fail Fast
-- Stop if the desired output family would change the route and the request is
-  ambiguous.
+## Stop Conditions
+- Stop when required user intent, source evidence, or owned input artifacts are
+  missing and guessing would change the result.
 - Do not choose a provider, endpoint key, runner, or storyboard format here.
 - Do not submit generation jobs.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
 
 ## Handoff
 - Image route -> `image-generation`.
@@ -75,7 +78,11 @@ Return a compact route artifact:
 
 ## Public Command Boundary
 
-- Check readiness first: `postplus doctor --skill generation-router`.
+- Choose the smallest matching command or workflow from the user input and run
+  it directly.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
 - This public skill is instruction-driven. Produce the route artifact directly
   from the available evidence.
 - Do not call private provider/runtime paths or unpublished local tools.

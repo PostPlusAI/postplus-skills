@@ -81,8 +81,13 @@ validation or continue deeper review mining for a specific ASIN.
 
 ## Public Command Boundary
 
-- Check readiness first: `postplus doctor --skill amazon-research`.
-- Input schema: `postplus research schema --collection-key amazon-asins --json`.
+- Choose the smallest matching command or workflow from the user input and run
+  it directly.
+- Readiness diagnostics: `postplus doctor --skill amazon-research`.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
+- Use `postplus research schema --collection-key amazon-asins --json` only when constructing or repairing an unknown request shape.
 - Hosted collection: `postplus research collect --skill amazon-research --collection-key amazon-asins --input <hosted-envelope.json> --output <collection-result.json>`.
 - Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
 - Keep the first pass bounded; expand only after inspecting the first result.

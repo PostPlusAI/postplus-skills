@@ -75,8 +75,13 @@ watchlist of usernames, hashtags, and tagged mentions.
 
 ## Public Command Boundary
 
-- Check readiness first: `postplus doctor --skill instagram-campaign-scout`.
-- Input schema: `postplus research schema --collection-key instagram-hashtags --json`.
+- Choose the smallest matching command or workflow from the user input and run
+  it directly.
+- Readiness diagnostics: `postplus doctor --skill instagram-campaign-scout`.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
+- Use `postplus research schema --collection-key instagram-hashtags --json` only when constructing or repairing an unknown request shape.
 - Hosted collection: `postplus research collect --skill instagram-campaign-scout --collection-key instagram-hashtags --input <hosted-envelope.json> --output <collection-result.json>`.
 - Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
 - Keep the first pass bounded; expand only after inspecting the first result.
