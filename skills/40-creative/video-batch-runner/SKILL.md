@@ -70,16 +70,22 @@ metadata:
 - If pending, return `manifestPath`, `pollRequestPath`, and `pollCommand`
   immediately. Do not keep thinking or polling in the conversation.
 
-## Fail Fast
-- Missing hosted capability request, unsupported provider/model, missing approved media,
-  missing prompt source, missing source basis, missing output path, deprecated or
-  unsupported motion fields, or stale request path used for polling.
-- Do not compensate for missing approvals by letting the render model improvise.
+## Stop Conditions
+- Stop when required user intent, source evidence, or owned input artifacts are
+  missing and guessing would change the result.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
 
 ## Public Command Boundary
 
-- Check readiness first: `postplus doctor --skill video-batch-runner`.
-- Request schema: `postplus media schema --endpoint <endpoint-key> --json`.
+- Choose the smallest matching command or workflow from the user input and run
+  it directly.
+- Readiness diagnostics: `postplus doctor --skill video-batch-runner`.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
+- Use `postplus media schema --endpoint <endpoint-key> --json` only when constructing or repairing an unknown request shape.
 - Hosted media capability: `postplus media capability --request <hosted-capability-request.json> --output <result.json>`.
 - Use the capability request shape required by the selected workflow; do not call provider APIs directly.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

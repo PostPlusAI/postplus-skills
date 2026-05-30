@@ -19,16 +19,23 @@ metadata:
 ## Required Input
 - Explicit user brief or JSON input matching the artifact contract.
 
-## Fail Fast
-- Missing required input, unsupported released key, missing local dependency, or unavailable hosted service must fail fast.
-- Do not invent fallback execution paths or private provider calls.
+## Stop Conditions
+- Stop when required user intent, source evidence, or owned input artifacts are
+  missing and guessing would change the result.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
 
 ## Handoff
 - Return the structured output, hosted result, poll command, or explicit blocker.
 
 ## Public Command Boundary
 
-- Check readiness first: `postplus doctor --skill social-media-extractor`.
+- Choose the smallest matching command or workflow from the user input and run
+  it directly.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
 - This public skill is instruction-driven. Produce the artifact described by the workflow directly from the available evidence.
 - Do not call private provider/runtime paths or unpublished local tools.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

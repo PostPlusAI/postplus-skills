@@ -69,11 +69,12 @@ The artifact packages the decision memo as JSON with product or niche, target
 channel, decision, demand signals, supply signals, rationale, missing layers,
 and recommended next step when provided.
 
-## Fail Fast
-- Stop if required evidence arrays are empty.
-- Do not invent missing demand, supply, rationale, finance, compliance, or
-  channel-fit layers.
-- Do not treat one platform's popularity as universal demand proof.
+## Stop Conditions
+- Stop when required user intent, source evidence, or owned input artifacts are
+  missing and guessing would change the result.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
 
 ## Handoff
 - Evidence missing -> route to the right collection skill first.
@@ -82,7 +83,11 @@ and recommended next step when provided.
 
 ## Public Command Boundary
 
-- Check readiness first: `postplus doctor --skill sourcing-selection`.
+- Choose the smallest matching command or workflow from the user input and run
+  it directly.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
 - This public skill is instruction-driven. Produce the artifact described by the workflow directly from the available evidence.
 - Do not call private provider/runtime paths or unpublished local tools.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

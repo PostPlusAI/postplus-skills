@@ -46,11 +46,12 @@ The artifact contains `testPurpose`, `mayLearn`, `mustNotCopy`, and
 `excludedReferences`. Add user-specific binding notes around that output when
 the prompt has real product, persona, or audio references.
 
-## Fail Fast
-- Stop if the prompt uses references but cannot say which are binding,
-  inspiration-only, or excluded.
-- Ask one short boundary question when missing reference ownership would change
-  the output.
+## Stop Conditions
+- Stop when required user intent, source evidence, or owned input artifacts are
+  missing and guessing would change the result.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
 
 ## Handoff
 - Hand `contract.json` to `video-request-architect` or the prompt writer.
@@ -58,7 +59,11 @@ the prompt has real product, persona, or audio references.
 
 ## Public Command Boundary
 
-- Check readiness first: `postplus doctor --skill reference-contract-builder`.
+- Choose the smallest matching command or workflow from the user input and run
+  it directly.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
 - This public skill is instruction-driven. Produce the artifact described by the workflow directly from the available evidence.
 - Do not call private provider/runtime paths or unpublished local tools.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

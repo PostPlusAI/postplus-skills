@@ -57,11 +57,12 @@ Common blame stages:
 
 Use blame stage as diagnostic guidance, not as a substitute for human verdict.
 
-## Fail Fast
-- Missing reviewer, reviewed asset identity, verdict, reasons, or proposed action must fail.
-- Do not create a final record from AI-only observations.
-- If `feedbackText` is present, require `rerunTarget`.
-- `rerunTarget` must name the rerunnable skill or workflow, not vague labels such as `voice` or `render`.
+## Stop Conditions
+- Stop when required user intent, source evidence, or owned input artifacts are
+  missing and guessing would change the result.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
 
 ## Output Shape
 `qaReport`:
@@ -82,8 +83,12 @@ Optional `feedbackHandoff`:
 
 ## Public Command Boundary
 
-- Check readiness first: `postplus doctor --skill creative-qa`.
-- Request schema: `postplus media schema --json`; add `--endpoint <endpoint-key>` for media-generation examples.
+- Choose the smallest matching command or workflow from the user input and run
+  it directly.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
+- Use `postplus media schema --json` only when constructing or repairing an unknown request shape.
 - Hosted media capability: `postplus media capability --request <hosted-capability-request.json> --output <result.json>`.
 - Use the capability request shape required by the selected workflow; do not call provider APIs directly.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.
