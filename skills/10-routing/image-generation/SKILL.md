@@ -77,15 +77,21 @@ Return:
 - `handoffSkill`
 - `mustNotDo`
 
-## Fail Fast
-- Stop if source images, edit targets, product identity, aspect ratio, text/UI
-  policy, or reference ownership is missing and would change the output.
-- Do not submit, poll, upload, or choose private provider routes.
+## Stop Conditions
+- Stop when required user intent, source evidence, or owned input artifacts are
+  missing and guessing would change the result.
 - Do not let `image-batch-runner` make creative classification decisions.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
 
 ## Public Command Boundary
 
-- Check readiness first: `postplus doctor --skill image-generation`.
+- Choose the smallest matching command or workflow from the user input and run
+  it directly.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
 - This public skill is instruction-driven. Produce the controller handoff
   artifact directly from the available evidence.
 - Do not call private provider/runtime paths or unpublished local tools.

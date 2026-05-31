@@ -70,15 +70,21 @@ Return:
 - `referencePolicy`
 - `mustNotDo`
 
-## Fail Fast
-- Stop if duration, aspect ratio, source basis, product identity, required
-  references, audio needs, or storyboard structure would change the route.
-- Do not invent a provider payload before the architecture is coherent.
+## Stop Conditions
+- Stop when required user intent, source evidence, or owned input artifacts are
+  missing and guessing would change the result.
 - Do not ask a runner to infer hook, persona, or reference meaning.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
 
 ## Public Command Boundary
 
-- Check readiness first: `postplus doctor --skill video-generation`.
+- Choose the smallest matching command or workflow from the user input and run
+  it directly.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
 - This public skill is instruction-driven. Produce the controller handoff
   artifact directly from the available evidence.
 - Do not call private provider/runtime paths or unpublished local tools.

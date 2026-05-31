@@ -71,8 +71,13 @@ cross-platform synthesis. Publishing belongs in `social-media-publisher`.
 
 ## Public Command Boundary
 
-- Check readiness first: `postplus doctor --skill facebook-research`.
-- Input schema: `postplus research schema --json`.
+- Choose the smallest matching command or workflow from the user input and run
+  it directly.
+- Readiness diagnostics: `postplus doctor --skill facebook-research`.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
+- Use `postplus research schema --json` only when constructing or repairing an unknown request shape.
 - Public content collection: `postplus research capability --request <hosted-capability-request.json> --output <collection-result.json>`.
 - Use `public-content-collection` with `sourceKey` `facebook-profile-posts`, `facebook-group-posts`, or `facebook-post-by-url`.
 - Keep the first pass bounded; expand only after inspecting the first result.

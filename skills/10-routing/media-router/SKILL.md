@@ -63,11 +63,12 @@ The artifact contains:
 - `needsTimestamps`
 - `executionMode`
 
-## Fail Fast
-- Ask for the missing media type or goal when the route would change.
-- Stop if the user expects edit-ready output but no transcript, timestamps, or
-  visual proof path is available.
-- Do not invent provider calls or hidden model chains.
+## Stop Conditions
+- Stop when required user intent, source evidence, or owned input artifacts are
+  missing and guessing would change the result.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
 
 ## Handoff
 - Hand the route JSON to the named `primarySkill`.
@@ -76,7 +77,11 @@ The artifact contains:
 
 ## Public Command Boundary
 
-- Check readiness first: `postplus doctor --skill media-router`.
+- Choose the smallest matching command or workflow from the user input and run
+  it directly.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
 - This public skill is instruction-driven. Produce the artifact described by the workflow directly from the available evidence.
 - Do not call private provider/runtime paths or unpublished local tools.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

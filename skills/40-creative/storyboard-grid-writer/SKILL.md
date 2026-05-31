@@ -90,12 +90,14 @@ Product reveal timing:
 Main drift risks:
 ```
 
-## Fail Fast
-- Stop if panel 1 does not make the viewer question visible.
-- Stop if product timing, aspect ratio, scene anchors, or text/UI policy is
-  missing and would change downstream generation.
+## Stop Conditions
+- Stop when required user intent, source evidence, or owned input artifacts are
+  missing and guessing would change the result.
 - Do not create provider JSON or submit renders.
 - Do not let a runner infer storyboard logic from generic prompt adjectives.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
 
 ## Handoff
 - Image panels -> `image-generation`.
@@ -105,7 +107,11 @@ Main drift risks:
 
 ## Public Command Boundary
 
-- Check readiness first: `postplus doctor --skill storyboard-grid-writer`.
+- Choose the smallest matching command or workflow from the user input and run
+  it directly.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
 - This public skill is instruction-driven. Produce the storyboard artifact
   directly from the available evidence.
 - Do not call private provider/runtime paths or unpublished local tools.

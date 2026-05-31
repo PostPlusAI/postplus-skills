@@ -93,8 +93,13 @@ missing evidence layer.
 
 ## Public Command Boundary
 
-- Check readiness first: `postplus doctor --skill google-trends-research`.
-- Input schema: `postplus research schema --collection-key google-trends-fast --json`.
+- Choose the smallest matching command or workflow from the user input and run
+  it directly.
+- Readiness diagnostics: `postplus doctor --skill google-trends-research`.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
+- Use `postplus research schema --collection-key google-trends-fast --json` only when constructing or repairing an unknown request shape.
 - Hosted collection: `postplus research collect --skill google-trends-research --collection-key google-trends-fast --input <hosted-envelope.json> --output <collection-result.json>`.
 - Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
 - Preview and approval boundaries stay explicit; do not execute irreversible publishing without the required approval artifact.
