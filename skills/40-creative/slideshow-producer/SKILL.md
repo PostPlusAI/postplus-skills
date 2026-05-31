@@ -33,7 +33,9 @@ metadata:
 - `imageSource: "local"` uses `localImagePath` as the final image and must not
   call generation.
 - `imageSource: "generate"` with no reference paths/URLs must use
+  `image-gpt-image-2-text`.
 - `imageSource: "generate"` with any reference path/URL must use
+  `image-gpt-image-2-edit`.
 - Never send reference-backed slides through text-to-image. Fix the manifest
   before generation if routing is inconsistent.
 
