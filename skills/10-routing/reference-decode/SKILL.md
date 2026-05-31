@@ -53,10 +53,12 @@ When no usable reference exists, operate in proxy mode:
 The artifact contains `hookEssence`, `viewerQuestion`, `mustCopyVisualGrammar`, and
 `forbiddenDrift`.
 
-## Fail Fast
-- Stop if there is no way to determine the opening promise, first visual anchor,
-  or required scene content.
-- Ask one short question when the missing visual anchor blocks downstream prompt work.
+## Stop Conditions
+- Stop when required user intent, source evidence, or owned input artifacts are
+  missing and guessing would change the result.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
 
 ## Handoff
 - Grid, beat sheet, or full render request -> `video-request-architect`.
@@ -65,7 +67,11 @@ The artifact contains `hookEssence`, `viewerQuestion`, `mustCopyVisualGrammar`, 
 
 ## Public Command Boundary
 
-- Check readiness first: `postplus doctor --skill reference-decode`.
+- Choose the smallest matching command or workflow from the user input and run
+  it directly.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
 - This public skill is instruction-driven. Produce the artifact described by the workflow directly from the available evidence.
 - Do not call private provider/runtime paths or unpublished local tools.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

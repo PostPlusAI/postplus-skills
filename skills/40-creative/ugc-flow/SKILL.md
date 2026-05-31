@@ -80,17 +80,21 @@ Return a workflow packet:
 - `qaPlan`
 - `openQuestions`
 
-## Fail Fast
-- Stop if product facts, claim boundaries, creator logic, reference ownership,
-  or target format are missing and would change the pipeline.
-- Do not submit provider jobs.
+## Stop Conditions
+- Stop when required user intent, source evidence, or owned input artifacts are
+  missing and guessing would change the result.
 - Do not let runners make creative or claim decisions.
-- Do not treat benchmark identity, exact creator likeness, or competitor brand
-  assets as copyable production input.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
 
 ## Public Command Boundary
 
-- Check readiness first: `postplus doctor --skill ugc-flow`.
+- Choose the smallest matching command or workflow from the user input and run
+  it directly.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
 - This public skill is instruction-driven. Produce the workflow packet directly
   from the available evidence.
 - Do not call private provider/runtime paths or unpublished local tools.
