@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-2026-05-28.1-workflow-assets-realism",
+  "releaseId": "skills-2026-06-01.2-workflow-workbench-final-video",
   "source": "PostPlusAI/postplus-skills",
   "skills": [
     {
@@ -677,6 +677,16 @@
           "key": "video-seedance-2-text-turbo",
           "name": "Seedance 2.0 Text To Video Turbo",
           "source": "endpointKey"
+        },
+        {
+          "key": "video-wanx2-1-i2v-turbo",
+          "name": "Wanx2.1 I2v Turbo",
+          "source": "endpointKey"
+        },
+        {
+          "key": "video-wanx2-1-t2v-turbo",
+          "name": "Wanx2.1 T2v Turbo",
+          "source": "endpointKey"
         }
       ],
       "requirements": {
@@ -690,7 +700,9 @@
           "video-seedance-2-image",
           "video-seedance-2-image-turbo",
           "video-seedance-2-text",
-          "video-seedance-2-text-turbo"
+          "video-seedance-2-text-turbo",
+          "video-wanx2-1-i2v-turbo",
+          "video-wanx2-1-t2v-turbo"
         ],
         "hostedCapabilities": [
           "media-file",

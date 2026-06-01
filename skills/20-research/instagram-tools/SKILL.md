@@ -19,16 +19,31 @@ metadata:
 ## Required Input
 - Hosted envelope or local normalized Instagram dataset depending on workflow.
 
-## Fail Fast
-- Do not call provider/private routes directly.
+## Script To Skill Map
+- `instagram-account-research`, `instagram-audience-voice`, and
+  `instagram-campaign-scout` use collection and normalization support.
+- `instagram-content-benchmark` uses post ranking and benchmark support.
+- `instagram-creator-discovery` uses creator extraction and ranking support.
+
+## Stop Conditions
+- Stop when required user intent, source evidence, or owned input artifacts are
+  missing and guessing would change the result.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
 
 ## Handoff
 - Return structured output to the calling Instagram skill.
 
 ## Public Command Boundary
 
-- Check readiness first: `postplus doctor --skill instagram-tools`.
-- Input schema: `postplus research schema --collection-key instagram-comments --json`.
+- Choose the smallest matching command or workflow from the user input and run
+  it directly.
+- Readiness diagnostics: `postplus doctor --skill instagram-tools`.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
+- Use `postplus research schema --collection-key instagram-comments --json` only when constructing or repairing an unknown request shape.
 - Hosted collection: `postplus research collect --skill instagram-tools --collection-key instagram-comments --input <hosted-envelope.json> --output <collection-result.json>`.
 - Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
 - Keep the first pass bounded; expand only after inspecting the first result.

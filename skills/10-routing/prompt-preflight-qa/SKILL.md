@@ -47,10 +47,12 @@ Point the weakness to the correct upstream stage:
 The artifact contains `verdict`, `canRunNow`, `missingFields`, `majorRisks`,
 `likelyDrift`, and `fixNow`.
 
-## Fail Fast
-- If a prompt is runnable but risky, mark it `risky` instead of passing it.
-- If a Seedance request exceeds 15 seconds without a segment plan, mark it not
-  ready and send it back to `video-request-architect`.
+## Stop Conditions
+- Stop when required user intent, source evidence, or owned input artifacts are
+  missing and guessing would change the result.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
 
 ## Handoff
 - Return `report.json` or the stdout JSON plus the smallest upstream fix.
@@ -58,7 +60,11 @@ The artifact contains `verdict`, `canRunNow`, `missingFields`, `majorRisks`,
 
 ## Public Command Boundary
 
-- Check readiness first: `postplus doctor --skill prompt-preflight-qa`.
+- Choose the smallest matching command or workflow from the user input and run
+  it directly.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
 - This public skill is instruction-driven. Produce the artifact described by the workflow directly from the available evidence.
 - Do not call private provider/runtime paths or unpublished local tools.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

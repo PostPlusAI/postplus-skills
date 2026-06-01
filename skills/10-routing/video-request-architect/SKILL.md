@@ -62,10 +62,12 @@ The artifact contains a JSON architecture with:
 - `segmentContract` with Seedance segmentation status and per-segment handoff
   data when segmentation is required
 
-## Fail Fast
-- Stop if hook logic, reference policy, timecoded actions, or product policy are missing.
-- Stop if a Seedance script exceeds 15 seconds without a valid segment plan.
-- Do not invent timing from prose, collapse long scripts into one request, or add provider-specific fallback paths.
+## Stop Conditions
+- Stop when required user intent, source evidence, or owned input artifacts are
+  missing and guessing would change the result.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
 
 ## Handoff
 - Hand `request-architecture.json` to the provider mapping or generation skill.
@@ -74,7 +76,11 @@ The artifact contains a JSON architecture with:
 
 ## Public Command Boundary
 
-- Check readiness first: `postplus doctor --skill video-request-architect`.
+- Choose the smallest matching command or workflow from the user input and run
+  it directly.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
 - This public skill is instruction-driven. Produce the artifact described by the workflow directly from the available evidence.
 - Do not call private provider/runtime paths or unpublished local tools.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

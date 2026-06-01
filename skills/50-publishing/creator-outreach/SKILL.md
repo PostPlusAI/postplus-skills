@@ -117,9 +117,7 @@ Stop and explain when:
 
 ## Output Expectations
 
-Return shortlist rows, fit scores and reasons, public contact signals with
-provenance, missing-evidence notes, outreach-readiness risks, and drafts ready
-for human review or a separate delivery tool.
+Return shortlist rows, fit scores and reasons, public contact signals with provenance, missing-evidence notes, outreach-readiness risks, and drafts ready for human review or a separate delivery tool.
 
 ## Handoff
 
@@ -130,8 +128,12 @@ for human review or a separate delivery tool.
 
 ## Public Command Boundary
 
-- Check readiness first: `postplus doctor --skill creator-outreach`.
-- Request schema: `postplus publish schema --json`.
+- Choose the smallest matching command or workflow from the user input and run
+  it directly.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
+- Use `postplus publish schema --json` only when constructing or repairing an unknown request shape.
 - Hosted publishing capability: `postplus publish capability --request <hosted-capability-request.json> --output <result.json>`.
 - Preview and approval boundaries stay explicit; do not execute irreversible publishing without the required approval artifact.
-- If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.
+- Confirm quote challenges with `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

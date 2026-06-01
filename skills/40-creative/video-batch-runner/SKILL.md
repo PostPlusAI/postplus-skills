@@ -27,11 +27,16 @@ metadata:
 - Default to the highest practical render quality for realism-sensitive human video; step down only for an explicit cheap draft, latency test, or provider limit, and persist the choice.
 - Default creative format is short-form vertical `9:16`; use
   `creativeFormat: "instagram_meta_ads"` or explicit `aspectRatio: "3:4"` when
-  the target is Instagram Meta Ads.
+  the target is Instagram Meta Ads, except Wanx 2.1 endpoints which currently
+  accept only `9:16` or `16:9`.
 - Released provider is `hosted-media` only. Direct provider routes, ad hoc
   structured motion-control fields, and unbound media roles are not released.
 - `video-kling-v2-6-pro-motion-control` is only reference-motion transfer with
   a reference image plus reference motion video.
+- Wanx 2.1 Turbo endpoints are `video-wanx2-1-t2v-turbo` and
+  `video-wanx2-1-i2v-turbo`; duration is fixed at 5 seconds, resolution is
+  `480p` or `720p`, and image-to-video input must already be a remote HTTP(S)
+  image URL.
 
 ## Source And Route
 - Source from the active project/client manifests first. Do not reuse another
@@ -70,16 +75,22 @@ metadata:
 - If pending, return `manifestPath`, `pollRequestPath`, and `pollCommand`
   immediately. Do not keep thinking or polling in the conversation.
 
-## Fail Fast
-- Missing hosted capability request, unsupported provider/model, missing approved media,
-  missing prompt source, missing source basis, missing output path, deprecated or
-  unsupported motion fields, or stale request path used for polling.
-- Do not compensate for missing approvals by letting the render model improvise.
+## Stop Conditions
+- Stop when required user intent, source evidence, or owned input artifacts are
+  missing and guessing would change the result.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
 
 ## Public Command Boundary
 
-- Check readiness first: `postplus doctor --skill video-batch-runner`.
-- Request schema: `postplus media schema --endpoint <endpoint-key> --json`.
+- Choose the smallest matching command or workflow from the user input and run
+  it directly.
+- Readiness diagnostics: `postplus doctor --skill video-batch-runner`.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
+- Use `postplus media schema --endpoint <endpoint-key> --json` only when constructing or repairing an unknown request shape.
 - Hosted media capability: `postplus media capability --request <hosted-capability-request.json> --output <result.json>`.
 - Use the capability request shape required by the selected workflow; do not call provider APIs directly.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

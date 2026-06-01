@@ -36,16 +36,21 @@ metadata:
 - Return final subtitle paths, source transcript path, selected chunk mode, and
   any profile path used.
 
-## Fail Fast
-- Missing normalized transcript, invalid `subtitle-normalized/v1` schema, missing
-  timing, missing output path, or unsupported profile/chunk mode.
-- Do not fake timing or switch to ad hoc subtitle generation to hide invalid
-  transcript input.
+## Stop Conditions
+- Stop when required user intent, source evidence, or owned input artifacts are
+  missing and guessing would change the result.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
 
 ## Public Command Boundary
 
-- Check readiness first: `postplus doctor --skill subtitle-packager`.
-- Request schema: `postplus media schema --json`; add `--endpoint <endpoint-key>` for media-generation examples.
+- Choose the smallest matching command or workflow from the user input and run
+  it directly.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
+- Use `postplus media schema --json` only when constructing or repairing an unknown request shape.
 - Hosted media capability: `postplus media capability --request <hosted-capability-request.json> --output <result.json>`.
 - Use the capability request shape required by the selected workflow; do not call provider APIs directly.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

@@ -61,11 +61,12 @@ The artifact contains `platform`, `route`, `primarySkill`, `explanation`, and
 `handoffReady`. Use that output as the route artifact, then carry the user's
 business constraints into the downstream collector.
 
-## Fail Fast
-- Fail or ask only when platform ambiguity, seed availability, or route goal
-  would change the collection strategy.
-- Do not use public web search as the primary route when a released platform
-  collector is available.
+## Stop Conditions
+- Stop when required user intent, source evidence, or owned input artifacts are
+  missing and guessing would change the result.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
 
 ## Handoff
 - TikTok discovery -> `tiktok-research`.
@@ -76,7 +77,11 @@ business constraints into the downstream collector.
 
 ## Public Command Boundary
 
-- Check readiness first: `postplus doctor --skill creator-discovery-router`.
+- Choose the smallest matching command or workflow from the user input and run
+  it directly.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
 - This public skill is instruction-driven. Produce the artifact described by the workflow directly from the available evidence.
 - Do not call private provider/runtime paths or unpublished local tools.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

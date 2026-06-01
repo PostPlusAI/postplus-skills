@@ -70,8 +70,13 @@ cross-platform synthesis.
 
 ## Public Command Boundary
 
-- Check readiness first: `postplus doctor --skill youtube-research`.
-- Input schema: `postplus research schema --collection-key youtube-channel-summary --json`.
+- Choose the smallest matching command or workflow from the user input and run
+  it directly.
+- Readiness diagnostics: `postplus doctor --skill youtube-research`.
+- If an owned CLI or script command fails, report the exact error and stop. Do
+  not bypass the failure with metadata-only answers, readiness probing, local
+  payload rewrites, fallback providers, or unpublished tools.
+- Use `postplus research schema --collection-key youtube-channel-summary --json` only when constructing or repairing an unknown request shape.
 - Hosted collection: `postplus research collect --skill youtube-research --collection-key youtube-channel-summary --input <hosted-envelope.json> --output <collection-result.json>`.
 - Public video collection: `postplus research capability --request <hosted-capability-request.json> --output <collection-result.json>` with `public-content-collection` sourceKey `youtube-videos`.
 - Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
