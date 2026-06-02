@@ -88,7 +88,7 @@ missing evidence layer.
 - TikTok content heat or hook patterns -> `tiktok-research`.
 - Instagram creator, account, or campaign scouting ->
   `instagram-account-research` or `instagram-campaign-scout`.
-- Amazon marketplace demand -> `amazon-research`.
+- Instagram/Meta content proof -> `social-media-extractor`.
 - Cross-source sourcing or selection judgment -> `sourcing-selection`.
 
 ## Public Command Boundary

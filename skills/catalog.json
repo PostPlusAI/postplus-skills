@@ -1,29 +1,8 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-2026-06-01.2-workflow-workbench-final-video",
+  "releaseId": "skills-2026-06-01.3-workflow-delivery-cleanup",
   "source": "PostPlusAI/postplus-skills",
   "skills": [
-    {
-      "familyId": "marketplace-sourcing",
-      "familyName": "Marketplace, Sourcing, and Growth",
-      "name": "amazon-research",
-      "path": "skills/20-research/amazon-research/SKILL.md",
-      "status": "released",
-      "supportedModels": [],
-      "requirements": {
-        "collectionKeys": [
-          "amazon-asins",
-          "amazon-bestsellers",
-          "amazon-free-products",
-          "amazon-products",
-          "amazon-reviews",
-          "amazon-reviews-v2"
-        ],
-        "hostedCapabilities": [
-          "hosted-collection"
-        ]
-      }
-    },
     {
       "familyId": "routing-contracts",
       "familyName": "Routing & Contracts",
@@ -74,14 +53,6 @@
       "familyName": "Media and Creative Production",
       "name": "creative-qa",
       "path": "skills/40-creative/creative-qa/SKILL.md",
-      "status": "released",
-      "supportedModels": []
-    },
-    {
-      "familyId": "routing-contracts",
-      "familyName": "Routing & Contracts",
-      "name": "creator-discovery-router",
-      "path": "skills/10-routing/creator-discovery-router/SKILL.md",
       "status": "released",
       "supportedModels": []
     },
@@ -480,9 +451,6 @@
         "hostedCapabilities": [
           "media-file",
           "media-generation"
-        ],
-        "localDependencies": [
-          "python3:PIL"
         ]
       }
     },
@@ -775,23 +743,6 @@
         "hostedCapabilities": [
           "media-file",
           "media-generation"
-        ]
-      }
-    },
-    {
-      "familyId": "x",
-      "familyName": "X / Twitter",
-      "name": "x-tools",
-      "path": "skills/20-research/x-tools/SKILL.md",
-      "status": "released",
-      "supportedModels": [],
-      "requirements": {
-        "collectionKeys": [
-          "x-posts",
-          "x-profiles"
-        ],
-        "hostedCapabilities": [
-          "hosted-collection"
         ]
       }
     },

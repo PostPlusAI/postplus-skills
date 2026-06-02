@@ -1,6 +1,6 @@
 ---
 name: social-media-extractor
-description: High-level entry point for cross-platform public social data extraction when the user has not named a platform-specific workflow yet.
+description: High-level entry point for Instagram and Meta public social data extraction when the user has not named a platform-specific workflow yet.
 metadata:
   postplus:
     familyId: routing-contracts
@@ -10,7 +10,15 @@ metadata:
 # Social Media Extractor
 
 ## Use When
-- High-level entry point for cross-platform public social data extraction when the user has not named a platform-specific workflow yet.
+- The user wants public Instagram or Facebook/Meta content signals for ad
+  creative, benchmark, creator shortlist, UGC, or campaign asset planning.
+- The user has not named a platform-specific workflow yet.
+
+## Scope
+- Instagram benchmark or creator shortlist work routes to Instagram skills.
+- Facebook/Meta public page, group, or post evidence routes to
+  `facebook-research`.
+- Non-Meta platforms are outside this release lane.
 
 ## Do Not Use When
 - The task belongs to ideation, QA, or another released skill listed in the handoff section.

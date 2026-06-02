@@ -96,7 +96,7 @@ reports or shortlist exports outside `.postplus/` when the user needs them.
 ## Handoff
 
 - Creator shortlist or public contact signals -> `creator-outreach`.
-- Cross-platform creator routing -> `creator-discovery-router`.
+- Instagram creator discovery -> `instagram-creator-discovery`.
 - Paid ad hooks or objectives -> `tiktok-ad-research`.
 - Local benchmark video files or audio references -> `tiktok-music-archive-downloader`.
 - Hook, structure, shot, or spoken-line breakdown -> `video-analysis`.

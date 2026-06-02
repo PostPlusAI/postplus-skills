@@ -92,9 +92,9 @@ Common decomposition templates:
 
 | User intent | Decomposition |
 |---|---|
-| "Promote this product" | ① competitive research (amazon-research) → ② campaign brief (benchmark-to-brief) → ③ creator outreach (creator-discovery) |
+| "Promote this product" | ① Instagram/Meta content proof (social-media-extractor) → ② campaign brief (benchmark-to-brief) → ③ creator shortlist or draft publishing path |
 | "Make a viral video" | ① trend collection (tiktok-research) → ② hook breakdown (video-analysis) → ③ request planning (video-request-architect) → ④ video render (video-batch-runner) |
-| "Build a social presence for this brand" | ① cross-platform audit (social-media-extractor) → ② content strategy (benchmark-to-brief) → ③ creative QA and production planning (creative-qa) |
+| "Build a social presence for this brand" | ① Instagram/Meta audit (social-media-extractor) → ② content strategy (benchmark-to-brief) → ③ creative QA and production planning (creative-qa) |
 | "Analyze this account" | ① account research (instagram-account-research) → ② audience voice (audience-voice) → ③ content benchmark (content-benchmark) |
 
 Use these as reference, not a rigid checklist. Adapt to the user's actual scope.

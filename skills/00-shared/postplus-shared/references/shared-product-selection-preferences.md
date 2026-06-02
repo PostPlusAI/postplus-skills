@@ -52,8 +52,7 @@ Default route:
 
 Use these routes:
 
-- cross-platform demand or content proof -> `social-media-extractor`
-- Amazon platform data -> `amazon-research`
+- Instagram/Meta demand or content proof -> `social-media-extractor`
 - TikTok content and audience language -> `tiktok-research`
 - Instagram creator/content/comment proof -> `instagram-account-research` or `instagram-content-benchmark` or `instagram-audience-voice`
 - supply-side product or supplier data -> user-provided supplier sheets,

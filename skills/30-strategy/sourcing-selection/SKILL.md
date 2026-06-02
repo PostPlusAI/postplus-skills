@@ -57,11 +57,12 @@ Use this order unless the user asks otherwise:
   marketplace data. Do not imply a released hosted 1688 collector.
 - Search-intent source: use `google-trends-research` for early momentum and
   rising-query signals.
-- Search-led demand: use `amazon-research` for listings, reviews, price bands,
-  and channel-native competition.
+- Search-led demand: use `google-trends-research` for rising-query signals and
+  user-provided marketplace exports for listings, reviews, price bands, and
+  channel-native competition.
 - Content-language fit: use `tiktok-research` when demos, hooks, audience
   language, or content-led selling matter.
-- Cross-platform social proof: use `social-media-extractor` before choosing
+- Instagram/Meta social proof: use `social-media-extractor` before choosing
   the platform-specific collector.
 
 ## Output Shape

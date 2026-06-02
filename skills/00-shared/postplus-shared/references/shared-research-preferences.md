@@ -39,12 +39,11 @@ Default execution order:
 
 ## Preferred Routes
 
-- broad cross-platform social research routing -> `social-media-extractor`
-- cross-platform creator discovery routing -> `creator-discovery-router`
+- Instagram and Meta social research routing -> `social-media-extractor`
+- Instagram creator discovery -> `instagram-creator-discovery`
 - Google search-intent and topic momentum -> `google-trends-research`
 - TikTok platform data -> `tiktok-research`
 - TikTok ad creative research -> `tiktok-ad-research`
-- Amazon platform data -> `amazon-research`
 - supply-side product or supplier data -> user-provided supplier sheets,
   quotations, or approved marketplace exports
 - Instagram creator discovery -> `instagram-creator-discovery`
@@ -52,7 +51,6 @@ Default execution order:
 - Instagram content benchmark -> `instagram-content-benchmark`
 - Instagram audience language -> `instagram-audience-voice`
 - Instagram hashtag/tagged campaign scouting -> `instagram-campaign-scout`
-- X account/topic graph research -> `x-tools`
 - YouTube channel and video research -> `youtube-research`
 - Facebook page and post research -> `facebook-research`
 - Hook, structure, and why content works -> `video-analysis`
@@ -75,11 +73,11 @@ If the user also wants execution after research, hand off only after the researc
 2. confirm channels or destinations if execution is high-impact
 3. then route to outreach or publishing skills
 
-For creator discovery requests, add a routing step before collection:
+For Instagram creator discovery requests, add a routing step before collection:
 
 1. normalize the brief
 2. choose `handle-first`, `content-first`, `graph-first`, or `mixed`
-3. collect with the platform skill using a wider recall band when needed
+3. collect with `instagram-creator-discovery` using a wider recall band when needed
 4. enrich candidates
 5. classify creator type
 6. shortlist
@@ -127,8 +125,8 @@ Creator-discovery-specific mistake:
 Better response:
 
 - recognize that follower band + niche fit usually needs routing
-- use `creator-discovery-router`
 - prefer `content-first` or `graph-first` when account search is likely to over-rank large accounts
+- use `instagram-creator-discovery` for Instagram creator discovery
 - use wider recall and tighter shortlist instead of strict first-pass filtering
 - classify `individual creator` vs `brand/product` vs `educator/consultant` vs `aggregator` before producing outreach-ready leads
 
@@ -140,6 +138,6 @@ Cross-platform mistake:
 
 Better response:
 
-- recognize when the request is about social direction rather than one named platform
+- recognize when the request is about Instagram/Meta social direction rather than one named platform
 - start with `social-media-extractor`
 - use platform-specific skills only after the route is clear
