@@ -38,8 +38,10 @@ Classify the request first:
 
 Released hosted collection key:
 
-- `google-trends-fast`: keyword analysis, regional trend signals, related
-  queries, and realtime trending searches.
+- `google-trends-fast`: keyword analysis using one `keyword` string. Keyword
+  requests must set `enableTrendingSearches: false`; `queries` is not a
+  supported keyword-request field for this collection because it produces
+  generic realtime trending searches.
 
 The hosted input must be a `schemaVersion: 1` envelope whose `input` field
 contains the compiled Google Trends request.
@@ -57,7 +59,7 @@ postplus research collect \
 ## Default Workflow
 
 1. Classify the request into one task shape.
-2. Compile a small keyword, country, timeframe, or geo brief.
+2. Compile one keyword with country and timeframe.
 3. Collect a small valid sample through `google-trends-fast`.
 4. Extract trend signals that matter.
 5. Separate observation from inference.
@@ -78,6 +80,8 @@ missing evidence layer.
 - Do not treat search spikes as proof that a product will sell.
 - Do not confuse news-driven spikes with durable category demand.
 - Do not skip geo and timeframe details when comparing terms.
+- Do not send `queries` for keyword momentum checks; use `keyword` with
+  `enableTrendingSearches: false`.
 - Stop on unsupported keys, missing auth, unavailable hosted service, stable
   network failure, or malformed collection output.
 - Do not answer Google Trends platform-data requests from generic web articles

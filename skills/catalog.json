@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-2026-06-01.3-workflow-delivery-cleanup",
+  "releaseId": "skills-2026-06-09.1-workflow-video-only-and-cli-contracts",
   "source": "PostPlusAI/postplus-skills",
   "skills": [
     {
