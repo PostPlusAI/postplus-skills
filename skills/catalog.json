@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-2026-06-09.1-workflow-video-only-and-cli-contracts",
+  "releaseId": "skills-2026-06-09.2-billing-reconcile-workflow-runtime-cleanup",
   "source": "PostPlusAI/postplus-skills",
   "skills": [
     {
