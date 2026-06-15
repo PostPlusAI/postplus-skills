@@ -27,11 +27,9 @@ metadata:
 - Separate the workflow into voice profile, optional voice identity, and concrete
   voice take. The script text can change; persona voice continuity should not.
 - Voice design is for an initial persona-aligned sound from `text`,
-  `voiceDescription`, and `language`.
-- Voice clone is for new script takes when approved reference audio or an
-  uploaded reference URL should preserve timbre and speaking style.
-- Keep `provider: "hosted-media"` and persist request, response, manifest,
-  review stub, source basis, and downloaded audio.
+  `voice_description`, and `language`.
+- Voice clone is for new script takes when approved reference `audio` and an
+  optional `reference_text` should preserve timbre and speaking style.
 
 ## Source And Path
 - Ground requests in the active project persona registry, voice baseline, script
@@ -43,11 +41,13 @@ metadata:
   asset folder, or state the chosen workspace path.
 
 ## Request Boundary
-- Hosted media requests require a capability request JSON with explicit
-  `capability`, `operation`, `operationId`, and normalized `input`.
-- Design requires `jobId`, `text`, `voiceDescription`, and `localOutputDir`.
-- Clone requires `jobId`, `text`, `localOutputDir`, and either
-  `referenceAudioUrl` or `referenceAudioPath`; local reference audio is uploaded
+- Voice design synthesizes a persona voice from spoken `text`, a free-text
+  `voice_description`, and an optional `language` (defaults to auto).
+- Voice clone reproduces an approved voice from spoken `text`, an `audio`
+  reference URL, an optional `reference_text` transcript, and optional `language`.
+- Exact field names, requiredness, and defaults are discovered from
+  `postplus media schema --json` and the generated example below; do not hard-code
+  a private request envelope here.
 
 ## Review And Handoff
 - Before generation, verify persona registry, voice baseline, script stability,
@@ -73,6 +73,19 @@ metadata:
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, fallback providers, or unpublished tools.
 - Use `postplus media schema --json` only when constructing or repairing an unknown request shape.
-- Hosted media capability: `postplus media capability --request <hosted-capability-request.json> --output <result.json>`.
-- Use the capability request shape required by the selected workflow; do not call provider APIs directly.
+- Run the hosted submit with the generated command below; do not call provider APIs directly.
+
+<!-- BEGIN GENERATED EXECUTION EXAMPLE -->
+```json
+{
+  "text": "<text>",
+  "voice_description": "<voice_description>"
+}
+```
+
+```bash
+postplus media create voice-design --request request.json --output result.json
+```
+<!-- END GENERATED EXECUTION EXAMPLE -->
+
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

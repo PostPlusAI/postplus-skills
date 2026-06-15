@@ -25,19 +25,21 @@ Use this skill when the user wants to:
 
 ## Collection Key Routing
 
-Released hosted collection keys:
+Route to the matching hosted collection key by task shape:
 
-- `instagram-hashtags`: hashtag post collection.
-- `instagram-search`: branded keyword, account, or topic discovery.
-- `instagram-posts`: post sampling from known URLs or accounts.
+- hashtag post collection,
+- branded keyword, account, or topic discovery,
+- post sampling from known URLs or accounts.
 
-Use hosted collection outputs and the workflow below.
+Discover the exact released collection keys and request shapes with
+`postplus research schema --json`. Use hosted collection outputs and the
+workflow below.
 
 ## Default Workflow
 
 1. Choose the campaign object: hashtag, target username, or brand keyword.
 2. Compile a small hashtag, search, or post request.
-3. Wrap hosted collection input under `schemaVersion: 1` + `input`.
+3. Write the compiled collection input to a request file.
 4. Collect hashtag, search, or post data.
 5. Normalize outputs into comparable datasets.
 6. Identify volume signals, related hashtags, top tagged creators, and UGC
@@ -81,8 +83,8 @@ watchlist of usernames, hashtags, and tagged mentions.
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, fallback providers, or unpublished tools.
-- Use `postplus research schema --collection-key instagram-hashtags --json` only when constructing or repairing an unknown request shape.
-- Hosted collection: `postplus research collect --skill instagram-campaign-scout --collection-key instagram-hashtags --input <hosted-envelope.json> --output <collection-result.json>`.
-- Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
+- Use `postplus research schema --collection-key <collectionKey> --json` only when constructing or repairing an unknown request shape.
+- Hosted collection runs through the shared `research collect` verb (owned by instagram-tools), attributing the run to this skill: `postplus research collect <collectionKey> --skill instagram-campaign-scout --request <input.json> --output <result.json>` (input = the collection parameters).
+- Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <result.json>`.
 - Keep the first pass bounded; expand only after inspecting the first result.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

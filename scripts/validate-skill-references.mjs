@@ -162,9 +162,9 @@ for (const markdownFile of markdownFiles) {
   }
   if (
     toSkillsPath(markdownFile).startsWith("20-research/") &&
-    /\bpostplus publish capability\b/.test(text)
+    /\bpostplus publish (?!schema\b)[\w-]+/u.test(text)
   ) {
-    report(errors, `${repoPath}: research skills must not route through publish capability.`);
+    report(errors, `${repoPath}: research skills must not route through publish operations.`);
   }
   const hostedCommandRules = [
     {
@@ -173,24 +173,19 @@ for (const markdownFile of markdownFiles) {
       message: "uses hosted research collect without the public schema discovery command.",
     },
     {
-      command: /\bpostplus research capability\b/,
+      command: /\bpostplus research scrape\b/,
       schema: /\bpostplus research schema\b/,
-      message: "uses hosted research capability without the public schema discovery command.",
+      message: "uses hosted research scrape without the public schema discovery command.",
     },
     {
-      command: /\bpostplus media capability\b/,
+      command: /\bpostplus media (?:create|transcribe|analyze)\b/u,
       schema: /\bpostplus media schema\b/,
-      message: "uses hosted media capability without the public schema discovery command.",
+      message: "uses a hosted media verb without the public schema discovery command.",
     },
     {
-      command: /\bpostplus publish capability\b/,
+      command: /\bpostplus publish (?!schema\b)[\w-]+/u,
       schema: /\bpostplus publish schema\b/,
-      message: "uses hosted publish capability without the public schema discovery command.",
-    },
-    {
-      command: /\bpostplus mobile capability\b/,
-      schema: /\bpostplus mobile schema\b/,
-      message: "uses hosted mobile capability without the public schema discovery command.",
+      message: "uses a hosted publish operation without the public schema discovery command.",
     },
   ];
   for (const rule of hostedCommandRules) {

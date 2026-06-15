@@ -30,13 +30,15 @@ Default public Facebook targets:
 - broad query -> small discovered public post set, then public content
   collection.
 
-Use the installed entrypoints:
+Map each public Facebook URL onto the matching released source key, then scrape
+that source. The `--request` file is a JSON array of input records (one record per
+public URL or query).
 
-The entrypoint maps public Facebook URLs onto released source keys:
-
-- `facebook-profile-posts`
-- `facebook-group-posts`
-- `facebook-post-by-url`
+<!-- BEGIN GENERATED EXECUTION EXAMPLE -->
+```bash
+postplus research scrape facebook-group-posts --request request.json --output result.json
+```
+<!-- END GENERATED EXECUTION EXAMPLE -->
 
 ## Default Workflow
 
@@ -78,7 +80,6 @@ cross-platform synthesis. Publishing belongs in `social-media-publisher`.
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, fallback providers, or unpublished tools.
 - Use `postplus research schema --json` only when constructing or repairing an unknown request shape.
-- Public content collection: `postplus research capability --request <hosted-capability-request.json> --output <collection-result.json>`.
-- Use `public-content-collection` with `sourceKey` `facebook-profile-posts`, `facebook-group-posts`, or `facebook-post-by-url`.
+- Public content scrape: `postplus research scrape <sourceKey> --request <input-array.json> --output <result.json>` (request = a JSON array of input records).
 - Keep the first pass bounded; expand only after inspecting the first result.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

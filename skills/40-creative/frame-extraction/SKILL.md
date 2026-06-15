@@ -61,7 +61,3 @@ metadata:
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, fallback providers, or unpublished tools.
-- Use `postplus media schema --json` only when constructing or repairing an unknown request shape.
-- Hosted media capability: `postplus media capability --request <hosted-capability-request.json> --output <result.json>`.
-- Use the capability request shape required by the selected workflow; do not call provider APIs directly.
-- If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

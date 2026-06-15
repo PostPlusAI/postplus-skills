@@ -11,8 +11,8 @@ metadata:
 
 ## Use When
 - Persona, concept, or shot inputs already exist and the next step is a hosted
-  image generation, edit, upload, or poll run.
-- The output must include local image files plus request, response, attempt, and
+  image generation or reference-based edit run.
+- The output must include local image files plus durable request, response, and
   manifest records for later QA or video rendering.
 
 ## Do Not Use When
@@ -22,44 +22,38 @@ metadata:
   unresolved. Use `image-generation` first.
 
 ## Execution Boundary
-- This runner validates and executes normalized requests. It must not make
-  creative strategy, task-classification, or reference-policy decisions.
-- Default model is `image-gpt-image-2-text`; edits default to
-  `image-gpt-image-2-edit`.
-- Default creative format is `short_form_vertical` with `aspectRatio: "9:16"`,
-  `quality: "medium"`, `resolution: "1k"`, and async execution
-  (`enableSyncMode: false`).
-- For Instagram Meta Ads, set `creativeFormat: "instagram_meta_ads"` or an
-  explicit `aspectRatio: "3:4"` in the normalized request, not only in prompt
-  wording.
-- Switch model, ratio, quality, resolution, or sync mode only when the user asks
-  or the upstream brief explicitly marks a draft or provider constraint.
+- Hosted image generation and edits run through the public `postplus media create`
+  verb and are async. A submit writes the request, response, manifest, generation
+  handle, provider status, and downloaded outputs if already completed.
+- This runner validates and executes resolved requests. It must not make creative
+  strategy, task-classification, or reference-policy decisions.
+- A higher-quality default and faster or cheaper model families are available;
+  prefer the default unless the user or upstream brief asks for a specific family,
+  ratio, quality, or resolution. The generated example below shows the default
+  endpoint key.
+- Reference-based edits pass each source image as a remote URL via a repeated
+  `--reference-image <url>` flag. Upload local source files to a hosted URL first;
+  do not pass local paths as edit references.
+- Identifiers and run-local state (`assetId`, `runId`, `localAssetDir`, manifest
+  paths) are minted or derived by the runner — do not supply them. Read them back
+  from the result for the next handoff.
 
 ## Source And Path
 - Ground every request in a benchmark-backed persona lock, concept or shot need,
   visual constraints, `assetPurpose`, and `sourceBasis`.
 - Use source files from the active project/client folder first. Do not treat one
   client directory as the default for all image work.
-- Store internal request, response, and polling state under `.postplus` when it
-  is not the user-facing handoff; keep final images and manifests in the active
-  asset folder. If no asset folder exists, choose one explicit workspace path.
-
-## Request Boundary
-- Hosted media requests require a capability request JSON with explicit
-  `capability`, `operation`, `operationId`, and normalized `input`.
-- Required request fields: `assetId`, `runId`, `localAssetDir`, `prompt`,
-  `assetPurpose`, and `sourceBasis`.
-- Use canonical fields only; do not accept `jobId` or `localOutputDir` as image
-  request fallbacks.
-  Upload or reference local source files explicitly before requesting edits.
+- Keep internal requests, responses, and manifests under `.postplus`; keep final
+  user-facing images and manifests in the active asset folder. If no asset folder
+  exists, choose one explicit workspace path.
 
 ## Review And Handoff
-- Before submission, verify persona grounding, asset purpose, source basis, local
-  output path, and what must stay fixed versus vary.
+- Before submission, verify persona grounding, asset purpose, source basis, and
+  what must stay fixed versus vary.
 - After generation, check realism, benchmark fit, repeatability across videos,
   copied-creator risk, and ad-like drift.
-- If processing is still pending, return the manifest/request paths and the
-  status command to poll.
+- If processing is still pending, return the manifest/request paths and the status
+  command to poll.
 
 ## Stop Conditions
 - Stop when required user intent, source evidence, or owned input artifacts are
@@ -76,7 +70,17 @@ metadata:
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, fallback providers, or unpublished tools.
-- Use `postplus media schema --json` only when constructing or repairing an unknown request shape.
-- Hosted media capability: `postplus media capability --request <hosted-capability-request.json> --output <result.json>`.
-- Use the capability request shape required by the selected workflow; do not call provider APIs directly.
+- Use `postplus media schema --json` only when you need the full endpoint, flag,
+  and enum contract or are repairing an unknown request shape.
+- Run the hosted image job with the generated command below; do not call provider
+  APIs directly.
+
+<!-- BEGIN GENERATED EXECUTION EXAMPLE -->
+```bash
+postplus media create image-gpt-image-2-text \
+  --prompt <prompt> \
+  --output <result.json>
+```
+<!-- END GENERATED EXECUTION EXAMPLE -->
+
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

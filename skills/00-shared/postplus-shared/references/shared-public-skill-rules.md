@@ -74,29 +74,29 @@ artifacts, or a compile step before provider execution.
 
 ## Hosted Request Shape Rule
 
-- `postplus research collect --input` receives a `schemaVersion: 1` envelope.
-- `postplus media|publish|mobile capability --request` receives a hosted
-  capability request with explicit `capability`, `operation`, `operationId`,
-  and the domain payload fields required by that operation.
-- Before writing a hosted request file, read the public schema with
+- Hosted skills run the converged verb grammar. The agent supplies only the
+  skill-specific input; the closed-source CLI runner translates it into the
+  hosted request, mints identifiers, and derives billing dimensions.
+- Each hosted command reads its input from `--request <file>`:
+  `postplus research collect <collection-key> --request <input.json>`,
+  `postplus research scrape <source-key> --request <input.json>` (scrape input
+  is a JSON array of `{ "url": ... }` entries),
+  `postplus media <verb> <endpoint-key> --request <input.json>`,
+  `postplus media analyze <model-key> --request <payload.json>`, and
+  `postplus publish <operation> --request <input.json>`. Flags-surface media
+  endpoints take the input as `--<flag>` options instead and read no `--request`
+  file.
+- Before writing a `--request` file, read the public schema with
   `postplus research schema --collection-key <key> --json`,
-  `postplus media schema --endpoint <endpoint-key> --json`,
-  `postplus publish schema --json`, or `postplus mobile schema --json`.
-- The skill-specific normalized/domain request belongs under `input` when the
-  selected hosted route expects an input object. Do not pass a bare normalized
-  request when the command asks for an envelope or capability request.
-- Minimum research collection input:
-
-```json
-{
-  "schemaVersion": 1,
-  "input": {}
-}
-```
-
-- When quote confirmation, hosted operation id, or resume state is needed, keep
-  those shared execution fields at the command-supported top level, not inside
-  the skill-specific `input` object.
+  `postplus media schema --endpoint <endpoint-key> --json`, or
+  `postplus publish schema --json`.
+- Put only the skill-specific request under `--request` (an object, or an array
+  for research scrape). Do not hand-write runner-managed fields such as ids,
+  tokens, or billing dimensions; the CLI mints or derives them and rejects them
+  in the request body.
+- Pass shared execution fields as command-supported flags
+  (`--quote-confirmation-token`, `--hosted-operation-id`, or `--run-handle` to
+  resume a pending research collection), not inside the skill-specific input.
 - If a hosted command prints `Quote confirmation challenge: <path>`, run the
   exact `postplus quote confirm --json --challenge-file <path>` command, then
   rerun the same hosted command with `--quote-confirmation-token <token>`.

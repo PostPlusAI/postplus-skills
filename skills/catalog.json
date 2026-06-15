@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-2026-06-09.1-workflow-video-only-and-cli-contracts",
+  "releaseId": "skills-2026-06-15.1-hosted-contract-and-workflow-workbench",
   "source": "PostPlusAI/postplus-skills",
   "skills": [
     {
@@ -19,20 +19,20 @@
       "status": "released",
       "supportedModels": [
         {
-          "key": "transcription-whisper",
+          "key": "transcription",
           "name": "Whisper",
           "source": "endpointKey"
         },
         {
-          "key": "transcription-whisper-turbo",
+          "key": "transcription-turbo",
           "name": "Whisper Turbo",
           "source": "endpointKey"
         }
       ],
       "requirements": {
         "endpointKeys": [
-          "transcription-whisper",
-          "transcription-whisper-turbo"
+          "transcription",
+          "transcription-turbo"
         ],
         "hostedCapabilities": [
           "media-file",
@@ -334,6 +334,7 @@
       "requirements": {
         "collectionKeys": [
           "instagram-comments",
+          "instagram-email-search",
           "instagram-hashtags",
           "instagram-posts",
           "instagram-profiles",
@@ -569,7 +570,7 @@
       "status": "released",
       "supportedModels": [
         {
-          "key": "gemini-video-analysis",
+          "key": "video-analysis",
           "name": "Gemini 3.5 Flash",
           "source": "modelKey"
         }
@@ -579,13 +580,8 @@
           "media-file",
           "video-analysis"
         ],
-        "localDependencies": [
-          "ffprobe",
-          "python3",
-          "python3:yt_dlp"
-        ],
         "modelKeys": [
-          "gemini-video-analysis"
+          "video-analysis"
         ]
       }
     },
@@ -702,14 +698,14 @@
       "status": "released",
       "supportedModels": [
         {
-          "key": "transcription-whisper-with-video",
+          "key": "transcription-video",
           "name": "Whisper With Video",
           "source": "endpointKey"
         }
       ],
       "requirements": {
         "endpointKeys": [
-          "transcription-whisper-with-video"
+          "transcription-video"
         ],
         "hostedCapabilities": [
           "media-file",
@@ -725,20 +721,20 @@
       "status": "released",
       "supportedModels": [
         {
-          "key": "voice-qwen3-clone",
+          "key": "voice-clone",
           "name": "Qwen3 TTS Voice Clone",
           "source": "endpointKey"
         },
         {
-          "key": "voice-qwen3-design",
+          "key": "voice-design",
           "name": "Qwen3 TTS Voice Design",
           "source": "endpointKey"
         }
       ],
       "requirements": {
         "endpointKeys": [
-          "voice-qwen3-clone",
-          "voice-qwen3-design"
+          "voice-clone",
+          "voice-design"
         ],
         "hostedCapabilities": [
           "media-file",

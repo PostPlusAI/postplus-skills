@@ -29,15 +29,15 @@ audience fit from actual content, prefer:
 
 ## Collection Key Routing
 
-Released hosted collection keys:
+Route to the matching hosted collection key by task shape:
 
-- `instagram-search`: topical, hashtag, tagged, or content-style discovery.
-- `instagram-profiles`: profile enrichment from candidate usernames.
-- `instagram-email-search`: released enrichment when contact-oriented search is
-  explicitly needed.
+- topical, hashtag, tagged, or content-style discovery,
+- profile enrichment from candidate usernames,
+- contact-oriented enrichment when contact-oriented search is explicitly needed.
 
-Use hosted collection outputs and the workflow below when collection,
-normalization, or ranking is needed.
+Discover the exact released collection keys and request shapes with
+`postplus research schema --json`. Use hosted collection outputs and the
+workflow below when collection, normalization, or ranking is needed.
 
 ## Route Guidance
 
@@ -50,7 +50,7 @@ normalization, or ranking is needed.
 
 1. Choose route: handle-first, content-first, or mixed.
 2. Compile the collection input from the brief.
-3. Wrap the input as a `schemaVersion: 1` hosted execution envelope.
+3. Write the compiled collection input to a request file.
 5. Normalize the dataset.
 6. Extract candidate usernames when the first pass produced posts or search
    results.
@@ -90,8 +90,8 @@ contact signals when available.
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, fallback providers, or unpublished tools.
-- Use `postplus research schema --collection-key instagram-email-search --json` only when constructing or repairing an unknown request shape.
-- Hosted collection: `postplus research collect --skill instagram-creator-discovery --collection-key instagram-email-search --input <hosted-envelope.json> --output <collection-result.json>`.
-- Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
+- Use `postplus research schema --collection-key <collectionKey> --json` only when constructing or repairing an unknown request shape.
+- Hosted collection runs through the shared `research collect` verb (owned by instagram-tools), attributing the run to this skill: `postplus research collect <collectionKey> --skill instagram-creator-discovery --request <input.json> --output <result.json>` (input = the collection parameters).
+- Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <result.json>`.
 - Keep the first pass bounded; expand only after inspecting the first result.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

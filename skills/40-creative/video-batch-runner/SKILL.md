@@ -27,16 +27,16 @@ metadata:
 - Default to the highest practical render quality for realism-sensitive human video; step down only for an explicit cheap draft, latency test, or provider limit, and persist the choice.
 - Default creative format is short-form vertical `9:16`; use
   `creativeFormat: "instagram_meta_ads"` or explicit `aspectRatio: "3:4"` when
-  the target is Instagram Meta Ads, except Wanx 2.1 endpoints which currently
-  accept only `9:16` or `16:9`.
+  the target is Instagram Meta Ads.
+- Released endpoint keys and their option enums (resolution, aspect ratio,
+  duration bounds) are discovered from `postplus media schema --json`; they are
+  not hard-coded here.
 - Released provider is `hosted-media` only. Direct provider routes, ad hoc
   structured motion-control fields, and unbound media roles are not released.
 - `video-kling-v2-6-pro-motion-control` is only reference-motion transfer with
   a reference image plus reference motion video.
-- Wanx 2.1 Turbo endpoints are `video-wanx2-1-t2v-turbo` and
-  `video-wanx2-1-i2v-turbo`; duration is fixed at 5 seconds, resolution is
-  `480p` or `720p`, and image-to-video input must already be a remote HTTP(S)
-  image URL.
+- Image-to-video inputs and reference motion video must already be remote
+  HTTP(S) media URLs.
 
 ## Source And Route
 - Source from the active project/client manifests first. Do not reuse another
@@ -50,10 +50,11 @@ metadata:
   prompt text only; do not map them to provider-native trajectory fields.
 
 ## Request Boundary
-- `--request` must point to a hosted capability request JSON with explicit
-  `capability`, `operation`, `operationId`, and normalized video `input`.
-- The agent writes normalized `request.json` and `poll-request.json` under
-  `.postplus`; polling must use the poll request built from `output.data.id`.
+- `--request` must point to a JSON file carrying only the normalized video
+  `input` for the selected endpoint; the CLI runner mints the operation
+  identifiers and billing dimensions.
+- Poll a pending render with the `output.data.id` handle returned by the create
+  request; do not keep polling in the conversation.
 - Keep internal requests/responses under `.postplus` when they are not final
   handoff artifacts; keep final renders/manifests in the active render folder.
 
@@ -86,11 +87,28 @@ metadata:
 
 - Choose the smallest matching command or workflow from the user input and run
   it directly.
+- This skill owns the `postplus media create <endpoint>` command for its
+  kling 3.0, Wanx 2.1, InfiniteTalk, and Kling 2.6 reference-motion endpoints.
+  Seedance renders go through the shared `postplus media create
+  video-seedance-2-*` command owned by `seedance-submitter`; route Seedance
+  there instead of duplicating its request shape here.
 - Readiness diagnostics: `postplus doctor --skill video-batch-runner`.
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, fallback providers, or unpublished tools.
-- Use `postplus media schema --endpoint <endpoint-key> --json` only when constructing or repairing an unknown request shape.
-- Hosted media capability: `postplus media capability --request <hosted-capability-request.json> --output <result.json>`.
-- Use the capability request shape required by the selected workflow; do not call provider APIs directly.
+- Use `postplus media schema --json` only when constructing or repairing an unknown request shape.
+- Run the hosted submit with the generated command below; do not call provider APIs directly.
+
+<!-- BEGIN GENERATED EXECUTION EXAMPLE -->
+```json
+{
+  "prompt": "<prompt>"
+}
+```
+
+```bash
+postplus media create video-kling-v3-0-pro-text --request request.json --output result.json
+```
+<!-- END GENERATED EXECUTION EXAMPLE -->
+
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

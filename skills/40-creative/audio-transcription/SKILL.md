@@ -21,18 +21,18 @@ metadata:
 - Required inputs are missing and guessing would change the result.
 
 ## Execution Boundary
-- Released endpoint keys are `transcription-whisper` and
-  `transcription-whisper-turbo` through hosted `media-file` and
-  `media-generation`.
-- Default to `transcription-whisper` when subtitle quality matters. Use turbo
-  only for an explicit cheaper rough pass or when timestamps are not primary.
-- Hosted transcription is async. Submit writes request, response, manifest,
-  generation handle, provider status, provider URLs, and downloaded outputs if
-  already completed.
+- Hosted transcription runs through the public `postplus media transcribe` verb
+  and is async. A submit writes request, response, manifest, generation handle,
+  provider status, provider URLs, and downloaded outputs if already completed.
+- A higher-quality default model and a faster, cheaper variant are available;
+  prefer the default when subtitle quality matters and use the cheaper variant
+  for an explicit rough pass. The generated example below shows the default
+  endpoint key.
 
 ## Source And Path
-- Include `durationSeconds` in the hosted capability request input for billing/preflight.
-- Use `enableTimestamps` when output will feed subtitles or edit decisions.
+- Supply the media duration so the hosted boundary can price and preflight the
+  request; a missing duration fast-fails before any provider spend.
+- Request timestamps when the output will feed subtitles or edit decisions.
 - Start with one source file before larger batches.
 - Keep internal requests, responses, manifests, normalized transcripts, and
   downloaded artifacts under `.postplus/audio-transcription`; keep final
@@ -59,7 +59,18 @@ metadata:
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, fallback providers, or unpublished tools.
-- Use `postplus media schema --json` only when constructing or repairing an unknown request shape.
-- Hosted media capability: `postplus media capability --request <hosted-capability-request.json> --output <result.json>`.
-- Use the capability request shape required by the selected workflow; do not call provider APIs directly.
+- Use `postplus media schema --json` only when you need the full endpoint, flag,
+  and enum contract or are repairing an unknown request shape.
+- Run the hosted transcription job with the generated command below; do not call
+  provider APIs directly.
+
+<!-- BEGIN GENERATED EXECUTION EXAMPLE -->
+```bash
+postplus media transcribe transcription \
+  --audio <audio> \
+  --duration-seconds <duration-seconds> \
+  --output <result.json>
+```
+<!-- END GENERATED EXECUTION EXAMPLE -->
+
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

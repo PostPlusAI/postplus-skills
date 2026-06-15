@@ -7,8 +7,6 @@ metadata:
     familyName: LinkedIn, Facebook, and YouTube
 ---
 
-# Youtube Research
-
 # YouTube Research
 
 Use this skill for public YouTube channel summaries, audience comment samples,
@@ -23,26 +21,35 @@ The released collection does not expose subscriber identities. Use channel
 metadata and comments as public proxies, and do not present comment authors as
 the subscriber base.
 
-## Collection Key Routing
+## Collection Route
 
-Released hosted collection keys:
+YouTube research runs through two hosted routes:
 
-- `youtube-channel-summary`: channel metadata and subscriber counts.
-- `youtube-comments`: audience proxy research from comments on a specific video
-  or Shorts URL.
-- `youtube-video-download`: hosted video record for explicit video URLs.
-- `youtube-videos`: public-video collection through the installed public-video
-  entrypoint.
+- Public video search/retrieval scrapes the public-video source. The `--request`
+  file is a JSON array of input records (one record per channel handle or video
+  URL).
+- Channel summary, audience comments, and downloadable video records collect a
+  hosted collection. The `--request` file is the collection input object
+  directly.
+
+<!-- BEGIN GENERATED EXECUTION EXAMPLE -->
+```bash
+postplus research scrape youtube-videos --request request.json --output result.json
+```
+
+```bash
+postplus research collect youtube-channel-summary --request request.json --output result.json
+```
+<!-- END GENERATED EXECUTION EXAMPLE -->
 
 ## Default Workflow
 
-1. For channel research, start with `youtube-channel-summary`.
-2. For audience research, collect a small comments sample with
-   `youtube-comments`.
-3. For broad public video discovery, compile a small public-video plan and run
-   the installed public-video collection entrypoint.
-4. If the public-video run is pending, preserve `collection-report.json` and
-   resume with the emitted poll command.
+1. For channel research, collect a channel summary.
+2. For audience research, collect a small comments sample.
+3. For broad public video discovery, compile a small public-video plan and
+   scrape the public-video source.
+4. If a hosted run is pending, preserve `collection-report.json` and resume with
+   the emitted poll command.
 5. Keep observation separate from inference, especially for audience claims.
 
 While collection is pending, tell the user the public collection is running
@@ -76,9 +83,9 @@ cross-platform synthesis.
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, fallback providers, or unpublished tools.
-- Use `postplus research schema --collection-key youtube-channel-summary --json` only when constructing or repairing an unknown request shape.
-- Hosted collection: `postplus research collect --skill youtube-research --collection-key youtube-channel-summary --input <hosted-envelope.json> --output <collection-result.json>`.
-- Public video collection: `postplus research capability --request <hosted-capability-request.json> --output <collection-result.json>` with `public-content-collection` sourceKey `youtube-videos`.
-- Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
+- Use `postplus research schema --json` only when constructing or repairing an unknown request shape.
+- Public video scrape: `postplus research scrape youtube-videos --request <input-array.json> --output <result.json>` (request = a JSON array of input records).
+- Hosted collection: `postplus research collect <collectionKey> --request <input.json> --output <result.json>` (input = the collection parameters; channel summary, comments, or video download).
+- Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <result.json>`.
 - Keep the first pass bounded; expand only after inspecting the first result.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

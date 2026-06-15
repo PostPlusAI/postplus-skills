@@ -133,7 +133,4 @@ Return shortlist rows, fit scores and reasons, public contact signals with prove
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, fallback providers, or unpublished tools.
-- Use `postplus publish schema --json` only when constructing or repairing an unknown request shape.
-- Hosted publishing capability: `postplus publish capability --request <hosted-capability-request.json> --output <result.json>`.
 - Preview and approval boundaries stay explicit; do not execute irreversible publishing without the required approval artifact.
-- Confirm quote challenges with `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

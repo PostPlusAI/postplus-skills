@@ -22,18 +22,20 @@ metadata:
 - Required inputs are missing and guessing would change the result.
 
 ## Execution Boundary
-- Default model is `gemini-3.5-flash` through released model key
-  `gemini-video-analysis`.
+- Analysis runs through the hosted `video-analysis` capability; discover the
+  model keys and request shape with `postplus media schema --json`.
 - Supported local formats are `.mp4`, `.m4v`, `.mov`, and `.webm`.
-- Local videos are uploaded through the hosted `file_reference` path: signed
-  upload URL, local byte upload, then Gemini `file_reference`.
-- The runner does not claim inline video bytes, compression, segmentation,
-  resumable upload, or file URI reuse. If signed upload or `file_reference`
-  analysis fails, stop on that error.
+- The analyze verb only accepts an already-hosted video reference. Put the local
+  video behind a hosted `storageReference` first with `postplus media-file
+  upload`, then reference it as a Gemini `file_reference` in the analyze request.
+  Upload is a separate generic verb, not part of `media analyze`.
+- This boundary does not claim inline video bytes, compression, segmentation,
+  resumable upload, or file URI reuse. If the upload or the hosted analyze call
+  fails, stop on that error.
 
 ## Source And Path
 - A direct local file can be analyzed immediately. For a URL, first download or
-  recover the local video, then build a download report.
+  recover the local video, then upload it with `media-file upload`.
 - Preserve `sourceId`, `sourceUrl`, `videoFilePath`, `sourceMetadataPath` or
   dataset path, model, prompt version, and source basis so results can be joined
   back to source metadata.
@@ -49,26 +51,40 @@ metadata:
   best-fit creative use cases.
 
 ## Output And Handoff
-- The runner writes one natural Markdown analysis file per source video plus
-  `_batch-summary.json`. The analysis should cover useful video evidence such
-  as shot beats, timeline, VO/on-screen text, reusable content structure, and
-  creative strategy when those are relevant.
-- Provider text is normalized before writing: Markdown is preserved, Markdown
-  wrapped in JSON is extracted, and structured JSON is rendered as readable
-  Markdown.
+- `media analyze` returns the hosted provider response (the Gemini candidates)
+  verbatim. Read the analysis text from that response and write one natural
+  Markdown file per source video into a stable workspace path; there is no batch
+  runner or summary file.
+- The analysis should cover useful video evidence such as shot beats, timeline,
+  VO/on-screen text, reusable content structure, and creative strategy when
+  those are relevant. If the provider returns the analysis wrapped in JSON,
+  unwrap it to readable Markdown in-context.
 - Results should stay grounded in observable video evidence. Database fields,
   catalog frontmatter, or search indexes belong to a separate ingestion step,
   not to the general video-analysis boundary.
 
 ## Public Command Boundary
 
-- Hosted media capability: `postplus media capability --request <hosted-capability-request.json> --output <result.json>`.
-- Use the capability request shape required by the selected workflow; do not call provider APIs directly.
-- Use `postplus media schema --json` only when constructing or repairing an
-  unknown request shape.
+- Step 1 — upload the local video to a hosted reference:
+  `postplus media-file upload --input-file <video> --mime <video/mp4|video/quicktime|video/webm> --output <upload.json>`.
+  Read `storageReference` from the result.
+- Step 2 — author the Gemini request file: `contents` with a `text` prompt part
+  and a `file_reference` part set to that `storageReference`, plus optional
+  `generationConfig`.
+- Step 3 — run the analysis:
+  `postplus media analyze <model-key> --request <gemini-request.json> --output <result.json>`.
+
+<!-- BEGIN GENERATED EXECUTION EXAMPLE -->
+```bash
+postplus media analyze video-analysis --request request.json --output result.json
+```
+<!-- END GENERATED EXECUTION EXAMPLE -->
+
+- Discover the model keys and request shape with `postplus media schema --json`;
+  do not call provider APIs directly.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.
 - Choose the smallest matching command from the user input and run it directly.
 - Readiness diagnostics: `postplus doctor --skill video-analysis`.
-  If the runner fails, report the exact script error and stop. Do not bypass the
+  If a command fails, report the exact error and stop. Do not bypass the
   failure by answering from metadata, base64-inlining video, readiness probing,
   or unowned fallbacks.

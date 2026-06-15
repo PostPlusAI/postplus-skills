@@ -23,10 +23,13 @@ metadata:
 ## Execution Boundary
 - Do not write hook variants from scratch, call image providers directly, create
   persona packs, or replace final creative QA.
-- Default image models are `image-gpt-image-2-text` for slides without
-  references and `image-gpt-image-2-edit` for slides with references.
-- Default quality is `medium`, resolution `1k`, output PNG. Default platform is
-  TikTok `9:16`; Instagram carousel uses `4:5` unless the user asks otherwise.
+- Route slides by reference state: `image-gpt-image-2-text` for slides without
+  references, `image-gpt-image-2-edit` for slides with references.
+- Slideshow aspect is a creative choice passed as `--aspect-ratio` (TikTok
+  `9:16`; Instagram carousel `4:5` unless the user asks otherwise). The other
+  image defaults (quality, resolution, output format) are owned by the image
+  create verb — discover them via `postplus media schema --json`; do not restate
+  hosted enums here.
 
 ## Manifest And Routing
 - The slide manifest is the routing source of truth.
@@ -72,6 +75,5 @@ metadata:
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, fallback providers, or unpublished tools.
 - Use `postplus media schema --json` only when constructing or repairing an unknown request shape.
-- Hosted media capability: `postplus media capability --request <hosted-capability-request.json> --output <result.json>`.
-- Use the capability request shape required by the selected workflow; do not call provider APIs directly.
+- Generate each slide through the shared image create verb (owned by image-batch-runner), attributing the run to this skill: `postplus media create image-gpt-image-2-text --skill slideshow-producer --prompt '<scene + vibe>' --aspect-ratio <ratio> --output <result.json>`. For reference-backed slides use `image-gpt-image-2-edit` with one or more `--reference-image <url>`. Do not call provider APIs directly.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

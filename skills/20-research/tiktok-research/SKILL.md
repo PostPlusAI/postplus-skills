@@ -38,20 +38,18 @@ Keep the first pass bounded:
 
 ## Collection Key Routing
 
-Use released hosted collection keys only with
+Route to the matching hosted collection key by task shape:
 
-- `tiktok-videos`: keyword, hashtag, profile URL, music URL, direct video, and
-  content-first creator discovery; local input shape `tiktok-scraper`.
-- `tiktok-users`: keyword account-search supplement; local input shape
-  `tiktok-user-search-scraper`.
-- `tiktok-profiles`: profile enrichment from known handles; local input shape
-  `tiktok-profile-scraper`.
-- `tiktok-related-videos`: graph expansion from shortlisted video URLs.
-- `tiktok-comments`: focused comment collection.
+- keyword, hashtag, profile URL, music URL, direct video, and content-first
+  creator discovery,
+- keyword account-search supplement,
+- profile enrichment from known handles,
+- graph expansion from shortlisted video URLs,
+- focused comment collection.
 
-`tiktok-scraper`, `tiktok-user-search-scraper`,
-`tiktok-profile-scraper`, and `tiktok-comments-scraper` are not hosted
-collection keys. Do not pass them to the collection runner.
+Discover the exact released collection keys and request shapes with
+`postplus research schema --json`. Pass the request body to
+`postplus research collect <collectionKey> --request <input.json>`.
 
 ## Creator Discovery Rule
 
@@ -73,12 +71,18 @@ explicitly asks for account-search recall.
 
 1. Choose the route first: content-first, handle-first, graph-first, or mixed.
 2. Keep the first hosted collection narrow when the brief is simple.
-3. Put the compiled input under a `schemaVersion: 1` hosted envelope before
-   running `postplus research collect --skill tiktok-research`.
+3. Write the compiled collection input to a request file and run
+   `postplus research collect <collectionKey> --request <input.json>`.
 4. Enrich profiles only after the content or account dataset exists.
 5. Expand around strong seed videos only after a promising shortlist exists.
 6. Summarize source surface, source query, strongest openings, repeated
    formats, creators, hashtags, and missing evidence.
+
+<!-- BEGIN GENERATED EXECUTION EXAMPLE -->
+```bash
+postplus research collect tiktok-comments --request request.json --output result.json
+```
+<!-- END GENERATED EXECUTION EXAMPLE -->
 
 Keep raw datasets and intermediate files under `.postplus/`; keep final
 reports or shortlist exports outside `.postplus/` when the user needs them.
@@ -89,7 +93,6 @@ reports or shortlist exports outside `.postplus/` when the user needs them.
 - Do not use paid ad data as organic creator or content evidence.
 - Do not route profile enrichment through unpublished keys or implementation
   names.
-- Do not pass bare local input JSON to hosted collection commands.
 - Stop on missing auth, unavailable PostPlus Cloud service, stable network
   failure, malformed collection output, or unsupported collection keys.
 
@@ -109,8 +112,8 @@ reports or shortlist exports outside `.postplus/` when the user needs them.
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, fallback providers, or unpublished tools.
-- Use `postplus research schema --collection-key tiktok-comments --json` only when constructing or repairing an unknown request shape.
-- Hosted collection: `postplus research collect --skill tiktok-research --collection-key tiktok-comments --input <hosted-envelope.json> --output <collection-result.json>`.
-- Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
+- Use `postplus research schema --collection-key <collectionKey> --json` only when constructing or repairing an unknown request shape.
+- Hosted collection: `postplus research collect <collectionKey> --request <input.json> --output <result.json>` (input = the collection parameters).
+- Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <result.json>`.
 - Keep the first pass bounded; expand only after inspecting the first result.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

@@ -19,10 +19,9 @@ metadata:
 - Required inputs are missing and guessing would change the result.
 
 ## Execution Boundary
-- Released endpoint key is `transcription-whisper-with-video` through hosted
-  `media-file` and `media-generation`.
-- Use `enableTimestamps: true` by default when results drive subtitles or edit
-  decisions.
+- Hosted video transcription runs through the public `postplus media transcribe`
+  verb and is async. The generated example below shows the endpoint key.
+- Request timestamps by default when results drive subtitles or edit decisions.
 - Hosted video transcription is async. Submit writes request, response, manifest,
   normalized transcript path, generation handle, provider status, provider URLs,
   and artifacts when already completed.
@@ -56,7 +55,17 @@ metadata:
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, fallback providers, or unpublished tools.
-- Use `postplus media schema --json` only when constructing or repairing an unknown request shape.
-- Hosted media capability: `postplus media capability --request <hosted-capability-request.json> --output <result.json>`.
-- Use the capability request shape required by the selected workflow; do not call provider APIs directly.
+- Use `postplus media schema --json` only when you need the full endpoint, flag,
+  and enum contract or are repairing an unknown request shape.
+- Run the hosted transcription job with the generated command below; do not call
+  provider APIs directly.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.
+
+<!-- BEGIN GENERATED EXECUTION EXAMPLE -->
+```bash
+postplus media transcribe transcription-video \
+  --video <video> \
+  --duration-seconds <duration-seconds> \
+  --output <result.json>
+```
+<!-- END GENERATED EXECUTION EXAMPLE -->

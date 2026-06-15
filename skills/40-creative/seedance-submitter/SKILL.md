@@ -25,19 +25,20 @@ metadata:
 - This runner validates, submits, and polls normalized Seedance requests. It must
   not make creative strategy, task-classification, or reference-policy decisions.
 - Interpret `sd2` as Seedance 2.0 unless the user names another model.
-- Released endpoint keys are `video-seedance-2-image`,
-  `video-seedance-2-image-turbo`, `video-seedance-2-text`, and
-  `video-seedance-2-text-turbo`.
-- `duration` is the provider bucket and must be `5`, `10`, or `15`. For edit
-  targets like `7.5s`, use the next viable bucket in `duration` and set
-  `targetEditDurationSeconds`.
+- Released endpoint keys and their option enums (resolution, aspect ratio,
+  duration bounds) are discovered from `postplus media schema --json`; they are
+  not hard-coded here.
+- Set `duration` within the endpoint's published bounds (see schema). For edit
+  targets that fall between viable values, pick the nearest valid `duration` and
+  set `targetEditDurationSeconds`.
 - When `targetEditDurationSeconds < duration`, include
   `timeline.activePerformanceEndSeconds` and `timeline.tailStrategy`.
-- If the target script or beat plan exceeds 15 seconds, split into independent
-  submit-ready segments. Do not submit one oversized request.
+- If the target script or beat plan exceeds the endpoint's maximum duration,
+  split into independent submit-ready segments. Do not submit one oversized
+  request.
 
 ## Source And Request
-- Lock product/storyboard/reference media, script, duration bucket, target edit
+- Lock product/storyboard/reference media, script, duration, target edit
   duration, output root, source basis, and whether the user wants submit or JSON
   only.
 - Put timecoded action and spoken lines together in `promptPlan.prompt_storyline`.
@@ -73,6 +74,19 @@ metadata:
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, fallback providers, or unpublished tools.
 - Use `postplus media schema --json` only when constructing or repairing an unknown request shape.
-- Hosted media capability: `postplus media capability --request <hosted-capability-request.json> --output <result.json>`.
-- Use the capability request shape required by the selected workflow; do not call provider APIs directly.
+- Run the hosted submit with the generated command below; do not call provider APIs directly.
+
+<!-- BEGIN GENERATED EXECUTION EXAMPLE -->
+```json
+{
+  "prompt": "<prompt>",
+  "image": "<image>"
+}
+```
+
+```bash
+postplus media create video-seedance-2-image --request request.json --output result.json
+```
+<!-- END GENERATED EXECUTION EXAMPLE -->
+
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

@@ -36,25 +36,18 @@ Classify the request first:
 
 ## Collection Key Routing
 
-Released hosted collection key:
+Keyword analysis uses one `keyword` string. Keyword requests must set
+`enableTrendingSearches: false`; `queries` is not a supported keyword-request
+field because it produces generic realtime trending searches.
 
-- `google-trends-fast`: keyword analysis using one `keyword` string. Keyword
-  requests must set `enableTrendingSearches: false`; `queries` is not a
-  supported keyword-request field for this collection because it produces
-  generic realtime trending searches.
+The `--request` file is the collection input object (the compiled Google Trends
+request) directly.
 
-The hosted input must be a `schemaVersion: 1` envelope whose `input` field
-contains the compiled Google Trends request.
-
-Primary command:
-
+<!-- BEGIN GENERATED EXECUTION EXAMPLE -->
 ```bash
-postplus research collect \
-  --skill google-trends-research \
-  --collection-key google-trends-fast \
-  --input <hosted-envelope.json> \
-  --output <raw-output.json>
+postplus research collect google-trends-fast --request request.json --output result.json
 ```
+<!-- END GENERATED EXECUTION EXAMPLE -->
 
 ## Default Workflow
 
@@ -104,7 +97,7 @@ missing evidence layer.
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, fallback providers, or unpublished tools.
 - Use `postplus research schema --collection-key google-trends-fast --json` only when constructing or repairing an unknown request shape.
-- Hosted collection: `postplus research collect --skill google-trends-research --collection-key google-trends-fast --input <hosted-envelope.json> --output <collection-result.json>`.
-- Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
+- Hosted collection: `postplus research collect google-trends-fast --request <input.json> --output <result.json>` (input = the collection parameters).
+- Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <result.json>`.
 - Preview and approval boundaries stay explicit; do not execute irreversible publishing without the required approval artifact.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

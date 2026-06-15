@@ -28,31 +28,26 @@ organic content lane mapping, or TikTok music workflows.
 
 ## Collection Key Routing
 
-Released hosted collection key:
-
-- `tiktok-ads-top`: top paid ad examples and optional ad-level metrics.
-
-The hosted input must be a `schemaVersion: 1` execution envelope whose `input`
-field contains the paid-ad collection request.
-
-Primary command:
-
-```bash
-postplus research collect \
-  --skill tiktok-ad-research \
-  --collection-key tiktok-ads-top \
-  --input <hosted-envelope.json> \
-  --output <raw-output.json>
-```
+Route paid-ad collection to the released hosted collection key for top paid ad
+examples and optional ad-level metrics. Discover the exact released collection
+key and request shape with `postplus research schema --json`, then pass the
+request body to `postplus research collect <collectionKey> --request <input.json>`.
 
 ## Default Workflow
 
 1. Classify the request into a paid-ad task shape.
 2. Build a narrow first-pass request for the category, region, objective, or
    competitor scope.
-3. Wrap the request under `schemaVersion: 1` + `input`.
-4. Run the hosted collection and normalize the result into observed ad facts.
+3. Write the request to a request file and run
+   `postplus research collect <collectionKey> --request <input.json>`.
+4. Normalize the result into observed ad facts.
 5. Separate observed ad facts from inferred creative implications.
+
+<!-- BEGIN GENERATED EXECUTION EXAMPLE -->
+```bash
+postplus research collect tiktok-ads-top --request request.json --output result.json
+```
+<!-- END GENERATED EXECUTION EXAMPLE -->
 
 Keep raw datasets and intermediate files under `.postplus/tiktok-ads/`; keep
 final shortlists, summaries, or briefs where the user can inspect them.
@@ -86,8 +81,8 @@ which metrics were actually present in the sample.
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, fallback providers, or unpublished tools.
-- Use `postplus research schema --collection-key tiktok-ads-top --json` only when constructing or repairing an unknown request shape.
-- Hosted collection: `postplus research collect --skill tiktok-ad-research --collection-key tiktok-ads-top --input <hosted-envelope.json> --output <collection-result.json>`.
-- Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <collection-result.json>`.
+- Use `postplus research schema --collection-key <collectionKey> --json` only when constructing or repairing an unknown request shape.
+- Hosted collection: `postplus research collect <collectionKey> --request <input.json> --output <result.json>` (input = the collection parameters).
+- Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <result.json>`.
 - Keep the first pass bounded; expand only after inspecting the first result.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

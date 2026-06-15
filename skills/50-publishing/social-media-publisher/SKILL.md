@@ -28,42 +28,42 @@ Channel onboarding uses the PostPlus invite-link path:
    workspace.
 4. PostPlus labels the channel with the user's PostPlus account id.
 
-Scripts receive PostPlus-hosted request envelopes and customer config files,
-not hidden server credentials.
+Scripts receive PostPlus-hosted request envelopes, not hidden server
+credentials.
 
-## Safe Default
+## Command
 
-the local request, enforces the integration allowlist, writes a preview
-envelope, emits an approval request, and does not call the remote publishing
-service.
+Run one operation per call. The operation is the subcommand:
 
-Actual remote mutation requires:
+`postplus publish <operation> --request <input.json> --output <result.json>`
 
-- `--execute`,
-- `--approval-file <approved.json>`,
-- an onboarded and allowed integration id,
-- current entitlement or channel evidence for publish-like operations.
+`<input.json>` is the publishing `input` object for that operation. The CLI
+mints the `operationId` and posts to the PostPlus social publishing workspace.
 
-or publishing an existing draft.
+Side-effecting operations (create, schedule, publish, delete) can return a
+quote-confirmation challenge before any spend. When that happens, run
+`postplus quote confirm --json --challenge-file <challenge.json>` and retry the
+same command with `--quote-confirmation-token <token>`.
+
+<!-- BEGIN GENERATED EXECUTION EXAMPLE -->
+```bash
+postplus publish analytics --request request.json --output result.json
+```
+<!-- END GENERATED EXECUTION EXAMPLE -->
 
 ## Required Input
 
-- A hosted capability request JSON with `capability: "social-publishing"`,
-  a supported `operation`, `operationId`, and publishing `input`.
-- A bare customer config JSON with `allowedIntegrationIds` at the top level.
-- Workspace/account identity, integration id, content/media, and post or group
-  ids required by the selected operation.
-
-Do not wrap the customer config in the hosted capability request.
+- A publishing `input` object matching the selected operation: workspace/account
+  identity, integration id, content/media, and post or group ids as required.
 
 ## Default Workflow
 
 1. Confirm the channel was onboarded through the invite-link flow.
-2. List integrations to confirm the exact integration id.
-3. Build the hosted capability request and bare customer config.
+2. List channels to confirm the exact integration id.
+3. Build the publishing `input` for the operation and run the command.
 4. Keep reviewable work in `draft` unless the user explicitly approves
-   scheduling or publishing.
-   approval and current channel evidence.
+   scheduling or publishing; live publish/schedule needs human approval and
+   current channel evidence.
 
 ## User-Facing Blockers
 
@@ -71,7 +71,7 @@ Stop and explain when:
 
 - no PostPlus auth/session is available,
 - the channel was not onboarded through the invite-link flow,
-- the integration id is missing or not in `allowedIntegrationIds`,
+- the integration id is missing or not an onboarded channel,
 - required content, media, post id, or group id is missing,
 - approval or quote confirmation is required,
 - entitlement or current channel evidence is missing for a publish-like action,
@@ -87,13 +87,12 @@ command when required, or the exact product error and next boundary.
 
 ## Public Command Boundary
 
-- Choose the smallest matching command or workflow from the user input and run
-  it directly.
+- Choose the smallest matching operation from the user input and run it directly.
 - Readiness diagnostics: `postplus doctor --skill social-media-publisher`.
-- If an owned CLI or script command fails, report the exact error and stop. Do
-  not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, fallback providers, or unpublished tools.
-- Use `postplus publish schema --json` only when constructing or repairing an unknown request shape.
-- Hosted publishing capability: `postplus publish capability --request <hosted-capability-request.json> --output <result.json>`.
-- Preview and approval boundaries stay explicit; do not execute irreversible publishing without the required approval artifact.
-- If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.
+- If an owned CLI command fails, report the exact error and stop. Do not bypass
+  the failure with metadata-only answers, readiness probing, local payload
+  rewrites, fallback providers, or unpublished tools.
+- Use `postplus publish schema --json` only when constructing or repairing an
+  unknown request shape.
+- Approval boundaries stay explicit; do not execute irreversible publishing
+  without human approval and current channel evidence.
