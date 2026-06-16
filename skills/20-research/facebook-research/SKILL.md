@@ -44,13 +44,11 @@ postplus research scrape facebook-group-posts --request request.json --output re
 
 1. Confirm Facebook public source scope.
 2. Compile a small page, group, post, or discovery brief.
-4. If the result is pending, preserve the emitted `collection-report.json`.
-   until `pending` is `0`.
-6. Normalize or summarize public post facts without treating them as private
+3. Scrape the matching released source key. `postplus research scrape` returns
+   the public post records synchronously in a single pass; this skill has no
+   async handle or checkpoint to poll.
+4. Normalize or summarize public post facts without treating them as private
    audience exports.
-
-While collection is pending, tell the user the public collection is running
-from a saved checkpoint and continue independent brief or source-review work.
 
 ## Output
 

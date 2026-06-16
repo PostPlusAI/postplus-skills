@@ -54,8 +54,9 @@ metadata:
 - Before submission, verify validation passed, every segment is self-contained,
   references are bound, required media exists, source basis is explicit, and the
   output path is durable.
-- If a render is pending, return the segment id, manifest path,
-  `pollRequestPath`/`pollCommand`, generation handle, and expected local
+- If a render is pending, return the segment id, manifest path, the
+  `output.data.id` generation handle, the poll command
+  `postplus media poll --handle <output.data.id>`, and expected local
   `renders/` output path. Do not keep polling in the conversation.
 
 ## Stop Conditions
@@ -70,6 +71,7 @@ metadata:
 - Choose the smallest matching command or workflow from the user input and run
   it directly.
 - Readiness diagnostics: `postplus doctor --skill seedance-submitter`.
+- Poll a pending render: `postplus media poll --handle <output.data.id>`.
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, fallback providers, or unpublished tools.

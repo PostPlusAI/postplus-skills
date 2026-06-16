@@ -53,8 +53,9 @@ metadata:
 - `--request` must point to a JSON file carrying only the normalized video
   `input` for the selected endpoint; the CLI runner mints the operation
   identifiers and billing dimensions.
-- Poll a pending render with the `output.data.id` handle returned by the create
-  request; do not keep polling in the conversation.
+- Poll a pending render with `postplus media poll --handle <output.data.id>`
+  (the handle is returned by the create request); do not keep polling in the
+  conversation.
 - Keep internal requests/responses under `.postplus` when they are not final
   handoff artifacts; keep final renders/manifests in the active render folder.
 
@@ -73,8 +74,9 @@ metadata:
   concrete prompt source, source basis, asset purpose, and local output path.
 - After generation, keep `review_pending` until human QA checks lip sync,
   persona continuity, audio/image match, native feel, and ad-like drift.
-- If pending, return `manifestPath`, `pollRequestPath`, and `pollCommand`
-  immediately. Do not keep thinking or polling in the conversation.
+- If pending, return `manifestPath`, the `output.data.id` handle, and the poll
+  command `postplus media poll --handle <output.data.id>` immediately. Do not
+  keep thinking or polling in the conversation.
 
 ## Stop Conditions
 - Stop when required user intent, source evidence, or owned input artifacts are
@@ -93,6 +95,7 @@ metadata:
   video-seedance-2-*` command owned by `seedance-submitter`; route Seedance
   there instead of duplicating its request shape here.
 - Readiness diagnostics: `postplus doctor --skill video-batch-runner`.
+- Poll a pending render: `postplus media poll --handle <output.data.id>`.
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, fallback providers, or unpublished tools.

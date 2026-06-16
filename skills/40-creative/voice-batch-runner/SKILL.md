@@ -54,8 +54,10 @@ metadata:
   route (`voice_design` or `voice_clone_take`), source basis, and output path.
 - After generation, review realism, persona fit, pacing, ad-like delivery,
   reuse potential, and for cloned output, timbre/accent drift from the reference.
-- If pending, return the saved request path, manifest path, generation handle or
-  command. Do not keep polling in the conversation.
+- If pending, return the saved request path, manifest path, the `output.data.id`
+  generation handle, and the poll command
+  `postplus media poll --handle <output.data.id>`. Do not keep polling in the
+  conversation.
 
 ## Stop Conditions
 - Stop when required user intent, source evidence, or owned input artifacts are
@@ -69,6 +71,7 @@ metadata:
 - Choose the smallest matching command or workflow from the user input and run
   it directly.
 - Readiness diagnostics: `postplus doctor --skill voice-batch-runner`.
+- Poll a pending voice take: `postplus media poll --handle <output.data.id>`.
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, fallback providers, or unpublished tools.

@@ -52,8 +52,8 @@ metadata:
   what must stay fixed versus vary.
 - After generation, check realism, benchmark fit, repeatability across videos,
   copied-creator risk, and ad-like drift.
-- If processing is still pending, return the manifest/request paths and the status
-  command to poll.
+- If processing is still pending, return the manifest/request paths and the poll
+  command `postplus media poll --handle <output.data.id>`.
 
 ## Stop Conditions
 - Stop when required user intent, source evidence, or owned input artifacts are
@@ -67,6 +67,7 @@ metadata:
 - Choose the smallest matching command or workflow from the user input and run
   it directly.
 - Readiness diagnostics: `postplus doctor --skill image-batch-runner`.
+- Poll a pending image job: `postplus media poll --handle <output.data.id>`.
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, fallback providers, or unpublished tools.
