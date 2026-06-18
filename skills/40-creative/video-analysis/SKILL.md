@@ -73,6 +73,9 @@ metadata:
   `generationConfig`.
 - Step 3 — run the analysis:
   `postplus media analyze <model-key> --request <gemini-request.json> --output <result.json>`.
+  When the source video duration is known (e.g. from the local file before upload),
+  pass `--video-seconds <n>` so the hosted boundary can route eligible short videos
+  efficiently; omit it when the duration is unknown.
 
 <!-- BEGIN GENERATED EXECUTION EXAMPLE -->
 ```bash
