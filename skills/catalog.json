@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-2026-06-18.1-field-validators-and-manifest-regressions",
+  "releaseId": "skills-2026-06-20.2-hosted-collection-handle-type",
   "source": "PostPlusAI/postplus-skills",
   "skills": [
     {

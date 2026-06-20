@@ -45,8 +45,10 @@ postplus research scrape facebook-group-posts --request request.json --output re
 1. Confirm Facebook public source scope.
 2. Compile a small page, group, post, or discovery brief.
 3. Scrape the matching released source key. `postplus research scrape` returns
-   the public post records synchronously in a single pass; this skill has no
-   async handle or checkpoint to poll.
+   either completed public post records or a pending result with `runHandle`.
+   When pending, resume with
+   `postplus research collect --run-handle <runHandle> --output <result.json>`
+   until the result is completed or failed.
 4. Normalize or summarize public post facts without treating them as private
    audience exports.
 
@@ -79,5 +81,6 @@ cross-platform synthesis. Publishing belongs in `social-media-publisher`.
   payload rewrites, fallback providers, or unpublished tools.
 - Use `postplus research schema --json` only when constructing or repairing an unknown request shape.
 - Public content scrape: `postplus research scrape <sourceKey> --request <input-array.json> --output <result.json>` (request = a JSON array of input records).
+- Resume a pending public content scrape: `postplus research collect --run-handle <runHandle> --output <result.json>`.
 - Keep the first pass bounded; expand only after inspecting the first result.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

@@ -1,6 +1,6 @@
 ---
 name: audio-transcription
-description: Transcribe local or remote audio into durable text and timestamp artifacts using hosted Whisper models. Use this when the job is speech-to-text from audio files and you need request/response persistence, optional timestamps, and subtitle-ready outputs.
+description: Transcribe remote HTTPS audio, or local audio after a PostPlus media-file upload, into durable text and timestamp artifacts using hosted Whisper models. Use this when the job is speech-to-text from audio files and you need request/response persistence, optional timestamps, and subtitle-ready outputs.
 metadata:
   postplus:
     familyId: media-production
@@ -24,6 +24,9 @@ metadata:
 - Hosted transcription runs through the public `postplus media transcribe` verb
   and is async. A submit writes request, response, manifest, generation handle,
   provider status, provider URLs, and downloaded outputs if already completed.
+- The transcription submit command accepts a remote HTTPS audio URL. For a local
+  audio file, first run the generic hosted upload step, read `output.download_url`
+  from the upload result, then pass that HTTPS URL to `--audio`.
 - A higher-quality default model and a faster, cheaper variant are available;
   prefer the default when subtitle quality matters and use the cheaper variant
   for an explicit rough pass. The generated example below shows the default
@@ -33,7 +36,7 @@ metadata:
 - Supply the media duration so the hosted boundary can price and preflight the
   request; a missing duration fast-fails before any provider spend.
 - Request timestamps when the output will feed subtitles or edit decisions.
-- Start with one source file before larger batches.
+- Start with one source file or uploaded audio URL before larger batches.
 - Keep internal requests, responses, manifests, normalized transcripts, and
   downloaded artifacts under `.postplus/audio-transcription`; keep final
   user-facing transcript exports outside `.postplus`.
@@ -64,6 +67,11 @@ metadata:
   and enum contract or are repairing an unknown request shape.
 - Run the hosted transcription job with the generated command below; do not call
   provider APIs directly.
+- For a local file, first run
+  `postplus media-file upload --skill audio-transcription --input-file <audio-file> --mime <audio/mpeg|audio/wav|audio/mp4> --output <upload.json>`.
+  Then read the HTTPS `output.download_url` from `<upload.json>` and pass that
+  URL as `--audio`. Do not pass local paths, `file://` URLs, or
+  `storageReference` objects to `postplus media transcribe`.
 
 <!-- BEGIN GENERATED EXECUTION EXAMPLE -->
 ```bash
