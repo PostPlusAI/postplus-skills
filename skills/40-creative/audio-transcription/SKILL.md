@@ -25,7 +25,7 @@ metadata:
   and is async. A submit writes request, response, manifest, generation handle,
   provider status, provider URLs, and downloaded outputs if already completed.
 - The transcription submit command accepts a remote HTTPS audio URL. For a local
-  audio file, first run the generic hosted upload step, read `output.download_url`
+  audio file, first run the generic hosted upload step, read `output.data.download_url`
   from the upload result, then pass that HTTPS URL to `--audio`.
 - A higher-quality default model and a faster, cheaper variant are available;
   prefer the default when subtitle quality matters and use the cheaper variant
@@ -69,7 +69,7 @@ metadata:
   provider APIs directly.
 - For a local file, first run
   `postplus media-file upload --skill audio-transcription --input-file <audio-file> --mime <audio/mpeg|audio/wav|audio/mp4> --output <upload.json>`.
-  Then read the HTTPS `output.download_url` from `<upload.json>` and pass that
+  Then read the HTTPS `output.data.download_url` from `<upload.json>` and pass that
   URL as `--audio`. Do not pass local paths, `file://` URLs, or
   `storageReference` objects to `postplus media transcribe`.
 

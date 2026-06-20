@@ -47,7 +47,7 @@ postplus research scrape facebook-group-posts --request request.json --output re
 3. Scrape the matching released source key. `postplus research scrape` returns
    either completed public post records or a pending result with `runHandle`.
    When pending, resume with
-   `postplus research collect --run-handle <runHandle> --output <result.json>`
+   `postplus research scrape --run-handle <runHandle> --output <result.json>`
    until the result is completed or failed.
 4. Normalize or summarize public post facts without treating them as private
    audience exports.
@@ -81,6 +81,6 @@ cross-platform synthesis. Publishing belongs in `social-media-publisher`.
   payload rewrites, fallback providers, or unpublished tools.
 - Use `postplus research schema --json` only when constructing or repairing an unknown request shape.
 - Public content scrape: `postplus research scrape <sourceKey> --request <input-array.json> --output <result.json>` (request = a JSON array of input records).
-- Resume a pending public content scrape: `postplus research collect --run-handle <runHandle> --output <result.json>`.
+- Resume a pending public content scrape: `postplus research scrape --run-handle <runHandle> --output <result.json>`.
 - Keep the first pass bounded; expand only after inspecting the first result.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

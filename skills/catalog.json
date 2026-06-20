@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-2026-06-20.2-hosted-collection-handle-type",
+  "releaseId": "skills-2026-06-21.1-turbo-removal-and-doc-fixes",
   "source": "PostPlusAI/postplus-skills",
   "skills": [
     {
@@ -22,17 +22,11 @@
           "key": "transcription",
           "name": "Whisper",
           "source": "endpointKey"
-        },
-        {
-          "key": "transcription-turbo",
-          "name": "Whisper Turbo",
-          "source": "endpointKey"
         }
       ],
       "requirements": {
         "endpointKeys": [
-          "transcription",
-          "transcription-turbo"
+          "transcription"
         ],
         "hostedCapabilities": [
           "media-file",
@@ -398,27 +392,15 @@
           "source": "endpointKey"
         },
         {
-          "key": "video-seedance-2-image-turbo",
-          "name": "Seedance 2.0 Image To Video Turbo",
-          "source": "endpointKey"
-        },
-        {
           "key": "video-seedance-2-text",
           "name": "Seedance 2.0 Text To Video",
-          "source": "endpointKey"
-        },
-        {
-          "key": "video-seedance-2-text-turbo",
-          "name": "Seedance 2.0 Text To Video Turbo",
           "source": "endpointKey"
         }
       ],
       "requirements": {
         "endpointKeys": [
           "video-seedance-2-image",
-          "video-seedance-2-image-turbo",
-          "video-seedance-2-text",
-          "video-seedance-2-text-turbo"
+          "video-seedance-2-text"
         ],
         "hostedCapabilities": [
           "media-file",
@@ -628,28 +610,8 @@
           "source": "endpointKey"
         },
         {
-          "key": "video-seedance-2-image-turbo",
-          "name": "Seedance 2.0 Image To Video Turbo",
-          "source": "endpointKey"
-        },
-        {
           "key": "video-seedance-2-text",
           "name": "Seedance 2.0 Text To Video",
-          "source": "endpointKey"
-        },
-        {
-          "key": "video-seedance-2-text-turbo",
-          "name": "Seedance 2.0 Text To Video Turbo",
-          "source": "endpointKey"
-        },
-        {
-          "key": "video-wanx2-1-i2v-turbo",
-          "name": "Wanx2.1 I2v Turbo",
-          "source": "endpointKey"
-        },
-        {
-          "key": "video-wanx2-1-t2v-turbo",
-          "name": "Wanx2.1 T2v Turbo",
           "source": "endpointKey"
         }
       ],
@@ -662,11 +624,7 @@
           "video-kling-v3-0-std-image",
           "video-kling-v3-0-std-text",
           "video-seedance-2-image",
-          "video-seedance-2-image-turbo",
-          "video-seedance-2-text",
-          "video-seedance-2-text-turbo",
-          "video-wanx2-1-i2v-turbo",
-          "video-wanx2-1-t2v-turbo"
+          "video-seedance-2-text"
         ],
         "hostedCapabilities": [
           "media-file",

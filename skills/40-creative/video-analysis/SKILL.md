@@ -26,9 +26,9 @@ metadata:
   model keys and request shape with `postplus media schema --json`.
 - Supported local formats are `.mp4`, `.m4v`, `.mov`, and `.webm`.
 - The analyze verb only accepts an already-hosted video reference. Put the local
-  video behind a hosted `storageReference` first with `postplus media-file
-  upload`, then reference `output.storageReference` as a Gemini `file_reference`
-  in the analyze request. Upload is a separate generic verb, not part of
+  video behind a hosted HTTPS URL first with `postplus media-file upload`, then
+  reference `output.data.download_url` as a Gemini `file_reference` in the
+  analyze request. Upload is a separate generic verb, not part of
   `media analyze`.
 - This boundary does not claim inline video bytes, compression, segmentation,
   resumable upload, or file URI reuse. If the upload or the hosted analyze call
@@ -66,11 +66,11 @@ metadata:
 
 ## Public Command Boundary
 
-- Step 1 — upload the local video to a hosted reference:
+- Step 1 — upload the local video to a hosted HTTPS URL:
   `postplus media-file upload --input-file <video> --mime <video/mp4|video/quicktime|video/webm> --output <upload.json>`.
-  Read `output.storageReference` from the result.
+  Read `output.data.download_url` from the result.
 - Step 2 — author the Gemini request file: `contents` with a `text` prompt part
-  and a `file_reference` part set to that `output.storageReference`, plus optional
+  and a `file_reference` part set to that `output.data.download_url`, plus optional
   `generationConfig`.
 - Step 3 — run the analysis:
   `postplus media analyze <model-key> --request <gemini-request.json> --output <result.json>`.

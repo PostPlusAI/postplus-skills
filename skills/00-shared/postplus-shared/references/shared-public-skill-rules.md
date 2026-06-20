@@ -55,7 +55,9 @@ artifacts, or a compile step before provider execution.
 - If there is no useful parallel work, run one bounded poll pass, report the
   current status, and keep the resume command or checkpoint available. The
   resume command for a hosted media job is `postplus media poll --handle
-  <output.data.id>`; for a hosted research collection it is
+  <output.data.id>`; for a public-content scrape (the `s_...` handle from
+  `research scrape`) it is `postplus research scrape --run-handle <runHandle>`;
+  for a hosted research collection it is
   `postplus research collect --run-handle <runHandle>`.
 
 ## Work Folder Rule

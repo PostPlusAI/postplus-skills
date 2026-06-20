@@ -22,7 +22,7 @@ metadata:
 - Hosted video transcription runs through the public `postplus media transcribe`
   verb and is async. The generated example below shows the endpoint key.
 - The transcription submit command accepts a remote HTTPS video URL. For a local
-  video file, first run the generic hosted upload step, read `output.download_url`
+  video file, first run the generic hosted upload step, read `output.data.download_url`
   from the upload result, then pass that HTTPS URL to `--video`.
 - Request timestamps by default when results drive subtitles or edit decisions.
 - Hosted video transcription is async. Submit writes request, response, manifest,
@@ -66,7 +66,7 @@ metadata:
   provider APIs directly.
 - For a local file, first run
   `postplus media-file upload --skill video-transcription --input-file <video-file> --mime <video/mp4|video/quicktime|video/webm> --output <upload.json>`.
-  Then read the HTTPS `output.download_url` from `<upload.json>` and pass that
+  Then read the HTTPS `output.data.download_url` from `<upload.json>` and pass that
   URL as `--video`. Do not pass local paths, `file://` URLs, or
   `storageReference` objects to `postplus media transcribe`.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.
