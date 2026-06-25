@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-2026-06-21.1-turbo-removal-and-doc-fixes",
+  "releaseId": "skills-2026-06-24.1-higgsfield-soul-and-seedance-toggles",
   "source": "PostPlusAI/postplus-skills",
   "skills": [
     {
@@ -199,12 +199,18 @@
           "key": "image-seedream-v5-lite-sequential",
           "name": "Seedream v5.0 Lite Sequential",
           "source": "endpointKey"
+        },
+        {
+          "key": "image-higgsfield-soul-text",
+          "name": "Soul Standard",
+          "source": "endpointKey"
         }
       ],
       "requirements": {
         "endpointKeys": [
           "image-gpt-image-2-edit",
           "image-gpt-image-2-text",
+          "image-higgsfield-soul-text",
           "image-nano-banana-2-edit",
           "image-nano-banana-2-text",
           "image-nano-banana-pro-edit-1k",
