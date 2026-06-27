@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-2026-06-24.1-higgsfield-soul-and-seedance-toggles",
+  "releaseId": "skills-2026-06-27.1-eve-exec-quality-and-review-fixes",
   "source": "PostPlusAI/postplus-skills",
   "skills": [
     {
@@ -398,6 +398,16 @@
           "source": "endpointKey"
         },
         {
+          "key": "video-seedance-2-mini-image",
+          "name": "Seedance 2.0 Mini Image To Video",
+          "source": "endpointKey"
+        },
+        {
+          "key": "video-seedance-2-mini-text",
+          "name": "Seedance 2.0 Mini Text To Video",
+          "source": "endpointKey"
+        },
+        {
           "key": "video-seedance-2-text",
           "name": "Seedance 2.0 Text To Video",
           "source": "endpointKey"
@@ -406,6 +416,8 @@
       "requirements": {
         "endpointKeys": [
           "video-seedance-2-image",
+          "video-seedance-2-mini-image",
+          "video-seedance-2-mini-text",
           "video-seedance-2-text"
         ],
         "hostedCapabilities": [
@@ -616,6 +628,16 @@
           "source": "endpointKey"
         },
         {
+          "key": "video-seedance-2-mini-image",
+          "name": "Seedance 2.0 Mini Image To Video",
+          "source": "endpointKey"
+        },
+        {
+          "key": "video-seedance-2-mini-text",
+          "name": "Seedance 2.0 Mini Text To Video",
+          "source": "endpointKey"
+        },
+        {
           "key": "video-seedance-2-text",
           "name": "Seedance 2.0 Text To Video",
           "source": "endpointKey"
@@ -630,6 +652,8 @@
           "video-kling-v3-0-std-image",
           "video-kling-v3-0-std-text",
           "video-seedance-2-image",
+          "video-seedance-2-mini-image",
+          "video-seedance-2-mini-text",
           "video-seedance-2-text"
         ],
         "hostedCapabilities": [

@@ -24,7 +24,9 @@ metadata:
 ## Execution Boundary
 - This runner validates, submits, and polls normalized Seedance requests. It must
   not make creative strategy, task-classification, or reference-policy decisions.
-- Interpret `sd2` as Seedance 2.0 unless the user names another model.
+- Interpret `sd2` as Seedance 2.0 Mini (`video-seedance-2-mini-*`), the current
+  default tier, unless the user names another model. The standard Seedance 2.0
+  tier (`video-seedance-2-*`) stays available when explicitly requested.
 - Released endpoint keys and their option enums (resolution, aspect ratio,
   duration bounds) are discovered from `postplus media schema --json`; they are
   not hard-coded here.
