@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-2026-07-01.1-workflow-platform-phase2",
+  "releaseId": "skills-2026-07-04.1-agent-copilot-unification",
   "source": "PostPlusAI/postplus-skills",
   "skills": [
     {
@@ -394,27 +394,39 @@
       "supportedModels": [
         {
           "key": "video-seedance-2-image",
-          "name": "Seedance 2.0 Image To Video",
-          "source": "endpointKey"
-        },
-        {
-          "key": "video-seedance-2-mini-image",
-          "name": "Seedance 2.0 Mini Image To Video",
-          "source": "endpointKey"
-        },
-        {
-          "key": "video-seedance-2-mini-text",
-          "name": "Seedance 2.0 Mini Text To Video",
+          "name": "Doubao Seedance 2 0 260128",
           "source": "endpointKey"
         },
         {
           "key": "video-seedance-2-text",
-          "name": "Seedance 2.0 Text To Video",
+          "name": "Doubao Seedance 2 0 260128",
+          "source": "endpointKey"
+        },
+        {
+          "key": "video-seedance-2-fast-image",
+          "name": "Doubao Seedance 2 0 Fast 260128",
+          "source": "endpointKey"
+        },
+        {
+          "key": "video-seedance-2-fast-text",
+          "name": "Doubao Seedance 2 0 Fast 260128",
+          "source": "endpointKey"
+        },
+        {
+          "key": "video-seedance-2-mini-image",
+          "name": "Doubao Seedance 2 0 Mini 260615",
+          "source": "endpointKey"
+        },
+        {
+          "key": "video-seedance-2-mini-text",
+          "name": "Doubao Seedance 2 0 Mini 260615",
           "source": "endpointKey"
         }
       ],
       "requirements": {
         "endpointKeys": [
+          "video-seedance-2-fast-image",
+          "video-seedance-2-fast-text",
           "video-seedance-2-image",
           "video-seedance-2-mini-image",
           "video-seedance-2-mini-text",
@@ -593,6 +605,36 @@
       "status": "released",
       "supportedModels": [
         {
+          "key": "video-seedance-2-image",
+          "name": "Doubao Seedance 2 0 260128",
+          "source": "endpointKey"
+        },
+        {
+          "key": "video-seedance-2-text",
+          "name": "Doubao Seedance 2 0 260128",
+          "source": "endpointKey"
+        },
+        {
+          "key": "video-seedance-2-fast-image",
+          "name": "Doubao Seedance 2 0 Fast 260128",
+          "source": "endpointKey"
+        },
+        {
+          "key": "video-seedance-2-fast-text",
+          "name": "Doubao Seedance 2 0 Fast 260128",
+          "source": "endpointKey"
+        },
+        {
+          "key": "video-seedance-2-mini-image",
+          "name": "Doubao Seedance 2 0 Mini 260615",
+          "source": "endpointKey"
+        },
+        {
+          "key": "video-seedance-2-mini-text",
+          "name": "Doubao Seedance 2 0 Mini 260615",
+          "source": "endpointKey"
+        },
+        {
           "key": "video-infinitetalk",
           "name": "InfiniteTalk",
           "source": "endpointKey"
@@ -621,26 +663,6 @@
           "key": "video-kling-v3-0-std-text",
           "name": "Kwaivgi Kling v3.0 Std Text To Video",
           "source": "endpointKey"
-        },
-        {
-          "key": "video-seedance-2-image",
-          "name": "Seedance 2.0 Image To Video",
-          "source": "endpointKey"
-        },
-        {
-          "key": "video-seedance-2-mini-image",
-          "name": "Seedance 2.0 Mini Image To Video",
-          "source": "endpointKey"
-        },
-        {
-          "key": "video-seedance-2-mini-text",
-          "name": "Seedance 2.0 Mini Text To Video",
-          "source": "endpointKey"
-        },
-        {
-          "key": "video-seedance-2-text",
-          "name": "Seedance 2.0 Text To Video",
-          "source": "endpointKey"
         }
       ],
       "requirements": {
@@ -651,6 +673,8 @@
           "video-kling-v3-0-pro-text",
           "video-kling-v3-0-std-image",
           "video-kling-v3-0-std-text",
+          "video-seedance-2-fast-image",
+          "video-seedance-2-fast-text",
           "video-seedance-2-image",
           "video-seedance-2-mini-image",
           "video-seedance-2-mini-text",

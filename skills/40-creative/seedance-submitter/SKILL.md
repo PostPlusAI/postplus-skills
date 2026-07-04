@@ -49,8 +49,11 @@ metadata:
 - Bind references explicitly: say what `[image 1]`, `[image 2]`, `[audio 1]`,
   or `[video 1]` controls. Do not rely on `same as previous`, `content above`,
   or unbound local handles in final requests.
-- Upload local reference images with the hosted media-file upload flow before
-  submission and pass uploaded URLs into the Seedance request.
+- Upload local reference media to hosted storage with the media-file upload
+  flow, then request a signed read URL through the media-file `create-read-url`
+  operation and pass that signed URL into the Seedance request. Seedance no
+  longer uses provider-side binary upload. Signed read URLs expire; request
+  them right before submission, not ahead of time.
 
 ## Review And Handoff
 - Before submission, verify validation passed, every segment is self-contained,
@@ -89,7 +92,7 @@ metadata:
 ```
 
 ```bash
-postplus media create video-seedance-2-image --request request.json --output result.json
+postplus media create video-seedance-2-fast-image --request request.json --output result.json
 ```
 <!-- END GENERATED EXECUTION EXAMPLE -->
 
