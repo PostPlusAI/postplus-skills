@@ -40,17 +40,13 @@ Default execution order:
 ## Preferred Routes
 
 - Instagram and Meta social research routing -> `social-media-extractor`
-- Instagram creator discovery -> `instagram-creator-discovery`
+- Instagram account, content, comment, creator, and campaign research ->
+  `instagram-research`
 - Google search-intent and topic momentum -> `google-trends-research`
 - TikTok platform data -> `tiktok-research`
-- TikTok ad creative research -> `tiktok-ad-research`
+- TikTok ad creative research -> `tiktok-research`
 - supply-side product or supplier data -> user-provided supplier sheets,
   quotations, or approved marketplace exports
-- Instagram creator discovery -> `instagram-creator-discovery`
-- Instagram creator/account research -> `instagram-account-research`
-- Instagram content benchmark -> `instagram-content-benchmark`
-- Instagram audience language -> `instagram-audience-voice`
-- Instagram hashtag/tagged campaign scouting -> `instagram-campaign-scout`
 - YouTube channel and video research -> `youtube-research`
 - Facebook page and post research -> `facebook-research`
 - Hook, structure, and why content works -> `video-analysis`
@@ -77,7 +73,8 @@ For Instagram creator discovery requests, add a routing step before collection:
 
 1. normalize the brief
 2. choose `handle-first`, `content-first`, `graph-first`, or `mixed`
-3. collect with `instagram-creator-discovery` using a wider recall band when needed
+3. collect with `instagram-research` using the matching reference route and a
+   wider recall band when needed
 4. enrich candidates
 5. classify creator type
 6. shortlist
@@ -126,7 +123,8 @@ Better response:
 
 - recognize that follower band + niche fit usually needs routing
 - prefer `content-first` or `graph-first` when account search is likely to over-rank large accounts
-- use `instagram-creator-discovery` for Instagram creator discovery
+- use `instagram-research` for Instagram account, content, comment, creator,
+  and campaign research
 - use wider recall and tighter shortlist instead of strict first-pass filtering
 - classify `individual creator` vs `brand/product` vs `educator/consultant` vs `aggregator` before producing outreach-ready leads
 

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-2026-07-04.1-agent-copilot-unification",
+  "releaseId": "skills-2026-07-06.1-social-research-consolidation",
   "source": "PostPlusAI/postplus-skills",
   "skills": [
     {
@@ -47,14 +47,6 @@
       "familyName": "Media and Creative Production",
       "name": "creative-qa",
       "path": "skills/40-creative/creative-qa/SKILL.md",
-      "status": "released",
-      "supportedModels": []
-    },
-    {
-      "familyId": "routing-contracts",
-      "familyName": "Routing & Contracts",
-      "name": "creator-outreach",
-      "path": "skills/50-publishing/creator-outreach/SKILL.md",
       "status": "released",
       "supportedModels": []
     },
@@ -241,94 +233,8 @@
     {
       "familyId": "instagram",
       "familyName": "Instagram",
-      "name": "instagram-account-research",
-      "path": "skills/20-research/instagram-account-research/SKILL.md",
-      "status": "released",
-      "supportedModels": [],
-      "requirements": {
-        "collectionKeys": [
-          "instagram-posts",
-          "instagram-profiles"
-        ],
-        "hostedCapabilities": [
-          "hosted-collection"
-        ]
-      }
-    },
-    {
-      "familyId": "instagram",
-      "familyName": "Instagram",
-      "name": "instagram-audience-voice",
-      "path": "skills/20-research/instagram-audience-voice/SKILL.md",
-      "status": "released",
-      "supportedModels": [],
-      "requirements": {
-        "collectionKeys": [
-          "instagram-comments"
-        ],
-        "hostedCapabilities": [
-          "hosted-collection"
-        ]
-      }
-    },
-    {
-      "familyId": "instagram",
-      "familyName": "Instagram",
-      "name": "instagram-campaign-scout",
-      "path": "skills/20-research/instagram-campaign-scout/SKILL.md",
-      "status": "released",
-      "supportedModels": [],
-      "requirements": {
-        "collectionKeys": [
-          "instagram-hashtags",
-          "instagram-posts",
-          "instagram-search"
-        ],
-        "hostedCapabilities": [
-          "hosted-collection"
-        ]
-      }
-    },
-    {
-      "familyId": "instagram",
-      "familyName": "Instagram",
-      "name": "instagram-content-benchmark",
-      "path": "skills/20-research/instagram-content-benchmark/SKILL.md",
-      "status": "released",
-      "supportedModels": [],
-      "requirements": {
-        "collectionKeys": [
-          "instagram-hashtags",
-          "instagram-posts"
-        ],
-        "hostedCapabilities": [
-          "hosted-collection"
-        ]
-      }
-    },
-    {
-      "familyId": "instagram",
-      "familyName": "Instagram",
-      "name": "instagram-creator-discovery",
-      "path": "skills/20-research/instagram-creator-discovery/SKILL.md",
-      "status": "released",
-      "supportedModels": [],
-      "requirements": {
-        "collectionKeys": [
-          "instagram-email-search",
-          "instagram-profiles",
-          "instagram-search"
-        ],
-        "hostedCapabilities": [
-          "hosted-collection"
-        ]
-      }
-    },
-    {
-      "familyId": "instagram",
-      "familyName": "Instagram",
-      "name": "instagram-tools",
-      "path": "skills/20-research/instagram-tools/SKILL.md",
+      "name": "instagram-research",
+      "path": "skills/20-research/instagram-research/SKILL.md",
       "status": "released",
       "supportedModels": [],
       "requirements": {
@@ -518,43 +424,13 @@
     {
       "familyId": "tiktok",
       "familyName": "TikTok",
-      "name": "tiktok-ad-research",
-      "path": "skills/20-research/tiktok-ad-research/SKILL.md",
-      "status": "released",
-      "supportedModels": [],
-      "requirements": {
-        "collectionKeys": [
-          "tiktok-ads-top"
-        ],
-        "hostedCapabilities": [
-          "hosted-collection"
-        ]
-      }
-    },
-    {
-      "familyId": "tiktok",
-      "familyName": "TikTok",
-      "name": "tiktok-music-archive-downloader",
-      "path": "skills/20-research/tiktok-music-archive-downloader/SKILL.md",
-      "status": "released",
-      "supportedModels": [],
-      "requirements": {
-        "localDependencies": [
-          "ffmpeg",
-          "python3",
-          "python3:yt_dlp"
-        ]
-      }
-    },
-    {
-      "familyId": "tiktok",
-      "familyName": "TikTok",
       "name": "tiktok-research",
       "path": "skills/20-research/tiktok-research/SKILL.md",
       "status": "released",
       "supportedModels": [],
       "requirements": {
         "collectionKeys": [
+          "tiktok-ads-top",
           "tiktok-comments",
           "tiktok-profiles",
           "tiktok-related-videos",

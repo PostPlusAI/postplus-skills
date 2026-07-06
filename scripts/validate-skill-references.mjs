@@ -124,6 +124,29 @@ const markdownFiles = walkFiles(SKILLS_ROOT, (filePath) =>
   filePath.endsWith(".md"),
 );
 
+const indexedBusinessReferences = new Set();
+const REFERENCE_LINK_PATTERN = /(?:^|[`(])((?:\.\/)?references\/[^`)\s]+\.md)(?:[`)]|$)/gmu;
+
+for (const skillFile of skillFiles) {
+  const text = fs.readFileSync(skillFile, "utf8");
+  const skillDir = path.dirname(skillFile);
+  const repoPath = toRepoPath(skillFile);
+
+  for (const match of text.matchAll(REFERENCE_LINK_PATTERN)) {
+    const reference = normalizeReference(match[1].replace(/^\.\//u, ""));
+    const target = path.resolve(skillDir, reference);
+    if (!target.startsWith(`${skillDir}${path.sep}`)) {
+      report(errors, `${repoPath}: reference ${reference} escapes the skill directory.`);
+      continue;
+    }
+    if (!fs.existsSync(target)) {
+      report(errors, `${repoPath}: indexed reference ${reference} is missing.`);
+      continue;
+    }
+    indexedBusinessReferences.add(toSkillsPath(target));
+  }
+}
+
 for (const markdownFile of markdownFiles) {
   const text = fs.readFileSync(markdownFile, "utf8");
   const repoPath = toRepoPath(markdownFile);
@@ -196,11 +219,12 @@ for (const markdownFile of markdownFiles) {
   const skillsPath = toSkillsPath(markdownFile);
   if (
     skillsPath.includes("/references/") &&
-    !skillsPath.startsWith("00-shared/postplus-shared/references/")
+    !skillsPath.startsWith("00-shared/postplus-shared/references/") &&
+    !indexedBusinessReferences.has(skillsPath)
   ) {
     report(
       errors,
-      `${repoPath}: business skill references are not part of the public contract.`,
+      `${repoPath}: business skill reference is not indexed by its SKILL.md.`,
     );
   }
 }

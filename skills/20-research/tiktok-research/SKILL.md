@@ -1,108 +1,81 @@
 ---
 name: tiktok-research
-description: Research TikTok metadata, creators, comments, trends, and benchmark data for organic platform analysis.
+description: Route and run bounded public TikTok research for organic videos, comments, creators, profiles, related videos, and paid ad examples.
 metadata:
   postplus:
     familyId: tiktok
     familyName: TikTok
 ---
 
-# TikTok Research Skill
+# TikTok Research
 
-Use this skill for organic TikTok platform research: keyword and hashtag
-sampling, competitor or creator sampling, profile enrichment, comments, trend
-and benchmark discovery, and dataset summaries.
+Use this as the TikTok research entrypoint when the user wants public TikTok
+evidence for a growth, marketing, creator, audience, competitor, or paid
+creative decision.
 
-Apply shared rulebook and user-guidance rules from `postplus-shared`.
+TikTok music/archive download is not part of the released public surface. Apply
+shared rulebook and user-guidance rules from `postplus-shared`.
 
-## Do Not Use When
+## Reference Index
 
-- The user wants paid ad intelligence. Route to `tiktok-ad-research`.
-- The user has already selected sounds and needs local downloads or audio
-  extraction. Route to `tiktok-music-archive-downloader`.
-- The user asks for external articles, policy, or news rather than TikTok
-  platform data.
-- The request requires unsupported shop creator analytics.
+Always apply `references/shared-contract.md` before running a route.
 
-## Cost Discipline
+| User asks for | Apply |
+| --- | --- |
+| Brand account, competitor account, profile health, account comparison | `references/account-and-competitor-audit.md` |
+| Organic examples, hooks, hashtags, formats, competitor videos, related videos | `references/organic-benchmark.md` |
+| Comments, audience voice, objections, FAQ, phrase bank, buyer language | `references/audience-voice.md` |
+| Creators, UGC makers, KOL/KOC, profile enrichment, creator shortlist | `references/creator-discovery.md` |
+| Paid ads, paid hooks, CTA, offers, region/objective ad examples | `references/paid-ads.md` |
+| Product demo fit, ecommerce angle, buyer objection, content-to-offer fit | `references/product-content-fit.md` |
+| Launch campaign, hashtag challenge, branded activity, competitor campaign | `references/campaign-scout.md` |
+| Market, region, language, cross-border localization, local angle comparison | `references/market-localization-scout.md` |
+| Profile facts only | Apply `references/shared-contract.md`, then run a bounded `tiktok-profiles` or `tiktok-users` lookup |
+| Mixed paid and organic | Run separated paid and organic lanes; never fill one lane with the other |
+| Shop, LIVE, private analytics, backend audience, GMV, conversion, hidden contacts, exact targeting, spend, ROAS | Stop or ask for a supported public TikTok scope |
+| Music/archive download or audio extraction | Not provided on the current public surface. Say so and stop; analyze user-provided local files through `media-router` instead |
+| Cross-platform request | Run only the TikTok lane here; hand off other platforms |
 
-Keep the first pass bounded:
+## First Question
 
-- 3-5 strongest queries or 2-4 seed hashtags.
-- 5-12 results per hashtag or query.
-- Treat `limit` as the target shortlist or candidate goal, not as a per-query
-  scrape size.
-- Do not collect comments, related videos, downloads, subtitles, or follower
-  expansion in the first pass unless the current step truly needs them.
-- Run serially; inspect and refine before expanding.
+Ask one question only when the answer changes platform, route, collection key,
+public/private boundary, first-pass scope, or output shape.
 
-## Collection Key Routing
+| Missing | Ask |
+| --- | --- |
+| Platform | `Which platform should I use first?` |
+| TikTok seed | `Please give one TikTok seed: keyword, hashtag, profile, video URL, competitor, product, creator criteria, or paid-ad scope.` |
+| Account audit without account | `Send the TikTok handle/profile URL, or tell me the brand and closest competitors to use as search seeds.` |
+| Ecommerce fit without product | `What product, audience, market, or offer should I test against TikTok evidence?` |
+| Campaign scout without campaign seed | `Send one campaign hashtag, slogan, brand profile, competitor, launch term, or example video.` |
+| Localization without market | `Which market or language should I compare first?` |
+| Audience voice without videos | `Send public TikTok video URLs, or give a keyword, hashtag, profile, or competitor so I can build a shortlist first.` |
+| Creator discovery without seed | `Give one niche, product, hashtag, competitor, customer type, video URL, or collaboration goal.` |
+| Paid ads without scope | `What paid scope should I sample: category, competitor, region/language, objective, hook, offer, or keyword?` |
+| Private/backend request | `This needs public evidence. Should I continue with public TikTok examples instead?` |
 
-Route to the matching hosted collection key by task shape:
+Do not ask for credentials, implementation choice, collection keys, schema fields,
+hidden fields, private exports, retry strategy, cookies, or music archive
+details.
 
-- keyword, hashtag, profile URL, music URL, direct video, and content-first
-  creator discovery,
-- keyword account-search supplement,
-- profile enrichment from known handles,
-- graph expansion from shortlisted video URLs,
-- focused comment collection.
+## Run Discipline
 
-Discover the exact released collection keys and request shapes with
-`postplus research schema --json`. Pass the request body to
-`postplus research collect <collectionKey> --request <input.json>`.
+1. Route the request with the table above.
+2. Apply `references/shared-contract.md`.
+3. Apply the selected workflow reference.
+4. Run the narrowest collection chain that can answer the first pass.
+5. Stop after the first pass and report scope, evidence, limits, and next
+   action.
 
-## Creator Discovery Rule
+Do not present a public sample as full TikTok truth. Do not use paid ads as
+organic creator evidence. Do not use organic videos as paid ad proof. Do not add
+hosted envelopes, hidden implementation fields, unsupported filters, or
+compatibility fallbacks to collection requests.
 
-For creator discovery with follower-band, recent-activity, local-language,
-geo-fit, or content-fit constraints, do not default to plain account search.
-
-Prefer:
-
-1. collect matched videos with `tiktok-videos`,
-2. extract authors from `.items[].authorUsername`,
-3. expand around strong seed videos if recall is weak,
-4. enrich profiles with `tiktok-profiles`,
-5. rank with profile plus content evidence.
-
-Use `tiktok-users` only as an account-search supplement unless the user
-explicitly asks for account-search recall.
-
-## Default Workflow
-
-1. Choose the route first: content-first, handle-first, graph-first, or mixed.
-2. Keep the first hosted collection narrow when the brief is simple.
-3. Write the compiled collection input to a request file and run
-   `postplus research collect <collectionKey> --request <input.json>`.
-4. Enrich profiles only after the content or account dataset exists.
-5. Expand around strong seed videos only after a promising shortlist exists.
-6. Summarize source surface, source query, strongest openings, repeated
-   formats, creators, hashtags, and missing evidence.
-
-<!-- BEGIN GENERATED EXECUTION EXAMPLE -->
-```bash
-postplus research collect tiktok-comments --request request.json --output result.json
-```
-<!-- END GENERATED EXECUTION EXAMPLE -->
-
-Keep raw datasets and intermediate files under `.postplus/`; keep final
-reports or shortlist exports outside `.postplus/` when the user needs them.
-
-## Failure Modes
-
-- Do not answer TikTok collection tasks with generic web search.
-- Do not use paid ad data as organic creator or content evidence.
-- Do not route profile enrichment through unpublished keys or implementation
-  names.
-- Stop on missing auth, unavailable PostPlus Cloud service, stable network
-  failure, malformed collection output, or unsupported collection keys.
-
-## Handoff
-
-- Creator shortlist or public contact signals -> `creator-outreach`.
-- Instagram creator discovery -> `instagram-creator-discovery`.
-- Paid ad hooks or objectives -> `tiktok-ad-research`.
-- Local benchmark video files or audio references -> `tiktok-music-archive-downloader`.
-- Hook, structure, shot, or spoken-line breakdown -> `video-analysis`.
+For local testing, optimize for a fast real first pass. Use the request cards in
+`references/shared-contract.md`; do not inspect fixtures, product mappings, or
+implementation docs unless a request actually fails and the error cannot be understood
+from the command output.
 
 ## Public Command Boundary
 
@@ -111,9 +84,43 @@ reports or shortlist exports outside `.postplus/` when the user needs them.
 - Readiness diagnostics: `postplus doctor --skill tiktok-research`.
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, fallback providers, or unpublished tools.
-- Use `postplus research schema --collection-key <collectionKey> --json` only when constructing or repairing an unknown request shape.
-- Hosted collection: `postplus research collect <collectionKey> --request <input.json> --output <result.json>` (input = the collection parameters).
-- Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <result.json>`.
+  payload rewrites, fallback services, or unpublished tools.
+- Use `postplus research schema --collection-key <collectionKey> --json` only
+  when constructing or repairing an unknown request shape.
+- Hosted collection:
+  `postplus research collect <collectionKey> --request <input.json> --output <result.json>`
+  where the request file is the raw collection input object, not a hosted
+  envelope and not `{ "schemaVersion": 1, "input": ... }`.
+- Resume a pending collection:
+  `postplus research collect --run-handle <runHandle> --output <result.json>`.
 - Keep the first pass bounded; expand only after inspecting the first result.
-- If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.
+- If the CLI returns a quote-confirmation challenge, run
+  `postplus quote confirm --json --challenge-file <challenge.json>` and retry
+  with the returned token.
+
+<!-- BEGIN GENERATED EXECUTION EXAMPLE -->
+```bash
+postplus research collect tiktok-ads-top --request request.json --output result.json
+```
+<!-- END GENERATED EXECUTION EXAMPLE -->
+
+## Local Development Direct Check
+
+For local development only, agents may verify a TikTok route through a direct
+public-content runner instead of the PostPlus CLI. This is a developer test
+path, not the released public boundary.
+
+- Prefer the official `postplus research collect` command first when it works.
+- If local product auth, quote handling, async status, or schema exposure blocks
+  quick skill validation, use the direct check path and record that as a product
+  integration gap for the technical owner.
+- Keep the route names, first-pass bounds, and output contract from
+  `references/shared-contract.md`.
+- Use direct checks only to prove collection viability for a route or document
+  a missing candidate surface.
+- Write raw collection items, request, stderr, and a run report to the local
+  product work folder.
+- Treat empty, unavailable, private, sparse, network-failed, or
+  collection-failed data as evidence gaps or test failures.
+- Before release, route the public skill back through the PostPlus collection
+  boundary and remove implementation-specific details from user-facing copy.
