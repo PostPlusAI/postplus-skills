@@ -54,7 +54,7 @@ Use these routes:
 
 - Instagram/Meta demand or content proof -> `social-media-extractor`
 - TikTok content and audience language -> `tiktok-research`
-- Instagram creator/content/comment proof -> `instagram-account-research` or `instagram-content-benchmark` or `instagram-audience-voice`
+- Instagram creator/content/comment proof -> `instagram-research`
 - supply-side product or supplier data -> user-provided supplier sheets,
   quotations, or approved marketplace exports
 - cross-source sourcing judgment -> `sourcing-selection`

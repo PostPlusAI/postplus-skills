@@ -1,6 +1,7 @@
 # Shared TikTok Music Workflow
 
-Shared routing and chaining rules for TikTok music, sound, video sample, and local audio-reference work.
+Shared routing and chaining rules for TikTok music, sound, and audio-reference
+work on the released public surface.
 
 ## Core Rule
 
@@ -10,15 +11,14 @@ Classify the request by the object the user already has:
 - `Music URL / sound URL / musicId / song keyword`: use `tiktok-research`
   when the released TikTok collection path can produce sample video URLs; if it
   cannot, ask the user for selected video URLs or an existing sample dataset
-- `Selected video URLs or sample dataset`: download videos and extract audio with `tiktok-music-archive-downloader`
-- `Local video or audio files`: route through `media-router` into transcription, subtitles, or `video-analysis`
+- `Wants the videos or audio downloaded`: video/audio archive download and
+  audio extraction are not provided on the current public surface. Say so and
+  stop that lane; do not improvise a downloader, proxy, or cookie path
+- `Local video or audio files`: route through `media-router` into
+  transcription, subtitles, or `video-analysis`
 
-Do not start with downloading when the user has not selected a sound or sample set.
-Do not treat extracted audio as commercially cleared unless the user confirms rights or platform-licensed use.
-Download claims are limited to TikTok post URLs reachable from the user's current
-local browser/IP environment. If `yt_dlp` reports that the current IP is blocked,
-preserve the failed source URL and stop the archive/audio-extraction chain
-instead of retrying broad downloads or inventing an unapproved proxy/cookie path.
+Do not treat any obtained audio as commercially cleared unless the user
+confirms rights or platform-licensed use.
 
 ## Skill Chain
 
@@ -27,9 +27,13 @@ Use this default chain for TikTok music research:
 1. `tiktok-research`: discover candidate sounds by region, category, or campaign fit.
 2. `tiktok-research`: collect or normalize selected video
    samples when the released collection path supports the request.
-3. `tiktok-music-archive-downloader`: download representative videos and extract reference audio.
-4. `video-analysis`: analyze video structure, hook, pacing, visual pattern, and usage context.
-5. `audio-transcription` or `video-transcription`: transcribe lyrics, speech, or voiceover when needed.
+3. Stop at sample video URLs. Downloading those videos or extracting reference
+   audio is not provided on the current public surface; hand the URL list to
+   the user.
+4. `video-analysis`: analyze structure, hook, pacing, visual pattern, and usage
+   context for videos the user provides as local files.
+5. `audio-transcription` or `video-transcription`: transcribe lyrics, speech, or
+   voiceover from user-provided files when needed.
 6. `subtitle-packager`: produce SRT/ASS only after timed transcript artifacts exist.
 
 Skip steps when the user already provides the corresponding artifact.
@@ -37,19 +41,10 @@ Skip steps when the user already provides the corresponding artifact.
 ## Collection Boundary
 
 The released public surface does not expose a separate TikTok music-sound
-collector skill. Keep music-specific collection claims inside `tiktok-research`
-only when the released collection key and script path support the exact request.
-If they do not, ask for selected TikTok video URLs or an existing sample dataset
-before downloading.
-
-## Download Access Boundary
-
-`tiktok-music-archive-downloader` is a local downloader for reachable TikTok post
-URLs. Passing the local dependency bootstrap does not prove that TikTok will let
-the current local IP/browser access path fetch the post. A download report item
-with `failureCode: "tiktok_ip_blocked"` is the supported fail-fast outcome:
-report the blocker with `sourceUrl`, `stderr`, and the report path, then stop
-until a reachable URL/sample file or approved access bootstrap exists.
+collector and does not expose a music/archive downloader. Keep music-specific
+collection claims inside `tiktok-research` only when the released collection
+key supports the exact request. Steps that need local media files require the
+user to supply those files.
 
 ## Output Contracts
 
@@ -98,21 +93,6 @@ Use for sound collection outputs:
 }
 ```
 
-### Download Manifest
-
-Use for archive-download inputs:
-
-```json
-{
-  "items": [
-    {
-      "sourceId": "musicid-videoid",
-      "sourceUrl": "https://www.tiktok.com/@user/video/123"
-    }
-  ]
-}
-```
-
 ## Storage
 
 Use this campaign layout:
@@ -122,22 +102,18 @@ customers/<customer-id>/campaigns/<campaign-id>/research/tiktok-music/
   raw/
   normalized/
   analysis/
-  archive/<run-id>/
-    manifest/
-    videos/
-    audio/
-    index.json
 ```
 
-Keep raw collection output, normalized datasets, and archive manifests. Do not keep only the final audio files.
+Keep raw collection output and normalized datasets so every candidate and
+sample stays traceable to its source video URL and music id.
 
 ## Combination Cases
 
 Use `tiktok-research` with this workflow when music fit must be judged against broader TikTok content, creator, hashtag, or comment context.
 
-Use `tiktok-ad-research` separately when the request is about paid ads or Creative Center ads. Do not infer organic music trends from ad-only data unless the user asks for paid creative context.
+Use `tiktok-research` paid ads separately when the request is about paid ads or Creative Center ads. Do not infer organic music trends from ad-only data unless the user asks for paid creative context.
 
-Use `video-analysis` after downloading only the shortlisted strongest samples. Do not run semantic video analysis over broad unscreened trend results.
+Use `video-analysis` only on the shortlisted strongest samples the user has provided as local files. Do not run semantic video analysis over broad unscreened trend results.
 
 Use `media-router` when the user gives local files and the needed output is unclear. Let it choose transcription, subtitle packaging, semantic analysis, or edit prep.
 
@@ -145,10 +121,8 @@ Use `creative-qa` only after a human has reviewed candidate audio/video samples 
 
 ## Failure Patterns
 
-- Jumping from a trend list directly to audio extraction without checking videos that use the sound.
+- Promising downloads or audio extraction instead of stating the public-surface
+  boundary and stopping.
 - Ranking sounds only by trend rank instead of campaign fit and sample availability.
-- Treating TikTok sound-page downloads as reliable when `yt-dlp` sound extraction may be broken.
-- Retrying broad archive downloads after `failureCode: "tiktok_ip_blocked"`
-  instead of reporting the access blocker.
-- Losing provenance by saving audio without source video URL, music id, and actor output.
+- Losing provenance by keeping analysis output without source video URL and music id.
 - Presenting scraped or extracted audio as cleared for commercial reuse.

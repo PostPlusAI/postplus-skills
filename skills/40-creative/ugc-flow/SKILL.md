@@ -57,7 +57,7 @@ not call providers or submit generation jobs.
 | Need | Handoff |
 | --- | --- |
 | Product or market evidence | Instagram/Meta research or strategy skill appropriate to the product |
-| Creator discovery | `instagram-creator-discovery` |
+| Instagram account, content, audience, creator, or campaign research | `instagram-research` |
 | Benchmark-to-brief | `benchmark-to-brief` |
 | Reference decode or boundary | `reference-decode`, `reference-contract-builder` |
 | Storyboard grid | `storyboard-grid-writer` |

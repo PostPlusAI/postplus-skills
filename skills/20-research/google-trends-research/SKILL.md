@@ -84,7 +84,7 @@ missing evidence layer.
 
 - TikTok content heat or hook patterns -> `tiktok-research`.
 - Instagram creator, account, or campaign scouting ->
-  `instagram-account-research` or `instagram-campaign-scout`.
+  `instagram-research`.
 - Instagram/Meta content proof -> `social-media-extractor`.
 - Cross-source sourcing or selection judgment -> `sourcing-selection`.
 
