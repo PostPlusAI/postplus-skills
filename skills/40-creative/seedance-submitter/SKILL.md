@@ -46,6 +46,14 @@ metadata:
 - Put timecoded action and spoken lines together in `promptPlan.prompt_storyline`.
   Put voice style, BGM, SFX, subtitle, and watermark constraints in
   `promptPlan.audio`.
+- `promptPlan.*`, `timeline.*`, and `targetEditDurationSeconds` are authoring
+  vocabulary, not Seedance request fields. The final `--request` JSON must be the
+  flat provider contract discovered from `postplus media schema --json`
+  (`prompt`, `image`, `duration`, `resolution`, `aspect_ratio`, `generate_audio`,
+  `reference_images`, `reference_videos`, `reference_audios`); the provider
+  rejects any field outside it. Compose the storyline/audio plan into the single
+  `prompt` string and map the edit-duration plan onto `duration` — do not submit
+  `promptPlan`/`timeline`/`targetEditDurationSeconds` as request fields.
 - Bind references explicitly: say what `[image 1]`, `[image 2]`, `[audio 1]`,
   or `[video 1]` controls. Do not rely on `same as previous`, `content above`,
   or unbound local handles in final requests.

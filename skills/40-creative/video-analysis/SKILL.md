@@ -25,11 +25,13 @@ metadata:
 - Analysis runs through the hosted `video-analysis` capability; discover the
   model keys and request shape with `postplus media schema --json`.
 - Supported local formats are `.mp4`, `.m4v`, `.mov`, and `.webm`.
-- The analyze verb only accepts an already-hosted video reference. Put the local
-  video behind a hosted HTTPS URL first with `postplus media-file upload`, then
-  reference `output.data.download_url` as a Gemini `file_reference` in the
-  analyze request. Upload is a separate generic verb, not part of
-  `media analyze`.
+- The analyze verb only accepts an already-hosted video reference. Upload the
+  local video first with `postplus media-file upload`, then pass that result's
+  `output.storageReference` object verbatim as the Gemini `file_reference`. The
+  `file_reference` must be that storage-reference object (`bucket`, `storagePath`,
+  `name`, `mimeType`), not a URL and not `output.data.download_url` — the hosted
+  boundary reads the bytes back from storage and materializes the Gemini file
+  server-side. Upload is a separate generic verb, not part of `media analyze`.
 - This boundary does not claim inline video bytes, compression, segmentation,
   resumable upload, or file URI reuse. If the upload or the hosted analyze call
   fails, stop on that error.
@@ -66,12 +68,13 @@ metadata:
 
 ## Public Command Boundary
 
-- Step 1 — upload the local video to a hosted HTTPS URL:
+- Step 1 — upload the local video:
   `postplus media-file upload --input-file <video> --mime <video/mp4|video/quicktime|video/webm> --output <upload.json>`.
-  Read `output.data.download_url` from the result.
+  Read the `output.storageReference` object from the result (`bucket`,
+  `storagePath`, `name`, `mimeType`, `sizeBytes`).
 - Step 2 — author the Gemini request file: `contents` with a `text` prompt part
-  and a `file_reference` part set to that `output.data.download_url`, plus optional
-  `generationConfig`.
+  and a `file_reference` part set to that `output.storageReference` object (not a
+  URL and not `output.data.download_url`), plus optional `generationConfig`.
 - Step 3 — run the analysis:
   `postplus media analyze <model-key> --request <gemini-request.json> --output <result.json>`.
   When the source video duration is known (e.g. from the local file before upload),

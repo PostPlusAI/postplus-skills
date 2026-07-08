@@ -90,7 +90,7 @@ metadata:
 - Choose the smallest matching command or workflow from the user input and run
   it directly.
 - This skill owns the `postplus media create <endpoint>` command for its
-  kling 3.0, Wanx 2.1, InfiniteTalk, and Kling 2.6 reference-motion endpoints.
+  kling 3.0, InfiniteTalk, and Kling 2.6 reference-motion endpoints.
   Seedance renders go through the shared `postplus media create
   video-seedance-2-*` command owned by `seedance-submitter`; route Seedance
   there instead of duplicating its request shape here.
