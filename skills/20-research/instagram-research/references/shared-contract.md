@@ -52,6 +52,72 @@ Use the narrowest released key. Direct identifiers beat recall.
 | Brand/category/topic/creator/campaign query | `instagram-search` | Recall only; not confirmed facts. |
 | Public contacts for shortlist | `instagram-email-search` | Shortlist only; never broad lead scraping. |
 
+## Request Field Shapes
+
+Each request is the raw collection input object. Send it directly to
+`postplus research collect <collectionKey> --skill instagram-research --request <input.json>`;
+never wrap it in a hosted envelope or a `{ "schemaVersion": 1, "input": ... }`
+shape, and never add fields the collection does not define. Use
+`postplus research schema --collection-key <collectionKey> --json` only when
+constructing or repairing an unknown shape. Watch the account-field split:
+`instagram-posts` takes `username` (array), while `instagram-profiles` and
+`instagram-email-search` take `usernames`. These first-pass examples are mirrored
+by the local-dev paradigm fixtures and must stay in sync with them.
+
+### instagram-profiles
+
+```json
+{
+  "resultsLimit": 3,
+  "usernames": ["duolingo", "quizlet", "coursera"]
+}
+```
+
+### instagram-posts
+
+```json
+{
+  "resultsLimit": 3,
+  "username": ["duolingo", "quizlet", "coursera"]
+}
+```
+
+### instagram-comments
+
+```json
+{
+  "directUrls": ["https://www.instagram.com/p/CuLQxEfrjA0/"],
+  "resultsLimit": 5
+}
+```
+
+### instagram-hashtags
+
+```json
+{
+  "hashtags": ["studytok", "aitutor"],
+  "resultsLimit": 3
+}
+```
+
+### instagram-search
+
+```json
+{
+  "searchLimit": 3,
+  "searchTerms": ["Paradigm AI tutor course", "Clover AI tutor learning"],
+  "searchType": "user"
+}
+```
+
+### instagram-email-search
+
+```json
+{
+  "usernames": ["studywithsoy", "studyquill"]
+}
+```
+
 ## Common Chains
 
 - Account audit: `instagram-profiles`, then `instagram-posts` only when content

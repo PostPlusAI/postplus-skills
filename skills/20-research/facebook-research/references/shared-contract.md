@@ -41,6 +41,115 @@ targeting, spend, and ROAS are not supported. When the decision needs one of
 those, say so and stop. Do not improvise another collection path, provider, or
 tool.
 
+## Request Field Shapes
+
+Each collect-lane request is the raw collection input object. Send it directly to
+`postplus research collect <collectionKey> --skill facebook-research --request <input.json>`;
+never wrap it in a hosted envelope or a `{ "schemaVersion": 1, "input": ... }`
+shape, and never add fields the collection does not define. Use
+`postplus research schema --collection-key <collectionKey> --json` only when
+constructing or repairing an unknown shape. `startUrls` items are
+`{ "url": "..." }` records; `resultsLimit` bounds items per source. These
+first-pass examples are mirrored by the local-dev paradigm fixtures and must stay
+in sync with them.
+
+### facebook-pages
+
+```json
+{
+  "startUrls": [{ "url": "https://www.facebook.com/duolingo" }]
+}
+```
+
+### facebook-posts
+
+```json
+{
+  "startUrls": [{ "url": "https://www.facebook.com/duolingo" }],
+  "resultsLimit": 1
+}
+```
+
+### facebook-reels
+
+```json
+{
+  "startUrls": [{ "url": "https://www.facebook.com/duolingo" }],
+  "resultsLimit": 1
+}
+```
+
+### facebook-comments
+
+```json
+{
+  "startUrls": [
+    { "url": "https://www.facebook.com/duolingo/posts/pfbid0GkaG5iS5gmG5dehNoj8A2y6qwhqfxgcLUEfewJSc6hs3BohjunrnLnNH3sjUggBzl" }
+  ],
+  "resultsLimit": 10,
+  "includeNestedComments": false,
+  "viewOption": "RANKED_UNFILTERED"
+}
+```
+
+### facebook-groups
+
+```json
+{
+  "startUrls": [
+    { "url": "https://www.facebook.com/groups/duolingo.all.languages/" }
+  ],
+  "resultsLimit": 1,
+  "viewOption": "CHRONOLOGICAL"
+}
+```
+
+### facebook-ads-library
+
+```json
+{
+  "urls": [
+    { "url": "https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=US&q=duolingo&search_type=keyword_unordered" }
+  ],
+  "count": 10,
+  "limitPerSource": 10,
+  "scrapePageAds.activeStatus": "active",
+  "scrapePageAds.countryCode": "US"
+}
+```
+
+### facebook-events
+
+```json
+{
+  "searchQueries": ["language learning New York"],
+  "startUrls": [],
+  "maxEvents": 3
+}
+```
+
+### facebook-marketplace
+
+```json
+{
+  "startUrls": [
+    { "url": "https://www.facebook.com/marketplace/sanfrancisco/search/?query=language%20books" }
+  ],
+  "resultsLimit": 3
+}
+```
+
+### facebook-search
+
+`facebook-search` is broad public discovery; the category-search first pass is:
+
+```json
+{
+  "categories": ["Language school"],
+  "resultsLimit": 5
+}
+```
+
 ## Human Alignment
 
 Infer the user decision before collecting:

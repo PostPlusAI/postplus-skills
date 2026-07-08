@@ -49,11 +49,14 @@ metadata:
 - Bind references explicitly: say what `[image 1]`, `[image 2]`, `[audio 1]`,
   or `[video 1]` controls. Do not rely on `same as previous`, `content above`,
   or unbound local handles in final requests.
-- Upload local reference media to hosted storage with the media-file upload
-  flow, then request a signed read URL through the media-file `create-read-url`
-  operation and pass that signed URL into the Seedance request. Seedance no
-  longer uses provider-side binary upload. Signed read URLs expire; request
-  them right before submission, not ahead of time.
+- Upload local reference media to hosted storage with
+  `postplus media-file upload --skill seedance-submitter --input-file <file> --mime <mime> --output <upload.json>`,
+  then read the signed HTTPS `output.data.download_url` from `<upload.json>` and
+  pass that URL into the Seedance request. `media-file` implements only `upload`;
+  its result already carries the signed read URL, so there is no
+  separate read-URL step. Seedance no longer uses provider-side binary upload.
+  The signed `download_url` expires, so run the upload right before submission,
+  not ahead of time.
 
 ## Review And Handoff
 - Before submission, verify validation passed, every segment is self-contained,
