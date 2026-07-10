@@ -32,8 +32,13 @@ metadata:
   ratio, quality, or resolution. The generated example below shows the default
   endpoint key.
 - Reference-based edits pass each source image as a remote URL via a repeated
-  `--reference-image <url>` flag. Upload local source files to a hosted URL first;
-  do not pass local paths as edit references.
+  `--reference-image <url>` flag; do not pass local paths as edit references.
+  Upload a local source file with
+  `postplus media-file upload --skill image-batch-runner --input-file <file> --mime <image/png|image/jpeg|image/webp> --output <upload.json>`,
+  then read the HTTPS `output.data.download_url` from `<upload.json>` and pass
+  that URL as `--reference-image`. The server downloads each reference itself, so
+  the URL must stay reachable until the submit returns; a URL the server cannot
+  fetch fails the request as a bad request, not a provider fault.
 - Identifiers and run-local state (`assetId`, `runId`, `localAssetDir`, manifest
   paths) are minted or derived by the runner — do not supply them. Read them back
   from the result for the next handoff.
