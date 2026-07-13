@@ -54,6 +54,10 @@ private exports, hidden fields, or retry strategy.
 4. Run the narrowest collection chain that can answer the first pass.
 5. Stop after the first pass and report scope, evidence, limits, and next action.
 
+Result record shapes for every collection key are documented in the
+`postplus-shared` reference `dataset-item-schemas.md`; consult it before
+writing result-processing code, and probe a single record only to verify.
+
 Do not present a sample as full-platform truth. Do not add hosted envelopes,
 hidden supplier fields, analysis notes, unsupported filters, or compatibility
 fallbacks to collection requests.

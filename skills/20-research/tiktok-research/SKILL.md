@@ -67,6 +67,10 @@ details.
 5. Stop after the first pass and report scope, evidence, limits, and next
    action.
 
+Result record shapes for every collection key are documented in the
+`postplus-shared` reference `dataset-item-schemas.md`; consult it before
+writing result-processing code, and probe a single record only to verify.
+
 Do not present a public sample as full TikTok truth. Do not use paid ads as
 organic creator evidence. Do not use organic videos as paid ad proof. Do not add
 hosted envelopes, hidden implementation fields, unsupported filters, or

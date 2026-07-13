@@ -57,6 +57,10 @@ schema fields, hidden filters, or retry strategy.
 5. Stop after the first pass and report scope, count, strongest results, limits,
    and next action.
 
+The result record shape for the collection key is documented in the
+`postplus-shared` reference `dataset-item-schemas.md`; consult it before
+writing result-processing code, and probe a single record only to verify.
+
 Do not present a bounded first pass as the full Pinterest catalog. Do not add
 hosted envelopes, hidden implementation fields, unsupported filters, or
 compatibility fallbacks to the request.

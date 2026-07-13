@@ -22,6 +22,7 @@ This skill is the single source of truth for principle-level PostPlus skill docu
 - [`shared-tiktok-music-workflow.md`](references/shared-tiktok-music-workflow.md)
 - [`shared-ads-workflow.md`](references/shared-ads-workflow.md)
 - [`shared-user-guidance.md`](references/shared-user-guidance.md)
+- [`dataset-item-schemas.md`](references/dataset-item-schemas.md) — result-record field tables for every released hosted research collection and source key.
 
 ## Default Workflow
 

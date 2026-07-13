@@ -52,6 +52,10 @@ postplus research collect youtube-channel-summary --request request.json --outpu
    the emitted poll command.
 5. Keep observation separate from inference, especially for audience claims.
 
+Result record shapes for every collection and source key are documented in the
+`postplus-shared` reference `dataset-item-schemas.md`; consult it before
+writing result-processing code, and probe a single record only to verify.
+
 While collection is pending, tell the user the public collection is running
 from a saved checkpoint and continue independent brief or source-review work.
 

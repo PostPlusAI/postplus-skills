@@ -69,6 +69,10 @@ choices, retries, credentials, hidden filters, or internal routing.
 5. Return a short chat answer: scope, counts, strongest finding, biggest gap,
    artifact path, and next action.
 
+Result record shapes for every collection and source key are documented in the
+`postplus-shared` reference `dataset-item-schemas.md`; consult it before
+writing result-processing code, and probe a single record only to verify.
+
 Do not add hosted envelopes, hidden implementation fields, unsupported filters,
 or compatibility fallbacks to a request.
 

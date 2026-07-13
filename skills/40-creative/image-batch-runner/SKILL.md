@@ -31,6 +31,10 @@ metadata:
   prefer the default unless the user or upstream brief asks for a specific family,
   ratio, quality, or resolution. The generated example below shows the default
   endpoint key.
+- Only edit endpoints accept `--reference-image` (default edit endpoint:
+  `image-gpt-image-2-edit`). Text endpoints such as `image-gpt-image-2-text`
+  reject the flag with `Unknown option`, so any reference-bound generation must
+  target an edit endpoint, not a text endpoint.
 - Reference-based edits pass each source image as a remote URL via a repeated
   `--reference-image <url>` flag; do not pass local paths as edit references.
   Upload a local source file with

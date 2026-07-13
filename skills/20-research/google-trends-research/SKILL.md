@@ -58,6 +58,10 @@ postplus research collect google-trends-fast --request request.json --output res
 5. Separate observation from inference.
 6. Hand off to platform or marketplace research if deeper evidence is needed.
 
+The result record shape for the collection key is documented in the
+`postplus-shared` reference `dataset-item-schemas.md`; consult it before
+writing result-processing code, and probe a single record only to verify.
+
 Keep query briefs, raw trend payloads, normalized outputs, and watchlist caches
 under `.postplus/google-trends/`; keep final summaries or shortlist exports
 where the user can inspect them.

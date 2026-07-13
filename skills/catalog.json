@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-2026-07-11.1-web-workspace-release",
+  "releaseId": "skills-2026-07-13.1-creative-ad-skills",
   "source": "PostPlusAI/postplus-skills",
   "skills": [
     {
@@ -37,8 +37,40 @@
     {
       "familyId": "media-production",
       "familyName": "Media and Creative Production",
+      "name": "authority-ad",
+      "path": "skills/40-creative/authority-ad/SKILL.md",
+      "status": "released",
+      "supportedModels": []
+    },
+    {
+      "familyId": "media-production",
+      "familyName": "Media and Creative Production",
+      "name": "before-after-ad",
+      "path": "skills/40-creative/before-after-ad/SKILL.md",
+      "status": "released",
+      "supportedModels": []
+    },
+    {
+      "familyId": "media-production",
+      "familyName": "Media and Creative Production",
       "name": "benchmark-to-brief",
       "path": "skills/40-creative/benchmark-to-brief/SKILL.md",
+      "status": "released",
+      "supportedModels": []
+    },
+    {
+      "familyId": "media-production",
+      "familyName": "Media and Creative Production",
+      "name": "cartoon-ad",
+      "path": "skills/40-creative/cartoon-ad/SKILL.md",
+      "status": "released",
+      "supportedModels": []
+    },
+    {
+      "familyId": "media-production",
+      "familyName": "Media and Creative Production",
+      "name": "commercial-ad",
+      "path": "skills/40-creative/commercial-ad/SKILL.md",
       "status": "released",
       "supportedModels": []
     },
@@ -55,6 +87,14 @@
       "familyName": "Media and Creative Production",
       "name": "editing-decision-engine",
       "path": "skills/40-creative/editing-decision-engine/SKILL.md",
+      "status": "released",
+      "supportedModels": []
+    },
+    {
+      "familyId": "media-production",
+      "familyName": "Media and Creative Production",
+      "name": "educational-ad",
+      "path": "skills/40-creative/educational-ad/SKILL.md",
       "status": "released",
       "supportedModels": []
     },
@@ -383,6 +423,14 @@
     {
       "familyId": "media-production",
       "familyName": "Media and Creative Production",
+      "name": "shot-by-shot-analysis",
+      "path": "skills/40-creative/shot-by-shot-analysis/SKILL.md",
+      "status": "released",
+      "supportedModels": []
+    },
+    {
+      "familyId": "media-production",
+      "familyName": "Media and Creative Production",
       "name": "slideshow-producer",
       "path": "skills/40-creative/slideshow-producer/SKILL.md",
       "status": "released",
@@ -452,6 +500,14 @@
     {
       "familyId": "media-production",
       "familyName": "Media and Creative Production",
+      "name": "street-interview-ad",
+      "path": "skills/40-creative/street-interview-ad/SKILL.md",
+      "status": "released",
+      "supportedModels": []
+    },
+    {
+      "familyId": "media-production",
+      "familyName": "Media and Creative Production",
       "name": "subtitle-packager",
       "path": "skills/40-creative/subtitle-packager/SKILL.md",
       "status": "released",
@@ -477,6 +533,14 @@
           "hosted-collection"
         ]
       }
+    },
+    {
+      "familyId": "media-production",
+      "familyName": "Media and Creative Production",
+      "name": "ugc-ad",
+      "path": "skills/40-creative/ugc-ad/SKILL.md",
+      "status": "released",
+      "supportedModels": []
     },
     {
       "familyId": "media-production",
