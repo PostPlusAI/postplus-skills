@@ -44,7 +44,11 @@ metadata:
 - Voice design synthesizes a persona voice from spoken `text`, a free-text
   `voice_description`, and an optional `language` (defaults to auto).
 - Voice clone reproduces an approved voice from spoken `text`, an `audio`
-  reference URL, an optional `reference_text` transcript, and optional `language`.
+  reference, an optional `reference_text` transcript, and optional `language`.
+  Upload a local reference with
+  `postplus media-file upload --skill voice-batch-runner --input-file <file> --mime <audio/mpeg|audio/wav> --output <upload.json>`,
+  then pass the persistent `output.mediaReference` as `--audio`; a remote HTTPS
+  URL also works, but must remain reachable through submission.
 - Exact field names, requiredness, and defaults are discovered from
   `postplus media schema --json` and the generated example below; do not hard-code
   a private request envelope here.
@@ -54,10 +58,14 @@ metadata:
   route (`voice_design` or `voice_clone_take`), source basis, and output path.
 - After generation, review realism, persona fit, pacing, ad-like delivery,
   reuse potential, and for cloned output, timbre/accent drift from the reference.
-- If pending, return the saved request path, manifest path, the `output.data.id`
+- If pending, return the manifest path, the `output.data.id`
   generation handle, and the poll command
   `postplus media poll --handle <output.data.id>`. Do not keep polling in the
   conversation.
+- Save a finished take with
+  `postplus media-file download --url <fresh-output-url> --output-file <path>`
+  (or `--reference <postplus-media://...>` for hosted storage); provider output
+  URLs are temporary, so download while fresh.
 
 ## Stop Conditions
 - Stop when required user intent, source evidence, or owned input artifacts are
@@ -79,15 +87,11 @@ metadata:
 - Run the hosted submit with the generated command below; do not call provider APIs directly.
 
 <!-- BEGIN GENERATED EXECUTION EXAMPLE -->
-```json
-{
-  "text": "<text>",
-  "voice_description": "<voice_description>"
-}
-```
-
 ```bash
-postplus media create voice-design --request request.json --output result.json
+postplus media create voice-design \
+  --text <text> \
+  --voice-description <voice-description> \
+  --output <result.json>
 ```
 <!-- END GENERATED EXECUTION EXAMPLE -->
 

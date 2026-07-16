@@ -1,6 +1,6 @@
 ---
 name: seedance-submitter
-description: Use when preparing, submitting, polling, or debugging Seedance 2.0 video generation jobs from product images, storyboard images, UGC scripts, voiceover copy, or promptPlan request JSON. Use for splitting scripts into render segments, uploading references, creating request JSON, submitting jobs through the PostPlus Cloud service, polling predictions, and handing off local render paths.
+description: Use when preparing, submitting, polling, or debugging Seedance 2.0 video generation jobs from product images, storyboard images, UGC scripts, voiceover copy, or promptPlan request JSON. Use for splitting scripts into render segments, uploading references, composing submit flags, submitting jobs through the PostPlus Cloud service, polling predictions, and handing off local render paths.
 metadata:
   postplus:
     familyId: media-production
@@ -41,30 +41,33 @@ metadata:
 
 ## Source And Request
 - Lock product/storyboard/reference media, script, duration, target edit
-  duration, output root, source basis, and whether the user wants submit or JSON
-  only.
+  duration, output root, source basis, and whether the user wants submission or
+  command preparation only.
 - Put timecoded action and spoken lines together in `promptPlan.prompt_storyline`.
   Put voice style, BGM, SFX, subtitle, and watermark constraints in
   `promptPlan.audio`.
 - `promptPlan.*`, `timeline.*`, and `targetEditDurationSeconds` are authoring
-  vocabulary, not Seedance request fields. The final `--request` JSON must be the
-  flat provider contract discovered from `postplus media schema --json`
-  (`prompt`, `image`, `duration`, `resolution`, `aspect_ratio`, `generate_audio`,
-  `reference_images`, `reference_videos`, `reference_audios`); the provider
-  rejects any field outside it. Compose the storyline/audio plan into the single
-  `prompt` string and map the edit-duration plan onto `duration` — do not submit
-  `promptPlan`/`timeline`/`targetEditDurationSeconds` as request fields.
+  vocabulary, not Seedance request fields. Submit with the endpoint's CLI flags
+  from the flat provider contract discovered from `postplus media schema --json`
+  (`--prompt`, `--image`, `--duration`, `--resolution`, `--aspect-ratio`,
+  `--generate-audio`, and the repeatable `--reference-image` /
+  `--reference-video` / `--reference-audio`); the CLI rejects any flag outside
+  the selected endpoint's contract. Compose the storyline/audio plan and any
+  `timeline.activePerformanceEndSeconds` / `timeline.tailStrategy` instruction
+  into the single `--prompt` narrative, then map the supported render bucket to
+  `--duration`; timeline authoring fields have no separate flags or request
+  fields, and there is no request-JSON envelope to author.
 - Bind references explicitly: say what `[image 1]`, `[image 2]`, `[audio 1]`,
   or `[video 1]` controls. Do not rely on `same as previous`, `content above`,
   or unbound local handles in final requests.
 - Upload local reference media to hosted storage with
   `postplus media-file upload --skill seedance-submitter --input-file <file> --mime <mime> --output <upload.json>`,
-  then read the signed HTTPS `output.data.download_url` from `<upload.json>` and
-  pass that URL into the Seedance request. `media-file` implements only `upload`;
-  its result already carries the signed read URL, so there is no
-  separate read-URL step. Seedance no longer uses provider-side binary upload.
-  The signed `download_url` expires, so run the upload right before submission,
-  not ahead of time.
+  then pass `output.mediaReference` — a persistent `postplus-media://` reference
+  that never expires — into the Seedance media flags (for example
+  `--reference-image <output.mediaReference>`). The hosted boundary exchanges it
+  for a fresh signed URL at provider send time, so upload once and reuse the
+  same reference across later submissions. `output.data.download_url` is a
+  signed URL that expires; prefer `output.mediaReference`.
 
 ## Review And Handoff
 - Before submission, verify validation passed, every segment is self-contained,
@@ -74,6 +77,10 @@ metadata:
   `output.data.id` generation handle, the poll command
   `postplus media poll --handle <output.data.id>`, and expected local
   `renders/` output path. Do not keep polling in the conversation.
+- Save a finished render to disk with
+  `postplus media-file download --url <fresh-output-url> --output-file <renders/...>`
+  (or `--reference <postplus-media://...>` for media that lives in hosted
+  storage); provider output URLs are temporary, so download while fresh.
 
 ## Stop Conditions
 - Stop when required user intent, source evidence, or owned input artifacts are
@@ -95,15 +102,11 @@ metadata:
 - Run the hosted submit with the generated command below; do not call provider APIs directly.
 
 <!-- BEGIN GENERATED EXECUTION EXAMPLE -->
-```json
-{
-  "prompt": "<prompt>",
-  "image": "<image>"
-}
-```
-
 ```bash
-postplus media create video-seedance-2-fast-image --request request.json --output result.json
+postplus media create video-seedance-2-fast-image \
+  --prompt <prompt> \
+  --image <image> \
+  --output <result.json>
 ```
 <!-- END GENERATED EXECUTION EXAMPLE -->
 

@@ -24,7 +24,8 @@ metadata:
 ## Execution Boundary
 - Hosted image generation and edits run through the public `postplus media create`
   verb and are async. A submit writes the request, response, manifest, generation
-  handle, provider status, and downloaded outputs if already completed.
+  handle, provider status, and the output URLs if already completed (bytes are
+  not auto-downloaded; see the download command below).
 - This runner validates and executes resolved requests. It must not make creative
   strategy, task-classification, or reference-policy decisions.
 - A higher-quality default and faster or cheaper model families are available;
@@ -35,14 +36,20 @@ metadata:
   `image-gpt-image-2-edit`). Text endpoints such as `image-gpt-image-2-text`
   reject the flag with `Unknown option`, so any reference-bound generation must
   target an edit endpoint, not a text endpoint.
-- Reference-based edits pass each source image as a remote URL via a repeated
-  `--reference-image <url>` flag; do not pass local paths as edit references.
+- Reference-based edits pass each source image via a repeated
+  `--reference-image` flag; do not pass local paths as edit references.
   Upload a local source file with
   `postplus media-file upload --skill image-batch-runner --input-file <file> --mime <image/png|image/jpeg|image/webp> --output <upload.json>`,
-  then read the HTTPS `output.data.download_url` from `<upload.json>` and pass
-  that URL as `--reference-image`. The server downloads each reference itself, so
-  the URL must stay reachable until the submit returns; a URL the server cannot
-  fetch fails the request as a bad request, not a provider fault.
+  then pass `output.mediaReference` — a persistent `postplus-media://` reference
+  that never expires — as `--reference-image`. A remote HTTPS URL also works;
+  the server downloads each reference itself, so a plain URL must stay reachable
+  until the submit returns (a URL the server cannot fetch fails the request as a
+  bad request, not a provider fault), while a `postplus-media://` reference is
+  exchanged for a fresh signed URL at send time and can be reused indefinitely.
+- Save a finished output to disk with
+  `postplus media-file download --url <fresh-output-url> --output-file <path>`
+  (or `--reference <postplus-media://...>` for media in hosted storage);
+  provider output URLs are temporary, so download while fresh.
 - Identifiers and run-local state (`assetId`, `runId`, `localAssetDir`, manifest
   paths) are minted or derived by the runner — do not supply them. Read them back
   from the result for the next handoff.

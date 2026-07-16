@@ -35,8 +35,8 @@ metadata:
   structured motion-control fields, and unbound media roles are not released.
 - `video-kling-v2-6-pro-motion-control` is only reference-motion transfer with
   a reference image plus reference motion video.
-- Image-to-video inputs and reference motion video must already be remote
-  HTTP(S) media URLs.
+- Image-to-video inputs and reference motion video must be remote HTTP(S) media
+  URLs or persistent `postplus-media://` references.
 
 ## Source And Route
 - Source from the active project/client manifests first. Do not reuse another
@@ -50,9 +50,11 @@ metadata:
   prompt text only; do not map them to provider-native trajectory fields.
 
 ## Request Boundary
-- `--request` must point to a JSON file carrying only the normalized video
-  `input` for the selected endpoint; the CLI runner mints the operation
-  identifiers and billing dimensions.
+- Submit with the selected endpoint's CLI flags (discover them from
+  `postplus media schema --json` or the per-endpoint `--help`); the CLI runner
+  mints the operation identifiers and billing dimensions. Media flags accept a
+  remote HTTPS URL or a persistent `postplus-media://` reference from
+  `postplus media-file upload` (`output.mediaReference`, never expires).
 - Poll a pending render with `postplus media poll --handle <output.data.id>`
   (the handle is returned by the create request); do not keep polling in the
   conversation.
@@ -103,14 +105,10 @@ metadata:
 - Run the hosted submit with the generated command below; do not call provider APIs directly.
 
 <!-- BEGIN GENERATED EXECUTION EXAMPLE -->
-```json
-{
-  "prompt": "<prompt>"
-}
-```
-
 ```bash
-postplus media create video-kling-v3-0-pro-text --request request.json --output result.json
+postplus media create video-kling-v3-0-pro-text \
+  --prompt <prompt> \
+  --output <result.json>
 ```
 <!-- END GENERATED EXECUTION EXAMPLE -->
 
