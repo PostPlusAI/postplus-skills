@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-2026-07-16.1-workflow-media-durability",
+  "releaseId": "skills-2026-07-17.1-bounded-wait-download-taxonomy",
   "source": "PostPlusAI/postplus-skills",
   "skills": [
     {
@@ -729,6 +729,14 @@
           "media-generation"
         ]
       }
+    },
+    {
+      "familyId": "media-production",
+      "familyName": "Media and Creative Production",
+      "name": "workflow-creation",
+      "path": "skills/40-creative/workflow-creation/SKILL.md",
+      "status": "released",
+      "supportedModels": []
     },
     {
       "familyId": "platform-research",

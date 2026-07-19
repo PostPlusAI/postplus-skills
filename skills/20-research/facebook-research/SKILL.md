@@ -93,9 +93,9 @@ or compatibility fallbacks to a request.
   where the request file is the raw collection input object, not a hosted
   envelope and not `{ "schemaVersion": 1, "input": ... }`.
 - Resume a pending public content scrape:
-  `postplus research scrape --run-handle <runHandle> --output <result.json>`.
+  `postplus research scrape --run-handle <runHandle> --output <result.json>` (waits in-command up to 45s per invocation; rerun while pending).
 - Resume a pending hosted collection:
-  `postplus research collect --run-handle <runHandle> --output <result.json>`.
+  `postplus research collect --run-handle <runHandle> --output <result.json>` (waits in-command up to 45s per invocation; rerun while pending).
 - Keep the first pass bounded; expand only after inspecting the first result.
   Stop on hard errors. Do not silently swap sources or invent missing data.
 - If the CLI returns a quote-confirmation challenge, run

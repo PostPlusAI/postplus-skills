@@ -43,8 +43,9 @@ metadata:
 
 ## Handoff
 - If status is pending, return the manifest path, the `output.data.id` generation
-  handle, and the poll command `postplus media poll --handle <output.data.id>`. Do
-  not keep the conversation open just to poll.
+  handle, and the poll command `postplus media poll --handle <output.data.id>`
+  (waits in-command up to 45s per invocation; rerun while pending). Do not keep
+  the conversation open just to poll.
 - When completed, hand off downloaded artifacts and `normalizedTranscriptPath`
   to `subtitle-packager` if SRT/ASS is needed.
 

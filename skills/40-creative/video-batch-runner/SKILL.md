@@ -56,8 +56,10 @@ metadata:
   remote HTTPS URL or a persistent `postplus-media://` reference from
   `postplus media-file upload` (`output.mediaReference`, never expires).
 - Poll a pending render with `postplus media poll --handle <output.data.id>`
-  (the handle is returned by the create request); do not keep polling in the
-  conversation.
+  (the handle is returned by the create request). The poll waits in-command —
+  each invocation re-checks every 8s for up to 45s (`--wait-seconds 0` =
+  single check) — so rerun the same command while pending instead of writing a
+  tighter retry loop.
 - Keep internal requests/responses under `.postplus` when they are not final
   handoff artifacts; keep final renders/manifests in the active render folder.
 
@@ -76,9 +78,10 @@ metadata:
   concrete prompt source, source basis, asset purpose, and local output path.
 - After generation, keep `review_pending` until human QA checks lip sync,
   persona continuity, audio/image match, native feel, and ad-like drift.
-- If pending, return `manifestPath`, the `output.data.id` handle, and the poll
-  command `postplus media poll --handle <output.data.id>` immediately. Do not
-  keep thinking or polling in the conversation.
+- If still pending after a poll's in-command wait, return `manifestPath`, the
+  `output.data.id` handle, and the poll command
+  `postplus media poll --handle <output.data.id>`; rerun that same command to
+  resume — do not re-submit the generation.
 
 ## Stop Conditions
 - Stop when required user intent, source evidence, or owned input artifacts are
@@ -97,7 +100,8 @@ metadata:
   video-seedance-2-*` command owned by `seedance-submitter`; route Seedance
   there instead of duplicating its request shape here.
 - Readiness diagnostics: `postplus doctor --skill video-batch-runner`.
-- Poll a pending render: `postplus media poll --handle <output.data.id>`.
+- Poll a pending render: `postplus media poll --handle <output.data.id>` (waits
+  in-command up to 45s per invocation; rerun while pending).
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, fallback providers, or unpublished tools.

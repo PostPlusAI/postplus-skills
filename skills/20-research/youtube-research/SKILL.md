@@ -90,7 +90,7 @@ cross-platform synthesis.
 - Use `postplus research schema --json` only when constructing or repairing an unknown request shape.
 - Public video scrape: `postplus research scrape youtube-videos --request <input-array.json> --output <result.json>` (request = a JSON array of input records).
 - Hosted collection: `postplus research collect <collectionKey> --request <input.json> --output <result.json>` (input = the collection parameters; channel summary, comments, or video download).
-- Resume a pending public video scrape: `postplus research scrape --run-handle <runHandle> --output <result.json>`.
-- Resume a pending hosted collection: `postplus research collect --run-handle <runHandle> --output <result.json>`.
+- Resume a pending public video scrape: `postplus research scrape --run-handle <runHandle> --output <result.json>` (waits in-command up to 45s per invocation; rerun while pending).
+- Resume a pending hosted collection: `postplus research collect --run-handle <runHandle> --output <result.json>` (waits in-command up to 45s per invocation; rerun while pending).
 - Keep the first pass bounded; expand only after inspecting the first result.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

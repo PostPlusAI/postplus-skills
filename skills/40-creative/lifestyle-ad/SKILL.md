@@ -1,6 +1,6 @@
 ---
 name: lifestyle-ad
-description: Design State-Led Lifestyle Ads where product capability is hidden inside a desirable human state. Use for "Lifestyle Ad", "State-Led Lifestyle Ad", "能力藏在状态里", premium product ads, Ray-Ban-like ad feel, tasteful product films, turning features into lifestyle ad scripts, shot-by-shot scripts with camera/action/sound/subtitle/purpose, and approved lifestyle scripts that should proceed directly into production via video-batch-runner for hosted video renders or image-batch-runner when still assets are needed first.
+description: Design State-Led Lifestyle Ads where product capability is hidden inside a desirable human state. Use for "Lifestyle Ad", "State-Led Lifestyle Ad", "能力藏在状态里", premium product ads, Ray-Ban-like ad feel, tasteful product films, turning features into lifestyle ad scripts, shot-by-shot scripts with camera/action/sound/subtitle/purpose, and approved lifestyle scripts that should proceed directly into production via video-batch-runner for hosted video renders, image-batch-runner when still assets are needed first, or workflow-creation when the script should become a reusable workflow on the PostPlus workflow platform.
 metadata:
   postplus:
     familyId: media-production
@@ -78,6 +78,8 @@ If the user approves the script, read `references/workflow-handoff.md` and immed
 Use `$video-batch-runner` by default: it turns the approved shot script into hosted video renders. This is the standard path when the user simply says to continue after approving the script.
 
 Use `$image-batch-runner` first when the approved script needs still assets before video: persona images, product lifestyle stills, first-frame candidates, scene images, or light consistency edits. Those stills then feed the video renders.
+
+Use `$workflow-creation` when the user wants the approved script to become a reusable production line instead of a one-off render batch: it builds a quotable, human-launched workflow on the PostPlus workflow platform from the locked script and references.
 
 Pass the approved shot script, Camera Grammar Plan, brand constraints, product facts, claim boundaries, and any provided references as locked creative context. Do not output a separate production brief and do not ask a second "generate?" confirmation.
 

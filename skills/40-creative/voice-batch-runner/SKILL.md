@@ -60,8 +60,9 @@ metadata:
   reuse potential, and for cloned output, timbre/accent drift from the reference.
 - If pending, return the manifest path, the `output.data.id`
   generation handle, and the poll command
-  `postplus media poll --handle <output.data.id>`. Do not keep polling in the
-  conversation.
+  `postplus media poll --handle <output.data.id>`. The poll waits in-command
+  (up to 45s per invocation, checking every 8s); rerun it while pending
+  instead of writing a tighter retry loop.
 - Save a finished take with
   `postplus media-file download --url <fresh-output-url> --output-file <path>`
   (or `--reference <postplus-media://...>` for hosted storage); provider output
@@ -79,7 +80,8 @@ metadata:
 - Choose the smallest matching command or workflow from the user input and run
   it directly.
 - Readiness diagnostics: `postplus doctor --skill voice-batch-runner`.
-- Poll a pending voice take: `postplus media poll --handle <output.data.id>`.
+- Poll a pending voice take: `postplus media poll --handle <output.data.id>`
+  (waits in-command up to 45s per invocation; rerun while pending).
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, fallback providers, or unpublished tools.

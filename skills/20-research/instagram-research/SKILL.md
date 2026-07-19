@@ -72,7 +72,7 @@ fallbacks to collection requests.
   payload rewrites, fallback providers, or unpublished tools.
 - Use `postplus research schema --collection-key <collectionKey> --json` only when constructing or repairing an unknown request shape.
 - Hosted collection runs through the shared `research collect` verb: `postplus research collect <collectionKey> --skill instagram-research --request <input.json> --output <result.json>` (input = the collection parameters).
-- Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <result.json>`.
+- Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <result.json>` (waits in-command up to 45s per invocation; rerun while pending).
 - Keep the first pass bounded; expand only after inspecting the first result.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.
 

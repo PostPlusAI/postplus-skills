@@ -24,8 +24,8 @@ metadata:
 ## Execution Boundary
 - Hosted image generation and edits run through the public `postplus media create`
   verb and are async. A submit writes the request, response, manifest, generation
-  handle, provider status, and the output URLs if already completed (bytes are
-  not auto-downloaded; see the download command below).
+  handle, provider status, and completed artifact metadata (bytes are not
+  auto-downloaded; see the download command below).
 - This runner validates and executes resolved requests. It must not make creative
   strategy, task-classification, or reference-policy decisions.
 - A higher-quality default and faster or cheaper model families are available;
@@ -46,10 +46,10 @@ metadata:
   until the submit returns (a URL the server cannot fetch fails the request as a
   bad request, not a provider fault), while a `postplus-media://` reference is
   exchanged for a fresh signed URL at send time and can be reused indefinitely.
-- Save a finished output to disk with
-  `postplus media-file download --url <fresh-output-url> --output-file <path>`
-  (or `--reference <postplus-media://...>` for media in hosted storage);
-  provider output URLs are temporary, so download while fresh.
+- Save a finished native OpenAI image output to disk with
+  `postplus media-file download --reference <output.data.artifacts[0].mediaReference> --output-file <path>`.
+  Treat `output.data.artifacts[0].mediaReference` as the durable download
+  identity. Do not persist or prefer temporary signed output URLs.
 - Identifiers and run-local state (`assetId`, `runId`, `localAssetDir`, manifest
   paths) are minted or derived by the runner — do not supply them. Read them back
   from the result for the next handoff.
@@ -69,7 +69,10 @@ metadata:
 - After generation, check realism, benchmark fit, repeatability across videos,
   copied-creator risk, and ad-like drift.
 - If processing is still pending, return the manifest/request paths and the poll
-  command `postplus media poll --handle <output.data.id>`.
+  command `postplus media poll --handle <output.data.id> --output path/to/generation-result.json`.
+  Reuse the exact `--output` path from the initial submit. A completed poll
+  atomically replaces the processing JSON at that path with the completed result;
+  rerun the same command while pending (each invocation waits up to 45s).
 
 ## Stop Conditions
 - Stop when required user intent, source evidence, or owned input artifacts are
@@ -83,7 +86,10 @@ metadata:
 - Choose the smallest matching command or workflow from the user input and run
   it directly.
 - Readiness diagnostics: `postplus doctor --skill image-batch-runner`.
-- Poll a pending image job: `postplus media poll --handle <output.data.id>`.
+- Poll a pending image job: `postplus media poll --handle <output.data.id> --output path/to/generation-result.json`.
+  Reuse the initial submit's result path so the completed poll atomically
+  replaces its processing JSON; rerun while pending (each invocation waits up
+  to 45s).
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, fallback providers, or unpublished tools.

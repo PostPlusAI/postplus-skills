@@ -96,7 +96,7 @@ from the command output.
   where the request file is the raw collection input object, not a hosted
   envelope and not `{ "schemaVersion": 1, "input": ... }`.
 - Resume a pending collection:
-  `postplus research collect --run-handle <runHandle> --output <result.json>`.
+  `postplus research collect --run-handle <runHandle> --output <result.json>` (waits in-command up to 45s per invocation; rerun while pending).
 - Keep the first pass bounded; expand only after inspecting the first result.
 - If the CLI returns a quote-confirmation challenge, run
   `postplus quote confirm --json --challenge-file <challenge.json>` and retry

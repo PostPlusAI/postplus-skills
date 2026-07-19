@@ -76,7 +76,10 @@ metadata:
 - If a render is pending, return the segment id, manifest path, the
   `output.data.id` generation handle, the poll command
   `postplus media poll --handle <output.data.id>`, and expected local
-  `renders/` output path. Do not keep polling in the conversation.
+  `renders/` output path. The poll command waits in-command (re-checks every 8s
+  for up to 45s per invocation; `--wait-seconds 0` = single check): rerun the
+  same command while the render stays pending instead of re-submitting or
+  writing a tighter retry loop.
 - Save a finished render to disk with
   `postplus media-file download --url <fresh-output-url> --output-file <renders/...>`
   (or `--reference <postplus-media://...>` for media that lives in hosted
@@ -94,7 +97,8 @@ metadata:
 - Choose the smallest matching command or workflow from the user input and run
   it directly.
 - Readiness diagnostics: `postplus doctor --skill seedance-submitter`.
-- Poll a pending render: `postplus media poll --handle <output.data.id>`.
+- Poll a pending render: `postplus media poll --handle <output.data.id>` (waits
+  in-command up to 45s per invocation; rerun while pending).
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, fallback providers, or unpublished tools.

@@ -10,6 +10,8 @@ Default to `$video-batch-runner`: it renders the approved shot script into hoste
 
 Use `$image-batch-runner` first when the approved concept needs still assets before video: persona images, product lifestyle stills, first-frame candidates, scene images, or light consistency edits. Those stills then feed the video renders.
 
+Use `$workflow-creation` when the user wants the approved script to become a reusable production line: it builds a quotable, human-launched workflow on the PostPlus workflow platform from the locked script, so the same concept can be launched repeatedly instead of rendered once.
+
 ## Handoff Payload
 
 Provide the downstream production runner with:
