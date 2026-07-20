@@ -17,13 +17,19 @@ Quality checks are internal; do not ask the user whether to run QA. Ask only whe
 
 ## Platform Tool Surface
 
-Drive workflows only through the platform workflow tools of the PostPlus workspace assistant session: `workflow_read` (resolve by name via `action=list`, inspect nodes/slots/versions via `get`, read runs via `runs_get`), `workflow_author` (`create` a blank or template-seeded workflow; `propose_edit` structural edits - `add_node` / `update_node` / `remove_node` / `connect_nodes` - returning an honest validation verdict without persisting), `apply_workflow_edit_to_canvas` (same operations when the user's live canvas is attached), `save_workflow_version` (persist a proposal; always human-approved), then `quote_workflow_run` and `launch_workflow_run`.
+Workflow authoring is ONE server-validated capability with two front doors. Use whichever the current session exposes — never mix them, and never bypass server validation:
+
+- **Workspace assistant typed tools**: `workflow_read` (resolve by name via `action=list`, inspect nodes/slots/versions via `get`, read runs via `runs_get`), `workflow_author` (`create` a blank or template-seeded workflow; `propose_edit` structural edits - `add_node` / `update_node` / `remove_node` / `connect_nodes` - returning an honest validation verdict without persisting), `apply_workflow_edit_to_canvas` (same operations when the user's live canvas is attached), `save_workflow_version` (persist a proposal; always human-approved), then `quote_workflow_run` and `launch_workflow_run`.
+- **CLI agent `postplus workflow` commands** - the same verbs, results as JSON, requiring a logged-in session (`postplus auth login`): `postplus workflow list` / `show` and `runs` / `run-show` (read), `create`, `propose` (= `propose_edit`: preview + validate, persists nothing), `save` (= `save_workflow_version`: persist a new immutable version), `quote`, and `launch`. Structural edits go in a `--operations` JSON array of the same `add_node` / `update_node` / `remove_node` / `connect_nodes` ops. Run `postplus workflow help` for exact flags.
+
+The two surfaces map one-to-one onto the same hosted verbs and the same validation; `propose` mirrors `propose_edit`, `save` mirrors `save_workflow_version`, `quote` mirrors `quote_workflow_run`, `launch` mirrors `launch_workflow_run`.
 
 Boundaries:
 
 - Resolve ids, never guess them; ambiguous name matches go back to the user as candidates.
 - Never hand-write a full definition document. Build structure through create plus edit operations and let the server validate; if `validation.ok=false`, fix the listed errors and re-propose. The server never silently repairs.
-- If these workflow tools are unavailable in the current session, do not fabricate a definition or any substitute file format. Say workflow authoring happens in the PostPlus workspace assistant, and route one-off render requests to `video-batch-runner`.
+- Persist only on human approval (`save_workflow_version` / `postplus workflow save`), and never launch without explicit user approval - quote first, report the reserved credits, and on the CLI pass the quoted `reservedMillicredits` as `--max-reserved-millicredits` together with `--confirm` (launch refuses to run without both).
+- If NEITHER surface is available in the current session (no workspace assistant tools and no logged-in CLI), do not fabricate a definition or any substitute file format. Say workflow authoring needs the PostPlus workspace assistant or a logged-in `postplus` CLI, and route one-off render requests to `video-batch-runner`.
 
 ## Workflow Shape Defaults
 
@@ -63,9 +69,9 @@ Guardrail diagnoses, prompt compiles. Business-experience guardrails are sidecar
 
 1. **Lock** only the needed context: user intent, product facts, claim limits, references, duration, exact hook/VO to preserve, and stated exclusions. If narrative logic is the gap, lock a compact cut plan first (hook, pain beat, product entrance, proof/value beat, CTA, post-production boundary).
 2. **Prompt** after reading `references/prompt-quality.md`. Resolve `do not/no/avoid/不要` into positive scene carriers; bind every reference to a job, scope, and boundary. Duration, aspect ratio, resolution, and audio generation belong in node config, never restated as prompt text.
-3. **Build** through `workflow_author`: create (blank or template), then propose the node/edge/config structure with edit operations.
+3. **Build** through `workflow_author` (or `postplus workflow create` / `propose`): create (blank or template), then propose the node/edge/config structure with edit operations.
 4. **Validate** with the returned verdict plus the internal quality gate. Fix truth-preserving issues directly; block only for missing facts that would change claims or behavior.
-5. **Persist and launch** on human approval only: `save_workflow_version`, then `quote_workflow_run`, report the reserved cost in credits (millicredits ÷ 1000), and `launch_workflow_run` after explicit approval - pass the quote's `reservedMillicredits` as `maxTotalReservedMillicredits` and the exact workflow name as `workflowTitle`.
+5. **Persist and launch** on human approval only: `save_workflow_version` (or `postplus workflow save`), then `quote_workflow_run` (or `postplus workflow quote`), report the reserved cost in credits (millicredits ÷ 1000), and `launch_workflow_run` (or `postplus workflow launch ... --confirm`) after explicit approval - pass the quote's `reservedMillicredits` as `maxTotalReservedMillicredits` / `--max-reserved-millicredits` and the exact workflow name as `workflowTitle` / `--title`.
 6. **Handoff** workflow name and id, saved version, validation status, quote/launch status, and meaningful blockers or residual risks. Runs are asynchronous with human review gates - report state and the workflow page link; do not poll a run to completion.
 
 ## Script-Locked Asset Mode
@@ -88,7 +94,7 @@ If the user wants external music, later sound design, or a silent workflow, turn
 
 ## Cost And Launch Discipline
 
-Launching spends real credits: always quote first, report the reserved credits, and never launch without explicit user approval. Runs pause at human review gates (per-clip approval, final review) - report run state and the workflow page link instead of sitting in a polling loop.
+Launching spends real credits: always quote first, report the reserved credits, and never launch without explicit user approval. On the CLI, `postplus workflow launch` refuses to run without `--confirm` and an acknowledged `--max-reserved-millicredits` ceiling; the server re-quotes and aborts if the fresh reservation exceeds it, so the confirmed cost bound stays binding. Runs pause at human review gates (per-clip approval, final review) - report run state and the workflow page link instead of sitting in a polling loop.
 
 ## Handoff
 
