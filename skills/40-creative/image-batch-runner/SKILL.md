@@ -80,6 +80,20 @@ metadata:
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, fallback providers, or unpublished tools.
+- Batch isolation: when producing a batch of independent items, a per-item
+  provider content/safety rejection is isolated to that item. It is identified
+  only by the typed code `postplus_cli_hosted_media_content_policy_blocked`,
+  never by provider prose, and it surfaces at either boundary: a failed
+  `postplus media create` whose typed error `code` is that code, or a
+  submitted run whose poll result carries `output.data.status: failed` and
+  `output.data.error.code` set to that code. On either, record which item was
+  blocked and its exact reason, skip it, and continue submitting and polling
+  the remaining items, then report the incomplete set at the end. Do not retry,
+  soften, or re-submit the blocked item — that is a forbidden payload rewrite.
+  Every other failure (a failed owned CLI/script command whose typed `code` is
+  not that content-policy code, or a run whose `error.code` is not that
+  content-policy code — auth, transport, quota, malformed request, provider
+  outage) is systemic: stop per the rule above.
 
 ## Public Command Boundary
 

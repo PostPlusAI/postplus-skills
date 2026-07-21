@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-2026-07-20.1-workflow-creation-cli-frontdoor",
+  "releaseId": "skills-2026-07-21.1-batch-isolation-submit-boundary",
   "source": "PostPlusAI/postplus-skills",
   "skills": [
     {
