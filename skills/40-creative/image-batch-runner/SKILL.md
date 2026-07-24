@@ -80,6 +80,15 @@ metadata:
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, fallback providers, or unpublished tools.
+- Batch canary: before fanning out a batch of independent items, submit item 1
+  alone and poll it to a terminal state. If the canary is content-policy
+  blocked (the per-item typed code below), record and skip it per batch
+  isolation, then canary the next item; fan out only after a non-blocked
+  canary completes successfully. Every other canary failure is systemic: stop.
+  Some failures are only visible on poll (async terminal states), so a
+  submit-accepted batch can still be 100% doomed — a canary caps the blast
+  radius of any systemic defect (bad reference form, provider outage, auth) at
+  one item instead of the whole batch.
 - Batch isolation: when producing a batch of independent items, a per-item
   provider content/safety rejection is isolated to that item. It is identified
   only by the typed code `postplus_cli_hosted_media_content_policy_blocked`,

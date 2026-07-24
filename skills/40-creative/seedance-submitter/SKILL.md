@@ -26,7 +26,19 @@ metadata:
   not make creative strategy, task-classification, or reference-policy decisions.
 - Interpret `sd2` as Seedance 2.0 Mini (`video-seedance-2-mini-*`), the current
   default tier, unless the user names another model. The standard Seedance 2.0
-  tier (`video-seedance-2-*`) stays available when explicitly requested.
+  tiers (`video-seedance-2-text` / `video-seedance-2-fast-text` and their
+  image-to-video counterparts — not `-mini-`) stay available when explicitly
+  requested. Mini is
+  the narrowest reference tier (see the reference-slot matrix below); when the
+  task needs reference video/audio, choose standard or fast instead of mini.
+- Reference-slot matrix (per endpoint, from the released schema): reference
+  slots exist only on `-text` (text-to-video) endpoints. `video-seedance-2-text`
+  and `video-seedance-2-fast-text` accept the repeatable `--reference-image` /
+  `--reference-video` / `--reference-audio`; `video-seedance-2-mini-text`
+  accepts `--reference-image` only (mini has no reference video/audio). Every
+  `-image` (image-to-video) endpoint takes exactly one `--image` first frame
+  and has no reference slots at all — multi-reference generation on this family
+  means using a `-text` endpoint, not adding flags to an `-image` one.
 - Released endpoint keys and their option enums (resolution, aspect ratio,
   duration bounds) are discovered from `postplus media schema --json`; they are
   not hard-coded here.
@@ -51,8 +63,9 @@ metadata:
   from the flat provider contract discovered from `postplus media schema --json`
   (`--prompt`, `--image`, `--duration`, `--resolution`, `--aspect-ratio`,
   `--generate-audio`, and the repeatable `--reference-image` /
-  `--reference-video` / `--reference-audio`); the CLI rejects any flag outside
-  the selected endpoint's contract. Compose the storyline/audio plan and any
+  `--reference-video` / `--reference-audio` — reference flags only on the
+  endpoints named in the reference-slot matrix above); the CLI rejects any flag
+  outside the selected endpoint's contract. Compose the storyline/audio plan and any
   `timeline.activePerformanceEndSeconds` / `timeline.tailStrategy` instruction
   into the single `--prompt` narrative, then map the supported render bucket to
   `--duration`; timeline authoring fields have no separate flags or request

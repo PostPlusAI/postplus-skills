@@ -16,6 +16,32 @@ artifacts, or a compile step before provider execution.
 - On that capability-missing path, do not switch into a “we can collect later”
   discovery flow.
 
+## Client Update Rule
+
+- A client compatibility failure is an update precondition, not a capability
+  failure. PostPlus Cloud returns it when the installed PostPlus CLI or the
+  installed PostPlus skills are older than the current release; it surfaces as
+  `postplus_client_upgrade_required`, as HTTP 426, or as a message saying the
+  PostPlus CLI or PostPlus skills are out of date.
+- This is the one failure class the agent recovers from on its own. Every other
+  boundary failure still follows the PostPlus Cloud Rule above: fail fast and
+  report it to the user.
+- Nothing updates automatically. The installed CLI does not self-upgrade during
+  ordinary commands; it only updates when the update command is actually run.
+- Recovery is exactly one command: `postplus update`. It is auth-independent and
+  it updates a stale CLI and the installed skills in the same invocation. Do not
+  run `postplus auth login` for this failure, and do not run a separate
+  package-manager install or skills-install command first.
+- After it succeeds, run `postplus status` to confirm the CLI and installed
+  skills are current, then retry the original command once.
+- If `postplus update` itself fails on permissions, network, DNS, proxy, or
+  registry errors, stop and report that update failure. Do not fall back to other
+  install commands, edit installed skill files, or work around the compatibility
+  check.
+- If the response asks for a restarted agent session, say so plainly and stop.
+  Updated skill instructions only load into a new session, so retrying in a loop
+  in the current session cannot pick them up.
+
 ## Supported Script Rule
 
 - Use PostPlus-supported scripts and PostPlus Cloud services as the supported

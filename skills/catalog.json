@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-2026-07-21.1-batch-isolation-submit-boundary",
+  "releaseId": "skills-2026-07-24.1-reddit-search-typed-image-pilot",
   "source": "PostPlusAI/postplus-skills",
   "skills": [
     {
@@ -350,6 +350,22 @@
       "path": "skills/10-routing/prompt-preflight-qa/SKILL.md",
       "status": "released",
       "supportedModels": []
+    },
+    {
+      "familyId": "reddit",
+      "familyName": "Reddit",
+      "name": "reddit-search",
+      "path": "skills/20-research/reddit-search/SKILL.md",
+      "status": "released",
+      "supportedModels": [],
+      "requirements": {
+        "collectionKeys": [
+          "reddit-search"
+        ],
+        "hostedCapabilities": [
+          "hosted-collection"
+        ]
+      }
     },
     {
       "familyId": "routing-contracts",
