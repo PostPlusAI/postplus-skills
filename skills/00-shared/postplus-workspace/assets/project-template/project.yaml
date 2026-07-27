@@ -1,0 +1,19 @@
+schema_version: 1
+project_name: "{{PROJECT_NAME}}"
+brand: "{{BRAND_NAME}}"
+product: "{{PRODUCT_NAME}}"
+stage: "onboarding"
+status: "draft"
+default_market: "{{MARKET}}"
+default_platform: "{{PLATFORM}}"
+current_campaign: ""
+approvals:
+  product_truth:
+    status: "pending"
+    approved_by: ""
+    approved_at: ""
+  test_plan:
+    status: "pending"
+    campaign: ""
+    approved_by: ""
+    approved_at: ""

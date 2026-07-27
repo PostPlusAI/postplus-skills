@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-2026-07-24.1-reddit-search-typed-image-pilot",
+  "releaseId": "skills-2026-07-28.1-postplus-workspace",
   "source": "PostPlusAI/postplus-skills",
   "skills": [
     {
@@ -342,6 +342,19 @@
       "path": "skills/00-shared/postplus-shared/SKILL.md",
       "status": "released",
       "supportedModels": []
+    },
+    {
+      "familyId": "workspace-publishing",
+      "familyName": "Workspace, Publishing, and Meta",
+      "name": "postplus-workspace",
+      "path": "skills/00-shared/postplus-workspace/SKILL.md",
+      "status": "released",
+      "supportedModels": [],
+      "requirements": {
+        "localDependencies": [
+          "python3"
+        ]
+      }
     },
     {
       "familyId": "routing-contracts",
