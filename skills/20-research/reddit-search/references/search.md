@@ -1,36 +1,54 @@
-# Keyword Search Workflow
+# Search Routes
 
-Use this reference for keyword-to-post requests such as "what does Reddit say
-about X", "find pain points around X", or "collect Reddit threads about X".
+Use this reference for keyword discovery and public Reddit search URLs.
 
-## First pass
+## Keyword requests
 
-1. Pick one keyword. If the user gave a phrase, keep it as a single
-   `searchTerms` entry.
-2. Set `searchSort` to `relevance` for research questions, or `top` when the
-   user wants the most upvoted threads.
-3. Set `searchTime` to `year` unless the user explicitly wants all-time or a
-   tighter window.
-4. Keep `maxPostsCount` at 20 for the first pass.
-5. Run the request from `references/shared-contract.md`.
-6. Normalize and deduplicate the results, then report scope and count.
+Use one phrase in `searchTerms` and enable exactly one result type per run:
 
-## When to expand
+| Goal | Search flags | Default bound |
+| --- | --- | --- |
+| Find posts | `searchPosts: true`, other search flags `false` | `relevance`, `year`, `maxPostsCount: 20` |
+| Find comments | `searchComments: true`, other search flags `false` | `relevance`, `year`, `maxCommentsCount: 20` |
+| Find communities | `searchCommunities: true`, other search flags `false` | `maxCommunitiesCount: 10` |
 
-Only after inspecting the first pass, and only when the user needs more:
+Example post discovery request:
 
-- More coverage for the same idea: raise `maxPostsCount` in a second,
-  still-bounded pass.
-- A different angle: run a separate request with a new keyword; do not merge
-  unrelated keywords into one request.
-- Fresh-versus-canonical comparison: run one `year` pass and one `all` pass,
-  and keep the two result sets separate.
+```json
+{
+  "searchTerms": ["portable espresso maker"],
+  "searchPosts": true,
+  "searchComments": false,
+  "searchCommunities": false,
+  "searchSort": "relevance",
+  "searchTime": "year",
+  "maxPostsCount": 20,
+  "includeNSFW": false
+}
+```
 
-Never expand blindly. Each pass stays bounded, and each result set is reported
-with its own scope and count.
+Use `top` when the user wants the most upvoted evidence, `new` for recency,
+`comments` for discussion-rich posts, or `hot` for current momentum. Otherwise
+keep `relevance`.
 
-## Out of scope
+## Narrowing a search
 
-Comment scrapes, subreddit feed scrapes, profile scrapes, post-URL scrapes,
-and media downloads are not part of the current public surface. If the user
-needs them, say so and stop rather than substituting a different source.
+- Set `withinCommunity` to a subreddit name for posts or comments inside one
+  community.
+- Set `onlyWithFlair` only when the user supplies a flair or asks for a
+  clearly named flair category.
+- For posts, use `postedAfter` and/or `postedBefore` for an exact date window.
+- For comments, use `commentedAfter` and/or `commentedBefore`.
+- When any exact date is used, omit `searchTime` rather than sending both.
+
+Keep each keyword in its own request. If comparing `year` with `all`, preserve
+the two passes as separate scopes before deduplication or synthesis.
+
+## Public search URLs
+
+Use `startUrls` with one `{ "url": "..." }` object for a supplied Reddit
+search URL. Set `fastMode` to `true` for the default bounded pass. Set it to
+`false` only when the user explicitly needs the collected list to match the
+visible search page as closely as possible, because strict fidelity costs more.
+
+Do not combine the search URL with `searchTerms` or another entry mode.

@@ -1,66 +1,61 @@
 # Shared Contract
 
-Apply this before every Reddit search run.
+Apply this contract before every route.
 
-## Request shape
+## Choose exactly one entry mode
 
-The `reddit-search` collection request is a single raw input object:
+Every request is one raw JSON object and uses exactly one of these entry modes:
 
-```json
-{
-  "searchTerms": ["portable espresso maker"],
-  "searchSort": "relevance",
-  "searchTime": "year",
-  "maxPostsCount": 20
-}
-```
+| Entry mode | Use for | Shape |
+| --- | --- | --- |
+| `searchTerms` | Keyword discovery | Array containing one search phrase |
+| `startUrls` | A post, profile, subreddit, or search page | Array of `{ "url": "..." }` objects |
+| `subredditUrls` | A bounded deep subreddit collection | Array of subreddit names or public URLs |
 
-- `searchTerms`: the search keywords. Use one keyword per request; keep the
-  array to a single entry so scope and count stay attributable.
-- `searchSort`: `relevance` (default choice for research), `hot`, `top`,
-  `new`, or `comments`. `new` matches loosely against the newest posts and is
-  usually noisy for research; prefer `relevance` or `top`.
-- `searchTime`: `all`, `hour`, `day`, `week`, `month`, or `year`. Use `year`
-  for opinion and product research unless the user wants all-time coverage.
-- `maxPostsCount`: how many posts to return. Keep the first pass at 20 and
-  expand only after inspecting the results.
+Never combine entry modes in one run. Send the raw object directly; never wrap
+it in a hosted envelope or `{ "schemaVersion": 1, "input": ... }`.
 
-Send the raw object. Never wrap it in a hosted envelope or a
-`{ "schemaVersion": 1, "input": ... }` shape, and never add fields the request
-does not define.
+When the user supplies multiple keywords, create one bounded request per
+keyword. The requests may run in parallel, but preserve the keyword on every
+result set so scope, cost, and evidence remain attributable.
 
-## Output normalization
+## Public request controls
 
-Each returned item is a Reddit post record. Normalize every item to:
+Use only controls required by the selected route:
 
-```json
-{
-  "title": "...",
-  "post_url": "https://www.reddit.com/r/.../comments/...",
-  "community": "IndiaCoffee",
-  "score": 175,
-  "comments_count": 112,
-  "created_at": "2026-06-16T00:00:00.000Z",
-  "snippet": "..."
-}
-```
+- Discovery: `searchPosts`, `searchComments`, `searchCommunities`,
+  `withinCommunity`, `searchSort`, and `searchTime`.
+- Exact windows: `postedAfter`, `postedBefore`, `commentedAfter`, and
+  `commentedBefore` as `YYYY-MM-DD` dates.
+- Content filters: `onlyWithFlair` and `includeNSFW`.
+- Bounded output: `maxPostsCount`, `maxCommentsCount`,
+  `maxCommentsPerPost`, and `maxCommunitiesCount`.
+- Thread traversal: `crawlCommentsPerPost`.
+- Search-page fidelity: `fastMode`, only for a search URL.
 
-- `title`: the post title.
-- `post_url`: the post page URL (`postUrl` field); the dedup key.
-- `community`: the subreddit name without the `r/` prefix
-  (`parsedCommunityName`).
-- `score`: the post score (`score`).
-- `comments_count`: the comment count (`commentsCount`).
-- `created_at`: the post creation time (`createdAt`).
-- `snippet`: the first ~200 characters of the post body (`body`), or null for
-  link/media posts without text.
+Do not add analysis, labelling, external-delivery, credential, or network
+controls to public requests.
 
-Deduplicate by `post_url` and drop items that carry no post URL.
+## Safety and cost bounds
 
-## First-pass discipline
+- Set `includeNSFW` to `false` unless the user explicitly asks for adult
+  content; only then set it to `true`.
+- Every maximum is a non-negative integer. Zero deliberately disables that
+  output type; a negative, fractional, or non-numeric value is invalid.
+- Keep the first pass at the route default. Expand only after showing the user
+  what the first pass found.
+- If an absolute date is present, omit `searchTime`; the exact date window owns
+  recency.
+- Multiple terms, URLs, subreddits, or profiles must not silently multiply the
+  agreed bound.
 
-- Run one bounded pass first, at 20 posts.
-- Treat empty, unavailable, private, or sparse results as an evidence gap, not
-  a reason to silently retry with a different request shape.
-- Stop on hard errors and report the exact command error. Do not fabricate
-  results and do not substitute an unsupported source.
+## Failure and continuation
+
+Treat empty, unavailable, private, or sparse output as an evidence gap. Report
+the exact scope and stop instead of changing routes or inventing evidence.
+
+For a hard command error, report the error and stop. For a saved async
+checkpoint, resume from the existing result file; do not launch a second run.
+
+For any price challenge, describe the quoted scope and wait for explicit user
+confirmation before confirming or retrying.

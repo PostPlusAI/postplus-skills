@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-2026-07-28.1-postplus-workspace",
+  "releaseId": "skills-2026-08-15.1-reddit-safe-resume",
   "source": "PostPlusAI/postplus-skills",
   "skills": [
     {
@@ -766,6 +766,24 @@
       "path": "skills/40-creative/workflow-creation/SKILL.md",
       "status": "released",
       "supportedModels": []
+    },
+    {
+      "familyId": "x",
+      "familyName": "X",
+      "name": "x-research",
+      "path": "skills/20-research/x-research/SKILL.md",
+      "status": "released",
+      "supportedModels": [],
+      "requirements": {
+        "collectionKeys": [
+          "x-posts",
+          "x-profiles",
+          "x-user-search"
+        ],
+        "hostedCapabilities": [
+          "hosted-collection"
+        ]
+      }
     },
     {
       "familyId": "platform-research",
