@@ -13,6 +13,9 @@ Use this skill for Google Trends platform-data work: topic discovery, keyword
 momentum, regional interest, rising queries, and search-intent watchlists.
 
 Apply shared rulebook and user-guidance rules from `postplus-shared`.
+When a supported command completes but evidence is empty, sparse, noisy,
+off-topic, or the wrong record type, apply the `postplus-shared` reference
+`research-quality-recovery.md`; hard execution errors still fail fast.
 
 ## Core Rule
 
@@ -102,6 +105,5 @@ missing evidence layer.
   payload rewrites, fallback providers, or unpublished tools.
 - Use `postplus research schema --collection-key google-trends-fast --json` only when constructing or repairing an unknown request shape.
 - Hosted collection: `postplus research collect google-trends-fast --request <input.json> --output <result.json>` (input = the collection parameters).
-- Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <result.json>` (waits in-command up to 45s per invocation; rerun while pending).
 - Preview and approval boundaries stay explicit; do not execute irreversible publishing without the required approval artifact.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

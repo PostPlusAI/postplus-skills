@@ -81,10 +81,12 @@ artifacts, or a compile step before provider execution.
 - If there is no useful parallel work, run one bounded poll pass, report the
   current status, and keep the resume command or checkpoint available. The
   resume command for a hosted media job is `postplus media poll --handle
-  <output.data.id>`; for a public-content scrape (the `s_...` handle from
-  `research scrape`) it is `postplus research scrape --run-handle <runHandle>`;
-  for a hosted research collection it is
-  `postplus research collect --run-handle <runHandle>`.
+  <output.data.id>`. Local research commands resume only from the result file:
+  `postplus research scrape --resume-from <result.json>` or
+  `postplus research collect --resume-from <result.json>`. Never extract, paste,
+  or rewrite `runHandle`; the CLI reads it byte-for-byte and updates the same
+  checkpoint file. A hosted runtime without a shared local filesystem follows
+  its own structured polling contract instead of emulating the local command.
 
 ## Work Folder Rule
 
@@ -126,8 +128,10 @@ artifacts, or a compile step before provider execution.
   tokens, or billing dimensions; the CLI mints or derives them and rejects them
   in the request body.
 - Pass shared execution fields as command-supported flags
-  (`--quote-confirmation-token`, `--hosted-operation-id`, or `--run-handle` to
-  resume a pending research collection), not inside the skill-specific input.
+  (`--quote-confirmation-token` or `--hosted-operation-id`), not inside the
+  skill-specific input. Research resume state stays in the `--output` result
+  file and is consumed through `--resume-from`; never copy its opaque handle
+  into a command or request body.
 - If a hosted command prints `Quote confirmation challenge: <path>`, run the
   exact `postplus quote confirm --json --challenge-file <path>` command, then
   rerun the same hosted command with `--quote-confirmation-token <token>`.
