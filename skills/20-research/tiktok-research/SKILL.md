@@ -15,6 +15,9 @@ creative decision.
 
 TikTok music/archive download is not part of the released public surface. Apply
 shared rulebook and user-guidance rules from `postplus-shared`.
+When a supported command completes but evidence is empty, sparse, noisy,
+off-topic, or the wrong record type, apply the `postplus-shared` reference
+`research-quality-recovery.md`; hard execution errors still fail fast.
 
 ## Reference Index
 
@@ -95,8 +98,6 @@ from the command output.
   `postplus research collect <collectionKey> --request <input.json> --output <result.json>`
   where the request file is the raw collection input object, not a hosted
   envelope and not `{ "schemaVersion": 1, "input": ... }`.
-- Resume a pending collection:
-  `postplus research collect --run-handle <runHandle> --output <result.json>` (waits in-command up to 45s per invocation; rerun while pending).
 - Keep the first pass bounded; expand only after inspecting the first result.
 - If the CLI returns a quote-confirmation challenge, run
   `postplus quote confirm --json --challenge-file <challenge.json>` and retry
