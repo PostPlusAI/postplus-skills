@@ -145,11 +145,9 @@ when each has its own request and output file.
 ### Async Result
 
 If a run returns `status: "processing"` with `runHandle`, do not relaunch it.
-Resume the same run:
-
-```bash
-postplus research collect --run-handle "$RUN_HANDLE" --output result.json
-```
+Keep `result.json` unchanged and resume it through the `postplus-shared` Async
+Provider Task Rule. Never extract the opaque handle into a shell variable or
+rewrite it in a command.
 
 If a request fails with a clear collection input error, report the operation id,
 collection key, request file, and exact message. For local prototype testing,

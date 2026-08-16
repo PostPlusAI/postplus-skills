@@ -32,10 +32,13 @@ Treat these as platform-data requests by default:
 Default execution order:
 
 1. use the platform skill to collect a small valid dataset
-2. normalize or rank locally
-3. synthesize findings from the dataset
-4. use deeper analysis skills only on shortlisted samples
-5. use web search only as a secondary layer if needed
+2. inspect whether the records are the intended type and directly relevant
+3. when execution succeeded but evidence quality did not, apply
+   `research-quality-recovery.md` within the approved cost bound
+4. normalize or rank locally
+5. synthesize findings from the accepted dataset
+6. use deeper analysis skills only on shortlisted samples
+7. use web search only as a secondary layer if needed
 
 ## Preferred Routes
 
@@ -111,6 +114,9 @@ Correct response:
 - recognize the named platform
 - route to the relevant skill first
 - collect the minimum valid evidence
+- distinguish a hard command failure from an evidence-quality gap
+- recover from empty, sparse, or noisy evidence with a bounded changed search
+  axis rather than repeating the same request or stopping immediately
 - synthesize only after evidence exists
 
 Creator-discovery-specific mistake:

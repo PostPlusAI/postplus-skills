@@ -14,6 +14,9 @@ already chosen a narrower Instagram skill. It routes the request, applies the
 public-surface contract, and runs the smallest supported first pass.
 
 Apply shared rulebook and user-guidance rules from `postplus-shared`.
+When a supported command completes but evidence is empty, sparse, noisy,
+off-topic, or the wrong record type, apply the `postplus-shared` reference
+`research-quality-recovery.md`; hard execution errors still fail fast.
 
 ## Reference Index
 
@@ -52,7 +55,11 @@ private exports, hidden fields, or retry strategy.
 2. Apply `references/shared-contract.md`.
 3. Apply the selected workflow reference.
 4. Run the narrowest collection chain that can answer the first pass.
-5. Stop after the first pass and report scope, evidence, limits, and next action.
+5. If execution succeeds but evidence is empty, sparse, noisy, or off-topic,
+   apply the shared bounded research-quality recovery rule; do not repeat the
+   same request or silently expand cost.
+6. Stop after the bounded first pass and report scope, evidence, limits, and
+   next action.
 
 Result record shapes for every collection key are documented in the
 `postplus-shared` reference `dataset-item-schemas.md`; consult it before
@@ -72,7 +79,6 @@ fallbacks to collection requests.
   payload rewrites, fallback providers, or unpublished tools.
 - Use `postplus research schema --collection-key <collectionKey> --json` only when constructing or repairing an unknown request shape.
 - Hosted collection runs through the shared `research collect` verb: `postplus research collect <collectionKey> --skill instagram-research --request <input.json> --output <result.json>` (input = the collection parameters).
-- Resume a pending collection: `postplus research collect --run-handle <runHandle> --output <result.json>` (waits in-command up to 45s per invocation; rerun while pending).
 - Keep the first pass bounded; expand only after inspecting the first result.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.
 

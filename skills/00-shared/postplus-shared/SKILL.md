@@ -17,6 +17,7 @@ This skill is the single source of truth for principle-level PostPlus skill docu
 
 - [`shared-public-skill-rules.md`](references/shared-public-skill-rules.md)
 - [`shared-research-preferences.md`](references/shared-research-preferences.md)
+- [`research-quality-recovery.md`](references/research-quality-recovery.md)
 - [`shared-product-selection-preferences.md`](references/shared-product-selection-preferences.md)
 - [`shared-source-of-truth-files.md`](references/shared-source-of-truth-files.md)
 - [`shared-tiktok-music-workflow.md`](references/shared-tiktok-music-workflow.md)
