@@ -28,6 +28,26 @@ this route only supports public ad and funnel evidence.
 Keep ads, landing pages, organic posts, and supplied exports as separate
 evidence lanes. Organic posts add context but never prove paid delivery.
 
+### Seed discovery before collection
+
+When the user supplies an exact brand, advertiser page, domain, or ad-library
+URL, use that entity directly. When the user supplies only a category, problem,
+or product type, do not assume one literal category query is enough:
+
+1. Use a small current public-web discovery pass to identify `3-8` concrete
+   products or brands in scope. Prefer official product sites and first-party
+   App Store or Google Play listings when they exist.
+2. Record each candidate's product name, brand, official domain, known page name
+   or URL, aliases, market, and offer wording. This is entity discovery, not
+   Facebook ad evidence.
+3. Build separate attributable lanes:
+   - up to two category/problem phrases for recall;
+   - one query per verified product or brand;
+   - advertiser page or ad-library URLs when verified; and
+   - offer or landing-domain wording only when the first records justify it.
+4. Start with the smallest lanes most likely to answer the decision. Do not run
+   every discovered entity automatically or silently multiply cost.
+
 ## Read Fields
 
 Use the ad-level fields present in the result: ad id and library link, advertiser
@@ -47,6 +67,18 @@ Extract:
 - audience or geography clue from disclosed fields
 
 Rank examples only inside the collected sample. Do not infer causality.
+
+Classify every candidate as `direct`, `relevant`, `adjacent`, `irrelevant`, or
+`uncertain` using advertiser identity, creative text, offer, destination domain,
+market, and active status. Main findings require direct or relevant ads;
+adjacent records may only guide recovery.
+
+If a supported pass is empty or low-quality, apply the shared research-quality
+recovery loop. Change one axis at a time: category phrase -> verified entity,
+brand -> advertiser page, alias -> official product name, or broad market -> one
+specified country/status scope. Inspect landing destinations when present. Stop
+after at most two changed passes or when the approved cost bound is reached, and
+report the attempted lanes when useful evidence remains unavailable.
 
 ## Output
 
