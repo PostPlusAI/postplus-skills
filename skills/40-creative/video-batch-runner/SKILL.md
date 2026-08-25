@@ -1,6 +1,6 @@
 ---
 name: video-batch-runner
-description: Generate and manage InfiniteTalk and Seedance 2.0 video renders for short-form production. Use this when approved upstream assets or prompt plans already exist and you need local render manifests, downloaded video files, and replaceable routes for talking-head or Seedance generation without losing continuity across concepts and personas.
+description: Generate and manage InfiniteTalk and Seedance 2.0/2.5 video renders for short-form production. Use this when approved upstream assets or prompt plans already exist and you need local render manifests, downloaded video files, and replaceable routes for talking-head or Seedance generation without losing continuity across concepts and personas.
 metadata:
   postplus:
     familyId: media-production
@@ -111,8 +111,8 @@ metadata:
 - This skill owns the `postplus media create <endpoint>` command for its
   kling 3.0, InfiniteTalk, and Kling 2.6 reference-motion endpoints.
   Seedance renders go through the shared `postplus media create
-  video-seedance-2-*` command owned by `seedance-submitter`; route Seedance
-  there instead of duplicating its request shape here.
+  video-seedance-2-*` or `video-seedance-2-5-*` command owned by
+  `seedance-submitter`; route Seedance there instead of duplicating its request shape here.
 - Readiness diagnostics: `postplus doctor --skill video-batch-runner`.
 - Poll a pending render: `postplus media poll --handle <output.data.id>` (waits
   in-command up to 45s per invocation; rerun while pending).

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-2026-08-16.3-projection-identity",
+  "releaseId": "skills-2026-08-24.1-seedance-2-5",
   "source": "PostPlusAI/postplus-skills",
   "skills": [
     {
@@ -435,10 +435,34 @@
           "key": "video-seedance-2-mini-text",
           "name": "Doubao Seedance 2 0 Mini 260615",
           "source": "endpointKey"
+        },
+        {
+          "key": "video-seedance-2-5-first-frame",
+          "name": "Doubao Seedance 2.5",
+          "source": "endpointKey"
+        },
+        {
+          "key": "video-seedance-2-5-first-last-frame",
+          "name": "Doubao Seedance 2.5",
+          "source": "endpointKey"
+        },
+        {
+          "key": "video-seedance-2-5-reference",
+          "name": "Doubao Seedance 2.5",
+          "source": "endpointKey"
+        },
+        {
+          "key": "video-seedance-2-5-text",
+          "name": "Doubao Seedance 2.5",
+          "source": "endpointKey"
         }
       ],
       "requirements": {
         "endpointKeys": [
+          "video-seedance-2-5-first-frame",
+          "video-seedance-2-5-first-last-frame",
+          "video-seedance-2-5-reference",
+          "video-seedance-2-5-text",
           "video-seedance-2-fast-image",
           "video-seedance-2-fast-text",
           "video-seedance-2-image",
@@ -643,6 +667,26 @@
           "source": "endpointKey"
         },
         {
+          "key": "video-seedance-2-5-first-frame",
+          "name": "Doubao Seedance 2.5",
+          "source": "endpointKey"
+        },
+        {
+          "key": "video-seedance-2-5-first-last-frame",
+          "name": "Doubao Seedance 2.5",
+          "source": "endpointKey"
+        },
+        {
+          "key": "video-seedance-2-5-reference",
+          "name": "Doubao Seedance 2.5",
+          "source": "endpointKey"
+        },
+        {
+          "key": "video-seedance-2-5-text",
+          "name": "Doubao Seedance 2.5",
+          "source": "endpointKey"
+        },
+        {
           "key": "video-infinitetalk",
           "name": "InfiniteTalk",
           "source": "endpointKey"
@@ -681,6 +725,10 @@
           "video-kling-v3-0-pro-text",
           "video-kling-v3-0-std-image",
           "video-kling-v3-0-std-text",
+          "video-seedance-2-5-first-frame",
+          "video-seedance-2-5-first-last-frame",
+          "video-seedance-2-5-reference",
+          "video-seedance-2-5-text",
           "video-seedance-2-fast-image",
           "video-seedance-2-fast-text",
           "video-seedance-2-image",
