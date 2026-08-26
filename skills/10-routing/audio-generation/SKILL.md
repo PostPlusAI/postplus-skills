@@ -21,7 +21,7 @@ metadata:
   `media-router`.
 - The voice request is already normalized for execution. Use
   `voice-batch-runner`.
-- The final work is a full video production pipeline. Use `video-generation` or
+- The final work is a full video production pipeline. Use `video-batch-runner` or
   `ugc-flow` after the audio handoff is clear.
 
 ## Core Boundary
@@ -39,7 +39,7 @@ invent voice strategy, translation policy, or lip-sync intent.
 | `translate_dub` | translate and dub source audio | require language, meaning-preservation, and timing policy |
 | `voice_clone_take` | approved reference voice should preserve timbre | bind reference audio, then `voice-batch-runner` |
 | `podcast_audio` | speaker-led or conversational audio | create voice/script handoff before video assembly |
-| `lip_sync_handoff` | audio drives talking-head or UGC render | `voice-batch-runner`, then `video-generation` |
+| `lip_sync_handoff` | audio drives talking-head or UGC render | `voice-batch-runner`, then `video-batch-runner` |
 
 ## Reference Rules
 - Approved voice reference audio is `binding`.
@@ -54,9 +54,9 @@ invent voice strategy, translation policy, or lip-sync intent.
 | If not audio-generation | Send to |
 | --- | --- |
 | Transcribe or analyze existing audio | `media-router` |
-| Need generated image/video around audio | `video-generation` |
+| Need generated image/video around audio | `video-batch-runner` |
 | Need normalized hosted voice execution | `voice-batch-runner` |
-| Need lip-sync video after audio | `video-generation` |
+| Need lip-sync video after audio | `video-batch-runner` |
 
 ## Output Shape
 Return:

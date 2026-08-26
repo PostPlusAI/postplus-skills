@@ -61,9 +61,10 @@ The artifact contains `hookEssence`, `viewerQuestion`, `mustCopyVisualGrammar`, 
   payload rewrites, fallback providers, or unpublished tools.
 
 ## Handoff
-- Grid, beat sheet, or full render request -> `video-request-architect`.
-- Explicit learn/do-not-copy boundary -> `reference-contract-builder`.
-- Prompt already drafted -> `prompt-preflight-qa`.
+- Grid or panel plan -> `storyboard-grid-writer`.
+- Image generation -> `image-batch-runner`.
+- Video generation -> `video-batch-runner`; pass the useful decoded grammar as
+  context, not as a second contract file.
 
 ## Public Command Boundary
 

@@ -20,8 +20,7 @@ metadata:
 - The final asset is video, audio, subtitles, transcripts, or an edit plan.
 - The image request is already normalized and ready to execute. Use
   `image-batch-runner`.
-- The user needs hook decoding or reference boundaries first. Use
-  `reference-decode` or `reference-contract-builder`.
+- The user needs hook or benchmark decoding first. Use `reference-decode`.
 
 ## Core Boundary
 This is the image generation controller. It does not submit jobs.
@@ -39,7 +38,7 @@ It must:
 | --- | --- | --- |
 | `text_to_image` | prompt only | write normalized image brief for `image-batch-runner` |
 | `image_edit` | uploaded image plus change request | bind edit image and preserve/alter rules |
-| `reference_image` | benchmark frame or style board | use `reference-contract-builder` before runner |
+| `reference_image` | benchmark frame or style board | state its intended influence in the runner handoff |
 | `product_image` | product photo, URL, or product facts | bind product identity and forbid invented claims |
 | `banner_thumbnail` | offer, hook, platform | require aspect ratio and text/UI policy |
 | `storyboard_image` | panel plan or board spec | hand storyboard panels to `image-batch-runner` |
@@ -60,10 +59,9 @@ It must:
 | --- | --- |
 | Needs media understanding first | `media-router` |
 | Needs reference meaning decoded | `reference-decode` |
-| Needs binding/inspiration/excluded contract | `reference-contract-builder` |
 | Needs storyboard panels | `storyboard-grid-writer` |
 | Needs execution with normalized request | `image-batch-runner` |
-| Final output is video | `video-generation` |
+| Final output is video | `video-batch-runner` |
 | Final output is audio | `audio-generation` |
 
 ## Output Shape

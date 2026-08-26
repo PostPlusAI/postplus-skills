@@ -18,14 +18,14 @@ metadata:
 
 ## Do Not Use When
 - The user only needs one image, voice take, or simple clip. Use
-  `image-generation`, `audio-generation`, or `video-generation`.
+  `image-batch-runner`, `voice-batch-runner`, or `video-batch-runner`.
 - The user only needs transcription, subtitles, or video analysis. Use
   `media-router`.
 - A provider-ready request already exists. Use the relevant runner.
 
 ## Core Boundary
-This is a workflow skill. It coordinates public skills and checkpoints; it does
-not call providers or submit generation jobs.
+This is a workflow skill. It coordinates creative stages; generation stages go
+directly to their runners.
 
 ## Standard Pipeline
 
@@ -33,20 +33,20 @@ not call providers or submit generation jobs.
    constraints, and claims that must not be invented.
 2. `creator_logic`: define creator type, audience fit, native behavior, tone,
    and what the creator is allowed to claim.
-3. `board`: use `reference-decode`, `reference-contract-builder`, and
-   `storyboard-grid-writer` when references or panel logic matter.
-4. `clip`: use `image-generation`, `audio-generation`, and `video-generation`
-   to produce controller handoffs.
+3. `board`: use `reference-decode` and `storyboard-grid-writer` when reference
+   analysis or panel logic materially helps.
+4. `clip`: use `image-batch-runner`, `voice-batch-runner`, and
+   `video-batch-runner` to create the media.
 5. `montage`: use `editing-decision-engine` for cut logic, B-roll roles, and
    subtitle or beat placement.
-6. `qa`: use `creative-qa` and `prompt-preflight-qa` before execution and after
-   generated assets return.
+6. `qa`: use `creative-qa` on the approved plan or returned media when review is
+   actually required.
 
 ## Required Checkpoints
 - product facts and source basis
 - creator/persona rule
 - viewer question and hook mechanism
-- reference contract with binding, inspiration-only, and excluded references
+- useful media roles and references stated directly in each generation handoff
 - storyboard or beat plan
 - image/audio/video controller handoffs
 - runner-ready requests only after strategy is locked
@@ -59,11 +59,11 @@ not call providers or submit generation jobs.
 | Product or market evidence | Instagram/Meta research or strategy skill appropriate to the product |
 | Instagram account, content, audience, creator, or campaign research | `instagram-research` |
 | Benchmark-to-brief | `benchmark-to-brief` |
-| Reference decode or boundary | `reference-decode`, `reference-contract-builder` |
+| Reference decode or boundary | `reference-decode` |
 | Storyboard grid | `storyboard-grid-writer` |
-| Image assets | `image-generation` |
-| Voice or dub | `audio-generation` |
-| Clips or talking-head video | `video-generation` |
+| Image assets | `image-batch-runner` |
+| Voice or dub | `voice-batch-runner` |
+| Clips or talking-head video | `video-batch-runner` |
 | Cut logic and montage | `editing-decision-engine` |
 | Final creative review | `creative-qa` |
 

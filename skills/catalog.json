@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-2026-08-24.1-seedance-2-5",
+  "releaseId": "skills-2026-08-27.1-video-runner-moyu",
   "source": "PostPlusAI/postplus-skills",
   "skills": [
     {
@@ -357,14 +357,6 @@
       }
     },
     {
-      "familyId": "routing-contracts",
-      "familyName": "Routing & Contracts",
-      "name": "prompt-preflight-qa",
-      "path": "skills/10-routing/prompt-preflight-qa/SKILL.md",
-      "status": "released",
-      "supportedModels": []
-    },
-    {
       "familyId": "reddit",
       "familyName": "Reddit",
       "name": "reddit-search",
@@ -386,95 +378,10 @@
     {
       "familyId": "routing-contracts",
       "familyName": "Routing & Contracts",
-      "name": "reference-contract-builder",
-      "path": "skills/10-routing/reference-contract-builder/SKILL.md",
-      "status": "released",
-      "supportedModels": []
-    },
-    {
-      "familyId": "routing-contracts",
-      "familyName": "Routing & Contracts",
       "name": "reference-decode",
       "path": "skills/10-routing/reference-decode/SKILL.md",
       "status": "released",
       "supportedModels": []
-    },
-    {
-      "familyId": "media-production",
-      "familyName": "Media and Creative Production",
-      "name": "seedance-submitter",
-      "path": "skills/40-creative/seedance-submitter/SKILL.md",
-      "status": "released",
-      "supportedModels": [
-        {
-          "key": "video-seedance-2-image",
-          "name": "Doubao Seedance 2 0 260128",
-          "source": "endpointKey"
-        },
-        {
-          "key": "video-seedance-2-text",
-          "name": "Doubao Seedance 2 0 260128",
-          "source": "endpointKey"
-        },
-        {
-          "key": "video-seedance-2-fast-image",
-          "name": "Doubao Seedance 2 0 Fast 260128",
-          "source": "endpointKey"
-        },
-        {
-          "key": "video-seedance-2-fast-text",
-          "name": "Doubao Seedance 2 0 Fast 260128",
-          "source": "endpointKey"
-        },
-        {
-          "key": "video-seedance-2-mini-image",
-          "name": "Doubao Seedance 2 0 Mini 260615",
-          "source": "endpointKey"
-        },
-        {
-          "key": "video-seedance-2-mini-text",
-          "name": "Doubao Seedance 2 0 Mini 260615",
-          "source": "endpointKey"
-        },
-        {
-          "key": "video-seedance-2-5-first-frame",
-          "name": "Doubao Seedance 2.5",
-          "source": "endpointKey"
-        },
-        {
-          "key": "video-seedance-2-5-first-last-frame",
-          "name": "Doubao Seedance 2.5",
-          "source": "endpointKey"
-        },
-        {
-          "key": "video-seedance-2-5-reference",
-          "name": "Doubao Seedance 2.5",
-          "source": "endpointKey"
-        },
-        {
-          "key": "video-seedance-2-5-text",
-          "name": "Doubao Seedance 2.5",
-          "source": "endpointKey"
-        }
-      ],
-      "requirements": {
-        "endpointKeys": [
-          "video-seedance-2-5-first-frame",
-          "video-seedance-2-5-first-last-frame",
-          "video-seedance-2-5-reference",
-          "video-seedance-2-5-text",
-          "video-seedance-2-fast-image",
-          "video-seedance-2-fast-text",
-          "video-seedance-2-image",
-          "video-seedance-2-mini-image",
-          "video-seedance-2-mini-text",
-          "video-seedance-2-text"
-        ],
-        "hostedCapabilities": [
-          "media-file",
-          "media-generation"
-        ]
-      }
     },
     {
       "familyId": "media-production",
@@ -741,22 +648,6 @@
           "media-generation"
         ]
       }
-    },
-    {
-      "familyId": "routing-contracts",
-      "familyName": "Routing & Contracts",
-      "name": "video-generation",
-      "path": "skills/10-routing/video-generation/SKILL.md",
-      "status": "released",
-      "supportedModels": []
-    },
-    {
-      "familyId": "routing-contracts",
-      "familyName": "Routing & Contracts",
-      "name": "video-request-architect",
-      "path": "skills/10-routing/video-request-architect/SKILL.md",
-      "status": "released",
-      "supportedModels": []
     },
     {
       "familyId": "media-production",

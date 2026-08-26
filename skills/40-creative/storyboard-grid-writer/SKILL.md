@@ -1,6 +1,6 @@
 ---
 name: storyboard-grid-writer
-description: Write dense storyboard-grid prompts for short-form image or previsualization workflows. Use this when a generation controller needs a 6-9 panel grid with hook logic, visible actions, product timing, and negative constraints before image or video request architecture.
+description: Write dense storyboard-grid prompts for short-form image or previsualization workflows. Use this when a generation task needs a 6-9 panel grid with hook logic, visible actions, product timing, and negative constraints before image or video generation.
 metadata:
   postplus:
     familyId: media-production
@@ -14,12 +14,11 @@ metadata:
   prompt pack.
 - Hook logic must become visible frame-by-frame action before image or video
   generation.
-- The output should hand off to `image-generation` or `video-request-architect`.
+- The output should hand off to `image-batch-runner` or `video-batch-runner`.
 
 ## Do Not Use When
 - The final provider request is already approved. Use the runner.
-- Reference meaning or copy boundaries are unresolved. Use `reference-decode`
-  or `reference-contract-builder`.
+- Reference meaning is unresolved. Use `reference-decode`.
 - The user wants plain prose, a script only, or execution submission.
 
 ## Core Rule
@@ -100,10 +99,9 @@ Main drift risks:
   payload rewrites, fallback providers, or unpublished tools.
 
 ## Handoff
-- Image panels -> `image-generation`.
-- Video architecture -> `video-request-architect`.
-- Reference uncertainty -> `reference-decode` or `reference-contract-builder`.
-- Prompt risk review -> `prompt-preflight-qa`.
+- Image panels -> `image-batch-runner`.
+- Video generation -> `video-batch-runner`.
+- Reference uncertainty -> `reference-decode`.
 
 ## Public Command Boundary
 

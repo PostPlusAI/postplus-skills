@@ -93,7 +93,7 @@ Common decomposition templates:
 | User intent | Decomposition |
 |---|---|
 | "Promote this product" | ① Instagram/Meta content proof (social-media-extractor) → ② campaign brief (benchmark-to-brief) → ③ creator shortlist or draft publishing path |
-| "Make a viral video" | ① trend collection (tiktok-research) → ② hook breakdown (video-analysis) → ③ request planning (video-request-architect) → ④ video render (video-batch-runner) |
+| "Make a viral video" | ① trend collection (tiktok-research) → ② hook breakdown (video-analysis) when useful → ③ final prompt + video render (video-batch-runner) |
 | "Build a social presence for this brand" | ① Instagram/Meta audit (social-media-extractor) → ② content strategy (benchmark-to-brief) → ③ creative QA and production planning (creative-qa) |
 | "Analyze this account" | ① `instagram-research` account route → ② `instagram-research` audience voice route → ③ `instagram-research` benchmark route |
 

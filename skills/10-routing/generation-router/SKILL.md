@@ -18,8 +18,8 @@ metadata:
 ## Do Not Use When
 - Transcription, subtitles, video analysis, beat maps, or edit plans are the
   primary output. Use `media-router`.
-- The user already selected `image-generation`, `video-generation`,
-  `audio-generation`, or `ugc-flow` and supplied that controller's inputs.
+- The user already selected `image-generation`, `video-batch-runner`,
+  `audio-generation`, or `ugc-flow` and supplied that skill's inputs.
 - The task is only research, creator discovery, copywriting, or publishing.
 
 ## Core Rule
@@ -43,7 +43,7 @@ The router owns only the first split:
 | Request shape | Route | First handoff |
 | --- | --- | --- |
 | Pure image prompt, uploaded image edit, product page image | `image` | `image-generation` |
-| Clip, storyboard, creator video, reference-motion video | `video` | `video-generation` |
+| Clip, storyboard, creator video, reference-motion video | `video` | `video-batch-runner` |
 | Voice, TTS, dubbing, translated audio, voice reference | `audio` | `audio-generation` |
 | Product-to-UGC, creator pipeline, repeated asset production | `workflow` | `ugc-flow` or the named workflow skill |
 | "Analyze this, then generate..." | `analysis_after_generation` | `media-router` for analysis, then the right generation controller |
@@ -70,7 +70,7 @@ Return a compact route artifact:
 
 ## Handoff
 - Image route -> `image-generation`.
-- Video route -> `video-generation`.
+- Video route -> `video-batch-runner`.
 - Audio route -> `audio-generation`.
 - Workflow route -> `ugc-flow` or another workflow skill.
 - Understanding-first route -> `media-router`, then return to this router or the

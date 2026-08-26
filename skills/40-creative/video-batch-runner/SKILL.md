@@ -1,6 +1,6 @@
 ---
 name: video-batch-runner
-description: Generate and manage InfiniteTalk and Seedance 2.0/2.5 video renders for short-form production. Use this when approved upstream assets or prompt plans already exist and you need local render manifests, downloaded video files, and replaceable routes for talking-head or Seedance generation without losing continuity across concepts and personas.
+description: Generate one or many videos through PostPlus from a brief, script, prompt, image, audio, or reference video. Use for text-to-video, image-to-video, first/last-frame video, multimodal reference video, talking-head video, and motion transfer. The agent chooses the matching released endpoint from current schema, writes one self-contained prompt per clip, uploads local media, submits, polls, downloads, and hands the render to QA.
 metadata:
   postplus:
     familyId: media-production
@@ -9,118 +9,87 @@ metadata:
 
 # Video Batch Runner
 
-## Use When
-- Approved image, script, voice, or prompt-plan inputs already exist and the next step is a hosted talking-head, Seedance, or reference-motion render.
-- The output must preserve a local render manifest, source basis, hosted handles,
-  output URLs, downloaded video files when the host can fetch them, and a
-  pollable checkpoint.
+This is the single PostPlus video-generation skill. It owns creative request
+assembly and execution across released video models; do not create a separate
+architect, preflight report, reference contract, or model-specific submitter.
 
-## Do Not Use When
-- The task belongs to ideation, QA, or another released skill listed in the handoff section.
-- Required inputs are missing and guessing would change the result.
-- Task class, hook logic, storyboard, or reference policy is still unresolved.
-  Use `video-generation` and `video-request-architect` first.
+## Workflow
 
-## Execution Boundary
-- This runner validates and executes normalized video requests. It must not make
-  creative strategy, task-classification, or reference-policy decisions.
-- Default to the highest practical render quality for realism-sensitive human video; step down only for an explicit cheap draft, latency test, or provider limit, and persist the choice.
-- Default creative format is short-form vertical `9:16`; use
-  `creativeFormat: "instagram_meta_ads"` or explicit `aspectRatio: "3:4"` when
-  the target is Instagram Meta Ads.
-- Released endpoint keys and their option enums (resolution, aspect ratio,
-  duration bounds) are discovered from `postplus media schema --json`; they are
-  not hard-coded here.
-- Released provider is `hosted-media` only. Direct provider routes, ad hoc
-  structured motion-control fields, and unbound media roles are not released.
-- `video-kling-v2-6-pro-motion-control` is only reference-motion transfer with
-  a reference image plus reference motion video.
-- Image-to-video inputs and reference motion video must be remote HTTP(S) media
-  URLs or persistent `postplus-media://` references.
+1. Read the brief and inspect the supplied media. Use `video-analysis` first only
+   when understanding an existing video materially changes the new render.
+2. Run `postplus media schema --json`, choose the smallest released endpoint
+   whose input roles match the job, then load its exact fields with `postplus
+   media schema --endpoint <endpoint> --json`:
+   - no driving media: text-to-video
+   - one opening image: image/first-frame-to-video
+   - locked opening and closing images: first-last-frame-to-video
+   - several images, videos, or audios that guide the result: reference video
+   - portrait plus approved audio: talking head
+   - identity image plus motion source video: motion transfer
+3. Decide each asset's role from the task. Bind identity, product, first/last
+   frame, timing, or motion only when the asset must control that property. Treat
+   style and benchmark media as inspiration, and omit media that should not
+   influence the render. Never infer a role merely because a file is present.
+4. Write one self-contained, model-facing prompt per clip. Include the visible
+   subject and action, product behavior, scene, camera, timing, speech/sound,
+   continuity, and the role of every submitted reference. Use explicit
+   `[image N]`, `[video N]`, and `[audio N]` bindings when the selected endpoint
+   accepts numbered references.
+5. Validate fields, enum values, defaults, cardinality, and duration against the
+   current schema. Do not carry provider field tables in this skill. If one clip
+   exceeds the supported duration or creative load, split it into independent
+   prompts before spending.
+6. Upload every local input and pass its persistent `output.mediaReference` to
+   the matching media field. For Moyu Seedance, run `postplus media-file upload --storage-only --skill video-batch-runner --input-file <file> --mime <mime> --output <upload.json>`.
+   This stops at PostPlus Storage and does not contact Moyu. During create, Web
+   registers all referenced media with Moyu, waits until all are `Active`, and
+   sends only `asset://` references in the single provider submit; the Skill
+   never owns Moyu asset ids. For another video provider, omit `--storage-only`.
+   Video Analysis keeps its own upload contract. Submit with `postplus media
+   create <endpoint> --skill video-batch-runner ...` using only fields published
+   by that endpoint.
+7. If create returns pending, poll the same run with `postplus media poll
+   --handle <output.data.id>`. Re-run that poll while pending; never submit a
+   replacement request merely to check status.
+8. When a local final file is needed, download the completed output with
+   `postplus media-file download --url <fresh-output-url> --output-file <path>
+   --skill video-batch-runner`.
+9. Return the actual result, downloaded media or result path, endpoint, prompt,
+   submitted media roles, and run handle. Send the finished render to
+   `video-analysis` or `creative-qa` only when final media QA is requested.
 
-## Source And Route
-- Source from the active project/client manifests first. Do not reuse another
-  client directory as the default source basis.
-- Required for all routes: hosted capability request, `jobId`, `assetPurpose`,
-  `sourceBasis`, `localOutputDir`, `provider: "hosted-media"`, and `model`.
-- Talking head requires approved `image`, approved `audio`, and script/concept
-  source. Seedance requires intentional `final_prompt` or `prompt_summary` plus
-  `promptPlan.prompt_storyline`, and required media for the selected mode.
-- `promptPlan.camera`, `promptPlan.shotType`, and `promptPlan.motion` constrain
-  prompt text only; do not map them to provider-native trajectory fields.
+## Execution Rules
 
-## Request Boundary
-- Submit with the selected endpoint's CLI flags (discover them from
-  `postplus media schema --json` or the per-endpoint `--help`); the CLI runner
-  mints the operation identifiers and billing dimensions. Media flags accept a
-  remote HTTPS URL or a persistent `postplus-media://` reference from
-  `postplus media-file upload` (`output.mediaReference`, never expires).
-- Poll a pending render with `postplus media poll --handle <output.data.id>`
-  (the handle is returned by the create request). The poll waits in-command —
-  each invocation re-checks every 8s for up to 45s (`--wait-seconds 0` =
-  single check) — so rerun the same command while pending instead of writing a
-  tighter retry loop.
-- Keep internal requests/responses under `.postplus` when they are not final
-  handoff artifacts; keep final renders/manifests in the active render folder.
-
-## Seedance Prompt Boundary
-- Prefer `prompt_summary` plus `promptPlan.prompt_storyline` over a dense
-  paragraph. Each segment should carry subject, storyline, scene/style, camera
-  language, sound intent, continuity constraints, and explicit `[image 1]` /
-  `[audio 1]` / `[video 1]` bindings as applicable.
-- Do not use deprecated `promptPlan.storyboardTimeline`; use
-  `promptPlan.prompt_storyline`.
-- Choose duration by spoken density. Use a shorter supported bucket or rewrite
-  the segment instead of padding silent holds.
-
-## Review And Handoff
-- Before submission, verify approved upstream assets, route/mode, media roles,
-  concrete prompt source, source basis, asset purpose, and local output path.
-- After generation, keep `review_pending` until human QA checks lip sync,
-  persona continuity, audio/image match, native feel, and ad-like drift.
-- If still pending after a poll's in-command wait, return `manifestPath`, the
-  `output.data.id` handle, and the poll command
-  `postplus media poll --handle <output.data.id>`; rerun that same command to
-  resume — do not re-submit the generation.
-
-## Stop Conditions
-- Stop when required user intent, source evidence, or owned input artifacts are
-  missing and guessing would change the result.
-- If an owned CLI or script command fails, report the exact error and stop. Do
-  not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, fallback providers, or unpublished tools.
-- Batch isolation: when producing a batch of independent items, a per-item
-  provider content/safety rejection is isolated to that item. It is identified
-  only by the typed code `postplus_cli_hosted_media_content_policy_blocked`,
-  never by provider prose, and it surfaces at either boundary: a failed
-  `postplus media create` whose typed error `code` is that code, or a
-  submitted run whose poll result carries `output.data.status: failed` and
-  `output.data.error.code` set to that code. On either, record which item was
-  blocked and its exact reason, skip it, and continue submitting and polling
-  the remaining items, then report the incomplete set at the end. Do not retry,
-  soften, or re-submit the blocked item — that is a forbidden payload rewrite.
-  Every other failure (a failed owned CLI/script command whose typed `code` is
-  not that content-policy code, or a run whose `error.code` is not that
-  content-policy code — auth, transport, quota, malformed request, provider
-  outage) is systemic: stop per the rule above.
+- PostPlus schema and the hosted execution manifest are the source of truth for
+  endpoint availability, input fields, enums, defaults, and billing dimensions.
+- Use the released `postplus` CLI. Do not call provider APIs directly, invent
+  provider-native fields, or create a provider-specific submitter skill.
+- Keep private request/result files under the active work folder's `.postplus/`
+  state; do not manufacture contract or planning artifacts for handoff.
+- If the CLI returns a quote-confirmation challenge, show it to the user, run
+  `postplus quote confirm --json --challenge-file <challenge.json>` only after
+  approval, then retry the exact operation with the returned token.
+- On an auth, transport, quota, malformed-request, capability, or provider
+  failure, report the typed error and stop. Do not switch endpoints, rewrite the
+  request, or claim a local plan is an executed render.
+- In a batch, only the typed error
+  `postplus_cli_hosted_media_content_policy_blocked` is item-local: record that
+  item as blocked without rewriting or retrying it, continue the independent
+  items, and report the incomplete set. Every other error stops the batch.
 
 ## Public Command Boundary
 
-- Choose the smallest matching command or workflow from the user input and run
-  it directly.
-- This skill owns the `postplus media create <endpoint>` command for its
-  kling 3.0, InfiniteTalk, and Kling 2.6 reference-motion endpoints.
-  Seedance renders go through the shared `postplus media create
-  video-seedance-2-*` or `video-seedance-2-5-*` command owned by
-  `seedance-submitter`; route Seedance there instead of duplicating its request shape here.
-- Readiness diagnostics: `postplus doctor --skill video-batch-runner`.
-- Poll a pending render: `postplus media poll --handle <output.data.id>` (waits
-  in-command up to 45s per invocation; rerun while pending).
-- If an owned CLI or script command fails, report the exact error and stop. Do
-  not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, fallback providers, or unpublished tools.
-- Use `postplus media schema --json` only when constructing or repairing an unknown request shape.
-- Run the hosted submit with the generated command below; do not call provider APIs directly.
+- Readiness: `postplus doctor --skill video-batch-runner`
+- Discover endpoints: `postplus media schema --json`
+- Read selected endpoint fields: `postplus media schema --endpoint <endpoint>
+  --json`
+- Upload local media: `postplus media-file upload --skill video-batch-runner
+  --input-file <file> --mime <mime> --output <upload.json>`; add
+  `--storage-only` for Moyu Seedance as specified above.
+- Submit: `postplus media create <endpoint> --skill video-batch-runner ...`
+- Resume: `postplus media poll --handle <output.data.id>`
+- Download: `postplus media-file download --url <fresh-output-url> --output-file
+  <path> --skill video-batch-runner`
 
 <!-- BEGIN GENERATED EXECUTION EXAMPLE -->
 ```bash
@@ -129,5 +98,3 @@ postplus media create video-kling-v3-0-pro-text \
   --output <result.json>
 ```
 <!-- END GENERATED EXECUTION EXAMPLE -->
-
-- If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.
