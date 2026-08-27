@@ -45,10 +45,9 @@ metadata:
   `voice_description`, and an optional `language` (defaults to auto).
 - Voice clone reproduces an approved voice from spoken `text`, an `audio`
   reference, an optional `reference_text` transcript, and optional `language`.
-  Upload a local reference with
-  `postplus media-file upload --skill voice-batch-runner --input-file <file> --mime <audio/mpeg|audio/wav> --output <upload.json>`,
-  then pass the persistent `output.mediaReference` as `--audio`; a remote HTTPS
-  URL also works, but must remain reachable through submission.
+  Pass a local path, HTTPS URL, existing PostPlus media reference, or data URI
+  directly to `--audio`. The CLI validates and prepares local media before the
+  single hosted submit; do not pre-upload it or construct a provider payload.
 - Exact field names, requiredness, and defaults are discovered from
   `postplus media schema --json` and the generated example below; do not hard-code
   a private request envelope here.
@@ -63,10 +62,8 @@ metadata:
   `postplus media poll --handle <output.data.id>`. The poll waits in-command
   (up to 45s per invocation, checking every 8s); rerun it while pending
   instead of writing a tighter retry loop.
-- Save a finished take with
-  `postplus media-file download --url <fresh-output-url> --output-file <path>`
-  (or `--reference <postplus-media://...>` for hosted storage); provider output
-  URLs are temporary, so download while fresh.
+- Save a finished take with `postplus media-file download`, using the completed
+  result's artifact reference when present or its output URL otherwise.
 
 ## Stop Conditions
 - Stop when required user intent, source evidence, or owned input artifacts are

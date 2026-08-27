@@ -1,6 +1,6 @@
 ---
 name: video-batch-runner
-description: Generate one or many videos through PostPlus from a brief, script, prompt, image, audio, or reference video. Use for text-to-video, image-to-video, first/last-frame video, multimodal reference video, talking-head video, and motion transfer. The agent chooses the matching released endpoint from current schema, writes one self-contained prompt per clip, uploads local media, submits, polls, downloads, and hands the render to QA.
+description: Generate one or many videos through PostPlus from a brief, script, prompt, image, audio, or reference video. Use for text-to-video, image-to-video, first/last-frame video, multimodal reference video, talking-head video, and motion transfer. The agent chooses the matching released endpoint from current schema, writes one self-contained prompt per clip, submits media by role, waits or resumes, downloads, and hands the render to QA.
 metadata:
   postplus:
     familyId: media-production
@@ -39,16 +39,12 @@ architect, preflight report, reference contract, or model-specific submitter.
    current schema. Do not carry provider field tables in this skill. If one clip
    exceeds the supported duration or creative load, split it into independent
    prompts before spending.
-6. Upload every local input and pass its persistent `output.mediaReference` to
-   the matching media field. For Moyu Seedance, run `postplus media-file upload --storage-only --skill video-batch-runner --input-file <file> --mime <mime> --output <upload.json>`.
-   This stops at PostPlus Storage and does not contact Moyu. During create, Web
-   registers all referenced media with Moyu, waits until all are `Active`, and
-   sends only `asset://` references in the single provider submit; the Skill
-   never owns Moyu asset ids. For another video provider, omit `--storage-only`.
-   Video Analysis keeps its own upload contract. Submit with `postplus media
-   create <endpoint> --skill video-batch-runner ...` using only fields published
-   by that endpoint.
-7. If create returns pending, poll the same run with `postplus media poll
+6. Pass each local path, HTTPS URL, existing PostPlus media reference, or data
+   URI directly to the matching role flag. The CLI validates and prepares local
+   media before a single hosted submit. Use only fields published by the
+   selected endpoint; do not pre-upload media or construct provider payloads.
+7. Prefer `--wait` when the expected runtime fits the command budget. If create
+   still returns pending, poll the same run with `postplus media poll
    --handle <output.data.id>`. Re-run that poll while pending; never submit a
    replacement request merely to check status.
 8. When a local final file is needed, download the completed output with
@@ -83,10 +79,8 @@ architect, preflight report, reference contract, or model-specific submitter.
 - Discover endpoints: `postplus media schema --json`
 - Read selected endpoint fields: `postplus media schema --endpoint <endpoint>
   --json`
-- Upload local media: `postplus media-file upload --skill video-batch-runner
-  --input-file <file> --mime <mime> --output <upload.json>`; add
-  `--storage-only` for Moyu Seedance as specified above.
-- Submit: `postplus media create <endpoint> --skill video-batch-runner ...`
+- Submit local or remote role media directly: `postplus media create <endpoint>
+  --skill video-batch-runner ... --wait`
 - Resume: `postplus media poll --handle <output.data.id>`
 - Download: `postplus media-file download --url <fresh-output-url> --output-file
   <path> --skill video-batch-runner`

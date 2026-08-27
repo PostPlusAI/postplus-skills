@@ -37,19 +37,13 @@ metadata:
   reject the flag with `Unknown option`, so any reference-bound generation must
   target an edit endpoint, not a text endpoint.
 - Reference-based edits pass each source image via a repeated
-  `--reference-image` flag; do not pass local paths as edit references.
-  Upload a local source file with
-  `postplus media-file upload --skill image-batch-runner --input-file <file> --mime <image/png|image/jpeg|image/webp> --output <upload.json>`,
-  then pass `output.mediaReference` — a persistent `postplus-media://` reference
-  that never expires — as `--reference-image`. A remote HTTPS URL also works;
-  the server downloads each reference itself, so a plain URL must stay reachable
-  until the submit returns (a URL the server cannot fetch fails the request as a
-  bad request, not a provider fault), while a `postplus-media://` reference is
-  exchanged for a fresh signed URL at send time and can be reused indefinitely.
-- Save a finished native OpenAI image output to disk with
+  `--reference-image` flag. Each value may be a local path, HTTPS URL, existing
+  PostPlus media reference, or data URI. The CLI validates and prepares local
+  media before the single hosted submit; do not pre-upload it or construct a
+  provider request object.
+- Save a finished image output to disk with
   `postplus media-file download --reference <output.data.artifacts[0].mediaReference> --output-file <path>`.
-  Treat `output.data.artifacts[0].mediaReference` as the durable download
-  identity. Do not persist or prefer temporary signed output URLs.
+  Use the completed result's artifact reference as the download source.
 - Identifiers and run-local state (`assetId`, `runId`, `localAssetDir`, manifest
   paths) are minted or derived by the runner — do not supply them. Read them back
   from the result for the next handoff.

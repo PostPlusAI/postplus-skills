@@ -1,6 +1,6 @@
 ---
 name: video-analysis
-description: Analyze local or downloaded social video files with the official Gemini API, especially for TikTok/Reels shot beats, timelines, voiceover or on-screen text capture, creative strategy, and natural Markdown outputs. Use this when you need video-level analysis beyond metadata, including uploading video files, prompting gemini-3.5-flash, and linking results back to source metadata.
+description: Analyze local or remote social videos through PostPlus, especially for TikTok/Reels shot beats, timelines, voiceover or on-screen text capture, creative strategy, and natural Markdown outputs. Use this when you need video-level analysis beyond metadata and want results linked back to source metadata.
 metadata:
   postplus:
     familyId: media-production
@@ -22,23 +22,16 @@ metadata:
 - Required inputs are missing and guessing would change the result.
 
 ## Execution Boundary
-- Analysis runs through the hosted `video-analysis` capability; discover the
-  model keys and request shape with `postplus media schema --json`.
+- Analysis runs through the hosted `video-analysis` capability; discover its
+  current flags with `postplus media schema --json`.
 - Supported local formats are `.mp4`, `.m4v`, `.mov`, and `.webm`.
-- The analyze verb only accepts an already-hosted video reference. Upload the
-  local video first with `postplus media-file upload`, then pass that result's
-  `output.storageReference` object verbatim as the Gemini `file_reference`. The
-  `file_reference` must be that storage-reference object (`bucket`, `storagePath`,
-  `name`, `mimeType`), not a URL and not `output.data.download_url` — the hosted
-  boundary reads the bytes back from storage and materializes the Gemini file
-  server-side. Upload is a separate generic verb, not part of `media analyze`.
-- This boundary does not claim inline video bytes, compression, segmentation,
-  resumable upload, or file URI reuse. If the upload or the hosted analyze call
-  fails, stop on that error.
+- Pass a local path, HTTPS URL, existing PostPlus media reference, or video data
+  URI directly to `--video`. The CLI prepares the media and the Web constructs
+  the provider request; do not pre-upload it or author a provider payload.
+- If media preparation or analysis fails, stop on that error.
 
 ## Source And Path
-- A direct local file can be analyzed immediately. For a URL, first download or
-  recover the local video, then upload it with `media-file upload`.
+- A local file or HTTPS video URL can be analyzed directly.
 - Preserve `sourceId`, `sourceUrl`, `videoFilePath`, `sourceMetadataPath` or
   dataset path, model, prompt version, and source basis so results can be joined
   back to source metadata.
@@ -54,8 +47,8 @@ metadata:
   best-fit creative use cases.
 
 ## Output And Handoff
-- `media analyze` returns the hosted provider response (the Gemini candidates)
-  verbatim. Read the analysis text from that response and write one natural
+- `media analyze` returns the hosted analysis response. Read the analysis text
+  from that response and write one natural
   Markdown file per source video into a stable workspace path; there is no batch
   runner or summary file.
 - The analysis should cover useful video evidence such as shot beats, timeline,
@@ -68,22 +61,18 @@ metadata:
 
 ## Public Command Boundary
 
-- Step 1 — upload the local video:
-  `postplus media-file upload --input-file <video> --mime <video/mp4|video/quicktime|video/webm> --output <upload.json>`.
-  Read the `output.storageReference` object from the result (`bucket`,
-  `storagePath`, `name`, `mimeType`, `sizeBytes`).
-- Step 2 — author the Gemini request file: `contents` with a `text` prompt part
-  and a `file_reference` part set to that `output.storageReference` object (not a
-  URL and not `output.data.download_url`), plus optional `generationConfig`.
-- Step 3 — run the analysis:
-  `postplus media analyze <model-key> --request <gemini-request.json> --output <result.json>`.
-  When the source video duration is known (e.g. from the local file before upload),
+- Run `postplus media analyze <model-key> --video <local-path-or-url> --prompt
+  <analysis-prompt> --output <result.json>`.
+  When the source video duration is known (for example from the local file),
   pass `--video-seconds <n>` so the hosted boundary can route eligible short videos
   efficiently; omit it when the duration is unknown.
 
 <!-- BEGIN GENERATED EXECUTION EXAMPLE -->
 ```bash
-postplus media analyze video-analysis --request request.json --output result.json
+postplus media analyze video-analysis \
+  --video <video> \
+  --prompt <prompt> \
+  --output <result.json>
 ```
 <!-- END GENERATED EXECUTION EXAMPLE -->
 
@@ -93,5 +82,5 @@ postplus media analyze video-analysis --request request.json --output result.jso
 - Choose the smallest matching command from the user input and run it directly.
 - Readiness diagnostics: `postplus doctor --skill video-analysis`.
   If a command fails, report the exact error and stop. Do not bypass the
-  failure by answering from metadata, base64-inlining video, readiness probing,
+  failure by answering from metadata, rewriting media, readiness probing,
   or unowned fallbacks.
