@@ -17,7 +17,7 @@ metadata:
 - The output should hand off to `image-batch-runner` or `video-batch-runner`.
 
 ## Do Not Use When
-- The final provider request is already approved. Use the runner.
+- The final generation request is already approved. Use the runner.
 - Reference meaning is unresolved. Use `reference-decode`.
 - The user wants plain prose, a script only, or execution submission.
 
@@ -92,11 +92,11 @@ Main drift risks:
 ## Stop Conditions
 - Stop when required user intent, source evidence, or owned input artifacts are
   missing and guessing would change the result.
-- Do not create provider JSON or submit renders.
+- Do not create execution JSON or submit renders.
 - Do not let a runner infer storyboard logic from generic prompt adjectives.
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, fallback providers, or unpublished tools.
+  payload rewrites, alternate execution paths, or unpublished tools.
 
 ## Handoff
 - Image panels -> `image-batch-runner`.
@@ -109,8 +109,8 @@ Main drift risks:
   it directly.
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, fallback providers, or unpublished tools.
+  payload rewrites, alternate execution paths, or unpublished tools.
 - This public skill is instruction-driven. Produce the storyboard artifact
   directly from the available evidence.
-- Do not call private provider/runtime paths or unpublished local tools.
+- Do not use unpublished execution paths or local tools.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

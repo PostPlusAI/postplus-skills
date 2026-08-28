@@ -18,7 +18,7 @@ Ask only when there is no discussion source:
 
 ## Run
 
-| Evidence need | Collection key | First pass |
+| Evidence need | Route | First pass |
 | --- | --- | --- |
 | Comments on public posts/reels | `facebook-comments` | `1-10` post/reel URLs, small comment bound |
 | Public group discussion | `facebook-groups` | `1-3` group URLs, small post bound |

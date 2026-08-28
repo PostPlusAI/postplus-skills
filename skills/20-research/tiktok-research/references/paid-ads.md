@@ -4,7 +4,7 @@ Use when the user wants TikTok paid ad examples, hooks, CTAs, offers, creative
 angles, regions/objectives when public fields allow, or paid-vs-organic creative
 comparison.
 
-Apply `shared-contract.md` for public surface, collection key semantics, bounds,
+Apply `shared-contract.md` for public surface, route semantics, bounds,
 evidence labeling, and output discipline.
 
 ## User Jobs

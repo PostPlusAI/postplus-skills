@@ -3,7 +3,7 @@
 Use when the user wants Instagram creators, influencers, KOLs, KOCs, UGC makers,
 affiliates, niche accounts, similar accounts, or outreach-ready shortlists.
 
-Apply `shared-contract.md` for public surface, collection key semantics, bounds,
+Apply `shared-contract.md` for public surface, route semantics, bounds,
 evidence labeling, and output discipline.
 
 ## User Jobs

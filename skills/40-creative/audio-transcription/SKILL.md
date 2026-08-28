@@ -22,8 +22,8 @@ metadata:
 
 ## Execution Boundary
 - Hosted transcription runs through the public `postplus media transcribe` verb
-  and is async. A submit writes request, response, manifest, generation handle,
-  provider status, provider URLs, and downloaded outputs if already completed.
+  and is async. A submit records the run handle, current status, and completed
+  artifacts when available.
 - Pass a local path, HTTPS URL, existing PostPlus media reference, or data URI
   directly to `--audio`. The CLI validates and prepares local media before the
   single hosted submit.
@@ -33,8 +33,8 @@ metadata:
   endpoint key.
 
 ## Source And Path
-- Supply the media duration so the hosted boundary can price and preflight the
-  request; a missing duration fast-fails before any provider spend.
+- Supply the media duration so PostPlus can validate the request before it runs;
+  a missing duration fails before submission.
 - Request timestamps when the output will feed subtitles or edit decisions.
 - Start with one source file or audio URL before larger batches.
 - Keep internal requests, responses, manifests, normalized transcripts, and
@@ -54,7 +54,7 @@ metadata:
   missing and guessing would change the result.
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, fallback providers, or unpublished tools.
+  payload rewrites, alternate execution paths, or unpublished tools.
 
 ## Public Command Boundary
 
@@ -63,20 +63,21 @@ metadata:
 - Readiness diagnostics: `postplus doctor --skill audio-transcription`.
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, fallback providers, or unpublished tools.
+  payload rewrites, alternate execution paths, or unpublished tools.
 - Use `postplus media schema --json` only when you need the full endpoint, flag,
   and enum contract or are repairing an unknown request shape.
-- Run the hosted transcription job with the generated command below; do not call
-  provider APIs directly.
+- Run the hosted transcription job with the generated command below; do not use
+  another execution interface.
 - Pass the source directly through `--audio`; do not pre-upload it or construct
-  provider request objects.
+  a manual request object.
 
 <!-- BEGIN GENERATED EXECUTION EXAMPLE -->
 ```bash
 postplus media transcribe transcription \
-  --audio <audio> \
-  --duration-seconds <duration-seconds> \
-  --output <result.json>
+  --audio ./reference.wav \
+  --duration-seconds 1 \
+  --wait \
+  --output ./result.json
 ```
 <!-- END GENERATED EXECUTION EXAMPLE -->
 

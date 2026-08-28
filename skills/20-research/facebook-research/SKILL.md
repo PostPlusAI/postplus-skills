@@ -1,6 +1,6 @@
 ---
 name: facebook-research
-description: Route and run bounded public Facebook research across two lanes - page, profile, group, and post scrapes plus hosted collections for reels, comments, ads, events, marketplace, pages, and search.
+description: Run bounded public Facebook research for pages, profiles, groups, posts, reels, comments, ads, events, marketplace listings, and search. Use when public Facebook evidence should support a marketing, creator, community, competitor, or funnel decision.
 metadata:
   postplus:
     familyId: platform-research
@@ -23,15 +23,9 @@ matches the job.
 
 ## Two Lanes
 
-Facebook research runs through two hosted routes:
-
-- Public page/profile/group/post content scrapes a public-content source. The
-  `--request` file is a JSON array of input records, one per URL.
-- Reels, comments, ad-library, events, marketplace, pages, posts, and search
-  collect a hosted collection. The `--request` file is the collection input
-  object directly.
-
-Keep the two lanes separate. Never fill one lane with the other.
+Facebook has URL-led routes for public page/profile/group/post content and
+specialized routes for reels, comments, ads, events, marketplace, pages, and
+search. Pick the route by user intent; PostPlus handles execution details.
 
 ## Route
 
@@ -60,7 +54,7 @@ size, or output shape.
 | Private target | `Can you provide a public URL or exported dataset instead?` |
 | Too broad | `Which 1-5 sources matter most for the first pass?` |
 
-Do not ask the user for source keys, collection keys, schemas, implementation
+Do not ask the user for internal route identifiers, schemas, implementation
 choices, retries, credentials, hidden filters, or internal routing.
 
 ## Run Discipline
@@ -76,29 +70,24 @@ choices, retries, credentials, hidden filters, or internal routing.
 6. Return a short chat answer: scope, counts, strongest finding, biggest gap,
    artifact path, and next action.
 
-Result record shapes for every collection and source key are documented in the
+Result record shapes for every research route are documented in the
 `postplus-shared` reference `dataset-item-schemas.md`; consult it before
 writing result-processing code, and probe a single record only to verify.
 
-Do not add hosted envelopes, hidden implementation fields, unsupported filters,
-or compatibility fallbacks to a request.
+Use only the public filters shown by the selected route.
 
 ## Public Command Boundary
 
-- Choose the smallest matching source or collection key and run it directly.
+- Choose the smallest matching research route and run it directly.
 - Readiness diagnostics: `postplus doctor --skill facebook-research`.
 - If an owned CLI command fails, report the exact error and stop. Do not bypass
   the failure with metadata-only answers, readiness probing, local payload
-  rewrites, fallback providers, or unpublished tools.
-- Use `postplus research schema --json` or
-  `postplus research schema --collection-key <collectionKey> --json` only when
-  constructing or repairing an unknown request shape.
-- Public content scrape:
-  `postplus research scrape <sourceKey> --skill facebook-research --request <input-array.json> --output <result.json>`.
-- Hosted collection:
-  `postplus research collect <collectionKey> --skill facebook-research --request <input.json> --output <result.json>`
-  where the request file is the raw collection input object, not a hosted
-  envelope and not `{ "schemaVersion": 1, "input": ... }`.
+  rewrites, alternate services, or unpublished tools.
+- Inspect one route with `postplus research run <route> --help` when its semantic
+  flags are not already clear.
+- Run `postplus research run <route> --<semantic flags> --skill
+  facebook-research --wait --output <result.json>`.
+- Pass only public URLs, search terms, locations, scope, and result limits.
 - Keep the first pass bounded; expand only after inspecting the first result.
   Stop on hard errors. Do not silently swap sources or invent missing data.
 - If the CLI returns a quote-confirmation challenge, run
@@ -107,10 +96,16 @@ or compatibility fallbacks to a request.
 
 <!-- BEGIN GENERATED EXECUTION EXAMPLE -->
 ```bash
-postplus research scrape facebook-group-posts --request request.json --output result.json
+postplus research run facebook-group-posts \
+  --url "https://example.com/source" \
+  --wait \
+  --output ./result.json
 ```
 
 ```bash
-postplus research collect facebook-ads-library --request request.json --output result.json
+postplus research run facebook-ads-library \
+  --query "example topic" \
+  --wait \
+  --output ./result.json
 ```
 <!-- END GENERATED EXECUTION EXAMPLE -->

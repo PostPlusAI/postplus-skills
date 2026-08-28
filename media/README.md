@@ -16,10 +16,10 @@ new model extends capability schema and the same runner; it does not create a
 new submitter skill.
 
 Do not insert architecture JSON, prompt-preflight reports, reference-contract
-files, or provider-specific submitters between approved creative context and
+files, or service-specific submitters between approved creative context and
 execution. They duplicate reasoning the agent can perform directly and can be
-mistaken for evidence that a Provider request ran.
+mistaken for evidence that a hosted run occurred.
 
 See [`reference-registry.md`](reference-registry.md) for compact reference-role
-guidance. Endpoint fields, media slots, enums, defaults, and billing dimensions
-come from `postplus media schema --json`, not this documentation.
+guidance. Endpoint fields, media roles, enums, and defaults come from
+`postplus media schema --json`, not this documentation.

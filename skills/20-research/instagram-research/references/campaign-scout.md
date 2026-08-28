@@ -4,7 +4,7 @@ Use when the user wants bounded public Instagram campaign evidence: branded
 hashtags, campaign names, launch phrases, brand/competitor posts, sampled UGC,
 watchlists, or creator leads from campaign activity.
 
-Apply `shared-contract.md` for public surface, collection key semantics, bounds,
+Apply `shared-contract.md` for public surface, route semantics, bounds,
 evidence labeling, and output discipline.
 
 ## User Jobs

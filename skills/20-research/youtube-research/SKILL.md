@@ -1,6 +1,6 @@
 ---
 name: youtube-research
-description: Research YouTube channel summaries, audience comment samples, downloadable video records, and public videos using PostPlus Cloud collection service. Use this when the user wants YouTube account research or public video metrics.
+description: Research public YouTube channel summaries, audience comment samples, downloadable video records, and video metrics through PostPlus. Use when the user needs YouTube account, content, or audience evidence.
 metadata:
   postplus:
     familyId: platform-research
@@ -10,8 +10,7 @@ metadata:
 # YouTube Research
 
 Use this skill for public YouTube channel summaries, audience comment samples,
-downloadable video records, and public video metrics through PostPlus hosted
-collection.
+downloadable video records, and public video metrics through PostPlus.
 
 Apply shared rulebook and user-guidance rules from `postplus-shared`.
 When a supported command completes but evidence is empty, sparse, noisy,
@@ -24,24 +23,26 @@ The released collection does not expose subscriber identities. Use channel
 metadata and comments as public proxies, and do not present comment authors as
 the subscriber base.
 
-## Collection Route
+## Research Routes
 
-YouTube research runs through two hosted routes:
-
-- Public video search/retrieval scrapes the public-video source. The `--request`
-  file is a JSON array of input records (one record per channel handle or video
-  URL).
-- Channel summary, audience comments, and downloadable video records collect a
-  hosted collection. The `--request` file is the collection input object
-  directly.
+Use `youtube-videos` for public video records, `youtube-channel-summary` for
+channel facts, `youtube-comments` for audience language, and
+`youtube-video-download` only when downloadable records are explicitly needed.
+PostPlus handles execution details.
 
 <!-- BEGIN GENERATED EXECUTION EXAMPLE -->
 ```bash
-postplus research scrape youtube-videos --request request.json --output result.json
+postplus research run youtube-videos \
+  --url "https://example.com/source" \
+  --wait \
+  --output ./result.json
 ```
 
 ```bash
-postplus research collect youtube-channel-summary --request request.json --output result.json
+postplus research run youtube-channel-summary \
+  --channel "@example" \
+  --wait \
+  --output ./result.json
 ```
 <!-- END GENERATED EXECUTION EXAMPLE -->
 
@@ -50,17 +51,17 @@ postplus research collect youtube-channel-summary --request request.json --outpu
 1. For channel research, collect a channel summary.
 2. For audience research, collect a small comments sample.
 3. For broad public video discovery, compile a small public-video plan and
-   scrape the public-video source.
-4. If a hosted run is pending, preserve `collection-report.json` and resume with
-   the emitted poll command.
+   run the `youtube-videos` route.
+4. If a run is pending, preserve its result file and resume with
+   `postplus research run --resume-from <result.json>`.
 5. Keep observation separate from inference, especially for audience claims.
 
-Result record shapes for every collection and source key are documented in the
+Result record shapes for every research route are documented in the
 `postplus-shared` reference `dataset-item-schemas.md`; consult it before
 writing result-processing code, and probe a single record only to verify.
 
-While collection is pending, tell the user the public collection is running
-from a saved checkpoint and continue independent brief or source-review work.
+While a run is pending, tell the user the research is continuing from a saved
+checkpoint and continue independent brief or source-review work.
 
 ## Output
 
@@ -72,8 +73,8 @@ subscriber identities.
 
 - Stop if the request includes non-YouTube platforms.
 - Stop if no public YouTube URL, channel, or query can be used.
-- Stop if hosted collection cannot resolve the channel handle or URL.
-- Stop on hosted capability, auth, DNS, proxy, network, or malformed-output
+- Stop if PostPlus cannot resolve the channel handle or URL.
+- Stop on PostPlus service, auth, DNS, proxy, network, or malformed-output
   hard errors.
 - Do not promise private audience identities or logged-in analytics.
 
@@ -89,9 +90,10 @@ cross-platform synthesis.
 - Readiness diagnostics: `postplus doctor --skill youtube-research`.
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, fallback providers, or unpublished tools.
-- Use `postplus research schema --json` only when constructing or repairing an unknown request shape.
-- Public video scrape: `postplus research scrape youtube-videos --request <input-array.json> --output <result.json>` (request = a JSON array of input records).
-- Hosted collection: `postplus research collect <collectionKey> --request <input.json> --output <result.json>` (input = the collection parameters; channel summary, comments, or video download).
+  payload rewrites, alternate services, or unpublished tools.
+- Inspect a route with `postplus research run <route> --help` only when needed.
+- Run `postplus research run <route> --<url/channel flags> --limit <n> --wait
+  --output <result.json>`.
+- Use only the semantic flags shown by the selected route.
 - Keep the first pass bounded; expand only after inspecting the first result.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

@@ -4,7 +4,7 @@ Use when the user wants to know how a product, offer, or ecommerce category
 should show up on TikTok: demos, hooks, objections, buyer language, competitor
 proof, or ad/organic angle fit.
 
-Apply `shared-contract.md` for public surface, collection key semantics, bounds,
+Apply `shared-contract.md` for public surface, route semantics, bounds,
 evidence labeling, and output discipline.
 
 ## User Jobs

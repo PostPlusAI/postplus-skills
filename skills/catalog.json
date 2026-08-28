@@ -1,6 +1,6 @@
 {
-  "schemaVersion": 1,
-  "releaseId": "skills-2026-08-27.2-media-input-ux",
+  "schemaVersion": 2,
+  "releaseId": "skills-2026-08-28.1-research-billing-cli-ux",
   "source": "PostPlusAI/postplus-skills",
   "skills": [
     {
@@ -25,12 +25,11 @@
         }
       ],
       "requirements": {
+        "capabilities": [
+          "media"
+        ],
         "endpointKeys": [
           "transcription"
-        ],
-        "hostedCapabilities": [
-          "media-file",
-          "media-generation"
         ]
       }
     },
@@ -106,26 +105,22 @@
       "status": "released",
       "supportedModels": [],
       "requirements": {
-        "collectionKeys": [
+        "capabilities": [
+          "research"
+        ],
+        "routeKeys": [
           "facebook-ads-library",
           "facebook-comments",
           "facebook-events",
+          "facebook-group-posts",
           "facebook-groups",
           "facebook-marketplace",
           "facebook-pages",
+          "facebook-post-by-url",
           "facebook-posts",
+          "facebook-profile-posts",
           "facebook-reels",
           "facebook-search"
-        ],
-        "hostedCapabilities": [
-          "hosted-collection",
-          "public-content-collection",
-          "public-content-discovery"
-        ],
-        "sourceKeys": [
-          "facebook-group-posts",
-          "facebook-post-by-url",
-          "facebook-profile-posts"
         ]
       }
     },
@@ -159,11 +154,11 @@
       "status": "released",
       "supportedModels": [],
       "requirements": {
-        "collectionKeys": [
-          "google-trends-fast"
+        "capabilities": [
+          "research"
         ],
-        "hostedCapabilities": [
-          "hosted-collection"
+        "routeKeys": [
+          "google-trends-fast"
         ]
       }
     },
@@ -251,6 +246,9 @@
         }
       ],
       "requirements": {
+        "capabilities": [
+          "media"
+        ],
         "endpointKeys": [
           "image-gpt-image-2-edit",
           "image-gpt-image-2-text",
@@ -267,10 +265,6 @@
           "image-seedream-v5-lite-edit-sequential",
           "image-seedream-v5-lite-sequential",
           "image-seedream-v5-lite-text"
-        ],
-        "hostedCapabilities": [
-          "media-file",
-          "media-generation"
         ]
       }
     },
@@ -290,16 +284,16 @@
       "status": "released",
       "supportedModels": [],
       "requirements": {
-        "collectionKeys": [
+        "capabilities": [
+          "research"
+        ],
+        "routeKeys": [
           "instagram-comments",
           "instagram-email-search",
           "instagram-hashtags",
           "instagram-posts",
           "instagram-profiles",
           "instagram-search"
-        ],
-        "hostedCapabilities": [
-          "hosted-collection"
         ]
       }
     },
@@ -327,11 +321,11 @@
       "status": "released",
       "supportedModels": [],
       "requirements": {
-        "collectionKeys": [
-          "pinterest-search"
+        "capabilities": [
+          "research"
         ],
-        "hostedCapabilities": [
-          "hosted-collection"
+        "routeKeys": [
+          "pinterest-search"
         ]
       }
     },
@@ -364,14 +358,14 @@
       "status": "released",
       "supportedModels": [],
       "requirements": {
-        "collectionKeys": [
+        "capabilities": [
+          "research"
+        ],
+        "routeKeys": [
           "reddit-post-comments",
           "reddit-search",
           "reddit-subreddit-posts",
           "reddit-user-activity"
-        ],
-        "hostedCapabilities": [
-          "hosted-collection"
         ]
       }
     },
@@ -410,13 +404,12 @@
         }
       ],
       "requirements": {
+        "capabilities": [
+          "media"
+        ],
         "endpointKeys": [
           "image-gpt-image-2-edit",
           "image-gpt-image-2-text"
-        ],
-        "hostedCapabilities": [
-          "media-file",
-          "media-generation"
         ]
       }
     },
@@ -439,8 +432,8 @@
         "accountConnections": [
           "social-publishing-workspace"
         ],
-        "hostedCapabilities": [
-          "social-publishing"
+        "capabilities": [
+          "publishing"
         ]
       }
     },
@@ -484,16 +477,16 @@
       "status": "released",
       "supportedModels": [],
       "requirements": {
-        "collectionKeys": [
+        "capabilities": [
+          "research"
+        ],
+        "routeKeys": [
           "tiktok-ads-top",
           "tiktok-comments",
           "tiktok-profiles",
           "tiktok-related-videos",
           "tiktok-users",
           "tiktok-videos"
-        ],
-        "hostedCapabilities": [
-          "hosted-collection"
         ]
       }
     },
@@ -527,9 +520,8 @@
         }
       ],
       "requirements": {
-        "hostedCapabilities": [
-          "media-file",
-          "video-analysis"
+        "capabilities": [
+          "media"
         ],
         "modelKeys": [
           "video-analysis"
@@ -571,6 +563,16 @@
         {
           "key": "video-seedance-2-mini-text",
           "name": "Doubao Seedance 2 0 Mini 260615",
+          "source": "endpointKey"
+        },
+        {
+          "key": "video-seedance-2-5-edit",
+          "name": "Doubao Seedance 2.5",
+          "source": "endpointKey"
+        },
+        {
+          "key": "video-seedance-2-5-extend",
+          "name": "Doubao Seedance 2.5",
           "source": "endpointKey"
         },
         {
@@ -625,6 +627,9 @@
         }
       ],
       "requirements": {
+        "capabilities": [
+          "media"
+        ],
         "endpointKeys": [
           "video-infinitetalk",
           "video-kling-v2-6-pro-motion-control",
@@ -632,6 +637,8 @@
           "video-kling-v3-0-pro-text",
           "video-kling-v3-0-std-image",
           "video-kling-v3-0-std-text",
+          "video-seedance-2-5-edit",
+          "video-seedance-2-5-extend",
           "video-seedance-2-5-first-frame",
           "video-seedance-2-5-first-last-frame",
           "video-seedance-2-5-reference",
@@ -642,10 +649,6 @@
           "video-seedance-2-mini-image",
           "video-seedance-2-mini-text",
           "video-seedance-2-text"
-        ],
-        "hostedCapabilities": [
-          "media-file",
-          "media-generation"
         ]
       }
     },
@@ -663,12 +666,11 @@
         }
       ],
       "requirements": {
+        "capabilities": [
+          "media"
+        ],
         "endpointKeys": [
           "transcription-video"
-        ],
-        "hostedCapabilities": [
-          "media-file",
-          "media-generation"
         ]
       }
     },
@@ -691,13 +693,12 @@
         }
       ],
       "requirements": {
+        "capabilities": [
+          "media"
+        ],
         "endpointKeys": [
           "voice-clone",
           "voice-design"
-        ],
-        "hostedCapabilities": [
-          "media-file",
-          "media-generation"
         ]
       }
     },
@@ -717,13 +718,13 @@
       "status": "released",
       "supportedModels": [],
       "requirements": {
-        "collectionKeys": [
+        "capabilities": [
+          "research"
+        ],
+        "routeKeys": [
           "x-posts",
           "x-profiles",
           "x-user-search"
-        ],
-        "hostedCapabilities": [
-          "hosted-collection"
         ]
       }
     },
@@ -735,17 +736,13 @@
       "status": "released",
       "supportedModels": [],
       "requirements": {
-        "collectionKeys": [
+        "capabilities": [
+          "research"
+        ],
+        "routeKeys": [
           "youtube-channel-summary",
           "youtube-comments",
-          "youtube-video-download"
-        ],
-        "hostedCapabilities": [
-          "hosted-collection",
-          "public-content-collection",
-          "public-content-discovery"
-        ],
-        "sourceKeys": [
+          "youtube-video-download",
           "youtube-videos"
         ]
       }

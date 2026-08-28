@@ -37,18 +37,18 @@ Classify the request first:
 - Regional interest mapping: which markets are warmer for a topic.
 - Related query expansion: rising terms usable as seeds.
 
-## Collection Key Routing
+## Route
 
-Keyword analysis uses one `keyword` string. Keyword requests must set
-`enableTrendingSearches: false`; `queries` is not a supported keyword-request
-field because it produces generic realtime trending searches.
-
-The `--request` file is the collection input object (the compiled Google Trends
-request) directly.
+Use `google-trends-fast` with one `--query`, a country, and a time range.
+PostPlus locks the route to keyword analysis so the Agent only supplies research
+intent.
 
 <!-- BEGIN GENERATED EXECUTION EXAMPLE -->
 ```bash
-postplus research collect google-trends-fast --request request.json --output result.json
+postplus research run google-trends-fast \
+  --query "example topic" \
+  --wait \
+  --output ./result.json
 ```
 <!-- END GENERATED EXECUTION EXAMPLE -->
 
@@ -61,7 +61,7 @@ postplus research collect google-trends-fast --request request.json --output res
 5. Separate observation from inference.
 6. Hand off to platform or marketplace research if deeper evidence is needed.
 
-The result record shape for the collection key is documented in the
+The result record shape for the route is documented in the
 `postplus-shared` reference `dataset-item-schemas.md`; consult it before
 writing result-processing code, and probe a single record only to verify.
 
@@ -80,8 +80,8 @@ missing evidence layer.
 - Do not treat search spikes as proof that a product will sell.
 - Do not confuse news-driven spikes with durable category demand.
 - Do not skip geo and timeframe details when comparing terms.
-- Do not send `queries` for keyword momentum checks; use `keyword` with
-  `enableTrendingSearches: false`.
+- Keep each run to one clear keyword; compare multiple terms as separate bounded
+  runs.
 - Stop on unsupported keys, missing auth, unavailable hosted service, stable
   network failure, or malformed collection output.
 - Do not answer Google Trends platform-data requests from generic web articles
@@ -102,8 +102,10 @@ missing evidence layer.
 - Readiness diagnostics: `postplus doctor --skill google-trends-research`.
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, fallback providers, or unpublished tools.
-- Use `postplus research schema --collection-key google-trends-fast --json` only when constructing or repairing an unknown request shape.
-- Hosted collection: `postplus research collect google-trends-fast --request <input.json> --output <result.json>` (input = the collection parameters).
+  payload rewrites, alternate services, or unpublished tools.
+- Inspect flags with `postplus research run google-trends-fast --help` only when
+  needed.
+- Run `postplus research run google-trends-fast --query <term> --country <code>
+  --time-range <window> --wait --output <result.json>`.
 - Preview and approval boundaries stay explicit; do not execute irreversible publishing without the required approval artifact.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

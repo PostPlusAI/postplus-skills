@@ -18,7 +18,7 @@ Ask only if no marketplace seed exists:
 
 ## Run
 
-| Evidence need | Collection key | First pass |
+| Evidence need | Route | First pass |
 | --- | --- | --- |
 | Listings by search or category | `facebook-marketplace` | 1 search/category URL, up to `10` listings |
 

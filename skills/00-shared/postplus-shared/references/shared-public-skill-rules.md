@@ -3,13 +3,13 @@
 Shared execution rules for released PostPlus skills running inside the PostPlus runtime.
 
 Use this rulebook when a skill needs PostPlus Cloud service access, temporary local
-artifacts, or a compile step before provider execution.
+artifacts, or a compile step before hosted execution.
 
 ## PostPlus Cloud Rule
 
-- Treat host-managed adapters, auth, and billing boundaries as the source of
-  truth for provider-backed execution.
-- Do not probe local secret env vars or ask the user to paste provider tokens
+- Treat PostPlus Cloud auth, usage approval, and execution as the source of
+  truth for hosted work.
+- Do not probe local secret env vars or ask the user to paste service tokens
   into the chat just to see whether a capability exists.
 - If the PostPlus Cloud boundary reports that a capability is unavailable, unauthorized,
   or not configured, fail fast and report that directly to the user.
@@ -53,7 +53,7 @@ artifacts, or a compile step before provider execution.
 
 ## Parallel Request Rule
 
-- When multiple tool calls, file reads, script requests, provider submissions,
+- When multiple tool calls, file reads, script requests, hosted submissions,
   or data-collection requests are independent, prepare their inputs first and
   dispatch them as a bounded parallel batch instead of running them one by one.
 - Do not serialize independent requests just because they target different
@@ -62,16 +62,15 @@ artifacts, or a compile step before provider execution.
   skill explicitly requires a serial queue, approval or quote confirmation is
   still missing, or the skill's own cost/rate-limit boundary requires smaller
   batches.
-- For approved side-effecting or provider-backed work, submit approved
+- For approved side-effecting or hosted work, submit approved
   independent items concurrently within the skill's stated batch or concurrency
-  limit. Do not create duplicate requests to mask slow or failing providers.
+  limit. Do not create duplicate requests to mask slow or failing services.
 
-## Async Provider Task Rule
+## Async Task Rule
 
-- When a supported script returns `pending`, `processing`, `generationHandle`,
-  `runHandle`, `providerUrls.get`, or a `collection-report.json`, treat that as
-  a real resumable checkpoint.
-- Do not block the user's conversation by looping on provider polling when the
+- When a supported command returns `pending`, `processing`, a run handle, or a
+  durable result file, treat that as a real resumable checkpoint.
+- Do not block the user's conversation by looping on status checks when the
   next useful action does not depend on the finished artifact.
 - Tell the user the job is still running, name the durable checkpoint in
   business terms, and continue with independent planning, review, or prep work
@@ -81,9 +80,8 @@ artifacts, or a compile step before provider execution.
 - If there is no useful parallel work, run one bounded poll pass, report the
   current status, and keep the resume command or checkpoint available. The
   resume command for a hosted media job is `postplus media poll --handle
-  <output.data.id>`. Local research commands resume only from the result file:
-  `postplus research scrape --resume-from <result.json>` or
-  `postplus research collect --resume-from <result.json>`. Never extract, paste,
+  <output.data.id>`. Research resumes only from the result file with
+  `postplus research run --resume-from <result.json>`. Never extract, paste,
   or rewrite `runHandle`; the CLI reads it byte-for-byte and updates the same
   checkpoint file. A hosted runtime without a shared local filesystem follows
   its own structured polling contract instead of emulating the local command.
@@ -109,24 +107,21 @@ artifacts, or a compile step before provider execution.
 
 - Hosted skills run the converged verb grammar. The agent supplies only the
   skill-specific input; the closed-source CLI runner translates it into the
-  hosted request, mints identifiers, and derives billing dimensions.
-- Each hosted command reads its input from `--request <file>`:
-  `postplus research collect <collection-key> --request <input.json>`,
-  `postplus research scrape <source-key> --request <input.json>` (scrape input
-  is a JSON array of `{ "url": ... }` entries),
-  `postplus media <verb> <endpoint-key> --request <input.json>`,
-  `postplus media analyze <model-key> --request <payload.json>`, and
-  `postplus publish <operation> --request <input.json>`. Flags-surface media
-  endpoints take the input as `--<flag>` options instead and read no `--request`
-  file.
-- Before writing a `--request` file, read the public schema with
-  `postplus research schema --collection-key <key> --json`,
-  `postplus media schema --endpoint <endpoint-key> --json`, or
-  `postplus publish schema --json`.
-- Put only the skill-specific request under `--request` (an object, or an array
-  for research scrape). Do not hand-write runner-managed fields such as ids,
-  tokens, or billing dimensions; the CLI mints or derives them and rejects them
-  in the request body.
+  hosted request and owns execution metadata.
+- Research and media accept product intent directly as semantic flags:
+  `postplus research run <route> --<semantic-flags>` and
+  `postplus media <verb> <endpoint-key> --<role-or-intent-flags>`. Local media
+  paths are valid role values; the CLI handles durable staging internally.
+- When the Skill does not already make a flag clear, inspect the exact public
+  surface with
+  `postplus research schema --route <route> --json`,
+  `postplus media schema --endpoint <endpoint-key> --json`, or the target's
+  `--help`. Do not create JSON request envelopes for Research or media.
+- Publishing intentionally retains an opaque product request:
+  `postplus publish <operation> --request <input.json>`. Read
+  `postplus publish schema --json` before writing it.
+- Do not hand-write runner-managed fields such as ids, tokens, service routing,
+  or storage handoffs; the CLI and Web own them.
 - Pass shared execution fields as command-supported flags
   (`--quote-confirmation-token` or `--hosted-operation-id`), not inside the
   skill-specific input. Research resume state stays in the `--output` result
@@ -154,8 +149,8 @@ artifacts, or a compile step before provider execution.
 
 ## Compile-Step Rule
 
-- For complex collection families, compile the user brief into provider-ready
-  input before the expensive execution step.
+- For complex research routes, compile the user brief into semantic flags
+  before the hosted execution step.
 - Inspect or adjust the compiled input when the request is high-cost, ambiguous,
   or unusually broad.
 

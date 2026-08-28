@@ -1,53 +1,16 @@
-# Shared Contract
+# Pinterest Shared Contract
 
-Apply this before every Pinterest search run.
+Use one public keyword per run:
 
-## Request shape
-
-The `pinterest-search` collection request is a single raw input object:
-
-```json
-{
-  "query": "minimalist workspace",
-  "filter": "all",
-  "limit": 20
-}
+```bash
+postplus research run pinterest-search --query "minimalist workspace" --kind all --limit 20 --wait --output result.json
 ```
 
-- `query`: the search keyword. One keyword per request.
-- `filter`: `all` for every pin type, or `videos` for video pins only. Use
-  `all` for image-address lists.
-- `limit`: how many results to return. The minimum is 20; keep the first pass at
-  20 and expand only after inspecting the results.
+- `--kind all` includes every pin type; `videos` narrows to video pins.
+- The route minimum is 20. Expand only after inspecting the first result.
+- Use only the flags shown by the selected route.
 
-Send the raw object. Never wrap it in a hosted envelope or a
-`{ "schemaVersion": 1, "input": ... }` shape, and never add fields the request
-does not define.
-
-## Output normalization
-
-Each returned item carries an image address, a pin identifier, and a title.
-Normalize every item to:
-
-```json
-{
-  "image_url": "https://...",
-  "pin_url": null,
-  "title": "..."
-}
-```
-
-- `image_url`: the direct image address; prefer the full-resolution field over
-  any thumbnail.
-- `pin_url`: the pin page URL when the result includes one, otherwise null.
-- `title`: the pin title.
-
-Deduplicate by `image_url` and drop items that carry no image address.
-
-## First-pass discipline
-
-- Run one bounded pass first, at the minimum limit.
-- Treat empty, unavailable, private, or sparse results as an evidence gap, not a
-  reason to silently retry with a different request shape.
-- Stop on hard errors and report the exact command error. Do not fabricate
-  results and do not substitute an unsupported source.
+Normalize usable results to `{ image_url, pin_url, title }`, prefer the
+full-resolution image, deduplicate by image URL, and discard records without an
+image. Empty or sparse results are evidence gaps, not permission to silently
+change the query or source. Stop on hard errors.

@@ -18,7 +18,7 @@ Ask only if there is no public source:
 
 ## Run
 
-| Source | Source key | Input |
+| Source | Route | Input |
 | --- | --- | --- |
 | Page/profile posts | `facebook-profile-posts` | `1-5` page/profile URLs, `1-10` posts each |
 | Group posts | `facebook-group-posts` | `1-3` public group URLs, `1-10` posts each |

@@ -47,7 +47,7 @@ metadata:
   reference, an optional `reference_text` transcript, and optional `language`.
   Pass a local path, HTTPS URL, existing PostPlus media reference, or data URI
   directly to `--audio`. The CLI validates and prepares local media before the
-  single hosted submit; do not pre-upload it or construct a provider payload.
+  single hosted submit; do not pre-upload it or construct a manual request.
 - Exact field names, requiredness, and defaults are discovered from
   `postplus media schema --json` and the generated example below; do not hard-code
   a private request envelope here.
@@ -70,11 +70,11 @@ metadata:
   missing and guessing would change the result.
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, fallback providers, or unpublished tools.
+  payload rewrites, alternate execution paths, or unpublished tools.
 - Batch isolation: when producing a batch of independent items, a per-item
-  provider content/safety rejection is isolated to that item. It is identified
+  content/safety rejection is isolated to that item. It is identified
   only by the typed code `postplus_cli_hosted_media_content_policy_blocked`,
-  never by provider prose, and it surfaces at either boundary: a failed
+  never by matching error prose, and it surfaces at either boundary: a failed
   `postplus media create` whose typed error `code` is that code, or a
   submitted run whose poll result carries `output.data.status: failed` and
   `output.data.error.code` set to that code. On either, record which item was
@@ -83,7 +83,7 @@ metadata:
   soften, or re-submit the blocked item — that is a forbidden payload rewrite.
   Every other failure (a failed owned CLI/script command whose typed `code` is
   not that content-policy code, or a run whose `error.code` is not that
-  content-policy code — auth, transport, quota, malformed request, provider
+  content-policy code — auth, transport, quota, malformed request, service
   outage) is systemic: stop per the rule above.
 
 ## Public Command Boundary
@@ -95,16 +95,17 @@ metadata:
   (waits in-command up to 45s per invocation; rerun while pending).
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, fallback providers, or unpublished tools.
+  payload rewrites, alternate execution paths, or unpublished tools.
 - Use `postplus media schema --json` only when constructing or repairing an unknown request shape.
-- Run the hosted submit with the generated command below; do not call provider APIs directly.
+- Run the hosted submit with the generated command below; do not use another execution interface.
 
 <!-- BEGIN GENERATED EXECUTION EXAMPLE -->
 ```bash
 postplus media create voice-design \
-  --text <text> \
-  --voice-description <voice-description> \
-  --output <result.json>
+  --text "example text" \
+  --voice-description "example voice_description" \
+  --wait \
+  --output ./result.json
 ```
 <!-- END GENERATED EXECUTION EXAMPLE -->
 

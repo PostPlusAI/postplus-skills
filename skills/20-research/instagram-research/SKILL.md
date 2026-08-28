@@ -34,7 +34,7 @@ Always apply `references/shared-contract.md` before running a route.
 
 ## First Question
 
-Ask one question only when the answer changes platform, route, collection key,
+Ask one question only when the answer changes platform, route,
 public/private boundary, or first-pass scope.
 
 | Missing | Ask |
@@ -46,8 +46,7 @@ public/private boundary, or first-pass scope.
 | Creator discovery without seed | `Give one niche, category, hashtag, competitor account, audience keyword, region/language, or collaboration goal.` |
 | Contact enrichment without shortlist | `Send the narrowed creator usernames/profile URLs, or let me first shortlist candidates.` |
 
-Do not ask for credentials, supplier choice, collection keys, schema fields,
-private exports, hidden fields, or retry strategy.
+Do not ask for credentials, private exports, or retry strategy.
 
 ## Run Discipline
 
@@ -57,17 +56,16 @@ private exports, hidden fields, or retry strategy.
 4. Run the narrowest collection chain that can answer the first pass.
 5. If execution succeeds but evidence is empty, sparse, noisy, or off-topic,
    apply the shared bounded research-quality recovery rule; do not repeat the
-   same request or silently expand cost.
+   same request or silently expand the approved PostPlus credit scope.
 6. Stop after the bounded first pass and report scope, evidence, limits, and
    next action.
 
-Result record shapes for every collection key are documented in the
+Result record shapes for every research route are documented in the
 `postplus-shared` reference `dataset-item-schemas.md`; consult it before
 writing result-processing code, and probe a single record only to verify.
 
-Do not present a sample as full-platform truth. Do not add hosted envelopes,
-hidden supplier fields, analysis notes, unsupported filters, or compatibility
-fallbacks to collection requests.
+Do not present a sample as full-platform truth. Do not add hidden implementation
+fields, analysis notes, unsupported filters, or compatibility fallbacks.
 
 ## Public Command Boundary
 
@@ -76,34 +74,21 @@ fallbacks to collection requests.
 - Readiness diagnostics: `postplus doctor --skill instagram-research`.
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, fallback providers, or unpublished tools.
-- Use `postplus research schema --collection-key <collectionKey> --json` only when constructing or repairing an unknown request shape.
-- Hosted collection runs through the shared `research collect` verb: `postplus research collect <collectionKey> --skill instagram-research --request <input.json> --output <result.json>` (input = the collection parameters).
+  payload rewrites, alternate services, or unpublished tools.
+- Inspect a route with `postplus research run <route> --help` only when its
+  semantic flags are not already clear.
+- Run `postplus research run <route> --<semantic flags> --skill
+  instagram-research --wait --output <result.json>`.
+- Pass only public handles, URLs, hashtags, search terms, locations, and limits
+  through flags shown by the selected route.
 - Keep the first pass bounded; expand only after inspecting the first result.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.
 
 <!-- BEGIN GENERATED EXECUTION EXAMPLE -->
 ```bash
-postplus research collect instagram-comments --request request.json --output result.json
+postplus research run instagram-comments \
+  --url "https://example.com/source" \
+  --wait \
+  --output ./result.json
 ```
 <!-- END GENERATED EXECUTION EXAMPLE -->
-
-## Local Development Direct Provider Check
-
-For local development only, agents may verify the same route contract through a
-direct public-content provider runner instead of the PostPlus CLI. This is a
-developer test path, not the released public boundary.
-
-- Keep the route names, first-pass bounds, and output contract from
-  `references/shared-contract.md`.
-- Use direct provider checks only to prove data collection viability for a
-  problematic route, such as hashtag samples or public contact-signal
-  enrichment.
-- Write raw provider items and a run report to the local product work folder;
-  do not rewrite raw payloads to make a run appear successful.
-- Treat empty comments, unavailable accounts, private data, missing contact
-  signals, network errors, and provider errors as evidence gaps or test
-  failures.
-- Before release, route the public skill back through the PostPlus collection
-  boundary and remove supplier-specific implementation details from public
-  user-facing copy.

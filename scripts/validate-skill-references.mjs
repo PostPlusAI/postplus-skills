@@ -191,16 +191,6 @@ for (const markdownFile of markdownFiles) {
   }
   const hostedCommandRules = [
     {
-      command: /\bpostplus research collect\b/,
-      schema: /\bpostplus research schema\b/,
-      message: "uses hosted research collect without the public schema discovery command.",
-    },
-    {
-      command: /\bpostplus research scrape\b/,
-      schema: /\bpostplus research schema\b/,
-      message: "uses hosted research scrape without the public schema discovery command.",
-    },
-    {
       command: /\bpostplus media (?:create|transcribe|analyze)\b/u,
       schema: /\bpostplus media schema\b/,
       message: "uses a hosted media verb without the public schema discovery command.",

@@ -22,12 +22,12 @@ metadata:
 - Required inputs are missing and guessing would change the result.
 
 ## Execution Boundary
-- Analysis runs through the hosted `video-analysis` capability; discover its
-  current flags with `postplus media schema --json`.
+- Analysis runs through `postplus media analyze`; discover its current flags
+  with `postplus media schema --json`.
 - Supported local formats are `.mp4`, `.m4v`, `.mov`, and `.webm`.
 - Pass a local path, HTTPS URL, existing PostPlus media reference, or video data
-  URI directly to `--video`. The CLI prepares the media and the Web constructs
-  the provider request; do not pre-upload it or author a provider payload.
+  URI directly to `--video`. PostPlus prepares the media and runs the request;
+  do not pre-upload it or author a manual request object.
 - If media preparation or analysis fails, stop on that error.
 
 ## Source And Path
@@ -53,7 +53,7 @@ metadata:
   runner or summary file.
 - The analysis should cover useful video evidence such as shot beats, timeline,
   VO/on-screen text, reusable content structure, and creative strategy when
-  those are relevant. If the provider returns the analysis wrapped in JSON,
+  those are relevant. If the result wraps the analysis in JSON,
   unwrap it to readable Markdown in-context.
 - Results should stay grounded in observable video evidence. Database fields,
   catalog frontmatter, or search indexes belong to a separate ingestion step,
@@ -70,14 +70,15 @@ metadata:
 <!-- BEGIN GENERATED EXECUTION EXAMPLE -->
 ```bash
 postplus media analyze video-analysis \
-  --video <video> \
-  --prompt <prompt> \
-  --output <result.json>
+  --video ./reference.mp4 \
+  --prompt "Describe the result you need" \
+  --wait \
+  --output ./result.json
 ```
 <!-- END GENERATED EXECUTION EXAMPLE -->
 
 - Discover the model keys and request shape with `postplus media schema --json`;
-  do not call provider APIs directly.
+  do not use another execution interface.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.
 - Choose the smallest matching command from the user input and run it directly.
 - Readiness diagnostics: `postplus doctor --skill video-analysis`.

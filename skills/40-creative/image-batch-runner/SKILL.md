@@ -1,6 +1,6 @@
 ---
 name: image-batch-runner
-description: Run fact-grounded image generation batches for short-form video production, especially persona images, first-frame candidates, and light consistency edits. Use this when persona and concept inputs already exist and you need local image assets, prompt records, and reusable model-call metadata. This skill should stay anchored to benchmark-backed persona locks and should save both raw provider responses and normalized local asset manifests.
+description: Run fact-grounded image generation batches for short-form video production, especially persona images, first-frame candidates, and light consistency edits. Use this when persona and concept inputs already exist and you need local image assets, prompt records, and durable run metadata. Keep requests anchored to benchmark-backed persona locks and save normalized local asset manifests.
 metadata:
   postplus:
     familyId: media-production
@@ -23,8 +23,8 @@ metadata:
 
 ## Execution Boundary
 - Hosted image generation and edits run through the public `postplus media create`
-  verb and are async. A submit writes the request, response, manifest, generation
-  handle, provider status, and completed artifact metadata (bytes are not
+  verb and are async. A submit records the run handle, current status, and
+  completed artifact metadata (bytes are not
   auto-downloaded; see the download command below).
 - This runner validates and executes resolved requests. It must not make creative
   strategy, task-classification, or reference-policy decisions.
@@ -40,7 +40,7 @@ metadata:
   `--reference-image` flag. Each value may be a local path, HTTPS URL, existing
   PostPlus media reference, or data URI. The CLI validates and prepares local
   media before the single hosted submit; do not pre-upload it or construct a
-  provider request object.
+  manual request object.
 - Save a finished image output to disk with
   `postplus media-file download --reference <output.data.artifacts[0].mediaReference> --output-file <path>`.
   Use the completed result's artifact reference as the download source.
@@ -73,7 +73,7 @@ metadata:
   missing and guessing would change the result.
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, fallback providers, or unpublished tools.
+  payload rewrites, alternate execution paths, or unpublished tools.
 - Batch canary: before fanning out a batch of independent items, submit item 1
   alone and poll it to a terminal state. If the canary is content-policy
   blocked (the per-item typed code below), record and skip it per batch
@@ -81,12 +81,12 @@ metadata:
   canary completes successfully. Every other canary failure is systemic: stop.
   Some failures are only visible on poll (async terminal states), so a
   submit-accepted batch can still be 100% doomed — a canary caps the blast
-  radius of any systemic defect (bad reference form, provider outage, auth) at
+  radius of any systemic defect (bad reference form, service outage, auth) at
   one item instead of the whole batch.
 - Batch isolation: when producing a batch of independent items, a per-item
-  provider content/safety rejection is isolated to that item. It is identified
+  content/safety rejection is isolated to that item. It is identified
   only by the typed code `postplus_cli_hosted_media_content_policy_blocked`,
-  never by provider prose, and it surfaces at either boundary: a failed
+  never by matching error prose, and it surfaces at either boundary: a failed
   `postplus media create` whose typed error `code` is that code, or a
   submitted run whose poll result carries `output.data.status: failed` and
   `output.data.error.code` set to that code. On either, record which item was
@@ -95,7 +95,7 @@ metadata:
   soften, or re-submit the blocked item — that is a forbidden payload rewrite.
   Every other failure (a failed owned CLI/script command whose typed `code` is
   not that content-policy code, or a run whose `error.code` is not that
-  content-policy code — auth, transport, quota, malformed request, provider
+  content-policy code — auth, transport, quota, malformed request, service
   outage) is systemic: stop per the rule above.
 
 ## Public Command Boundary
@@ -109,17 +109,18 @@ metadata:
   to 45s).
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, fallback providers, or unpublished tools.
+  payload rewrites, alternate execution paths, or unpublished tools.
 - Use `postplus media schema --json` only when you need the full endpoint, flag,
   and enum contract or are repairing an unknown request shape.
-- Run the hosted image job with the generated command below; do not call provider
-  APIs directly.
+- Run the hosted image job with the generated command below; do not use another
+  execution interface.
 
 <!-- BEGIN GENERATED EXECUTION EXAMPLE -->
 ```bash
 postplus media create image-gpt-image-2-text \
-  --prompt <prompt> \
-  --output <result.json>
+  --prompt "Describe the result you need" \
+  --wait \
+  --output ./result.json
 ```
 <!-- END GENERATED EXECUTION EXAMPLE -->
 

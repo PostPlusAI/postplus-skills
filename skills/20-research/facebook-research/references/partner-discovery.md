@@ -20,7 +20,7 @@ Ask only if there are no usable seeds:
 
 Discover, then verify:
 
-| Step | Collection key | First pass |
+| Step | Route | First pass |
 | --- | --- | --- |
 | Broad public discovery from a query | `facebook-search` | 1 query, small result bound |
 | Page identity, category, activity, content fit | `facebook-pages` | `1-5` page URLs |

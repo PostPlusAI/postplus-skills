@@ -24,6 +24,8 @@ architect, preflight report, reference contract, or model-specific submitter.
    - one opening image: image/first-frame-to-video
    - locked opening and closing images: first-last-frame-to-video
    - several images, videos, or audios that guide the result: reference video
+   - change an existing video's content: video edit
+   - continue an existing video: video extend
    - portrait plus approved audio: talking head
    - identity image plus motion source video: motion transfer
 3. Decide each asset's role from the task. Bind identity, product, first/last
@@ -36,13 +38,13 @@ architect, preflight report, reference contract, or model-specific submitter.
    `[image N]`, `[video N]`, and `[audio N]` bindings when the selected endpoint
    accepts numbered references.
 5. Validate fields, enum values, defaults, cardinality, and duration against the
-   current schema. Do not carry provider field tables in this skill. If one clip
+   current schema. Do not carry private execution field tables in this skill. If one clip
    exceeds the supported duration or creative load, split it into independent
    prompts before spending.
 6. Pass each local path, HTTPS URL, existing PostPlus media reference, or data
    URI directly to the matching role flag. The CLI validates and prepares local
    media before a single hosted submit. Use only fields published by the
-   selected endpoint; do not pre-upload media or construct provider payloads.
+   selected endpoint; do not pre-upload media or construct private payloads.
 7. Prefer `--wait` when the expected runtime fits the command budget. If create
    still returns pending, poll the same run with `postplus media poll
    --handle <output.data.id>`. Re-run that poll while pending; never submit a
@@ -56,16 +58,16 @@ architect, preflight report, reference contract, or model-specific submitter.
 
 ## Execution Rules
 
-- PostPlus schema and the hosted execution manifest are the source of truth for
-  endpoint availability, input fields, enums, defaults, and billing dimensions.
-- Use the released `postplus` CLI. Do not call provider APIs directly, invent
-  provider-native fields, or create a provider-specific submitter skill.
+- PostPlus schema is the source of truth for endpoint availability, input
+  fields, enums, and defaults.
+- Use the released `postplus` CLI. Do not call underlying services directly,
+  invent private fields, or create a service-specific submitter skill.
 - Keep private request/result files under the active work folder's `.postplus/`
   state; do not manufacture contract or planning artifacts for handoff.
 - If the CLI returns a quote-confirmation challenge, show it to the user, run
   `postplus quote confirm --json --challenge-file <challenge.json>` only after
   approval, then retry the exact operation with the returned token.
-- On an auth, transport, quota, malformed-request, capability, or provider
+- On an auth, transport, quota, malformed-request, capability, or execution
   failure, report the typed error and stop. Do not switch endpoints, rewrite the
   request, or claim a local plan is an executed render.
 - In a batch, only the typed error
@@ -88,7 +90,8 @@ architect, preflight report, reference contract, or model-specific submitter.
 <!-- BEGIN GENERATED EXECUTION EXAMPLE -->
 ```bash
 postplus media create video-kling-v3-0-pro-text \
-  --prompt <prompt> \
-  --output <result.json>
+  --prompt "Describe the result you need" \
+  --wait \
+  --output ./result.json
 ```
 <!-- END GENERATED EXECUTION EXAMPLE -->

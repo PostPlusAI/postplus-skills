@@ -18,7 +18,7 @@ Ask only if the source is missing:
 
 ## Run
 
-| Target | Source key | Input |
+| Target | Route | Input |
 | --- | --- | --- |
 | Page/profile | `facebook-profile-posts` | `1-5` page/profile URLs, `5-10` posts each |
 | Public group | `facebook-group-posts` | `1-3` group URLs, `5-10` posts each |

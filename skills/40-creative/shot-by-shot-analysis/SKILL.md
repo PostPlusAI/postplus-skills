@@ -19,7 +19,7 @@ synthesize only after every source has been inspected.
 
 - Use `video-analysis` for actual video understanding. Analyze each source in a
   separate request with the same shot-table contract.
-- Do not generate images, videos, prompts, workflows, or provider payloads.
+- Do not generate images, videos, prompts, workflows, or execution requests.
 - Do not infer video content from metadata, filenames, transcripts, thumbnails,
   or general knowledge when the footage itself has not been inspected.
 - Keep raw hosted responses and temporary request records internal. Deliver one

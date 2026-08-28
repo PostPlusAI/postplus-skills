@@ -18,7 +18,7 @@ Ask only if no page, profile, or reel URL exists:
 
 ## Run
 
-| Evidence need | Collection key | First pass |
+| Evidence need | Route | First pass |
 | --- | --- | --- |
 | Reels from a page/profile | `facebook-reels` | `1-5` page/profile URLs, small reel bound |
 | Page/profile posts for a mixed benchmark | `facebook-posts` | `1-5` page/profile URLs, up to `10` posts each |

@@ -4,7 +4,7 @@ Use when the user wants public TikTok comment language: objections, questions,
 pain points, praise, purchase intent, comparison language, FAQ, phrase bank, or
 copy insights.
 
-Apply `shared-contract.md` for public surface, collection key semantics, bounds,
+Apply `shared-contract.md` for public surface, route semantics, bounds,
 evidence labeling, and output discipline.
 
 ## User Jobs

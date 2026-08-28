@@ -22,7 +22,7 @@ If the user asks for paid ad examples, route the paid lane to `ads-and-funnel.md
 
 ## Run
 
-| Source | Source key | Input |
+| Source | Route | Input |
 | --- | --- | --- |
 | Competitor page/profile posts | `facebook-profile-posts` | `1-5` page/profile URLs, up to `10` posts each |
 | Public group posts | `facebook-group-posts` | `1-3` public group URLs, up to `10` posts each |

@@ -17,7 +17,7 @@ metadata:
 - A no-reference brief still needs a proxy structure before prompt work.
 
 ## Do Not Use When
-- Do not create the final storyboard grid or provider payload here.
+- Do not create the final storyboard grid or execution request here.
 - Do not copy faces, exact wardrobe, creator identity, exact location, or exact
   overlays from benchmark material.
 
@@ -58,7 +58,7 @@ The artifact contains `hookEssence`, `viewerQuestion`, `mustCopyVisualGrammar`, 
   missing and guessing would change the result.
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, fallback providers, or unpublished tools.
+  payload rewrites, alternate execution paths, or unpublished tools.
 
 ## Handoff
 - Grid or panel plan -> `storyboard-grid-writer`.
@@ -72,7 +72,7 @@ The artifact contains `hookEssence`, `viewerQuestion`, `mustCopyVisualGrammar`, 
   it directly.
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, fallback providers, or unpublished tools.
+  payload rewrites, alternate execution paths, or unpublished tools.
 - This public skill is instruction-driven. Produce the artifact described by the workflow directly from the available evidence.
-- Do not call private provider/runtime paths or unpublished local tools.
+- Do not use unpublished execution paths or local tools.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

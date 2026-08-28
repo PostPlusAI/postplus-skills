@@ -21,7 +21,7 @@ this route only supports public ad and funnel evidence.
 
 ## Run
 
-| Evidence need | Collection key | First pass |
+| Evidence need | Route | First pass |
 | --- | --- | --- |
 | Ads by keyword or advertiser | `facebook-ads-library` | 1 keyword or advertiser page, up to `10` ads |
 
@@ -46,7 +46,7 @@ or product type, do not assume one literal category query is enough:
    - advertiser page or ad-library URLs when verified; and
    - offer or landing-domain wording only when the first records justify it.
 4. Start with the smallest lanes most likely to answer the decision. Do not run
-   every discovered entity automatically or silently multiply cost.
+   every discovered entity automatically or silently multiply credit use.
 
 ## Read Fields
 
@@ -77,7 +77,7 @@ If a supported pass is empty or low-quality, apply the shared research-quality
 recovery loop. Change one axis at a time: category phrase -> verified entity,
 brand -> advertiser page, alias -> official product name, or broad market -> one
 specified country/status scope. Inspect landing destinations when present. Stop
-after at most two changed passes or when the approved cost bound is reached, and
+after at most two changed passes or when the approved PostPlus credit bound is reached, and
 report the attempted lanes when useful evidence remains unavailable.
 
 ## Output

@@ -57,21 +57,18 @@ postplus status
 npx -y skills add PostPlusAI/postplus-skills --global --list
 ```
 
-Hosted request schema discovery:
+Public command discovery:
 
 ```bash
-postplus research schema --collection-key <collection-key> --json
+postplus research schema --route <route> --json
 postplus media schema --endpoint <endpoint-key> --json
 postplus publish schema --json
 postplus mobile schema --json
 ```
 
-Use these schema commands before an agent writes a `--input` or `--request`
-JSON file for a hosted PostPlus command. For media work, run
-`postplus media schema --json` first to list `endpointKeys`, then rerun with
-the selected `--endpoint`. For research work, run
-`postplus research schema --json` first to list `collectionKeys`, then rerun
-with the selected `--collection-key`.
+Research and media take semantic flags directly; inspect a route or endpoint
+only when its Skill does not already make the flags clear. Publishing retains
+an explicit request file because its operation payload is user-authored.
 
 ## Local Studio
 
@@ -230,7 +227,7 @@ Example requests:
 "Analyze this reference video and turn it into a brief for our product."
 "Generate a storyboard for a 15-second hook."
 "Transcribe this video, create subtitles, and suggest B-roll placements."
-"Prepare provider-ready image or video generation requests."
+"Create an image or video from these references."
 "Turn this product into a UGC-style video workflow with image, voice, clip, montage, and QA handoffs."
 ```
 

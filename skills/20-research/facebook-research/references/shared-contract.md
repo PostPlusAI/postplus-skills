@@ -1,224 +1,57 @@
 # Facebook Shared Contract
 
-Read this before every route. Keep the run public, small, source-grounded, and
-useful to the growth decision.
+Read this before every route. Keep research public, bounded, attributable, and
+useful to the user's decision. PostPlus owns execution, credit guards, and
+polling.
 
-## Released Surface
+## Routes
 
-The released Facebook surface has two lanes. The scrape lane pulls public
-page/profile/group/post content through `postplus research scrape <sourceKey>`.
-The collect lane pulls reels, comments, ads, events, marketplace, pages, posts,
-and public search through `postplus research collect <collectionKey>`. Use
-`postplus research schema --json` or
-`postplus research schema --collection-key <collectionKey> --json` only when
-constructing or repairing an unknown request shape.
+| Evidence need | Route | Semantic input | First pass |
+| --- | --- | --- | --- |
+| Public page/profile posts | `facebook-profile-posts` | `--url`, `--limit` | 1-5 URLs, 20 posts |
+| Direct post evidence | `facebook-post-by-url` | `--url` | 1-10 URLs |
+| Public group posts | `facebook-group-posts` | `--url`, `--limit` | 1-3 groups, 20 posts |
+| Ad-library creative | `facebook-ads-library` | `--query`, `--country`, `--status`, `--limit` | 20 ads |
+| Post/reel comments | `facebook-comments` | `--url`, `--limit` | 1-5 URLs, 20 comments |
+| Public group discussion | `facebook-groups` | `--url`, optional `--query`, `--limit` | 20 posts |
+| Events/local activity | `facebook-events` | `--query` or `--url`, `--limit` | 10 events |
+| Marketplace listings | `facebook-marketplace` | `--url`, `--limit` | 10 listings |
+| Page identity | `facebook-pages` | `--url` | 1-5 pages |
+| Rich page/profile posts | `facebook-posts` | `--url`, `--limit` | 20 posts |
+| Reels | `facebook-reels` | `--url`, `--limit` | 20 reels |
+| Broad public search | `facebook-search` | `--category`, `--location`, `--limit` | 20 results |
 
-Scrape lane (public content):
+Run:
 
-| Evidence need | Source key | First pass |
-| --- | --- | --- |
-| Public page/profile recent posts | `facebook-profile-posts` | `1-5` page/profile URLs, small per-source post bound |
-| Direct public post evidence | `facebook-post-by-url` | `1-10` post URLs |
-| Public group recent posts | `facebook-group-posts` | `1-3` public groups |
-
-Collect lane (hosted collection):
-
-| Evidence need | Collection key | First pass |
-| --- | --- | --- |
-| Ad-library creative, offers, CTAs | `facebook-ads-library` | 1 keyword or advertiser page, up to `10` ads |
-| Post/reel comments | `facebook-comments` | `1-10` post/reel URLs, small comment bound |
-| Public group discussion | `facebook-groups` | `1-3` group URLs, small post bound |
-| Public events, local activations | `facebook-events` | 1 topic+location query or event URL, up to `10` events |
-| Marketplace listings, price bands | `facebook-marketplace` | 1 marketplace search/category URL, up to `10` listings |
-| Page identity, category, activity | `facebook-pages` | `1-5` page URLs |
-| Page/profile posts (rich fields) | `facebook-posts` | `1-5` page/profile URLs, up to `10` posts each |
-| Reels, short-form video | `facebook-reels` | `1-5` page/profile URLs, small reel bound |
-| Broad public search discovery | `facebook-search` | 1 query, small result bound |
-
-Anything outside these keys is not on the released public surface: private
-profiles, hidden groups, member lists, Page Insights, ad account metrics,
-targeting, spend, and ROAS are not supported. When the decision needs one of
-those, say so and stop. Do not improvise another collection path, provider, or
-tool.
-
-## Request Field Shapes
-
-Each collect-lane request is the raw collection input object. Send it directly to
-`postplus research collect <collectionKey> --skill facebook-research --request <input.json>`;
-never wrap it in a hosted envelope or a `{ "schemaVersion": 1, "input": ... }`
-shape, and never add fields the collection does not define. Use
-`postplus research schema --collection-key <collectionKey> --json` only when
-constructing or repairing an unknown shape. `startUrls` items are
-`{ "url": "..." }` records; `resultsLimit` bounds items per source. These
-first-pass examples are mirrored by the local-dev paradigm fixtures and must stay
-in sync with them.
-
-### facebook-pages
-
-```json
-{
-  "startUrls": [{ "url": "https://www.facebook.com/duolingo" }]
-}
+```bash
+postplus research run <route> --<semantic flags> --skill facebook-research --wait --output result.json
 ```
 
-### facebook-posts
+Use `postplus research run <route> --help` only when the flags are unclear.
 
-```json
-{
-  "startUrls": [{ "url": "https://www.facebook.com/duolingo" }],
-  "resultsLimit": 1
-}
-```
-
-### facebook-reels
-
-```json
-{
-  "startUrls": [{ "url": "https://www.facebook.com/duolingo" }],
-  "resultsLimit": 1
-}
-```
-
-### facebook-comments
-
-```json
-{
-  "startUrls": [
-    { "url": "https://www.facebook.com/duolingo/posts/pfbid0GkaG5iS5gmG5dehNoj8A2y6qwhqfxgcLUEfewJSc6hs3BohjunrnLnNH3sjUggBzl" }
-  ],
-  "resultsLimit": 10,
-  "includeNestedComments": false,
-  "viewOption": "RANKED_UNFILTERED"
-}
-```
-
-### facebook-groups
-
-```json
-{
-  "startUrls": [
-    { "url": "https://www.facebook.com/groups/duolingo.all.languages/" }
-  ],
-  "resultsLimit": 1,
-  "viewOption": "CHRONOLOGICAL"
-}
-```
-
-### facebook-ads-library
-
-```json
-{
-  "urls": [
-    { "url": "https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=US&q=duolingo&search_type=keyword_unordered" }
-  ],
-  "count": 10,
-  "limitPerSource": 10,
-  "scrapePageAds.activeStatus": "active",
-  "scrapePageAds.countryCode": "US"
-}
-```
-
-### facebook-events
-
-```json
-{
-  "searchQueries": ["language learning New York"],
-  "startUrls": [],
-  "maxEvents": 3
-}
-```
-
-### facebook-marketplace
-
-```json
-{
-  "startUrls": [
-    { "url": "https://www.facebook.com/marketplace/sanfrancisco/search/?query=language%20books" }
-  ],
-  "resultsLimit": 3
-}
-```
-
-### facebook-search
-
-`facebook-search` is broad public discovery; the category-search first pass is:
-
-```json
-{
-  "categories": ["Language school"],
-  "resultsLimit": 5
-}
-```
+Private profiles, hidden groups, member lists, Page Insights, account metrics,
+targeting, spend, and ROAS are outside this public surface. Say so and stop.
 
 ## Human Alignment
 
-Infer the user decision before collecting:
+Infer whether the user wants diagnosis, comparison, discovery, extraction,
+planning, or verification. Ask one question only when it changes the route,
+privacy boundary, sample, or deliverable. Do not ask for implementation details.
 
-| Decision | Means |
-| --- | --- |
-| Audit | What should we fix, monitor, or stop doing? |
-| Benchmark | What patterns are competitors using? |
-| Voice | What words, objections, and questions appear in public group discussion? |
-| Monitoring | What changed in the sources since the last pass? |
+## Bounds And Recovery
 
-Ask one short question only when the current seed cannot support the decision.
-If the route is clear, state the assumption and run the first pass.
+- Start with one route and the smallest useful sample.
+- Keep independent sources separately attributable.
+- On hard auth, network, contract, or service errors, stop with the exact error.
+- On a successful but sparse/noisy result, apply
+  `postplus-shared/research-quality-recovery.md` once within the same bound.
+- Resume a pending checkpoint with
+  `postplus research run --resume-from result.json`; never resubmit it.
 
-## Parallel Rule
+## Evidence
 
-Parallelize independent seeds:
-
-- posts across multiple pages/profiles
-- competitor pages
-- group posts or group discussion across multiple groups
-- direct posts, reels, comments, or listings across multiple URLs
-- ad-library, events, or search seeds that do not depend on each other
-
-Do not parallelize dependent work, such as comment evidence before the source
-post URLs exist, or page verification before discovery returns candidates.
-
-## Evidence Rules
-
-- Public samples are snapshots, not complete Facebook truth.
-- Keep each source and collection type as its own evidence lane; do not merge a
-  scrape sample with a collect sample or present one as the other.
-- Engagement, play, response, and price fields rank items inside the sample only.
-- Comments and group discussion are public visible text only, not full sentiment.
-- Ad-library transparency fields are public disclosure only, never paid delivery.
-- Supplied exports are valid only when labeled as user-provided.
-- Empty, private, login-gated, sparse, or noisy data is a gap.
-
-Stop for private profiles, hidden groups, member lists, private messages,
-backend Page Insights, Business Manager, ad account access, exact targeting,
-spend, ROAS, conversion, full historical archives, or login automation.
-
-## HTML Artifact
-
-When item-level evidence exists, produce:
-
-- `result.json`: source of truth
-- `evidence.html`: review surface over the JSON
-
-The HTML must be compact and inspectable:
-
-- header: user goal, route, seeds, source keys, run time, item counts
-- finding rail: 3-7 supported findings, each linked to evidence rows
-- evidence table/cards: source URL, text/title, date, public metrics, media
-  fields, raw row id
-- filters: source type, source key, keyword/text search, status when relevant
-- gaps: private, empty, sparse, unsupported, noisy, or failed lanes
-- next action: one concrete follow-up
-
-The HTML must not invent fields or hide gaps. Every claim needs a row id, source
-URL, or public item id.
-
-## Chat Output
-
-Keep chat short:
-
-- scope and sources
-- source keys run and counts
-- artifact paths
-- strongest supported finding
-- biggest gap
-- next action
+Keep the complete JSON result. Preserve source URLs and observed dates. Separate
+observations from inference, deduplicate repeated records, and never turn a
+bounded sample into a platform-wide claim. For item-level work, also produce a
+compact HTML artifact with scope, count, strongest examples, gaps, and next
+action.

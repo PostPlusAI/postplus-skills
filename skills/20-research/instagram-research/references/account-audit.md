@@ -4,7 +4,7 @@ Use when the user gives known Instagram accounts and wants account health,
 competitor comparison, known creator fit, or a post shortlist for later comment
 or outreach work.
 
-Apply `shared-contract.md` for public surface, collection key semantics, bounds,
+Apply `shared-contract.md` for public surface, route semantics, bounds,
 evidence labeling, and output discipline.
 
 ## User Jobs

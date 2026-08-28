@@ -4,7 +4,7 @@ Use when the user wants public Instagram organic content examples, hooks,
 formats, captions, content pillars, competitor posts, hashtag samples, or
 category/topic creative patterns.
 
-Apply `shared-contract.md` for public surface, collection key semantics, bounds,
+Apply `shared-contract.md` for public surface, route semantics, bounds,
 evidence labeling, and output discipline.
 
 ## User Jobs

@@ -25,13 +25,12 @@ metadata:
   directly to `--video`. The CLI validates and prepares local media before the
   single hosted submit.
 - Request timestamps by default when results drive subtitles or edit decisions.
-- Hosted video transcription is async. Submit writes request, response, manifest,
-  normalized transcript path, generation handle, provider status, provider URLs,
-  and artifacts when already completed.
+- Hosted video transcription is async. Submit records the run handle, current
+  status, normalized transcript path, and completed artifacts when available.
 
 ## Source And Path
 - Before submit, derive `durationSeconds` from the source video or URL and pass
-  it through the endpoint's duration flag for billing and preflight.
+  it through the endpoint's duration flag for request validation.
 - Start with one source file before larger batches.
 - Keep internal requests, responses, normalized transcripts, and downloaded
   artifacts under `.postplus/video-transcription`; keep final user-facing
@@ -50,7 +49,7 @@ metadata:
   missing and guessing would change the result.
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, fallback providers, or unpublished tools.
+  payload rewrites, alternate execution paths, or unpublished tools.
 
 ## Public Command Boundary
 
@@ -59,20 +58,21 @@ metadata:
 - Readiness diagnostics: `postplus doctor --skill video-transcription`.
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, fallback providers, or unpublished tools.
+  payload rewrites, alternate execution paths, or unpublished tools.
 - Use `postplus media schema --json` only when you need the full endpoint, flag,
   and enum contract or are repairing an unknown request shape.
-- Run the hosted transcription job with the generated command below; do not call
-  provider APIs directly.
+- Run the hosted transcription job with the generated command below; do not use
+  another execution interface.
 - Pass the source directly through `--video`; do not pre-upload it or construct
-  provider request objects.
+  a manual request object.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.
 
 <!-- BEGIN GENERATED EXECUTION EXAMPLE -->
 ```bash
 postplus media transcribe transcription-video \
-  --video <video> \
-  --duration-seconds <duration-seconds> \
-  --output <result.json>
+  --video ./reference.mp4 \
+  --duration-seconds 1 \
+  --wait \
+  --output ./result.json
 ```
 <!-- END GENERATED EXECUTION EXAMPLE -->

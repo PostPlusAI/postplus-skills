@@ -41,7 +41,7 @@ Always apply `references/shared-contract.md` before running a route.
 
 ## First Question
 
-Ask one question only when the answer changes platform, route, collection key,
+Ask one question only when the answer changes platform, route,
 public/private boundary, first-pass scope, or output shape.
 
 | Missing | Ask |
@@ -57,9 +57,8 @@ public/private boundary, first-pass scope, or output shape.
 | Paid ads without scope | `What paid scope should I sample: category, competitor, region/language, objective, hook, offer, or keyword?` |
 | Private/backend request | `This needs public evidence. Should I continue with public TikTok examples instead?` |
 
-Do not ask for credentials, implementation choice, collection keys, schema fields,
-hidden fields, private exports, retry strategy, cookies, or music archive
-details.
+Do not ask for credentials, private exports, retry strategy, cookies, or music
+archive details.
 
 ## Run Discipline
 
@@ -70,19 +69,16 @@ details.
 5. Stop after the first pass and report scope, evidence, limits, and next
    action.
 
-Result record shapes for every collection key are documented in the
+Result record shapes for every research route are documented in the
 `postplus-shared` reference `dataset-item-schemas.md`; consult it before
 writing result-processing code, and probe a single record only to verify.
 
 Do not present a public sample as full TikTok truth. Do not use paid ads as
-organic creator evidence. Do not use organic videos as paid ad proof. Do not add
-hosted envelopes, hidden implementation fields, unsupported filters, or
-compatibility fallbacks to collection requests.
+organic creator evidence. Do not use organic videos as paid ad proof. Use only
+the filters shown by the selected route.
 
-For local testing, optimize for a fast real first pass. Use the request cards in
-`references/shared-contract.md`; do not inspect fixtures, product mappings, or
-implementation docs unless a request actually fails and the error cannot be understood
-from the command output.
+For local testing, optimize for a fast real first pass. Use the route cards in
+`references/shared-contract.md`; do not inspect fixtures or product mappings.
 
 ## Public Command Boundary
 
@@ -91,13 +87,11 @@ from the command output.
 - Readiness diagnostics: `postplus doctor --skill tiktok-research`.
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, fallback services, or unpublished tools.
-- Use `postplus research schema --collection-key <collectionKey> --json` only
-  when constructing or repairing an unknown request shape.
-- Hosted collection:
-  `postplus research collect <collectionKey> --request <input.json> --output <result.json>`
-  where the request file is the raw collection input object, not a hosted
-  envelope and not `{ "schemaVersion": 1, "input": ... }`.
+  payload rewrites, alternate services, or unpublished tools.
+- Inspect a route with `postplus research run <route> --help` only when its
+  semantic flags are not already clear.
+- Run `postplus research run <route> --<query/url/handle/hashtag flags> --limit
+  <n> --wait --output <result.json>`.
 - Keep the first pass bounded; expand only after inspecting the first result.
 - If the CLI returns a quote-confirmation challenge, run
   `postplus quote confirm --json --challenge-file <challenge.json>` and retry
@@ -105,27 +99,8 @@ from the command output.
 
 <!-- BEGIN GENERATED EXECUTION EXAMPLE -->
 ```bash
-postplus research collect tiktok-ads-top --request request.json --output result.json
+postplus research run tiktok-ads-top \
+  --wait \
+  --output ./result.json
 ```
 <!-- END GENERATED EXECUTION EXAMPLE -->
-
-## Local Development Direct Check
-
-For local development only, agents may verify a TikTok route through a direct
-public-content runner instead of the PostPlus CLI. This is a developer test
-path, not the released public boundary.
-
-- Prefer the official `postplus research collect` command first when it works.
-- If local product auth, quote handling, async status, or schema exposure blocks
-  quick skill validation, use the direct check path and record that as a product
-  integration gap for the technical owner.
-- Keep the route names, first-pass bounds, and output contract from
-  `references/shared-contract.md`.
-- Use direct checks only to prove collection viability for a route or document
-  a missing candidate surface.
-- Write raw collection items, request, stderr, and a run report to the local
-  product work folder.
-- Treat empty, unavailable, private, sparse, network-failed, or
-  collection-failed data as evidence gaps or test failures.
-- Before release, route the public skill back through the PostPlus collection
-  boundary and remove implementation-specific details from user-facing copy.

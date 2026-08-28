@@ -18,7 +18,7 @@ Ask only if no event seed exists:
 
 ## Run
 
-| Evidence need | Collection key | First pass |
+| Evidence need | Route | First pass |
 | --- | --- | --- |
 | Events by topic/location or event URL | `facebook-events` | 1 topic+location query or event URL, up to `10` events |
 

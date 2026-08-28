@@ -1,10 +1,9 @@
 # Hosted Collection Result Record Schemas
 
-Shared reference: the documented result-record shape for every released hosted
-research key — both the `postplus research collect <collectionKey>` lane and
-the `postplus research scrape <sourceKey>` lane. Use
-`postplus research schema --collection-key <collectionKey> --json` for the
-request-side input shape; this file documents the records that come back.
+Shared reference: the documented result-record shape for every released
+`postplus research run <route>` capability. Use
+`postplus research schema --route <route> --json` for the input flags; this
+file documents the records that come back.
 
 Rules:
 
@@ -72,9 +71,9 @@ additional_info (null|…)        ec_certificates []
 The `videos[]` / `images[]` URLs are signed CDN links with short expiry —
 download promptly or treat as ephemeral (see the media-URL rule above).
 
-## Other collection keys (`research collect`)
+## Other Research routes
 
-| collection key | top-level result-record keys |
+| route | top-level result-record keys |
 | --- | --- |
 | facebook-posts | facebookUrl, postId, pageName, url, time, timestamp, user{}, text, textReferences[], link, likes, comments, shares, topReactionsCount, viewsCount, media[], feedbackId, reactionLikeCount/LoveCount/CareCount/WowCount/HahaCount, topLevelUrl, facebookId, pageAdLibrary{}, inputUrl |
 | facebook-comments | facebookUrl, commentUrl, commentId, id, feedbackId, date, text, profileUrl, profilePicture, profileId, profileName, likesCount, threadingDepth, facebookId, postTitle, pageAdLibrary{}, inputUrl |
@@ -107,9 +106,9 @@ download promptly or treat as ephemeral (see the media-URL rule above).
 | youtube-comments | text, likeCount, replyCount, publishedTime, author{id,name,thumbnails}, isPinned, isHearted |
 | youtube-video-download | original_url, requested_resolution, provided_resolution, title, channel, duration, thumbnail, view_count, categories, description, video_filesize, audio_filesize, downloadable_video_link, downloadable_audio_link, merged_downloadable_link, additional_metadata{} |
 
-## Public content source keys (`research scrape`)
+## Public-page Research routes
 
-| source key | top-level record keys |
+| route | top-level record keys |
 | --- | --- |
 | facebook-profile-posts | url, post_id, user_url, user_username_raw, content, date_posted, hashtags, num_comments, num_shares, num_likes_type, likes, post_type, page_name, page_url, profile_id, profile_handle, page_intro, page_category, page_logo, page_external_website, page_likes, page_followers, page_is_verified, attachments[], video_view_count, play_count, count_reactions_type, is_sponsored, shortcode, is_page, following, original_post |
 | facebook-post-by-url | url, post_id, user_url, user_username_raw, content, date_posted, num_comments, num_shares, num_likes_type, profile_id, page_logo, page_likes, page_followers, page_is_verified, attachments[], page_url, profile_handle, is_sponsored, video_view_count, likes, post_type, play_count |

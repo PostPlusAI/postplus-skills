@@ -35,7 +35,7 @@ Always apply `references/shared-contract.md` before running a route.
 
 ## First Question
 
-Ask one question only when the answer changes platform, route, collection key,
+Ask one question only when the answer changes platform, route,
 public/private boundary, first-pass scope, or output shape.
 
 | Missing | Ask |
@@ -47,7 +47,7 @@ public/private boundary, first-pass scope, or output shape.
 | Creator discovery without seed | `Give one niche, topic, product, competitor, audience, or collaboration goal.` |
 | Localization without market | `Which market or language should I compare first?` |
 
-Do not ask for credentials, supplier choice, collection keys, schemas, hidden
+Do not ask for credentials, implementation choices, schemas, hidden
 fields, private exports, cookies, or retry strategy.
 
 ## Run Discipline
@@ -62,19 +62,19 @@ Result record shapes are documented in the `postplus-shared` reference
 `dataset-item-schemas.md`; consult it before processing results, and inspect one
 real record only to verify.
 
-Do not present a bounded sample as full-platform truth. Do not add hosted
-envelopes, hidden implementation fields, unsupported filters, network-graph
-switches, or compatibility fallbacks to collection requests.
+Do not present a bounded sample as full-platform truth. Use only the public
+filters shown by the selected route.
 
 ## Public Command Boundary
 
 - Readiness diagnostics: `postplus doctor --skill x-research`.
-- Use `postplus research schema --collection-key <collectionKey> --json` only
-  when constructing or repairing an unknown request shape.
-- Run a hosted collection with
-  `postplus research collect <collectionKey> --skill x-research --request <input.json> --output <result.json>`.
+- Inspect a route with `postplus research run <route> --help` only when its
+  semantic flags are not already clear.
+- Run `postplus research run <route> --<query/handle/url flags> --limit <n>
+  --skill x-research --wait --output <result.json>`.
+- Use only the semantic flags shown by the selected route.
 - Resume a pending run with
-  `postplus research collect --resume-from <result.json>`; never extract or
+  `postplus research run --resume-from <result.json>`; never extract or
   rewrite the opaque handle stored in that checkpoint.
 - Keep the first pass bounded. If a command fails, report the exact error and
   stop; do not silently swap sources or invent missing data.
@@ -84,6 +84,8 @@ switches, or compatibility fallbacks to collection requests.
 
 <!-- BEGIN GENERATED EXECUTION EXAMPLE -->
 ```bash
-postplus research collect x-posts --request request.json --output result.json
+postplus research run x-posts \
+  --wait \
+  --output ./result.json
 ```
 <!-- END GENERATED EXECUTION EXAMPLE -->

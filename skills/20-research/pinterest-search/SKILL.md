@@ -47,8 +47,8 @@ output shape.
 | Too broad | `Which one keyword matters most for the first pass?` |
 | Filter intent | `Should I include all pins, or only video pins?` |
 
-Do not ask the user for credentials, implementation choice, collection keys,
-schema fields, hidden filters, or retry strategy.
+Do not ask the user for credentials, implementation choice, schema fields,
+hidden filters, or retry strategy.
 
 ## Run Discipline
 
@@ -61,29 +61,24 @@ schema fields, hidden filters, or retry strategy.
 5. Stop after the first pass and report scope, count, strongest results, limits,
    and next action.
 
-The result record shape for the collection key is documented in the
+The result record shape for the route is documented in the
 `postplus-shared` reference `dataset-item-schemas.md`; consult it before
 writing result-processing code, and probe a single record only to verify.
 
-Do not present a bounded first pass as the full Pinterest catalog. Do not add
-hosted envelopes, hidden implementation fields, unsupported filters, or
-compatibility fallbacks to the request.
+Do not present a bounded first pass as the full Pinterest catalog. Use only the
+public filters shown by the route.
 
 ## Public Command Boundary
 
-- Build the raw request object
-  `{ "query": "...", "filter": "all", "limit": 20 }` (`filter` is `all` or
-  `videos`; `limit` minimum is 20) and run the collect verb directly.
+- Run `postplus research run pinterest-search --query <keyword> --kind
+  <all|videos> --limit <n> --wait --output <result.json>`; the minimum limit is
+  20.
 - Readiness diagnostics: `postplus doctor --skill pinterest-search`.
 - If the owned CLI command fails, report the exact error and stop. Do not bypass
   the failure with metadata-only answers, readiness probing, local payload
-  rewrites, fallback services, or unpublished tools.
-- Use `postplus research schema --collection-key pinterest-search --json` only
-  when constructing or repairing an unknown request shape.
-- Hosted collection:
-  `postplus research collect pinterest-search --request <input.json> --output <result.json>`
-  where the request file is the raw collection input object, not a hosted
-  envelope and not `{ "schemaVersion": 1, "input": ... }`.
+  rewrites, alternate services, or unpublished tools.
+- Inspect flags with `postplus research run pinterest-search --help` only when
+  needed.
 - Keep the first pass bounded; expand only after inspecting the first result.
 - If the CLI returns a quote-confirmation challenge, run
   `postplus quote confirm --json --challenge-file <challenge.json>` and retry
@@ -91,6 +86,9 @@ compatibility fallbacks to the request.
 
 <!-- BEGIN GENERATED EXECUTION EXAMPLE -->
 ```bash
-postplus research collect pinterest-search --request request.json --output result.json
+postplus research run pinterest-search \
+  --query "example topic" \
+  --wait \
+  --output ./result.json
 ```
 <!-- END GENERATED EXECUTION EXAMPLE -->

@@ -18,7 +18,7 @@ off-topic, or the wrong record type, apply the `postplus-shared` reference
 ## Experience Rules
 
 1. Speak in the user's business language, not collection terminology.
-2. Ask at most one question, and only when it changes the route or cost bound.
+2. Ask at most one question, and only when it changes the route or credit bound.
 3. Start with the smallest useful sample and expand only after review.
 4. Keep implementation, delivery, and network controls out of the conversation.
 5. Fail fast on hard command, contract, auth, or private-surface failures. When
@@ -52,17 +52,17 @@ safe default applies. Otherwise ask only the highest-information question:
 | A deep subreddit request has no bound | `What date range or maximum post count should bound the deep collection?` |
 | Multiple expensive directions compete | `Which one should I run first: discovery, a thread deep-dive, a subreddit, or a public profile?` |
 
-Never ask for credentials, collection keys, schema fields, implementation
+Never ask for credentials, schema fields, implementation
 choice, delivery settings, or retry strategy.
 
 ## Run Protocol
 
 1. Select one route and apply its references.
-2. Write the raw request object to a local file under `.postplus/`.
-3. Run the narrowest collection that answers the first pass.
+2. Run the narrowest semantic route that answers the first pass.
+3. Keep the JSON result under `.postplus/` as durable evidence.
 4. Inspect record types and relevance. If the evidence is not useful, apply the
    recovery flow in `references/shared-contract.md` without repeating an
-   identical request or exceeding the approved cost bound.
+   identical request or exceeding the approved PostPlus credit bound.
 5. Keep the complete raw records in the result file; normalize only the
    user-facing evidence according to `references/result-shapes.md`.
 6. Report scope, counts by result type, representative evidence, limits, and
@@ -74,21 +74,21 @@ parallel, but their result sets remain separate until presentation.
 ## Public Command Boundary
 
 - Readiness: `postplus doctor --skill reddit-search`.
-- Inspect an unknown request contract only when needed with
-  `postplus research schema --collection-key <collection-key> --json`.
-- Select the route-owned collection key:
+- Inspect route flags only when needed with `postplus research run <route>
+  --help`.
+- Select the route:
   - `reddit-search` for keyword discovery, public search URLs, community search,
     and ordinary subreddit feeds;
   - `reddit-post-comments` for one or more selected post threads;
   - `reddit-subreddit-posts` for bounded deep subreddit collection;
   - `reddit-user-activity` for an explicitly named public profile.
-- Collect with
-  `postplus research collect <collection-key> --request <input.json> --output <result.json>`.
-- The request file is the raw collection input object, never a hosted envelope.
+- Run `postplus research run <route> --<query/url/subreddit/handle flags>
+  --limit <n> --wait --output <result.json>`.
+- Use only the semantic flags shown by the selected route.
 - If a run returns a saved async checkpoint, resume it with
-  `postplus research collect --resume-from <result.json>` rather than starting
+  `postplus research run --resume-from <result.json>` rather than starting
   a duplicate run.
-- If a quote-confirmation challenge appears, show its scope and price. Only
+- If a quote-confirmation challenge appears, show its scope and PostPlus credits. Only
   after the user confirms, run
   `postplus quote confirm --json --challenge-file <challenge.json>` and retry
   with the returned token.
@@ -107,6 +107,8 @@ sentiment analysis, media download, external delivery, and network tuning.
 
 <!-- BEGIN GENERATED EXECUTION EXAMPLE -->
 ```bash
-postplus research collect reddit-search --request request.json --output result.json
+postplus research run reddit-search \
+  --wait \
+  --output ./result.json
 ```
 <!-- END GENERATED EXECUTION EXAMPLE -->

@@ -28,7 +28,7 @@ Boundaries:
 
 - Resolve ids, never guess them; ambiguous name matches go back to the user as candidates.
 - Never hand-write a full definition document. Build structure through create plus edit operations and let the server validate; if `validation.ok=false`, fix the listed errors and re-propose. The server never silently repairs.
-- Persist only on human approval (`save_workflow_version` / `postplus workflow save`), and never launch without explicit user approval - quote first, report the reserved credits, and on the CLI pass the quoted `reservedMillicredits` as `--max-reserved-millicredits` together with `--confirm` (launch refuses to run without both).
+- Persist only on human approval (`save_workflow_version` / `postplus workflow save`), and never launch without explicit user approval - quote first, report the reserved PostPlus credits, and on the CLI pass the quoted `reservedCredits` as `--max-reserved-credits` together with `--confirm` (launch refuses to run without both).
 - If NEITHER surface is available in the current session (no workspace assistant tools and no logged-in CLI), do not fabricate a definition or any substitute file format. Say workflow authoring needs the PostPlus workspace assistant or a logged-in `postplus` CLI, and route one-off render requests to `video-batch-runner`.
 
 ## Workflow Shape Defaults
@@ -71,7 +71,7 @@ Guardrail diagnoses, prompt compiles. Business-experience guardrails are sidecar
 2. **Prompt** after reading `references/prompt-quality.md`. Resolve `do not/no/avoid/不要` into positive scene carriers; bind every reference to a job, scope, and boundary. Duration, aspect ratio, resolution, and audio generation belong in node config, never restated as prompt text.
 3. **Build** through `workflow_author` (or `postplus workflow create` / `propose`): create (blank or template), then propose the node/edge/config structure with edit operations.
 4. **Validate** with the returned verdict plus the internal quality gate. Fix truth-preserving issues directly; block only for missing facts that would change claims or behavior.
-5. **Persist and launch** on human approval only: `save_workflow_version` (or `postplus workflow save`), then `quote_workflow_run` (or `postplus workflow quote`), report the reserved cost in credits (millicredits ÷ 1000), and `launch_workflow_run` (or `postplus workflow launch ... --confirm`) after explicit approval - pass the quote's `reservedMillicredits` as `maxTotalReservedMillicredits` / `--max-reserved-millicredits` and the exact workflow name as `workflowTitle` / `--title`.
+5. **Persist and launch** on human approval only: `save_workflow_version` (or `postplus workflow save`), then `quote_workflow_run` (or `postplus workflow quote`), report the reserved PostPlus credits, and `launch_workflow_run` (or `postplus workflow launch ... --confirm`) after explicit approval - pass the quote's `reservedCredits` as `--max-reserved-credits` and the exact workflow name as `--title`.
 6. **Handoff** workflow name and id, saved version, validation status, quote/launch status, and meaningful blockers or residual risks. Runs are asynchronous with human review gates - report state and the workflow page link; do not poll a run to completion.
 
 ## Script-Locked Asset Mode
@@ -94,7 +94,7 @@ If the user wants external music, later sound design, or a silent workflow, turn
 
 ## Cost And Launch Discipline
 
-Launching spends real credits: always quote first, report the reserved credits, and never launch without explicit user approval. On the CLI, `postplus workflow launch` refuses to run without `--confirm` and an acknowledged `--max-reserved-millicredits` ceiling; the server re-quotes and aborts if the fresh reservation exceeds it, so the confirmed cost bound stays binding. Runs pause at human review gates (per-clip approval, final review) - report run state and the workflow page link instead of sitting in a polling loop.
+Launching spends real credits: always quote first, report the reserved PostPlus credits, and never launch without explicit user approval. On the CLI, `postplus workflow launch` refuses to run without `--confirm` and an acknowledged `--max-reserved-credits` ceiling; the server re-quotes and aborts if the fresh reservation exceeds it, so the confirmed cost bound stays binding. Runs pause at human review gates (per-clip approval, final review) - report run state and the workflow page link instead of sitting in a polling loop.
 
 ## Handoff
 

@@ -21,7 +21,7 @@ metadata:
 - Required inputs are missing and guessing would change the result.
 
 ## Execution Boundary
-- Do not write hook variants from scratch, call image providers directly, create
+- Do not write hook variants from scratch, bypass the shared image command, create
   persona packs, or replace final creative QA.
 - Route slides by reference state: `image-gpt-image-2-text` for slides without
   references, `image-gpt-image-2-edit` for slides with references.
@@ -64,7 +64,7 @@ metadata:
   missing and guessing would change the result.
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, fallback providers, or unpublished tools.
+  payload rewrites, alternate execution paths, or unpublished tools.
 
 ## Public Command Boundary
 
@@ -73,7 +73,7 @@ metadata:
 - Readiness diagnostics: `postplus doctor --skill slideshow-producer`.
 - If an owned CLI or script command fails, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, fallback providers, or unpublished tools.
+  payload rewrites, alternate execution paths, or unpublished tools.
 - Use `postplus media schema --json` only when constructing or repairing an unknown request shape.
-- Generate each slide through the shared image create verb (owned by image-batch-runner), attributing the run to this skill: `postplus media create image-gpt-image-2-text --skill slideshow-producer --prompt '<scene + vibe>' --aspect-ratio <ratio> --output <result.json>`. For reference-backed slides use `image-gpt-image-2-edit` with one or more `--reference-image <url>`. Do not call provider APIs directly.
+- Generate each slide through the shared image create verb (owned by image-batch-runner), attributing the run to this skill: `postplus media create image-gpt-image-2-text --skill slideshow-producer --prompt '<scene + vibe>' --aspect-ratio <ratio> --output <result.json>`. For reference-backed slides use `image-gpt-image-2-edit` with one or more `--reference-image <url>`. Do not use another execution interface.
 - If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.
