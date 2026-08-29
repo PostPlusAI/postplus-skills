@@ -85,8 +85,8 @@ Use only the public filters shown by the selected route.
   rewrites, alternate services, or unpublished tools.
 - Inspect one route with `postplus research run <route> --help` when its semantic
   flags are not already clear.
-- Run `postplus research run <route> --<semantic flags> --skill
-  facebook-research --wait --output <result.json>`.
+- Run `postplus research run <route> --<semantic flags> --wait --output
+  <result.json>`.
 - Pass only public URLs, search terms, locations, scope, and result limits.
 - Keep the first pass bounded; expand only after inspecting the first result.
   Stop on hard errors. Do not silently swap sources or invent missing data.

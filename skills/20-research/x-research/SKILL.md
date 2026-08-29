@@ -71,7 +71,7 @@ filters shown by the selected route.
 - Inspect a route with `postplus research run <route> --help` only when its
   semantic flags are not already clear.
 - Run `postplus research run <route> --<query/handle/url flags> --limit <n>
-  --skill x-research --wait --output <result.json>`.
+  --wait --output <result.json>`.
 - Use only the semantic flags shown by the selected route.
 - Resume a pending run with
   `postplus research run --resume-from <result.json>`; never extract or

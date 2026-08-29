@@ -77,8 +77,8 @@ fields, analysis notes, unsupported filters, or compatibility fallbacks.
   payload rewrites, alternate services, or unpublished tools.
 - Inspect a route with `postplus research run <route> --help` only when its
   semantic flags are not already clear.
-- Run `postplus research run <route> --<semantic flags> --skill
-  instagram-research --wait --output <result.json>`.
+- Run `postplus research run <route> --<semantic flags> --wait --output
+  <result.json>`.
 - Pass only public handles, URLs, hashtags, search terms, locations, and limits
   through flags shown by the selected route.
 - Keep the first pass bounded; expand only after inspecting the first result.
