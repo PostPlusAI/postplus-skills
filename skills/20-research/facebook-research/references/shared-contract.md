@@ -24,7 +24,7 @@ polling.
 Run:
 
 ```bash
-postplus research run <route> --<semantic flags> --skill facebook-research --wait --output result.json
+postplus research run <route> --<semantic flags> --wait --output result.json
 ```
 
 Use `postplus research run <route> --help` only when the flags are unclear.
