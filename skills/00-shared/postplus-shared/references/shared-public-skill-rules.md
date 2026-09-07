@@ -11,36 +11,42 @@ artifacts, or a compile step before hosted execution.
   truth for hosted work.
 - Do not probe local secret env vars or ask the user to paste service tokens
   into the chat just to see whether a capability exists.
-- If the PostPlus Cloud boundary reports that a capability is unavailable, unauthorized,
-  or not configured, fail fast and report that directly to the user.
+- If the PostPlus Cloud boundary reports that a capability is unavailable or not
+  configured, fail fast and report that directly to the user. A missing or invalid
+  CLI session follows the bounded login handoff below; other authorization failures
+  still fail fast.
 - On that capability-missing path, do not switch into a “we can collect later”
   discovery flow.
 
-## Client Update Rule
+## Bounded Client Recovery Rule
 
 - A client compatibility failure is an update precondition, not a capability
   failure. PostPlus Cloud returns it when the installed PostPlus CLI or the
   installed PostPlus skills are older than the current release; it surfaces as
   `postplus_client_upgrade_required`, as HTTP 426, or as a message saying the
   PostPlus CLI or PostPlus skills are out of date.
-- This is the one failure class the agent recovers from on its own. Every other
-  boundary failure still follows the PostPlus Cloud Rule above: fail fast and
-  report it to the user.
-- Nothing updates automatically. The installed CLI does not self-upgrade during
-  ordinary commands; it only updates when the update command is actually run.
-- Recovery is exactly one command: `postplus update`. It is auth-independent and
-  it updates a stale CLI and the installed skills in the same invocation. Do not
-  run `postplus auth login` for this failure, and do not run a separate
-  package-manager install or skills-install command first.
-- After it succeeds, run `postplus status` to confirm the CLI and installed
-  skills are current, then retry the original command once.
-- If `postplus update` itself fails on permissions, network, DNS, proxy, or
-  registry errors, stop and report that update failure. Do not fall back to other
-  install commands, edit installed skill files, or work around the compatibility
-  check.
-- If the response asks for a restarted agent session, say so plainly and stop.
-  Updated skill instructions only load into a new session, so retrying in a loop
-  in the current session cannot pick them up.
+- This, a missing or invalid CLI session, and an unambiguous local CLI-usage
+  rejection are the only command failure classes the agent may recover from on
+  its own. An insufficient-balance response is a user-mediated account action,
+  not an automatic retry. Every other boundary failure still follows the
+  PostPlus Cloud Rule above: fail fast and report it to the user.
+
+<!-- BEGIN PUBLIC CLI RECOVERY CONTRACT -->
+**Bounded recovery:** Current PostPlus CLIs handle a compatible update and retry the command once when no agent-session restart is required. If an older CLI only reports that an update is required, run `postplus update` and retry once under the same condition. For a missing or invalid CLI session, run `postplus auth login` yourself; it opens the browser by default. Immediately share its exact URL as a clickable link for the user to **Connect**, then retry the original command once only after the CLI confirms success. Never ask the user to run the command or enter/compare a code, approve the connection for them, or automatically restart a cancelled/expired login. For a local usage rejection before remote work starts, use that command's `--help` to make one unambiguous correction from existing user input and retry once.
+
+If PostPlus returns `postplus_cli_balance_required` with an `open_url` user action, give the user its exact label and URL and stop for account action. Do not invent a checkout link, claim whether provider work or charging occurred, or blindly resubmit after payment; continue from the command's documented status or checkpoint once the user confirms credits are available.
+
+Otherwise stop and report the exact error. Never expose login polling secrets, retry after remote work may have started, change user intent, bypass approval, switch providers, rewrite payloads, or make a second recovery attempt. After success, briefly say that PostPlus updated, using only the official update details PostPlus reported.
+<!-- END PUBLIC CLI RECOVERY CONTRACT -->
+
+- Current CLIs perform the compatibility update and one original-command retry
+  themselves. The Skill rule is also the fallback for older CLIs that can only
+  surface the compatibility failure.
+- `postplus update` is auth-independent and updates a stale CLI and the installed
+  skills in the same invocation. Do not run `postplus auth login`, a separate
+  package-manager install, or a skills-install command first.
+- A restart notice means refreshed Skill instructions apply to the next agent
+  session. Do not retry a command that PostPlus marks as requiring that restart.
 
 ## Supported Script Rule
 

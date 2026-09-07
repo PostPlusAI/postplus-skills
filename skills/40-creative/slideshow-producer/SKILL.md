@@ -62,7 +62,7 @@ metadata:
 ## Stop Conditions
 - Stop when required user intent, source evidence, or owned input artifacts are
   missing and guessing would change the result.
-- If an owned CLI or script command fails, report the exact error and stop. Do
+- If an owned CLI or script command still fails after any bounded recovery allowed by the executing PostPlus skill, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, alternate execution paths, or unpublished tools.
 
@@ -71,7 +71,7 @@ metadata:
 - Choose the smallest matching command or workflow from the user input and run
   it directly.
 - Readiness diagnostics: `postplus doctor --skill slideshow-producer`.
-- If an owned CLI or script command fails, report the exact error and stop. Do
+- If an owned CLI or script command still fails after any bounded recovery allowed by the executing PostPlus skill, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, alternate execution paths, or unpublished tools.
 - Use `postplus media schema --json` only when constructing or repairing an unknown request shape.

@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "releaseId": "skills-2026-09-07.1-agent-onboarding-recovery",
+  "title": "A smoother start. Fewer interruptions.",
+  "summary": "Get to know PostPlus on first install, connect your account from a browser, and keep working through updates when it is safe to continue.",
+  "highlights": [
+    "First-time installation includes a concise product introduction; later updates show release-specific changes without repeating the welcome.",
+    "Compatible updates can resume the original command once. If new agent instructions are required or verification fails, PostPlus explains why it stopped.",
+    "Login opens your browser by default and keeps a clickable link available. Connect once; the CLI confirms success only after saving and validating the connection.",
+    "Insufficient-credit errors include the relevant personal or team billing link, with agent guidance to resume existing work rather than blindly submit it again.",
+    "Safer concurrent updates and credential saving, with Windows npm command handling that preserves arguments and reports failures clearly.",
+    "Agents can correct an unambiguous local command mistake once before remote work starts; generated examples use supported command arguments."
+  ]
+}

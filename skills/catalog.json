@@ -1,6 +1,32 @@
 {
   "schemaVersion": 2,
-  "releaseId": "skills-2026-08-29.1-research-run-recovery",
+  "releaseId": "skills-2026-09-07.1-agent-onboarding-recovery",
+  "productBrief": {
+    "schemaVersion": 1,
+    "paragraphs": [
+      "Marketing should not begin with a maze of tools. It should begin with an ambition.",
+      "PostPlus is building a new way for founders, marketers, and teams to work with AI—not as a chatbot that simply offers ideas, but as a capable marketing partner that can move real work forward.",
+      "Today, PostPlus brings together 42 specialized marketing skills spanning research, strategy, creative production, and publishing. Its research coverage includes 8 major channels and signal sources—TikTok, Instagram, YouTube, Facebook, X, Reddit, Pinterest, and Google Trends—alongside workflows for competitor analysis, audience insight, short-form video, images, voice, transcription, campaign briefs, and reports.",
+      "Simply describe what you want to achieve. PostPlus helps your AI agent choose the right path, gather reliable signals, turn evidence into useful work, and preserve the results—so every project can build on what came before.",
+      "Next, we’re expanding PostPlus to support multiple brands and accounts in one place, connect and understand advertising accounts, recommend improvements, and safely carry out changes after your approval. Shared workspaces, roles, reviews, and approvals will also make it easier for teams to collaborate without losing context or control.",
+      "Human judgment remains at the center. You set the direction, approve important decisions, and make the final call. PostPlus helps with everything required to get there.",
+      "Our ambition is simple: give individuals and lean teams the operating power of a much larger marketing organization—without adding more tools, handoffs, or noise."
+    ]
+  },
+  "releaseNotes": {
+    "schemaVersion": 1,
+    "releaseId": "skills-2026-09-07.1-agent-onboarding-recovery",
+    "title": "A smoother start. Fewer interruptions.",
+    "summary": "Get to know PostPlus on first install, connect your account from a browser, and keep working through updates when it is safe to continue.",
+    "highlights": [
+      "First-time installation includes a concise product introduction; later updates show release-specific changes without repeating the welcome.",
+      "Compatible updates can resume the original command once. If new agent instructions are required or verification fails, PostPlus explains why it stopped.",
+      "Login opens your browser by default and keeps a clickable link available. Connect once; the CLI confirms success only after saving and validating the connection.",
+      "Insufficient-credit errors include the relevant personal or team billing link, with agent guidance to resume existing work rather than blindly submit it again.",
+      "Safer concurrent updates and credential saving, with Windows npm command handling that preserves arguments and reports failures clearly.",
+      "Agents can correct an unambiguous local command mistake once before remote work starts; generated examples use supported command arguments."
+    ]
+  },
   "source": "PostPlusAI/postplus-skills",
   "skills": [
     {
