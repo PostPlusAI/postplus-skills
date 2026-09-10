@@ -64,7 +64,7 @@ Return a compact route artifact:
   missing and guessing would change the result.
 - Do not choose a provider, endpoint key, runner, or storyboard format here.
 - Do not submit generation jobs.
-- If an owned CLI or script command fails, report the exact error and stop. Do
+- If an owned CLI or script command still fails after any bounded recovery allowed by the executing PostPlus skill, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, fallback providers, or unpublished tools.
 
@@ -80,7 +80,7 @@ Return a compact route artifact:
 
 - Choose the smallest matching command or workflow from the user input and run
   it directly.
-- If an owned CLI or script command fails, report the exact error and stop. Do
+- If an owned CLI or script command still fails after any bounded recovery allowed by the executing PostPlus skill, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, fallback providers, or unpublished tools.
 - This public skill is instruction-driven. Produce the route artifact directly

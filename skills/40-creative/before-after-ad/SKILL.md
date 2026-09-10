@@ -30,7 +30,7 @@ Read the smallest useful source context first:
 - prior reference-video analysis or benchmark notes when relevant
 
 If the user supplies raw reference videos without an analysis, use
-`video-analysis` first. Do not infer style from filenames, thumbnails, or a
+`media-analysis` first. Do not infer style from filenames, thumbnails, or a
 single frame.
 
 Lock these before writing:

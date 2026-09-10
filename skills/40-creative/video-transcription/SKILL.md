@@ -12,7 +12,7 @@ metadata:
 ## Use When
 - The input is a video file and the goal is speech extraction, timed transcript,
   caption generation, multilingual transcript, or edit-prep timestamps.
-- Use `video-analysis` instead when the user needs semantic visual analysis.
+- Use `media-analysis` instead when the user needs semantic visual analysis.
 
 ## Do Not Use When
 - The task belongs to ideation, QA, or another released skill listed in the handoff section.
@@ -47,7 +47,7 @@ metadata:
 ## Stop Conditions
 - Stop when required user intent, source evidence, or owned input artifacts are
   missing and guessing would change the result.
-- If an owned CLI or script command fails, report the exact error and stop. Do
+- If an owned CLI or script command still fails after any bounded recovery allowed by the executing PostPlus skill, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, alternate execution paths, or unpublished tools.
 
@@ -56,7 +56,7 @@ metadata:
 - Choose the smallest matching command or workflow from the user input and run
   it directly.
 - Readiness diagnostics: `postplus doctor --skill video-transcription`.
-- If an owned CLI or script command fails, report the exact error and stop. Do
+- If an owned CLI or script command still fails after any bounded recovery allowed by the executing PostPlus skill, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, alternate execution paths, or unpublished tools.
 - Use `postplus media schema --json` only when you need the full endpoint, flag,
@@ -75,4 +75,10 @@ postplus media transcribe transcription-video \
   --wait \
   --output ./result.json
 ```
+
+**Bounded recovery:** Current PostPlus CLIs handle a compatible update and retry the command once when no agent-session restart is required. If an older CLI only reports that an update is required, run `postplus update` and retry once under the same condition. For a missing or invalid CLI session, run `postplus auth login` yourself; it opens the browser by default. Immediately share its exact URL as a clickable link for the user to **Connect**, then retry the original command once only after the CLI confirms success. Never ask the user to run the command or enter/compare a code, approve the connection for them, or automatically restart a cancelled/expired login. For a local usage rejection before remote work starts, use that command's `--help` to make one unambiguous correction from existing user input and retry once.
+
+If PostPlus returns `postplus_cli_balance_required` with an `open_url` user action, give the user its exact label and URL and stop for account action. Do not invent a checkout link, claim whether provider work or charging occurred, or blindly resubmit after payment; continue from the command's documented status or checkpoint once the user confirms credits are available.
+
+Otherwise stop and report the exact error. Never expose login polling secrets, resubmit an operation when remote work may have started, change user intent, bypass approval, switch providers, rewrite payloads, or make a second recovery attempt. After success, briefly say that PostPlus updated, using only the official update details PostPlus reported.
 <!-- END GENERATED EXECUTION EXAMPLE -->

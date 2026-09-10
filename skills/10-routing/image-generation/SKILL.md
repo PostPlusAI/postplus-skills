@@ -79,7 +79,7 @@ Return:
 - Stop when required user intent, source evidence, or owned input artifacts are
   missing and guessing would change the result.
 - Do not let `image-batch-runner` make creative classification decisions.
-- If an owned CLI or script command fails, report the exact error and stop. Do
+- If an owned CLI or script command still fails after any bounded recovery allowed by the executing PostPlus skill, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, fallback providers, or unpublished tools.
 
@@ -87,7 +87,7 @@ Return:
 
 - Choose the smallest matching command or workflow from the user input and run
   it directly.
-- If an owned CLI or script command fails, report the exact error and stop. Do
+- If an owned CLI or script command still fails after any bounded recovery allowed by the executing PostPlus skill, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, fallback providers, or unpublished tools.
 - This public skill is instruction-driven. Produce the controller handoff

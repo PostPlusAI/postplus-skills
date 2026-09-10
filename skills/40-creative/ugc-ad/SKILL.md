@@ -19,7 +19,7 @@ Use one route at a time. Do not flatten every UGC pattern into the same talking-
 
 - If the user wants ideas, recommendations, or a brief, return a `UGC Direction` and a compact beat outline. Stop before a full shot script unless requested.
 - If the user wants a script, return a `UGC Direction`, shot table, production locks, and one approval checkpoint.
-- If the user provides an existing video for review, use `$video-analysis` first and audit it against the closest route. Do not rewrite or enter production unless asked.
+- If the user provides an existing video for review, use `$media-analysis` first and audit it against the closest route. Do not rewrite or enter production unless asked.
 
 ## Workflow
 
@@ -109,7 +109,7 @@ Pass the approved shot script, `UGC Direction`, selected route, product facts, c
 
 ## Review Mode
 
-After `$video-analysis`, return:
+After `$media-analysis`, return:
 
 - factual shot structure and product first-appearance time
 - closest route and template reference

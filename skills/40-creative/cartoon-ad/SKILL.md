@@ -28,7 +28,7 @@ approval checkpoint, and direct production handoff after approval.
 
 Use when the user supplies an existing animated ad and asks whether it fits this grammar or how it should improve.
 
-Use `$video-analysis` first to obtain observable shot and audio evidence. Then return:
+Use `$media-analysis` first to obtain observable shot and audio evidence. Then return:
 
 - factual structure and offer first-appearance time
 - a `Strong / Partial / Weak / Missing` grammar audit with timecodes

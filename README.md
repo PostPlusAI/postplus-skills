@@ -32,23 +32,51 @@ Requires Node.js and npm.
 
 ```bash
 npm install -g @postplus/cli@latest
+postplus install
 postplus auth login
-POSTPLUS_AGENT_TARGETS="claude-code codex cursor github-copilot windsurf trae trae-cn openclaw hermes-agent"
-for agent in $POSTPLUS_AGENT_TARGETS; do
-  npx -y skills add PostPlusAI/postplus-skills --global --full-depth --skill '*' --agent "$agent" --yes
-done
-postplus skills verify
 ```
+
+`postplus auth login` opens your system browser and waits for you to connect
+PostPlus. If you are already signed in there, you can approve the connection
+directly. The CLI always prints the real login URL, so an agent can share it or
+you can open it yourself if the browser does not launch.
+
+```text
+Opening browser for authentication...
+If browser does not open, visit:
+<your PostPlus login URL>
+Waiting for approval...
+Successfully authenticated.
+```
+
+For a remote terminal or CI, use `postplus auth login --no-browser` to print the
+URL without trying to open a browser. Browser launch failures show a clear
+message and keep waiting for approval through that URL. The wait is bounded by
+the login request's expiry; cancellation, expiry, or an invalid approval payload
+stops without starting another login. The CLI atomically saves approved credentials,
+confirms delivery to activate the session, then validates cloud access before
+reporting success. If delivery cannot be confirmed, it keeps the saved credentials
+and reports the uncertainty instead of claiming success. Use `postplus auth validate`
+to check cloud access; `postplus auth status` only inspects local credentials.
 
 If you explicitly do not want global skills, run the install from the target
-project directory and omit `--global`:
+project directory:
 
 ```bash
-POSTPLUS_AGENT_TARGETS="claude-code codex cursor github-copilot windsurf trae trae-cn openclaw hermes-agent"
-for agent in $POSTPLUS_AGENT_TARGETS; do
-  npx -y skills add PostPlusAI/postplus-skills --full-depth --skill '*' --agent "$agent" --yes
-done
+postplus install --current-directory
 ```
+
+Run `postplus update` for maintenance. From a project with PostPlus Skills,
+it updates that project; otherwise it updates global Skills. If both are
+installed, only the current project is updated. `--current-directory` explicitly
+targets the current directory, including a first installation there.
+
+Each installation keeps its own verified release record. Switching projects or
+moving a project preserves that installation's record. `postplus status` and
+`postplus skills verify` check the selected installation without upgrading its
+record merely because skill names match. Installations created by an older CLI
+need one `postplus update` to establish their own verified release; another
+project's or global installation's version cannot stand in for it.
 
 Useful checks:
 
@@ -88,17 +116,21 @@ runtime cache and logs stay under `PostPlus Studio/.postplus/`.
 
 ## The Vision
 
-PostPlus is built for a world where one marketer, founder, operator, or agency strategist can work with an AI agent as if they had a larger marketing team around them.
+<!-- BEGIN POSTPLUS PRODUCT BRIEF -->
+Marketing should not begin with a maze of tools. It should begin with an ambition.
 
-The goal is not to replace marketing judgment. The goal is to make the repeatable parts of marketing more structured:
+PostPlus is building a new way for founders, marketers, and teams to work with AI—not as a chatbot that simply offers ideas, but as a capable marketing partner that can move real work forward.
 
-- finding public signals
-- comparing channels, creators, products, and content angles
-- turning research into briefs, scripts, captions, subtitles, images, videos, reports, and outreach lists
-- publishing or handing work off through Feishu, Google Workspace, social tools, email, or local files
-- improving the result through experiments, feedback, and performance analysis
+Today, PostPlus brings together 41 specialized marketing skills spanning research, strategy, creative production, and publishing. Its research coverage includes 8 major channels and signal sources—TikTok, Instagram, YouTube, Facebook, X, Reddit, Pinterest, and Google Trends—alongside workflows for competitor analysis, audience insight, short-form video, images, voice, transcription, campaign briefs, and reports.
 
-PostPlus gives the agent durable marketing workflows so it does not improvise from a blank page every time.
+Simply describe what you want to achieve. PostPlus helps your AI agent choose the right path, gather reliable signals, turn evidence into useful work, and preserve the results—so every project can build on what came before.
+
+Next, we’re expanding PostPlus to support multiple brands and accounts in one place, connect and understand advertising accounts, recommend improvements, and safely carry out changes after your approval. Shared workspaces, roles, reviews, and approvals will also make it easier for teams to collaborate without losing context or control.
+
+Human judgment remains at the center. You set the direction, approve important decisions, and make the final call. PostPlus helps with everything required to get there.
+
+Our ambition is simple: give individuals and lean teams the operating power of a much larger marketing organization—without adding more tools, handoffs, or noise.
+<!-- END POSTPLUS PRODUCT BRIEF -->
 
 ## Who This Is For
 

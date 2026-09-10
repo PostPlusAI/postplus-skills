@@ -19,7 +19,7 @@ Treat commercial polish as controlled product behavior, framing, motion, edit, a
 
 - If the user wants ideas, recommendations, or a brief, return a `Commercial Direction` and compact beat outline. Stop before a full shot script unless requested.
 - If the user wants a script, return a `Commercial Direction`, shot table, production locks, and one approval checkpoint.
-- If the user provides an existing video for review, use `$video-analysis` first and audit it against the closest mechanism. Do not rewrite or enter production unless asked.
+- If the user provides an existing video for review, use `$media-analysis` first and audit it against the closest mechanism. Do not rewrite or enter production unless asked.
 
 ## Workflow
 
@@ -107,7 +107,7 @@ Pass the approved shot script, `Commercial Direction`, selected mechanism, produ
 
 ## Review Mode
 
-After `$video-analysis`, return:
+After `$media-analysis`, return:
 
 - factual shot structure and product first-appearance time
 - closest mechanism and template reference

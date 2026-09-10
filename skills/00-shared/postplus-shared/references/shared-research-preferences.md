@@ -52,7 +52,7 @@ Default execution order:
   quotations, or approved marketplace exports
 - YouTube channel and video research -> `youtube-research`
 - Facebook page and post research -> `facebook-research`
-- Hook, structure, and why content works -> `video-analysis`
+- Hook, structure, and why content works -> `media-analysis`
 
 ## Chaining Rule
 
@@ -98,7 +98,7 @@ If the route is already clear, do not stop to ask.
 ## Video Analysis Proactive Ask
 
 When the user wants to analyze a specific video — hook, structure, shots, or
-why it works — ask if they want to use `video-analysis` before falling back to
+why it works — ask if they want to use `media-analysis` before falling back to
 generic analysis. Skip the ask only if the user already named the skill.
 
 ## Failure Pattern To Avoid

@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "releaseId": "skills-2026-09-09.2-unified-integration",
+  "title": "Connected work, recoverable media tasks.",
+  "summary": "Connect your account, continue safely through compatible updates, and keep media reports and visual evidence together with clear progress and recovery steps.",
+  "highlights": [
+    "First-time installation includes a concise product introduction; later updates show release-specific changes without repeating the welcome.",
+    "Compatible updates can resume the original command once. If new agent instructions are required or verification fails, PostPlus explains why it stopped.",
+    "Login opens your browser by default and keeps a clickable link available. Connect once; the CLI confirms success only after saving and validating the connection.",
+    "Insufficient-credit errors include the relevant personal or team billing link, with agent guidance to resume existing work rather than blindly submit it again.",
+    "Safer concurrent updates and credential saving, with Windows npm command handling that preserves arguments and reports failures clearly.",
+    "Agents can correct an unambiguous local command mistake once before remote work starts; generated examples use supported command arguments.",
+    "Media analysis combines video reports, native image posts, and real frame evidence in one skill; missing visual evidence is listed and recovered separately without automatically buying another analysis.",
+    "Media recovery keeps the original task identity. Unknown outcomes remain explicit, and confirmed reports are retained while billing or missing evidence is resolved."
+  ]
+}

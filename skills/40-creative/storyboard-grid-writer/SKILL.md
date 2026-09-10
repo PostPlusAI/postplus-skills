@@ -94,7 +94,7 @@ Main drift risks:
   missing and guessing would change the result.
 - Do not create execution JSON or submit renders.
 - Do not let a runner infer storyboard logic from generic prompt adjectives.
-- If an owned CLI or script command fails, report the exact error and stop. Do
+- If an owned CLI or script command still fails after any bounded recovery allowed by the executing PostPlus skill, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, alternate execution paths, or unpublished tools.
 
@@ -107,7 +107,7 @@ Main drift risks:
 
 - Choose the smallest matching command or workflow from the user input and run
   it directly.
-- If an owned CLI or script command fails, report the exact error and stop. Do
+- If an owned CLI or script command still fails after any bounded recovery allowed by the executing PostPlus skill, report the exact error and stop. Do
   not bypass the failure with metadata-only answers, readiness probing, local
   payload rewrites, alternate execution paths, or unpublished tools.
 - This public skill is instruction-driven. Produce the storyboard artifact

@@ -15,7 +15,7 @@ architect, preflight report, reference contract, or model-specific submitter.
 
 ## Workflow
 
-1. Read the brief and inspect the supplied media. Use `video-analysis` first only
+1. Read the brief and inspect the supplied media. Use `media-analysis` first only
    when understanding an existing video materially changes the new render.
 2. Run `postplus media schema --json`, choose the smallest released endpoint
    whose input roles match the job, then load its exact fields with `postplus
@@ -54,7 +54,7 @@ architect, preflight report, reference contract, or model-specific submitter.
    --skill video-batch-runner`.
 9. Return the actual result, downloaded media or result path, endpoint, prompt,
    submitted media roles, and run handle. Send the finished render to
-   `video-analysis` or `creative-qa` only when final media QA is requested.
+   `media-analysis` or `creative-qa` only when final media QA is requested.
 
 ## Execution Rules
 
@@ -94,4 +94,10 @@ postplus media create video-kling-v3-0-pro-text \
   --wait \
   --output ./result.json
 ```
+
+**Bounded recovery:** Current PostPlus CLIs handle a compatible update and retry the command once when no agent-session restart is required. If an older CLI only reports that an update is required, run `postplus update` and retry once under the same condition. For a missing or invalid CLI session, run `postplus auth login` yourself; it opens the browser by default. Immediately share its exact URL as a clickable link for the user to **Connect**, then retry the original command once only after the CLI confirms success. Never ask the user to run the command or enter/compare a code, approve the connection for them, or automatically restart a cancelled/expired login. For a local usage rejection before remote work starts, use that command's `--help` to make one unambiguous correction from existing user input and retry once.
+
+If PostPlus returns `postplus_cli_balance_required` with an `open_url` user action, give the user its exact label and URL and stop for account action. Do not invent a checkout link, claim whether provider work or charging occurred, or blindly resubmit after payment; continue from the command's documented status or checkpoint once the user confirms credits are available.
+
+Otherwise stop and report the exact error. Never expose login polling secrets, resubmit an operation when remote work may have started, change user intent, bypass approval, switch providers, rewrite payloads, or make a second recovery attempt. After success, briefly say that PostPlus updated, using only the official update details PostPlus reported.
 <!-- END GENERATED EXECUTION EXAMPLE -->

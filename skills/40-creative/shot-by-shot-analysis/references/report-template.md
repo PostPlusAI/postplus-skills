@@ -12,12 +12,22 @@ Use this exact top-level structure:
 
 ## Video 1: <source label>
 
-| timecode | visual | framing/composition | camera motion | subject/action | product/prop relationship | lighting/color | edit rhythm | sound/music | speech/text | emotional state | production purpose |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+### Beat 01 · <timecode> · <observable change>
+
+- **Visual / setting:** <scene evidence>; **framing:** <shot size, angle,
+  composition>; **lighting / color:** <observable treatment>
+- **Motion / action:** camera=<movement>; subject=<movement>;
+  product/props=<state and relationship>
+- **Edit / sound:** <cut, speed, continuity, music, SFX, ambience>
+- **Speech / text:** <actual wording or explicit absence>; capture=<status>
+- **Emotional state:** <observable cue or inference>; confidence=<level>
+- **Production purpose:** <inference tied to evidence>; confidence=<level>
+
+<!-- Repeat the complete beat block through the end of the source. -->
 
 ## Video 2: <source label>
 
-<!-- Repeat the complete table for every source. -->
+<!-- Repeat complete, isolated beat evidence for every source. -->
 
 ## Style Grammar Report
 

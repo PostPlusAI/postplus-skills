@@ -17,8 +17,8 @@ synthesize only after every source has been inspected.
 
 ## Execution Boundary
 
-- Use `video-analysis` for actual video understanding. Analyze each source in a
-  separate request with the same shot-table contract.
+- Use `media-analysis` for actual video understanding. Analyze each source in a
+  separate request with the same canonical beat-evidence contract.
 - Do not generate images, videos, prompts, workflows, or execution requests.
 - Do not infer video content from metadata, filenames, transcripts, thumbnails,
   or general knowledge when the footage itself has not been inspected.
@@ -33,29 +33,29 @@ synthesize only after every source has been inspected.
    shared style theory while analyzing later videos.
 3. Segment by observable shot or meaningful continuous beat. Use start-end
    timecodes. Mark approximate boundaries when exact timing is uncertain.
-4. Complete the shot table for the current video before interpreting its broader
-   purpose. Describe visible and audible evidence before inference.
-5. Verify that the table covers the full usable duration, preserves shot order,
-   and does not invent speech, sound, motion, products, or production intent.
-6. Repeat until every video has a complete table.
-7. Compare all completed tables. Separate recurring grammar from one-off details
-   and unique recognizable elements.
+4. Complete the beat-evidence blocks for the current video before interpreting
+   its broader purpose. Describe visible and audible evidence before inference.
+5. Verify that the blocks cover the full usable duration, preserve source order,
+   and do not invent speech, sound, motion, products, or production intent.
+6. Repeat until every video has complete beat evidence.
+7. Compare all completed evidence sets. Separate recurring grammar from one-off
+   details and unique recognizable elements.
 8. Write the Style Grammar Report with concrete rules, supporting source and
    timecode references, recurrence, and confidence.
 9. Add a compact downstream handoff section. Preserve the style logic without
    turning it into final prompts or execution requests.
 
-## Shot Table Contract
+## Beat Evidence Contract
 
-Use this exact column order for every video:
-
-`timecode | visual | framing/composition | camera motion | subject/action | product/prop relationship | lighting/color | edit rhythm | sound/music | speech/text | emotional state | production purpose`
+For each source, preserve the complete `media-analysis` Section 4
+`Shot-By-Shot Evidence` blocks. Use `references/report-template.md` for the
+exact fields; do not convert them into a wide table or omit any field.
 
 Apply these rules:
 
 - Describe what is visible and audible before interpreting it.
-- Keep `visual` factual. Put inferred narrative or commercial function only in
-  `production purpose`.
+- Keep visual evidence factual. Put inferred narrative or commercial function
+  only in `production purpose`.
 - Describe framing with production terms such as shot size, angle, headroom,
   subject placement, depth, foreground, and negative space.
 - Distinguish camera movement from subject movement.
@@ -67,10 +67,13 @@ Apply these rules:
   evidence is ambiguous.
 - Use `not present` when a field truly does not occur. Do not fill absence with
   speculation.
+- Use compact tables only for short comparisons. Dense observations and quoted
+  language stay in vertical beat blocks so the report remains readable on
+  narrow screens and in agent context.
 
 ## Synthesis Rules
 
-- Do not average the videos early. Synthesize only from completed shot tables.
+- Do not average the videos early. Synthesize only from completed beat evidence.
 - Treat a pattern as recurring only when supported by more than one source, or
   by repeated independent examples within a source. State the narrower basis.
 - Cite evidence as `<source-label> @ <timecode>`.
@@ -100,7 +103,8 @@ recognizable or source-specific elements under `avoid`, not `must_keep`.
 
 ## Markdown Deliverable
 
-Read `references/report-template.md`. Produce one report with complete source tables, the ordered `Style Grammar Report`, and a concise downstream handoff.
+Produce one report from `references/report-template.md` with complete source
+beat evidence, the ordered `Style Grammar Report`, and a concise handoff.
 
 ## Downstream Handoff
 
@@ -118,16 +122,14 @@ Do not create separate handoff files unless the user explicitly requests them.
 
 Before handoff, confirm:
 
-- every input video has a complete, ordered shot table
-- synthesis begins only after the final table
+- every input video has complete, ordered beat evidence
+- synthesis begins only after the final source evidence set
 - shared claims cite supporting sources and timecodes
 - recurring and one-off details are separated
 - uncertainty is visible rather than silently resolved
 - production-purpose inference is not presented as observation
-- unique identity, brand, private, and recognizable elements are excluded from
-  reusable rules
-- the report is readable by a human and specific enough for downstream prompt
-  construction
+- unique or recognizable identity, brand, and private details stay out of
+  reusable rules; the report remains human-readable and production-specific
 
 ## Stop Conditions
 

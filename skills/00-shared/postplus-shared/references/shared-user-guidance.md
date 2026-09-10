@@ -40,7 +40,7 @@ Use the concrete skill names, not abstract workflow labels.
 
 Good shape:
 
-- "I will first use tiktok-research to collect a small public sample and output a shortlist; after approval, I will pass it to video-analysis for hook and shot breakdown."
+- "I will first use tiktok-research to collect a small public sample and output a shortlist; after approval, I will pass it to media-analysis for hook and shot breakdown."
 - "I will first put the persona lock and source basis into the image-batch-runner request and output a local asset manifest; the next step can go to creative-qa or video-batch-runner."
 
 Do not promise hosted, provider, file-reference, account-connection, or
@@ -93,7 +93,7 @@ Common decomposition templates:
 | User intent | Decomposition |
 |---|---|
 | "Promote this product" | ① Instagram/Meta content proof (social-media-extractor) → ② campaign brief (benchmark-to-brief) → ③ creator shortlist or draft publishing path |
-| "Make a viral video" | ① trend collection (tiktok-research) → ② hook breakdown (video-analysis) when useful → ③ final prompt + video render (video-batch-runner) |
+| "Make a viral video" | ① trend collection (tiktok-research) → ② hook breakdown (media-analysis) when useful → ③ final prompt + video render (video-batch-runner) |
 | "Build a social presence for this brand" | ① Instagram/Meta audit (social-media-extractor) → ② content strategy (benchmark-to-brief) → ③ creative QA and production planning (creative-qa) |
 | "Analyze this account" | ① `instagram-research` account route → ② `instagram-research` audience voice route → ③ `instagram-research` benchmark route |
 
@@ -105,8 +105,8 @@ After completing a skill, offer one concrete downstream skill as the logical
 next step. One suggestion at a time. Don't list all possibilities.
 
 Examples:
-- tiktok-research done → "Want me to break down the hooks and structure of these videos with video-analysis?"
-- video-analysis done → "These insights could feed into a campaign brief via benchmark-to-brief."
+- tiktok-research done → "Want me to break down the hooks and structure of these videos with media-analysis?"
+- media-analysis done → "These insights could feed into a campaign brief via benchmark-to-brief."
 - benchmark-to-brief done → "Brief is ready. Want me to turn it into a video request plan?"
 
 ## First-Use Mini Onboarding
@@ -143,7 +143,7 @@ to disk before continuing.
 
 Good shapes:
 
-- "video-analysis stopped before provider analysis: the upload reached Gemini Files API, but the file never became ACTIVE within the hosted wait window. The real unblocker is provider file activation, not another local retry."
+- "media-analysis stopped before provider analysis: the upload reached Gemini Files API, but the file never became ACTIVE within the hosted wait window. The real unblocker is provider file activation, not another local retry."
 - "image-batch-runner cannot use image-gpt-image-2-text in this release: the skill runner and registry only expose hosted endpoints already present in the PostPlus media-generation catalog."
 - "social-media-publisher preview succeeded, but publishing is still approval-gated; no post was sent."
 - "I can see the pasted image in this conversation, but this Codex session has not exposed the original image bytes or a local file path to tools. Please save the image locally or provide its path, then I can upload that real file."

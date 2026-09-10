@@ -28,7 +28,7 @@ checks, one approval checkpoint, and direct handoff after approval.
 
 Use when the user supplies an existing ad and asks whether it fits this grammar or how it should improve.
 
-Use `$video-analysis` first to obtain observable shot and audio evidence. Then return:
+Use `$media-analysis` first to obtain observable shot and audio evidence. Then return:
 
 - factual structure, hook, product timing, proof, and ending status
 - a timecoded `Strong / Partial / Weak / Missing` audit

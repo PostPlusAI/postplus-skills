@@ -15,7 +15,7 @@ Classify the request by the object the user already has:
   audio extraction are not provided on the current public surface. Say so and
   stop that lane; do not improvise a downloader, proxy, or cookie path
 - `Local video or audio files`: route through `media-router` into
-  transcription, subtitles, or `video-analysis`
+  transcription, subtitles, or `media-analysis`
 
 Do not treat any obtained audio as commercially cleared unless the user
 confirms rights or platform-licensed use.
@@ -30,7 +30,7 @@ Use this default chain for TikTok music research:
 3. Stop at sample video URLs. Downloading those videos or extracting reference
    audio is not provided on the current public surface; hand the URL list to
    the user.
-4. `video-analysis`: analyze structure, hook, pacing, visual pattern, and usage
+4. `media-analysis`: analyze structure, hook, pacing, visual pattern, and usage
    context for videos the user provides as local files.
 5. `audio-transcription` or `video-transcription`: transcribe lyrics, speech, or
    voiceover from user-provided files when needed.
@@ -113,7 +113,7 @@ Use `tiktok-research` with this workflow when music fit must be judged against b
 
 Use `tiktok-research` paid ads separately when the request is about paid ads or Creative Center ads. Do not infer organic music trends from ad-only data unless the user asks for paid creative context.
 
-Use `video-analysis` only on the shortlisted strongest samples the user has provided as local files. Do not run semantic video analysis over broad unscreened trend results.
+Use `media-analysis` only on the shortlisted strongest samples the user has provided as local files. Do not run semantic video analysis over broad unscreened trend results.
 
 Use `media-router` when the user gives local files and the needed output is unclear. Let it choose transcription, subtitle packaging, semantic analysis, or edit prep.
 

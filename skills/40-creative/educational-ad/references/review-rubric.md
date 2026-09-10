@@ -1,6 +1,6 @@
 # Review Rubric
 
-Use this reference after `$video-analysis` supplies observable shot and audio evidence.
+Use this reference after `$media-analysis` supplies observable shot and audio evidence.
 
 ## Evidence First
 

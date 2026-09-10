@@ -58,7 +58,7 @@ Use these routes:
 - supply-side product or supplier data -> user-provided supplier sheets,
   quotations, or approved marketplace exports
 - cross-source sourcing judgment -> `sourcing-selection`
-- Hook, structure, and why content works -> `video-analysis`
+- Hook, structure, and why content works -> `media-analysis`
 - Creative benchmark adaptation -> `benchmark-to-brief`
 
 If no supply-chain or finance skill exists yet, state the missing layer clearly and avoid false confidence.
