@@ -1,13 +1,8 @@
----
-name: shot-by-shot-analysis
-description: Inspect multiple reference or benchmark videos shot by shot, record observable visual and audio evidence independently for each source, then synthesize their recurring short-form style grammar, one-off details, imitation boundaries, and generator risks in one human-readable Markdown report. Use before image prompt construction, video request architecture, Seedance workflow creation, or batch media generation when reference footage defines the desired production language.
-metadata:
-  postplus:
-    familyId: media-production
-    familyName: Media and Creative Production
----
 
-# Shot-by-Shot Analysis
+# Multi-source and detailed shot analysis
+
+Read only when the user requests multi-reference comparison or detailed shot-by-shot
+evidence. Ordinary single-video questions do not require this report.
 
 ## Purpose
 
@@ -17,13 +12,13 @@ synthesize only after every source has been inspected.
 
 ## Execution Boundary
 
-- Use `media-analysis` for actual video understanding. Analyze each source in a
+- Use this skill’s video analysis command for actual understanding. Analyze each source in a
   separate request with the same canonical beat-evidence contract.
 - Do not generate images, videos, prompts, workflows, or execution requests.
 - Do not infer video content from metadata, filenames, transcripts, thumbnails,
   or general knowledge when the footage itself has not been inspected.
 - Keep raw hosted responses and temporary request records internal. Deliver one
-  Markdown report named `<case>-shot-by-shot-analysis.md`.
+  Markdown report named `<case>-shot-evidence.md`.
 
 ## Workflow
 
@@ -48,7 +43,7 @@ synthesize only after every source has been inspected.
 ## Beat Evidence Contract
 
 For each source, preserve the complete `media-analysis` Section 4
-`Shot-By-Shot Evidence` blocks. Use `references/report-template.md` for the
+`Shot-By-Shot Evidence` blocks. Use the report template below for the
 exact fields; do not convert them into a wide table or omit any field.
 
 Apply these rules:
@@ -103,7 +98,7 @@ recognizable or source-specific elements under `avoid`, not `must_keep`.
 
 ## Markdown Deliverable
 
-Produce one report from `references/report-template.md` with complete source
+Produce one report from the report template below with complete source
 beat evidence, the ordered `Style Grammar Report`, and a concise handoff.
 
 ## Downstream Handoff
@@ -112,9 +107,7 @@ Keep the handoff concise and derived from the report:
 
 - **Image Generation:** Extract static framing, subject state, scene, lighting, palette, product placement, `must_keep`, `can_vary`, and `avoid`. Hand this to creative planning before `image-batch-runner`.
 - **Video Prompt Architecture:** Extract camera language, movement, edit rhythm, sound, speech posture, emotional progression, product behavior, continuity, and generator risks before `video-batch-runner`.
-- **Workflow Creation:** Provide the full report as source evidence. Compile its
-  rules into positive, executable scene carriers and explicit reference jobs;
-  do not paste analysis language or imitation warnings into model prompts.
+- **Repeated production:** Retain the report as source evidence; do not treat a report as an executable workflow or hosted result.
 
 Do not create separate handoff files unless the user explicitly requests them.
 
@@ -138,3 +131,70 @@ Before handoff, confirm:
   synthesis.
 - If the hosted analysis command fails, report the exact error and do not replace
   video evidence with guesses.
+
+## Report template
+
+Use this exact top-level structure:
+
+```markdown
+# <Case> Shot-by-Shot Analysis
+
+## Sources
+
+| source | duration | source basis | notes |
+| --- | ---: | --- | --- |
+
+## Video 1: <source label>
+
+### Beat 01 · <timecode> · <observable change>
+
+- **Visual / setting:** <scene evidence>; **framing:** <shot size, angle,
+  composition>; **lighting / color:** <observable treatment>
+- **Motion / action:** camera=<movement>; subject=<movement>;
+  product/props=<state and relationship>
+- **Edit / sound:** <cut, speed, continuity, music, SFX, ambience>
+- **Speech / text:** <actual wording or explicit absence>; capture=<status>
+- **Emotional state:** <observable cue or inference>; confidence=<level>
+- **Production purpose:** <inference tied to evidence>; confidence=<level>
+
+<!-- Repeat the complete beat block through the end of the source. -->
+
+## Video 2: <source label>
+
+<!-- Repeat complete, isolated beat evidence for every source. -->
+
+## Style Grammar Report
+
+### 1. core_human_state
+**Shared rule:**
+**Evidence:**
+**Recurrence:**
+**Confidence:**
+
+<!-- Repeat for all required dimensions. -->
+
+## Downstream Handoff
+
+### Image Generation
+### Video Prompt Architecture
+### Repeated production
+```
+
+The Style Grammar Report must contain these dimensions in order:
+
+1. `core_human_state`
+2. `camera_language`
+3. `framing_rules`
+4. `movement_rules`
+5. `edit_rhythm`
+6. `lighting_and_color`
+7. `sound_world`
+8. `speech_and_tone`
+9. `text_and_subtitle_behavior`
+10. `product_or_prop_behavior`
+11. `proof_style`
+12. `scene_world`
+13. `must_keep`
+14. `can_vary`
+15. `avoid`
+16. `generator_risks`

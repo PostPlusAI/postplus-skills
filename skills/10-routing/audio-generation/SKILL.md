@@ -1,6 +1,6 @@
 ---
 name: audio-generation
-description: Control audio generation requests before execution. Use this when the user asks for TTS, persona voice, voice change, translated dub, cloned voice take, podcast audio, or lip-sync audio handoff and the skill must classify the request before handing execution to voice-batch-runner or a video workflow.
+description: Plan TTS, voice cloning, voice change, translated dub, or lip-sync audio. Resolve voice and reference policy before handing a ready request to voice-batch-runner.
 metadata:
   postplus:
     familyId: routing-contracts
@@ -17,12 +17,11 @@ metadata:
 - The next decision is audio task class, reference policy, and runner handoff.
 
 ## Do Not Use When
-- The user only needs transcription, subtitles, or audio analysis. Use
-  `media-router`.
+- The user needs speech-to-text from existing audio. Use `audio-transcription`;
+  use its local subtitle reference when an existing timed transcript needs subtitle files.
 - The voice request is already normalized for execution. Use
   `voice-batch-runner`.
-- The final work is a full video production pipeline. Use `video-batch-runner` or
-  `ugc-flow` after the audio handoff is clear.
+- The final work is a full video production pipeline. Use `video-batch-runner` after the audio handoff is clear.
 
 ## Core Boundary
 This is the audio generation controller. It does not submit jobs.
@@ -53,7 +52,7 @@ invent voice strategy, translation policy, or lip-sync intent.
 
 | If not audio-generation | Send to |
 | --- | --- |
-| Transcribe or analyze existing audio | `media-router` |
+| Transcribe existing audio | `audio-transcription` |
 | Need generated image/video around audio | `video-batch-runner` |
 | Need normalized hosted voice execution | `voice-batch-runner` |
 | Need lip-sync video after audio | `video-batch-runner` |
@@ -73,18 +72,14 @@ Return:
 - Stop when required user intent, source evidence, or owned input artifacts are
   missing and guessing would change the result.
 - Do not ask `voice-batch-runner` to decide the creative role of the voice.
-- If an owned CLI or script command still fails after any bounded recovery allowed by the executing PostPlus skill, report the exact error and stop. Do
-  not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, fallback providers, or unpublished tools.
+
 
 ## Public Command Boundary
 
 - Choose the smallest matching command or workflow from the user input and run
   it directly.
-- If an owned CLI or script command still fails after any bounded recovery allowed by the executing PostPlus skill, report the exact error and stop. Do
-  not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, fallback providers, or unpublished tools.
+
 - This public skill is instruction-driven. Produce the controller handoff
   artifact directly from the available evidence.
 - Do not call private provider/runtime paths or unpublished local tools.
-- If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.
+- If the CLI returns a quote-confirmation challenge, obtain user approval for its scope and cost before running `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

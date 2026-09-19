@@ -1,6 +1,6 @@
 ---
 name: postplus-workspace
-description: Initialize and operate a durable local PostPlus creative workspace across product onboarding, research, strategy, test planning, production, launch, and learning. Use when starting or resuming a PostPlus project folder, checking stage readiness, maintaining approved product and campaign context, or routing repeated work through current PostPlus skills and CLI capabilities.
+description: Maintain a project folder with approved product facts, campaign context, and reusable results. Use for ongoing work, not required for one-off tasks.
 metadata:
   postplus:
     familyId: workspace-publishing
@@ -10,8 +10,9 @@ metadata:
 # PostPlus Workspace
 
 Turn one resolved project folder into the durable context and control surface for
-repeated PostPlus work. Use `postplus-shared` first for shared public rules,
-source-of-truth guidance, work-folder handling, and local dependency handling.
+repeated PostPlus work. Reuse confirmed brand, product, persona, and campaign
+facts; do not require workspace setup for a one-off task. Read only task-relevant
+facts, keep approved claims distinct from ideas, and change them only in scope.
 This skill owns workspace orchestration. Specialist PostPlus skills own domain
 judgment. The current PostPlus CLI and server own schemas, validation, cost,
 permissions, and provider execution.
@@ -48,7 +49,9 @@ permissions, and provider execution.
 
 1. Resolve the exact target folder and inspect existing files.
 2. Run `postplus doctor --skill postplus-workspace --json`. Follow
-   `postplus-shared` if the Python 3 dependency is missing.
+   its concrete action if Python 3 is missing; if no executable action is
+   supplied, report the dependency and affected task and stop. Do not guess
+   a package manager, install command, or administrator permission.
 3. Resolve this installed skill directory and run:
 
 ```text
@@ -88,7 +91,8 @@ intended campaign.
    [context-schema.md](references/context-schema.md).
 4. Run the workspace stage check before high-impact execution.
 5. Read the selected specialist skill completely.
-6. Read current CLI help or schema immediately before CLI execution.
+6. Read current CLI help or schema only when the selected skill leaves a
+   required argument unclear.
 7. Continue from recorded state instead of recreating prior work.
 
 If no workspace exists, offer initialization. Do not scatter project files into
@@ -131,10 +135,5 @@ OUTPUTS: <created or updated artifacts>
 NEXT: <one next action>
 ```
 
-## Resources
-
-- [context-schema.md](references/context-schema.md): ownership and loading rules
-- [stage-gates.md](references/stage-gates.md): stage and approval gates
-- [uncertainty-policy.md](references/uncertainty-policy.md): ask, assume, and repair boundaries
-- `assets/project-template/`: workspace and campaign templates
-- `scripts/workspace.py`: non-destructive initialization and local stage checks
+Workspace and campaign templates are in `assets/project-template/`.
+The commands above use the non-destructive `scripts/workspace.py` entrypoint.

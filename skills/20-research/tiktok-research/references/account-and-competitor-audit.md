@@ -4,8 +4,6 @@ Use when the user gives TikTok accounts, brands, competitors, or profiles and
 wants a public account readout, competitor comparison, positioning check, or
 content shortlist for deeper research.
 
-Apply `shared-contract.md` for public surface, route semantics, bounds,
-evidence labeling, and output discipline.
 
 ## User Jobs
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import fs from "node:fs";
+import { assertNoRetiredPublicSkillReferences } from "./lib/retired-public-skills.mjs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -19,22 +20,11 @@ const SKILLS_ROOT = fs.existsSync(PUBLIC_SKILLS_ROOT)
   : path.join(REPO_ROOT, "skills");
 const VENDORED_SUPPORT_DIR = "_" + "postplus_shared";
 
-const REQUIRED_SHARED_RULEBOOK_FILES = [
-  "shared-ads-workflow.md",
-  "shared-product-selection-preferences.md",
-  "shared-public-skill-rules.md",
-  "shared-research-preferences.md",
-  "shared-source-of-truth-files.md",
-  "shared-tiktok-music-workflow.md",
-  "shared-user-guidance.md",
-];
 const REMOVED_INDEX_FILE = "INDEX" + ".md";
 
 const SHARED_MARKDOWN_PATH_PATTERN =
   /\$\{CLAUDE_SKILL_DIR\}\/_[^/) \n]*postplus[^/) \n]*shared\/shared-[^`) \n]+\.md/g;
 const CLAUDE_SKILL_PATH_PATTERN = /\$\{CLAUDE_SKILL_DIR\}\/([^\s`)]+)/g;
-const SHARED_PRINCIPLE_PATTERN =
-  /public skill rules|research preferences|product-selection preferences|source-of-truth files|TikTok music workflow|ads workflow|user guidance/i;
 const PRIVATE_RUNTIME_PATTERN = new RegExp(
   [
     "postplus_workspace" + "_runtime",
@@ -104,19 +94,6 @@ if (fs.existsSync(path.join(SKILLS_ROOT, REMOVED_INDEX_FILE))) {
   report(errors, `${toRepoPath(path.join(SKILLS_ROOT, REMOVED_INDEX_FILE))}: removed navigation index is not part of the public skill contract.`);
 }
 
-const sharedRulebookRoot = path.join(
-  SKILLS_ROOT,
-  "00-shared",
-  "postplus-shared",
-  "references",
-);
-for (const fileName of REQUIRED_SHARED_RULEBOOK_FILES) {
-  const requiredPath = path.join(sharedRulebookRoot, fileName);
-  if (!fs.existsSync(requiredPath)) {
-    report(errors, `${toRepoPath(requiredPath)}: required shared rulebook is missing.`);
-  }
-}
-
 const skillFiles = walkFiles(SKILLS_ROOT, (filePath) =>
   filePath.endsWith("SKILL.md"),
 );
@@ -150,17 +127,23 @@ for (const skillFile of skillFiles) {
 for (const markdownFile of markdownFiles) {
   const text = fs.readFileSync(markdownFile, "utf8");
   const repoPath = toRepoPath(markdownFile);
+  try {
+    assertNoRetiredPublicSkillReferences(text, repoPath);
+  } catch (error) {
+    report(errors, error.message);
+  }
+
   const sharedMarkdownMatches = text.match(SHARED_MARKDOWN_PATH_PATTERN) || [];
   for (const match of sharedMarkdownMatches) {
     report(
       errors,
-      `${repoPath}: uses removed shared markdown path ${match}; use postplus-shared instead.`,
+      `${repoPath}: uses removed shared markdown path ${match}; use the owning skill or public CLI command.`,
     );
   }
   if (/skills\/shared-[^) \n]+\.md/.test(text)) {
     report(
       errors,
-      `${repoPath}: links to removed root shared markdown; use postplus-shared instead.`,
+      `${repoPath}: links to removed root shared markdown; use the owning skill or public CLI command.`,
     );
   }
   const removedIndexPattern = new RegExp(
@@ -209,7 +192,6 @@ for (const markdownFile of markdownFiles) {
   const skillsPath = toSkillsPath(markdownFile);
   if (
     skillsPath.includes("/references/") &&
-    !skillsPath.startsWith("00-shared/postplus-shared/references/") &&
     !indexedBusinessReferences.has(skillsPath)
   ) {
     report(
@@ -223,17 +205,6 @@ for (const skillFile of skillFiles) {
   const text = fs.readFileSync(skillFile, "utf8");
   const repoPath = toRepoPath(skillFile);
   const skillDir = path.dirname(skillFile);
-
-  if (
-    !repoPath.endsWith("00-shared/postplus-shared/SKILL.md") &&
-    SHARED_PRINCIPLE_PATTERN.test(text) &&
-    !text.includes("postplus-shared")
-  ) {
-    report(
-      errors,
-      `${repoPath}: mentions shared principles but does not declare postplus-shared.`,
-    );
-  }
 
   for (const match of text.matchAll(CLAUDE_SKILL_PATH_PATTERN)) {
     const reference = normalizeReference(match[1]);
@@ -254,7 +225,7 @@ const vendoredSharedMarkdown = walkFiles(SKILLS_ROOT, (filePath) =>
 for (const filePath of vendoredSharedMarkdown) {
   report(
     errors,
-    `${toRepoPath(filePath)}: vendored shared support is not part of the public contract; use postplus-shared references or public CLI commands.`,
+    `${toRepoPath(filePath)}: vendored shared support is not part of the public contract; use skill-owned references or public CLI commands.`,
   );
 }
 

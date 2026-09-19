@@ -13,4 +13,6 @@ postplus research run pinterest-search --query "minimalist workspace" --kind all
 Normalize usable results to `{ image_url, pin_url, title }`, prefer the
 full-resolution image, deduplicate by image URL, and discard records without an
 image. Empty or sparse results are evidence gaps, not permission to silently
-change the query or source. Stop on hard errors.
+change the query or source.
+
+Follow the CLI action for execution failures; successful but insufficient evidence follows the quality limits in this skill’s SKILL.md.

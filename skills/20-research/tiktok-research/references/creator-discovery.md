@@ -4,8 +4,6 @@ Use when the user wants TikTok creators, UGC makers, affiliates, KOL/KOC lists,
 profile enrichment, or outreach-ready creator shortlists from public TikTok
 evidence.
 
-Apply `shared-contract.md` for public surface, route semantics, bounds,
-evidence labeling, and output discipline.
 
 ## User Jobs
 

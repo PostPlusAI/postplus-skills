@@ -1,6 +1,6 @@
 ---
 name: audio-transcription
-description: Transcribe local or remote audio into durable text and timestamp artifacts through PostPlus. Use this when the job is speech-to-text from audio files and you need request/response persistence, optional timestamps, and subtitle-ready outputs.
+description: Transcribe local or remote audio into text and timestamps. Convert an existing timed transcript locally into SRT or ASS without another transcription job.
 metadata:
   postplus:
     familyId: media-production
@@ -16,8 +16,11 @@ metadata:
 - Use `video-transcription` for video inputs and `media-analysis` for semantic
   video understanding.
 
+If a timed transcript already exists and only subtitle output is requested,
+skip transcription and read the local subtitle conversion reference.
+
 ## Do Not Use When
-- The task belongs to ideation, QA, or another released skill listed in the handoff section.
+- The task needs new creative generation or visual analysis rather than speech or subtitles.
 - Required inputs are missing and guessing would change the result.
 
 ## Execution Boundary
@@ -42,28 +45,23 @@ metadata:
   user-facing transcript exports outside `.postplus`.
 
 ## Handoff
-- If status is pending, return the manifest path, the `output.data.id` generation
-  handle, and the poll command `postplus media poll --handle <output.data.id>`
-  (waits in-command up to 45s per invocation; rerun while pending). Do not keep
-  the conversation open just to poll.
-- When completed, hand off downloaded artifacts and `normalizedTranscriptPath`
-  to `subtitle-packager` if SRT/ASS is needed.
+- If status is pending, preserve the result path and follow the CLI-returned
+  action or resume command for the same operation. Do not submit another job.
+  Stop and report when the CLI wait/recovery boundary is reached.
+- When SRT/ASS is requested, use the actual timed transcript and read
+  [local subtitle conversion](references/subtitles.md). Convert locally without
+  another hosted request; do not invent a CLI export command.
 
 ## Stop Conditions
 - Stop when required user intent, source evidence, or owned input artifacts are
   missing and guessing would change the result.
-- If an owned CLI or script command still fails after any bounded recovery allowed by the executing PostPlus skill, report the exact error and stop. Do
-  not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, alternate execution paths, or unpublished tools.
 
 ## Public Command Boundary
 
 - Choose the smallest matching command or workflow from the user input and run
   it directly.
 - Readiness diagnostics: `postplus doctor --skill audio-transcription`.
-- If an owned CLI or script command still fails after any bounded recovery allowed by the executing PostPlus skill, report the exact error and stop. Do
-  not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, alternate execution paths, or unpublished tools.
+
 - Use `postplus media schema --json` only when you need the full endpoint, flag,
   and enum contract or are repairing an unknown request shape.
 - Run the hosted transcription job with the generated command below; do not use
@@ -80,11 +78,9 @@ postplus media transcribe transcription \
   --output ./result.json
 ```
 
-**Bounded recovery:** Current PostPlus CLIs handle a compatible update and retry the command once when no agent-session restart is required. If an older CLI only reports that an update is required, run `postplus update` and retry once under the same condition. For a missing or invalid CLI session, run `postplus auth login` yourself; it opens the browser by default. Immediately share its exact URL as a clickable link for the user to **Connect**, then retry the original command once only after the CLI confirms success. Never ask the user to run the command or enter/compare a code, approve the connection for them, or automatically restart a cancelled/expired login. For a local usage rejection before remote work starts, use that command's `--help` to make one unambiguous correction from existing user input and retry once.
-
-If PostPlus returns `postplus_cli_balance_required` with an `open_url` user action, give the user its exact label and URL and stop for account action. Do not invent a checkout link, claim whether provider work or charging occurred, or blindly resubmit after payment; continue from the command's documented status or checkpoint once the user confirms credits are available.
-
-Otherwise stop and report the exact error. Never expose login polling secrets, resubmit an operation when remote work may have started, change user intent, bypass approval, switch providers, rewrite payloads, or make a second recovery attempt. After success, briefly say that PostPlus updated, using only the official update details PostPlus reported.
+Follow the CLI's structured result and reported next action; do not infer recovery from free-text messages.
+Wait for explicit user approval when requested; an action does not authorize spending, publishing, or overwriting.
+Resume the same operation through its returned checkpoint or action; never resubmit uncertain work, repeat exhausted recovery, or switch providers to bypass failure.
 <!-- END GENERATED EXECUTION EXAMPLE -->
 
-- If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.
+- If the CLI returns a quote-confirmation challenge, obtain user approval for its scope and cost before running `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

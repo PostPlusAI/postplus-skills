@@ -1,6 +1,6 @@
 ---
 name: street-interview-ad
-description: Design and audit street-interview advertising concepts and shot scripts built around a public conversation, visible microphone, candid respondent state, question-led persuasion, product interaction, and grounded proof. Use for street interview ads, vox-pop ads, man-on-the-street ads, sidewalk interview ads, public reaction ads, interview-style direct-response ads, converting an offer or approved brief into a street-interview script, reviewing an existing street-interview ad, or handing an approved street-interview concept to image or video production.
+description: Design or review street-interview and vox-pop ads using candid conversation, a clear question, product interaction, and grounded proof.
 metadata:
   postplus:
     familyId: media-production

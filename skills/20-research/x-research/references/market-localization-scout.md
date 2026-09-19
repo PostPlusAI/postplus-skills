@@ -3,7 +3,6 @@
 Use for language, region, market, cross-border, local-angle, or localized
 creator/content comparisons.
 
-Apply `shared-contract.md` first.
 
 ## Run
 

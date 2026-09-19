@@ -3,8 +3,6 @@
 Use when the user wants public TikTok organic videos, hooks, formats, hashtags,
 competitor content, related examples, or category creative patterns.
 
-Apply `shared-contract.md` for public surface, route semantics, bounds,
-evidence labeling, and output discipline.
 
 ## User Jobs
 

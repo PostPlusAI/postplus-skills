@@ -1,6 +1,6 @@
 ---
 name: benchmark-to-brief
-description: Turn validated benchmark research into campaign briefs and concept candidates for short-form video production. Use this when you already have research artifacts such as reports, master tables, pattern tables, or comment analyses and need to produce fact-grounded briefs, concept lists, hook options, or test plans. This skill must stay anchored to real source data and should not invent angles, personas, or claims that are not supported by the available research.
+description: Turn existing benchmark reports, pattern tables, or audience evidence into grounded campaign briefs, concepts, hooks, and test plans.
 metadata:
   postplus:
     familyId: media-production
@@ -57,9 +57,7 @@ For every recommendation, answer:
 ## Stop Conditions
 - Stop when required user intent, source evidence, or owned input artifacts are
   missing and guessing would change the result.
-- If an owned CLI or script command still fails after any bounded recovery allowed by the executing PostPlus skill, report the exact error and stop. Do
-  not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, fallback providers, or unpublished tools.
+
 
 ## Output Shape
 Common outputs:
@@ -103,6 +101,3 @@ Concept candidate fields:
 
 - Choose the smallest matching command or workflow from the user input and run
   it directly.
-- If an owned CLI or script command still fails after any bounded recovery allowed by the executing PostPlus skill, report the exact error and stop. Do
-  not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, fallback providers, or unpublished tools.

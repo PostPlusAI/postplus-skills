@@ -1,6 +1,6 @@
 ---
 name: reference-decode
-description: Decode benchmark videos, contact sheets, frames, or rough ideas into reusable prompt structure. Use this when you need to extract hook essence, viewer question, must-copy visual grammar, and forbidden drift before writing storyboard or generation prompts.
+description: Turn reference videos, frames, or contact sheets into reusable hook and visual rules for new creative prompts, with clear imitation boundaries.
 metadata:
   postplus:
     familyId: routing-contracts
@@ -56,12 +56,10 @@ The artifact contains `hookEssence`, `viewerQuestion`, `mustCopyVisualGrammar`, 
 ## Stop Conditions
 - Stop when required user intent, source evidence, or owned input artifacts are
   missing and guessing would change the result.
-- If an owned CLI or script command still fails after any bounded recovery allowed by the executing PostPlus skill, report the exact error and stop. Do
-  not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, alternate execution paths, or unpublished tools.
+
 
 ## Handoff
-- Grid or panel plan -> `storyboard-grid-writer`.
+- For a grid or panel plan, preserve the decoded evidence in the requested layout before image generation.
 - Image generation -> `image-batch-runner`.
 - Video generation -> `video-batch-runner`; pass the useful decoded grammar as
   context, not as a second contract file.
@@ -70,9 +68,7 @@ The artifact contains `hookEssence`, `viewerQuestion`, `mustCopyVisualGrammar`, 
 
 - Choose the smallest matching command or workflow from the user input and run
   it directly.
-- If an owned CLI or script command still fails after any bounded recovery allowed by the executing PostPlus skill, report the exact error and stop. Do
-  not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, alternate execution paths, or unpublished tools.
+
 - This public skill is instruction-driven. Produce the artifact described by the workflow directly from the available evidence.
 - Do not use unpublished execution paths or local tools.
-- If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.
+- If the CLI returns a quote-confirmation challenge, obtain user approval for its scope and cost before running `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

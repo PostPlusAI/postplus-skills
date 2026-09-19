@@ -5,14 +5,7 @@ credit guards, and polling.
 
 ## Routes
 
-| Evidence need | Route | Semantic input | First pass |
-| --- | --- | --- | --- |
-| Organic videos | `tiktok-videos` | query/handle/hashtag/URL, country, limit | 20 videos |
-| Comments/audience voice | `tiktok-comments` | repeat `--url`, `--limit` | 1-5 videos, 20 comments |
-| Known profiles | `tiktok-profiles` | repeat `--handle`, `--limit` | 1-5 profiles |
-| Account recall | `tiktok-users` | repeat `--query`, `--limit` | 20 accounts |
-| Related videos | `tiktok-related-videos` | repeat `--url`, country, limit | 20 videos |
-| Paid examples | `tiktok-ads-top` | `--limit` | 20 ads |
+Route names and first-pass bounds are in this skill’s SKILL.md.
 
 Run:
 
@@ -44,10 +37,7 @@ boundary, sample, or deliverable.
 ## Bounds And Recovery
 
 - Start with one route and a small sample; keep each seed/market attributable.
-- On hard auth, network, contract, or service errors, stop with the exact error.
-- On successful but sparse/noisy evidence, apply the shared bounded recovery
-  rule once; do not repeat an identical request or silently expand the approved
-  PostPlus credit scope.
+- Follow the CLI action for execution failures; successful but insufficient evidence follows the quality limits in this skill’s SKILL.md.
 - Resume with `postplus research run --resume-from result.json`; never resubmit.
 
 ## Evidence

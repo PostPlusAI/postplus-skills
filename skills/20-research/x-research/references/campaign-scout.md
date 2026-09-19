@@ -3,7 +3,6 @@
 Use for launches, hashtags, slogans, mentions, brand activity, competitor
 campaigns, public reactions, or a bounded campaign watchlist.
 
-Apply `shared-contract.md` first.
 
 ## Run
 

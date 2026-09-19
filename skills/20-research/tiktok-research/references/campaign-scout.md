@@ -4,8 +4,6 @@ Use when the user wants bounded public TikTok evidence for a campaign, launch,
 hashtag challenge, slogan, branded phrase, competitor activity, seeding wave, or
 watchlist.
 
-Apply `shared-contract.md` for public surface, route semantics, bounds,
-evidence labeling, and output discipline.
 
 ## User Jobs
 

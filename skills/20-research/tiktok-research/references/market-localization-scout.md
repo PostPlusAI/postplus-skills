@@ -4,8 +4,6 @@ Use when the user wants to compare TikTok public evidence across markets,
 regions, languages, or buyer contexts for cross-border marketing or ecommerce
 localization.
 
-Apply `shared-contract.md` for public surface, route semantics, bounds,
-evidence labeling, and output discipline.
 
 ## User Jobs
 

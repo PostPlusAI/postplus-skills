@@ -1,25 +1,12 @@
 # Facebook Shared Contract
 
-Read this before every route. Keep research public, bounded, attributable, and
+Read this only for platform-specific scope or evidence questions not covered by SKILL.md. Keep research public, bounded, attributable, and
 useful to the user's decision. PostPlus owns execution, credit guards, and
 polling.
 
 ## Routes
 
-| Evidence need | Route | Semantic input | First pass |
-| --- | --- | --- | --- |
-| Public page/profile posts | `facebook-profile-posts` | `--url`, `--limit` | 1-5 URLs, 20 posts |
-| Direct post evidence | `facebook-post-by-url` | `--url` | 1-10 URLs |
-| Public group posts | `facebook-group-posts` | `--url`, `--limit` | 1-3 groups, 20 posts |
-| Ad-library creative | `facebook-ads-library` | `--query`, `--country`, `--status`, `--limit` | 20 ads |
-| Post/reel comments | `facebook-comments` | `--url`, `--limit` | 1-5 URLs, 20 comments |
-| Public group discussion | `facebook-groups` | `--url`, optional `--query`, `--limit` | 20 posts |
-| Events/local activity | `facebook-events` | `--query` or `--url`, `--limit` | 10 events |
-| Marketplace listings | `facebook-marketplace` | `--url`, `--limit` | 10 listings |
-| Page identity | `facebook-pages` | `--url` | 1-5 pages |
-| Rich page/profile posts | `facebook-posts` | `--url`, `--limit` | 20 posts |
-| Reels | `facebook-reels` | `--url`, `--limit` | 20 reels |
-| Broad public search | `facebook-search` | `--category`, `--location`, `--limit` | 20 results |
+Route names and first-pass bounds are in this skill’s SKILL.md.
 
 Run:
 
@@ -42,9 +29,7 @@ privacy boundary, sample, or deliverable. Do not ask for implementation details.
 
 - Start with one route and the smallest useful sample.
 - Keep independent sources separately attributable.
-- On hard auth, network, contract, or service errors, stop with the exact error.
-- On a successful but sparse/noisy result, apply
-  `postplus-shared/research-quality-recovery.md` once within the same bound.
+- Follow the CLI action for execution failures; successful but insufficient evidence follows the quality limits in this skill’s SKILL.md.
 - Resume a pending checkpoint with
   `postplus research run --resume-from result.json`; never resubmit it.
 

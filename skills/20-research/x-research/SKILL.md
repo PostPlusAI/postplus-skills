@@ -1,6 +1,6 @@
 ---
 name: x-research
-description: Route and run bounded public X research for posts, threads and replies, account audits, organic benchmarks, audience voice, creator discovery, campaign scouting, and market localization.
+description: Research public X posts, threads, replies, and accounts for audience language, creator discovery, competitor benchmarks, and campaign evidence.
 metadata:
   postplus:
     familyId: x
@@ -12,14 +12,11 @@ metadata:
 Use this as the X research entrypoint when the user needs public evidence for a
 marketing, creator, audience, competitor, campaign, or localization decision.
 
-Apply shared rulebook and user-guidance rules from `postplus-shared`.
-When a supported command completes but evidence is empty, sparse, noisy,
-off-topic, or the wrong record type, apply the `postplus-shared` reference
-`research-quality-recovery.md`; hard execution errors still fail fast.
 
 ## Reference Index
 
-Always apply `references/shared-contract.md` before running a route.
+Read only the one route reference matching the request. The local contract is
+optional detail when platform scope remains unclear.
 
 | User asks for | Apply |
 | --- | --- |
@@ -29,7 +26,7 @@ Always apply `references/shared-contract.md` before running a route.
 | Creators, experts, operators, partners, profile verification | `references/creator-discovery.md` |
 | Launch, hashtag, mention, brand or competitor campaign | `references/campaign-scout.md` |
 | Market, region, language, or cross-border comparison | `references/market-localization-scout.md` |
-| Profile facts only | Apply `references/shared-contract.md`, then use `x-profiles` for known accounts or `x-user-search` for recall |
+| Profile facts only | Use `x-profiles` for known accounts or `x-user-search` for recall |
 | Private accounts, DMs, hidden analytics, full follower graphs, ad spend, targeting, conversion, or ROAS | Stop or ask for a supported public X scope |
 | Cross-platform request | Run only the X lane here; hand off other platforms |
 
@@ -53,14 +50,10 @@ fields, private exports, cookies, or retry strategy.
 ## Run Discipline
 
 1. Route the request with the table above.
-2. Apply `references/shared-contract.md`.
-3. Apply the selected workflow reference.
-4. Run the narrowest collection chain that answers the first pass.
-5. Stop after the first pass and report scope, evidence, limits, and next action.
+2. Read only the selected workflow reference.
+3. Run the narrowest collection chain that answers the first pass.
+4. Stop after the first pass and report scope, evidence, limits, and next action.
 
-Result record shapes are documented in the `postplus-shared` reference
-`dataset-item-schemas.md`; consult it before processing results, and inspect one
-real record only to verify.
 
 Do not present a bounded sample as full-platform truth. Use only the public
 filters shown by the selected route.
@@ -79,9 +72,31 @@ filters shown by the selected route.
 - Keep the first pass bounded. If a command still fails after any bounded
   recovery allowed by the executing PostPlus skill, report the exact error and
   stop; do not silently swap sources or invent missing data.
-- If the CLI returns a quote-confirmation challenge, run
+- If the CLI returns a quote-confirmation challenge, obtain user approval for its scope and cost before running
   `postplus quote confirm --json --challenge-file <challenge.json>` and retry
   with the returned token.
+
+## Command Selection
+
+| Need | Route | Flags |
+| --- | --- | --- |
+| Posts, timelines, direct URLs, replies | `x-posts` | repeat query/handle/URL, sort, limit |
+| Known account facts | `x-profiles` | repeat handle, limit |
+| Keyword account recall | `x-user-search` | repeat query, limit |
+
+Only if platform scope or evidence interpretation remains unclear, consult
+[platform contract](references/shared-contract.md); it is not a preflight.
+
+## Evidence Quality
+
+1. Check whether evidence is a post, reply, or profile; a search snippet cannot establish the contents of a full conversation.
+2. Prefer direct public URLs or verified handles; change one supported query, date, or language constraint if recall misses.
+3. Allow at most two changed follow-up passes after successful but insufficient results, within approved scope and budget; do not repeat an identical request or hide a failed/pending operation.
+4. Stop when sufficient, at the bound, or when another pass would not help. Report useful evidence and uncertainty; preserve raw results and source links.
+
+Visible metrics are observations, not reach or conversion; account search recall is not verified identity.
+Full machine fields belong to `postplus research schema --route <route> --json`;
+consult it only when required for processing, not before every request.
 
 <!-- BEGIN GENERATED EXECUTION EXAMPLE -->
 ```bash
@@ -90,9 +105,7 @@ postplus research run x-posts \
   --output ./result.json
 ```
 
-**Bounded recovery:** Current PostPlus CLIs handle a compatible update and retry the command once when no agent-session restart is required. If an older CLI only reports that an update is required, run `postplus update` and retry once under the same condition. For a missing or invalid CLI session, run `postplus auth login` yourself; it opens the browser by default. Immediately share its exact URL as a clickable link for the user to **Connect**, then retry the original command once only after the CLI confirms success. Never ask the user to run the command or enter/compare a code, approve the connection for them, or automatically restart a cancelled/expired login. For a local usage rejection before remote work starts, use that command's `--help` to make one unambiguous correction from existing user input and retry once.
-
-If PostPlus returns `postplus_cli_balance_required` with an `open_url` user action, give the user its exact label and URL and stop for account action. Do not invent a checkout link, claim whether provider work or charging occurred, or blindly resubmit after payment; continue from the command's documented status or checkpoint once the user confirms credits are available.
-
-Otherwise stop and report the exact error. Never expose login polling secrets, resubmit an operation when remote work may have started, change user intent, bypass approval, switch providers, rewrite payloads, or make a second recovery attempt. After success, briefly say that PostPlus updated, using only the official update details PostPlus reported.
+Follow the CLI's structured result and reported next action; do not infer recovery from free-text messages.
+Wait for explicit user approval when requested; an action does not authorize spending, publishing, or overwriting.
+Resume the same operation through its returned checkpoint or action; never resubmit uncertain work, repeat exhausted recovery, or switch providers to bypass failure.
 <!-- END GENERATED EXECUTION EXAMPLE -->

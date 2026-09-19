@@ -1,6 +1,6 @@
 ---
 name: google-trends-research
-description: Research Google Trends search-intent signals for topic discovery, keyword momentum, regional interest, and rising queries without treating search trends as the same thing as platform content heat or marketplace demand.
+description: Research Google Trends keyword momentum, regional interest, and related queries. Use search-interest evidence without treating it as sales or total demand.
 metadata:
   postplus:
     familyId: marketplace-sourcing
@@ -12,10 +12,6 @@ metadata:
 Use this skill for Google Trends platform-data work: topic discovery, keyword
 momentum, regional interest, rising queries, and search-intent watchlists.
 
-Apply shared rulebook and user-guidance rules from `postplus-shared`.
-When a supported command completes but evidence is empty, sparse, noisy,
-off-topic, or the wrong record type, apply the `postplus-shared` reference
-`research-quality-recovery.md`; hard execution errors still fail fast.
 
 ## Core Rule
 
@@ -43,6 +39,17 @@ Use `google-trends-fast` with one `--query`, a country, and a time range.
 PostPlus locks the route to keyword analysis so the Agent only supplies research
 intent.
 
+## Evidence Quality
+
+1. Check that term, country, and time window match the question before comparing trends.
+2. Refine one query, region, or time window when a completed pass is too sparse; do not mix incomparable scopes.
+3. Allow at most two changed follow-up passes after successful but insufficient results, within approved scope and budget; do not repeat an identical request or hide a failed/pending operation.
+4. Stop when sufficient, at the bound, or when another pass would not help. Report useful evidence and uncertainty; preserve raw results and source links.
+
+Relative search interest is not absolute search volume, purchases, or full market demand.
+Full machine fields belong to `postplus research schema --route <route> --json`;
+consult it only when required for processing, not before every request.
+
 <!-- BEGIN GENERATED EXECUTION EXAMPLE -->
 ```bash
 postplus research run google-trends-fast \
@@ -51,11 +58,9 @@ postplus research run google-trends-fast \
   --output ./result.json
 ```
 
-**Bounded recovery:** Current PostPlus CLIs handle a compatible update and retry the command once when no agent-session restart is required. If an older CLI only reports that an update is required, run `postplus update` and retry once under the same condition. For a missing or invalid CLI session, run `postplus auth login` yourself; it opens the browser by default. Immediately share its exact URL as a clickable link for the user to **Connect**, then retry the original command once only after the CLI confirms success. Never ask the user to run the command or enter/compare a code, approve the connection for them, or automatically restart a cancelled/expired login. For a local usage rejection before remote work starts, use that command's `--help` to make one unambiguous correction from existing user input and retry once.
-
-If PostPlus returns `postplus_cli_balance_required` with an `open_url` user action, give the user its exact label and URL and stop for account action. Do not invent a checkout link, claim whether provider work or charging occurred, or blindly resubmit after payment; continue from the command's documented status or checkpoint once the user confirms credits are available.
-
-Otherwise stop and report the exact error. Never expose login polling secrets, resubmit an operation when remote work may have started, change user intent, bypass approval, switch providers, rewrite payloads, or make a second recovery attempt. After success, briefly say that PostPlus updated, using only the official update details PostPlus reported.
+Follow the CLI's structured result and reported next action; do not infer recovery from free-text messages.
+Wait for explicit user approval when requested; an action does not authorize spending, publishing, or overwriting.
+Resume the same operation through its returned checkpoint or action; never resubmit uncertain work, repeat exhausted recovery, or switch providers to bypass failure.
 <!-- END GENERATED EXECUTION EXAMPLE -->
 
 ## Default Workflow
@@ -67,9 +72,6 @@ Otherwise stop and report the exact error. Never expose login polling secrets, r
 5. Separate observation from inference.
 6. Hand off to platform or marketplace research if deeper evidence is needed.
 
-The result record shape for the route is documented in the
-`postplus-shared` reference `dataset-item-schemas.md`; consult it before
-writing result-processing code, and probe a single record only to verify.
 
 Keep query briefs, raw trend payloads, normalized outputs, and watchlist caches
 under `.postplus/google-trends/`; keep final summaries or shortlist exports
@@ -98,20 +100,19 @@ missing evidence layer.
 - TikTok content heat or hook patterns -> `tiktok-research`.
 - Instagram creator, account, or campaign scouting ->
   `instagram-research`.
-- Instagram/Meta content proof -> `social-media-extractor`.
-- Cross-source sourcing or selection judgment -> `sourcing-selection`.
+- Instagram/Meta content proof -> `instagram-research` or `facebook-research`.
+- For cross-source decisions, synthesize the evidence for the user’s task;
+  do not treat search interest alone as a sourcing recommendation.
 
 ## Public Command Boundary
 
 - Choose the smallest matching command or workflow from the user input and run
   it directly.
 - Readiness diagnostics: `postplus doctor --skill google-trends-research`.
-- If an owned CLI or script command still fails after any bounded recovery allowed by the executing PostPlus skill, report the exact error and stop. Do
-  not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, alternate services, or unpublished tools.
+
 - Inspect flags with `postplus research run google-trends-fast --help` only when
   needed.
 - Run `postplus research run google-trends-fast --query <term> --country <code>
   --time-range <window> --wait --output <result.json>`.
 - Preview and approval boundaries stay explicit; do not execute irreversible publishing without the required approval artifact.
-- If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.
+- If the CLI returns a quote-confirmation challenge, obtain user approval for its scope and cost before running `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

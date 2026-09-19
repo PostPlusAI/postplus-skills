@@ -4,8 +4,6 @@ Use when the user wants public TikTok comment language: objections, questions,
 pain points, praise, purchase intent, comparison language, FAQ, phrase bank, or
 copy insights.
 
-Apply `shared-contract.md` for public surface, route semantics, bounds,
-evidence labeling, and output discipline.
 
 ## User Jobs
 
@@ -62,7 +60,7 @@ separate outputs. If videos must be shortlisted first, collect comments after
 the shortlist exists.
 
 For account comment research, use the known-account request card in
-`shared-contract.md`, filter returned videos by the requested time window, then
+the command selection in SKILL.md, filter returned videos by the requested time window, then
 run `tiktok-comments` on the selected `webVideoUrl` values. Do not inspect
 fixtures or product code to rediscover this path.
 

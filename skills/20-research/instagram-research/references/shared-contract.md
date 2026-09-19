@@ -5,14 +5,7 @@ execution, credit guards, and polling.
 
 ## Routes
 
-| Evidence need | Route | Semantic input | First pass |
-| --- | --- | --- | --- |
-| Known account facts | `instagram-profiles` | repeat `--handle`, `--limit` | 1-5 accounts |
-| Recent account posts | `instagram-posts` | repeat `--handle`, `--limit` | 20 posts |
-| Comments/audience voice | `instagram-comments` | repeat `--url`, `--limit` | 1-5 posts, 20 comments |
-| Hashtag/campaign sample | `instagram-hashtags` | repeat `--hashtag`, `--kind`, `--limit` | 20 items |
-| Brand/account/topic recall | `instagram-search` | repeat `--query`, `--kind`, `--limit` | 20 results |
-| Public contact signals | `instagram-email-search` | repeat `--handle` | Narrow shortlist |
+Route names and first-pass bounds are in this skill’s SKILL.md.
 
 Run:
 
@@ -48,10 +41,7 @@ sample, or deliverable.
 - Start with one route and a small sample; keep each seed attributable.
 - For an organic benchmark, start with `10-15` items per theme, account,
   hashtag, or query and no more than `3-5` broad seeds.
-- On hard auth, network, contract, or service errors, stop with the exact error.
-- On successful but sparse/noisy evidence, apply the shared bounded recovery
-  rule once; do not repeat an identical request or silently expand the approved
-  PostPlus credit scope.
+- Follow the CLI action for execution failures; successful but insufficient evidence follows the quality limits in this skill’s SKILL.md.
 - Resume with `postplus research run --resume-from result.json`; never resubmit.
 
 ## Evidence

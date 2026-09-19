@@ -3,11 +3,12 @@
 The public tree keeps category directories for discovery. Runtime ownership is
 simpler:
 
-- `generation-router` makes only the first image/video/audio/workflow split.
+- Discover the concrete image, audio, video, or workflow skill directly.
 - Creative and ad-format skills may produce a brief, script, or storyboard.
 - `image-batch-runner`, `video-batch-runner`, and `voice-batch-runner` interpret
   the approved context, choose from current PostPlus schema, and execute.
-- `creative-qa` judges returned media when QA is requested.
+- Each creative skill checks its own result against the approved brief; use
+  `media-analysis` when deeper visual or audio inspection is needed.
 
 For video, `video-batch-runner` is the single generation entrypoint. It owns
 model selection, final per-clip prompts, media-role decisions, local upload,

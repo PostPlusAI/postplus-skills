@@ -15,8 +15,8 @@ Typical routes:
 
 | Task | Optional preparation | Runner |
 | --- | --- | --- |
-| Image generation/edit | `image-generation`, `reference-decode`, or `storyboard-grid-writer` when useful | `image-batch-runner` |
-| Video from prompt, frames, references, audio, or motion | ad-format skill, `reference-decode`, or `storyboard-grid-writer` when useful | `video-batch-runner` |
+| Image generation/edit | `image-generation` or `reference-decode` when useful | `image-batch-runner` |
+| Video from prompt, frames, references, audio, or motion | ad-format skill or `reference-decode` when useful | `video-batch-runner` |
 | TTS, voice design, or voice clone | `audio-generation` when useful | `voice-batch-runner` |
 | Talking-head video | generate/approve voice first when needed | `voice-batch-runner`, then `video-batch-runner` |
 

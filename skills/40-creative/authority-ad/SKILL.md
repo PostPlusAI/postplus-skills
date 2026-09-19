@@ -1,6 +1,6 @@
 ---
 name: authority-ad
-description: Design or audit evidence-led short-form Authority Ads that use a credible operator, expert, insider, skeptical dialogue, case narrator, or demonstrator to expose a hidden problem mechanism and connect it to approved proof and a product solution. Use for educational ads, expert ads, authority ads, doctor-style or specialist-style ads, podcast ads, interview ads, insider reveals, case-story explainers, problem-mechanism ads, evidence-led VSLs, 专家广告, 权威广告, 科普广告, 采访广告, reviewing an existing authority-led ad, and approved scripts that should proceed to image-batch-runner or video-batch-runner.
+description: Design or review expert-led, insider, case-story, or interview ads that explain a problem mechanism using approved evidence and a credible product solution.
 metadata:
   postplus:
     familyId: media-production

@@ -1,6 +1,6 @@
 ---
 name: video-batch-runner
-description: Generate one or many videos through PostPlus from a brief, script, prompt, image, audio, or reference video. Use for text-to-video, image-to-video, first/last-frame video, multimodal reference video, talking-head video, and motion transfer. The agent chooses the matching released endpoint from current schema, writes one self-contained prompt per clip, submits media by role, waits or resumes, downloads, and hands the render to QA.
+description: Generate videos from briefs, prompts, images, audio, or reference clips. Choose a supported model, submit one or many clips, resume runs, and download results.
 metadata:
   postplus:
     familyId: media-production
@@ -47,14 +47,16 @@ architect, preflight report, reference contract, or model-specific submitter.
    selected endpoint; do not pre-upload media or construct private payloads.
 7. Prefer `--wait` when the expected runtime fits the command budget. If create
    still returns pending, poll the same run with `postplus media poll
-   --handle <output.data.id>`. Re-run that poll while pending; never submit a
-   replacement request merely to check status.
+   --handle <output.data.id>`. Prefer the CLI-returned action or resume command
+   for the same operation. Honor its wait/recovery boundary and never submit
+   a replacement request merely to check status.
 8. When a local final file is needed, download the completed output with
    `postplus media-file download --url <fresh-output-url> --output-file <path>
    --skill video-batch-runner`.
 9. Return the actual result, downloaded media or result path, endpoint, prompt,
    submitted media roles, and run handle. Send the finished render to
-   `media-analysis` or `creative-qa` only when final media QA is requested.
+   `media-analysis` only when deeper final-media inspection is requested;
+   otherwise check the render against the approved brief yourself.
 
 ## Execution Rules
 
@@ -95,9 +97,7 @@ postplus media create video-kling-v3-0-pro-text \
   --output ./result.json
 ```
 
-**Bounded recovery:** Current PostPlus CLIs handle a compatible update and retry the command once when no agent-session restart is required. If an older CLI only reports that an update is required, run `postplus update` and retry once under the same condition. For a missing or invalid CLI session, run `postplus auth login` yourself; it opens the browser by default. Immediately share its exact URL as a clickable link for the user to **Connect**, then retry the original command once only after the CLI confirms success. Never ask the user to run the command or enter/compare a code, approve the connection for them, or automatically restart a cancelled/expired login. For a local usage rejection before remote work starts, use that command's `--help` to make one unambiguous correction from existing user input and retry once.
-
-If PostPlus returns `postplus_cli_balance_required` with an `open_url` user action, give the user its exact label and URL and stop for account action. Do not invent a checkout link, claim whether provider work or charging occurred, or blindly resubmit after payment; continue from the command's documented status or checkpoint once the user confirms credits are available.
-
-Otherwise stop and report the exact error. Never expose login polling secrets, resubmit an operation when remote work may have started, change user intent, bypass approval, switch providers, rewrite payloads, or make a second recovery attempt. After success, briefly say that PostPlus updated, using only the official update details PostPlus reported.
+Follow the CLI's structured result and reported next action; do not infer recovery from free-text messages.
+Wait for explicit user approval when requested; an action does not authorize spending, publishing, or overwriting.
+Resume the same operation through its returned checkpoint or action; never resubmit uncertain work, repeat exhausted recovery, or switch providers to bypass failure.
 <!-- END GENERATED EXECUTION EXAMPLE -->

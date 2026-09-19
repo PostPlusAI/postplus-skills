@@ -1,6 +1,6 @@
 ---
 name: commercial-ad
-description: Design, recommend, or audit short-form product commercials built around one controlled visual mechanism, clear product behavior, designed sound, observable or explicitly metaphorical proof, and a resolved payoff. Use for product commercials, studio product ads, stress tests, CGI ingredient worlds, mystery reveals, satisfying restocks, mini TV spots, editorial try-ons, surreal product ads, commercial briefs, commercial shot scripts, reviewing existing product ads, and approved commercial scripts that should proceed into image or video production.
+description: Design or review product commercials with a controlled visual mechanism, observable product behavior, sound, and payoff. Produce a brief or shot script.
 metadata:
   postplus:
     familyId: media-production

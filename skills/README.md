@@ -1,5 +1,8 @@
 # PostPlus Skills
 
-This directory contains released PostPlus skills. Agents load individual `SKILL.md` files and the shared rulebook under `00-shared/postplus-shared`.
+Agents discover the concrete task skill and read its `SKILL.md`. Read a local
+reference only when its documented branch is needed; ordinary tasks have no
+shared-skill prerequisite.
 
-Machine-readable release metadata lives in `catalog.json`. Agents should rely on skill discovery and each skill's own compact contract.
+`catalog.json` is generated release metadata. For current capabilities and
+onboarding, use `postplus --help`.

@@ -1,6 +1,6 @@
 ---
 name: cartoon-ad
-description: Design and audit visual-argument-led animated ads that turn user pressure, offer interaction, mechanism, and proof into readable characters, props, actions, visual systems, and state changes. Use for Cartoon Ads, animated direct-response ads, stylized 3D or tactile ads, personified problems, category exposes, founder stories, B2B case-character ads, animated software or service ads, product-mechanism visualization, 卡通广告, 动画广告, 3D动画广告, 拟人化广告, B2B动画广告, 把痛点动画化, reviewing an existing animated ad against this grammar, and approved scripts that should proceed into image or video production.
+description: Design or review animated ads that explain a product through visual arguments, metaphors, and grounded proof. Produce a script ready for creative production.
 metadata:
   postplus:
     familyId: media-production

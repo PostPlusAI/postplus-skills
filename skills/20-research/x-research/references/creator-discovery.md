@@ -3,7 +3,6 @@
 Use for creators, experts, operators, journalists, partners, advocates, or
 outreach candidates around a niche, topic, product, account, or campaign.
 
-Apply `shared-contract.md` first.
 
 ## Run
 

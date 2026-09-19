@@ -1,6 +1,6 @@
 ---
 name: educational-ad
-description: Design and audit evidence-led educational short-form ads that turn a viewer problem, question, contradiction, or comparison into a clear explanation, clause-matched visual proof, an earned product or offer entry, and a practical changed state. Use for Educational Ads, explainer ads, expert or spokesperson ads, authority-led ads, ranked or tier-list ads, interview demonstrations, product education, mechanism-led direct-response ads, B2B explainers, animated educational ads, reviewing an existing educational ad, and approved educational scripts that should proceed into image or video production.
+description: Design or review educational and explainer ads that answer a viewer question with clear reasoning, visual evidence, and an earned product introduction.
 metadata:
   postplus:
     familyId: media-production

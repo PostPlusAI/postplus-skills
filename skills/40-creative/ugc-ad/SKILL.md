@@ -1,6 +1,6 @@
 ---
 name: ugc-ad
-description: Design, recommend, or audit creator-led short-form product ads built around direct address, believable product interaction, observable proof, and a natural personal verdict. Use for UGC ads, creator ads, selfie testimonials, product reviews, misconception-led or skeptic-to-believer ads, problem-reframe-proof ads, problem-solution demos, tutorials, unboxings, ASMR unboxings, try-ons, before-and-after ads, social validation, POV concepts, UGC briefs, UGC shot scripts, reviewing existing UGC videos, and approved UGC scripts that should proceed into image or video production.
+description: Design or review creator-led product ads, testimonials, demos, tutorials, unboxings, or POV concepts with believable interaction and approved proof.
 metadata:
   postplus:
     familyId: media-production

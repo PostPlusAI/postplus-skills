@@ -1,6 +1,6 @@
 ---
 name: image-batch-runner
-description: Run fact-grounded image generation batches for short-form video production, especially persona images, first-frame candidates, and light consistency edits. Use this when persona and concept inputs already exist and you need local image assets, prompt records, and durable run metadata. Keep requests anchored to benchmark-backed persona locks and save normalized local asset manifests.
+description: Execute ready image briefs and edits, including product or persona images and batch variants. Use resolved references and return image assets with saved run results.
 metadata:
   postplus:
     familyId: media-production
@@ -66,14 +66,13 @@ metadata:
   command `postplus media poll --handle <output.data.id> --output path/to/generation-result.json`.
   Reuse the exact `--output` path from the initial submit. A completed poll
   atomically replaces the processing JSON at that path with the completed result;
-  rerun the same command while pending (each invocation waits up to 45s).
+  prefer the CLI-returned action or resume command for that same operation,
+  honor its wait/recovery boundary, and never submit a replacement job.
 
 ## Stop Conditions
 - Stop when required user intent, source evidence, or owned input artifacts are
   missing and guessing would change the result.
-- If an owned CLI or script command still fails after any bounded recovery allowed by the executing PostPlus skill, report the exact error and stop. Do
-  not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, alternate execution paths, or unpublished tools.
+
 - Batch canary: before fanning out a batch of independent items, submit item 1
   alone and poll it to a terminal state. If the canary is content-policy
   blocked (the per-item typed code below), record and skip it per batch
@@ -105,11 +104,9 @@ metadata:
 - Readiness diagnostics: `postplus doctor --skill image-batch-runner`.
 - Poll a pending image job: `postplus media poll --handle <output.data.id> --output path/to/generation-result.json`.
   Reuse the initial submit's result path so the completed poll atomically
-  replaces its processing JSON; rerun while pending (each invocation waits up
-  to 45s).
-- If an owned CLI or script command still fails after any bounded recovery allowed by the executing PostPlus skill, report the exact error and stop. Do
-  not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, alternate execution paths, or unpublished tools.
+  replaces its processing JSON. Prefer the returned resume action and stop
+  when the CLI wait/recovery boundary is reached.
+
 - Use `postplus media schema --json` only when you need the full endpoint, flag,
   and enum contract or are repairing an unknown request shape.
 - Run the hosted image job with the generated command below; do not use another
@@ -123,11 +120,9 @@ postplus media create image-gpt-image-2-text \
   --output ./result.json
 ```
 
-**Bounded recovery:** Current PostPlus CLIs handle a compatible update and retry the command once when no agent-session restart is required. If an older CLI only reports that an update is required, run `postplus update` and retry once under the same condition. For a missing or invalid CLI session, run `postplus auth login` yourself; it opens the browser by default. Immediately share its exact URL as a clickable link for the user to **Connect**, then retry the original command once only after the CLI confirms success. Never ask the user to run the command or enter/compare a code, approve the connection for them, or automatically restart a cancelled/expired login. For a local usage rejection before remote work starts, use that command's `--help` to make one unambiguous correction from existing user input and retry once.
-
-If PostPlus returns `postplus_cli_balance_required` with an `open_url` user action, give the user its exact label and URL and stop for account action. Do not invent a checkout link, claim whether provider work or charging occurred, or blindly resubmit after payment; continue from the command's documented status or checkpoint once the user confirms credits are available.
-
-Otherwise stop and report the exact error. Never expose login polling secrets, resubmit an operation when remote work may have started, change user intent, bypass approval, switch providers, rewrite payloads, or make a second recovery attempt. After success, briefly say that PostPlus updated, using only the official update details PostPlus reported.
+Follow the CLI's structured result and reported next action; do not infer recovery from free-text messages.
+Wait for explicit user approval when requested; an action does not authorize spending, publishing, or overwriting.
+Resume the same operation through its returned checkpoint or action; never resubmit uncertain work, repeat exhausted recovery, or switch providers to bypass failure.
 <!-- END GENERATED EXECUTION EXAMPLE -->
 
-- If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.
+- If the CLI returns a quote-confirmation challenge, obtain user approval for its scope and cost before running `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

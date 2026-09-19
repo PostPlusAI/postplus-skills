@@ -1,6 +1,6 @@
 ---
 name: image-generation
-description: Control image generation requests before execution. Use this when the user wants text-to-image, image edit, reference-image generation, product image, persona image, banner, thumbnail, storyboard image, or image batch variants and the skill must identify inputs, classify the task, choose model/reference rules, then hand off to image-batch-runner.
+description: Plan image creation or edits from prompts, products, or references. Resolve task type, model, and reference rules before handing ready requests to image-batch-runner.
 metadata:
   postplus:
     familyId: routing-contracts
@@ -57,9 +57,9 @@ It must:
 
 | If not image-generation | Send to |
 | --- | --- |
-| Needs media understanding first | `media-router` |
+| Needs media understanding first | `media-analysis` |
 | Needs reference meaning decoded | `reference-decode` |
-| Needs storyboard panels | `storyboard-grid-writer` |
+| Needs storyboard panels | Prepare the panel plan here before `image-batch-runner` |
 | Needs execution with normalized request | `image-batch-runner` |
 | Final output is video | `video-batch-runner` |
 | Final output is audio | `audio-generation` |
@@ -79,18 +79,14 @@ Return:
 - Stop when required user intent, source evidence, or owned input artifacts are
   missing and guessing would change the result.
 - Do not let `image-batch-runner` make creative classification decisions.
-- If an owned CLI or script command still fails after any bounded recovery allowed by the executing PostPlus skill, report the exact error and stop. Do
-  not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, fallback providers, or unpublished tools.
+
 
 ## Public Command Boundary
 
 - Choose the smallest matching command or workflow from the user input and run
   it directly.
-- If an owned CLI or script command still fails after any bounded recovery allowed by the executing PostPlus skill, report the exact error and stop. Do
-  not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, fallback providers, or unpublished tools.
+
 - This public skill is instruction-driven. Produce the controller handoff
   artifact directly from the available evidence.
 - Do not call private provider/runtime paths or unpublished local tools.
-- If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.
+- If the CLI returns a quote-confirmation challenge, obtain user approval for its scope and cost before running `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.

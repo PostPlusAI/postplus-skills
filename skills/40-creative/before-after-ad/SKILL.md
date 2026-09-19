@@ -1,6 +1,6 @@
 ---
 name: before-after-ad
-description: Design evidence-led before-and-after short-form ads from product facts, approved proof, reference analysis, or rough concepts. Use for before/after ads, transformation ads, problem-solution-result UGC, skincare/body/wellness routines, visual comparison scripts, or approved before-after scripts that should proceed to image-batch-runner or video-batch-runner.
+description: Design or review before-and-after ads with matched comparisons, approved transformation evidence, and a clear product role. Produce a grounded shot script.
 metadata:
   postplus:
     familyId: media-production

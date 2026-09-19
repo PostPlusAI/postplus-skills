@@ -3,7 +3,6 @@
 Use for public reply language, objections, repeated questions, praise,
 comparisons, misconceptions, FAQ, copy phrases, or buyer-language hypotheses.
 
-Apply `shared-contract.md` first.
 
 ## Run
 

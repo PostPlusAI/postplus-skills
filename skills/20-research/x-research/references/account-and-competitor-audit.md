@@ -2,7 +2,6 @@
 
 Use for known brand, competitor, creator, expert, or partner accounts.
 
-Apply `shared-contract.md` for scope, keys, bounds, and evidence rules.
 
 ## Run
 

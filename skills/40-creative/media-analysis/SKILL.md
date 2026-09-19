@@ -1,6 +1,6 @@
 ---
 name: media-analysis
-description: Analyze a media link, local video or image, or images already in the conversation. Use for full video and audio understanding, native TikTok or Instagram carousel review, visual questions, screenshots, key frames, and timecoded evidence; choose the needed analysis internally.
+description: Analyze videos, images, or carousels with visible and audible evidence. Answer visual questions, inspect frames, or compare references shot by shot when requested.
 metadata:
   postplus:
     familyId: media-production
@@ -11,6 +11,10 @@ metadata:
 
 Analyze the user's link, local file, or visible images and deliver readable
 findings with the actual visual evidence. Choose the necessary work internally.
+
+For multi-reference comparison or requested detailed shot-by-shot evidence, read
+[multi-source shot analysis](references/multi-source-shot-analysis.md). This branch
+keeps sources independent before synthesis; ordinary analysis skips it.
 
 ## Choose the work
 
@@ -38,11 +42,9 @@ postplus media analyze video-analysis \
   --output ./result.md
 ```
 
-**Bounded recovery:** Current PostPlus CLIs handle a compatible update and retry the command once when no agent-session restart is required. If an older CLI only reports that an update is required, run `postplus update` and retry once under the same condition. For a missing or invalid CLI session, run `postplus auth login` yourself; it opens the browser by default. Immediately share its exact URL as a clickable link for the user to **Connect**, then retry the original command once only after the CLI confirms success. Never ask the user to run the command or enter/compare a code, approve the connection for them, or automatically restart a cancelled/expired login. For a local usage rejection before remote work starts, use that command's `--help` to make one unambiguous correction from existing user input and retry once.
-
-If PostPlus returns `postplus_cli_balance_required` with an `open_url` user action, give the user its exact label and URL and stop for account action. Do not invent a checkout link, claim whether provider work or charging occurred, or blindly resubmit after payment; continue from the command's documented status or checkpoint once the user confirms credits are available.
-
-Otherwise stop and report the exact error. Never expose login polling secrets, resubmit an operation when remote work may have started, change user intent, bypass approval, switch providers, rewrite payloads, or make a second recovery attempt. After success, briefly say that PostPlus updated, using only the official update details PostPlus reported.
+Follow the CLI's structured result and reported next action; do not infer recovery from free-text messages.
+Wait for explicit user approval when requested; an action does not authorize spending, publishing, or overwriting.
+Resume the same operation through its returned checkpoint or action; never resubmit uncertain work, repeat exhausted recovery, or switch providers to bypass failure.
 <!-- END GENERATED EXECUTION EXAMPLE -->
 
 Omit `--prompt` for the default shot table and production notes described in

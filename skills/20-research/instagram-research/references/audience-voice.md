@@ -4,8 +4,6 @@ Use when the user wants public Instagram comment language: pain points,
 objections, repeated questions, praise, buying intent, comparison language, FAQ,
 hooks, or copy handoff.
 
-Apply `shared-contract.md` for public surface, route semantics, bounds,
-evidence labeling, and output discipline.
 
 ## User Jobs
 

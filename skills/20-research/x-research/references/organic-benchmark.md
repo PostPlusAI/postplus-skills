@@ -3,7 +3,6 @@
 Use for public posts, hooks, formats, topics, competitors, hashtags, mentions,
 media patterns, or reusable organic content ideas.
 
-Apply `shared-contract.md` first.
 
 ## Run
 

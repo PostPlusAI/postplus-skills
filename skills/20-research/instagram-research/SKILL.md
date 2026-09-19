@@ -1,6 +1,6 @@
 ---
 name: instagram-research
-description: Route and run bounded public Instagram research for account audits, organic benchmarks, audience voice, creator discovery, campaign scouting, and public contact-signal enrichment.
+description: Research public Instagram accounts, posts, Reels, comments, hashtags, and creators for audits, benchmarks, audience voice, or collaboration shortlists.
 metadata:
   postplus:
     familyId: instagram
@@ -13,14 +13,11 @@ Use this as the single Instagram research entrypoint when the user has not
 already chosen a narrower Instagram skill. It routes the request, applies the
 public-surface contract, and runs the smallest supported first pass.
 
-Apply shared rulebook and user-guidance rules from `postplus-shared`.
-When a supported command completes but evidence is empty, sparse, noisy,
-off-topic, or the wrong record type, apply the `postplus-shared` reference
-`research-quality-recovery.md`; hard execution errors still fail fast.
 
 ## Reference Index
 
-Always apply `references/shared-contract.md` before running a route.
+Read only the one route reference matching the request. The local contract is
+optional detail when platform scope remains unclear.
 
 | User asks for | Apply |
 | --- | --- |
@@ -51,18 +48,14 @@ Do not ask for credentials, private exports, or retry strategy.
 ## Run Discipline
 
 1. Route the request with the table above.
-2. Apply `references/shared-contract.md`.
-3. Apply the selected workflow reference.
-4. Run the narrowest collection chain that can answer the first pass.
-5. If execution succeeds but evidence is empty, sparse, noisy, or off-topic,
-   apply the shared bounded research-quality recovery rule; do not repeat the
+2. Read only the selected workflow reference.
+3. Run the narrowest collection chain that can answer the first pass.
+4. If execution succeeds but evidence is empty, sparse, noisy, or off-topic,
+   apply the quality rules below; do not repeat the
    same request or silently expand the approved PostPlus credit scope.
-6. Stop after the bounded first pass and report scope, evidence, limits, and
+5. Stop after the bounded first pass and report scope, evidence, limits, and
    next action.
 
-Result record shapes for every research route are documented in the
-`postplus-shared` reference `dataset-item-schemas.md`; consult it before
-writing result-processing code, and probe a single record only to verify.
 
 Do not present a sample as full-platform truth. Do not add hidden implementation
 fields, analysis notes, unsupported filters, or compatibility fallbacks.
@@ -72,9 +65,7 @@ fields, analysis notes, unsupported filters, or compatibility fallbacks.
 - Choose the smallest matching command or workflow from the user input and run
   it directly.
 - Readiness diagnostics: `postplus doctor --skill instagram-research`.
-- If an owned CLI or script command still fails after any bounded recovery allowed by the executing PostPlus skill, report the exact error and stop. Do
-  not bypass the failure with metadata-only answers, readiness probing, local
-  payload rewrites, alternate services, or unpublished tools.
+
 - Inspect a route with `postplus research run <route> --help` only when its
   semantic flags are not already clear.
 - Run `postplus research run <route> --<semantic flags> --wait --output
@@ -82,7 +73,32 @@ fields, analysis notes, unsupported filters, or compatibility fallbacks.
 - Pass only public handles, URLs, hashtags, search terms, locations, and limits
   through flags shown by the selected route.
 - Keep the first pass bounded; expand only after inspecting the first result.
-- If the CLI returns a quote-confirmation challenge, run `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.
+- If the CLI returns a quote-confirmation challenge, obtain user approval for its scope and cost before running `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.
+
+## Command Selection
+
+| Evidence need | Route | Semantic input | First pass |
+| --- | --- | --- | --- |
+| Known account facts | `instagram-profiles` | repeat `--handle`, `--limit` | 1-5 accounts |
+| Recent account posts | `instagram-posts` | repeat `--handle`, `--limit` | 20 posts |
+| Comments/audience voice | `instagram-comments` | repeat `--url`, `--limit` | 1-5 posts, 20 comments |
+| Hashtag/campaign sample | `instagram-hashtags` | repeat `--hashtag`, `--kind`, `--limit` | 20 items |
+| Brand/account/topic recall | `instagram-search` | repeat `--query`, `--kind`, `--limit` | 20 results |
+| Public contact signals | `instagram-email-search` | repeat `--handle` | Narrow shortlist |
+
+Only if platform scope or evidence interpretation remains unclear, consult
+[platform contract](references/shared-contract.md); it is not a preflight.
+
+## Evidence Quality
+
+1. Check that profile facts, post evidence, and actual comments match the requested decision; captions are not audience voice.
+2. Prefer verified handles or post URLs; if discovery misses, change the query or hashtag and verify the shortlisted profiles.
+3. Allow at most two changed follow-up passes after successful but insufficient results, within approved scope and budget; do not repeat an identical request or hide a failed/pending operation.
+4. Stop when sufficient, at the bound, or when another pass would not help. Report useful evidence and uncertainty; preserve raw results and source links.
+
+Public follower counts are snapshots, not growth; contact signals are unverified, and absent metrics are not zero.
+Full machine fields belong to `postplus research schema --route <route> --json`;
+consult it only when required for processing, not before every request.
 
 <!-- BEGIN GENERATED EXECUTION EXAMPLE -->
 ```bash
@@ -92,9 +108,7 @@ postplus research run instagram-comments \
   --output ./result.json
 ```
 
-**Bounded recovery:** Current PostPlus CLIs handle a compatible update and retry the command once when no agent-session restart is required. If an older CLI only reports that an update is required, run `postplus update` and retry once under the same condition. For a missing or invalid CLI session, run `postplus auth login` yourself; it opens the browser by default. Immediately share its exact URL as a clickable link for the user to **Connect**, then retry the original command once only after the CLI confirms success. Never ask the user to run the command or enter/compare a code, approve the connection for them, or automatically restart a cancelled/expired login. For a local usage rejection before remote work starts, use that command's `--help` to make one unambiguous correction from existing user input and retry once.
-
-If PostPlus returns `postplus_cli_balance_required` with an `open_url` user action, give the user its exact label and URL and stop for account action. Do not invent a checkout link, claim whether provider work or charging occurred, or blindly resubmit after payment; continue from the command's documented status or checkpoint once the user confirms credits are available.
-
-Otherwise stop and report the exact error. Never expose login polling secrets, resubmit an operation when remote work may have started, change user intent, bypass approval, switch providers, rewrite payloads, or make a second recovery attempt. After success, briefly say that PostPlus updated, using only the official update details PostPlus reported.
+Follow the CLI's structured result and reported next action; do not infer recovery from free-text messages.
+Wait for explicit user approval when requested; an action does not authorize spending, publishing, or overwriting.
+Resume the same operation through its returned checkpoint or action; never resubmit uncertain work, repeat exhausted recovery, or switch providers to bypass failure.
 <!-- END GENERATED EXECUTION EXAMPLE -->

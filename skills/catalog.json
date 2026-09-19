@@ -1,40 +1,60 @@
 {
   "schemaVersion": 2,
-  "releaseId": "skills-2026-09-09.2-unified-integration",
+  "releaseId": "skills-2026-09-18.1-cli-mechanism-hardening",
   "productBrief": {
     "schemaVersion": 1,
     "paragraphs": [
-      "Marketing should not begin with a maze of tools. It should begin with an ambition.",
-      "PostPlus is building a new way for founders, marketers, and teams to work with AI—not as a chatbot that simply offers ideas, but as a capable marketing partner that can move real work forward.",
-      "Today, PostPlus brings together 41 specialized marketing skills spanning research, strategy, creative production, and publishing. Its research coverage includes 8 major channels and signal sources—TikTok, Instagram, YouTube, Facebook, X, Reddit, Pinterest, and Google Trends—alongside workflows for competitor analysis, audience insight, short-form video, images, voice, transcription, campaign briefs, and reports.",
-      "Simply describe what you want to achieve. PostPlus helps your AI agent choose the right path, gather reliable signals, turn evidence into useful work, and preserve the results—so every project can build on what came before.",
-      "Next, we’re expanding PostPlus to support multiple brands and accounts in one place, connect and understand advertising accounts, recommend improvements, and safely carry out changes after your approval. Shared workspaces, roles, reviews, and approvals will also make it easier for teams to collaborate without losing context or control.",
-      "Human judgment remains at the center. You set the direction, approve important decisions, and make the final call. PostPlus helps with everything required to get there.",
-      "Our ambition is simple: give individuals and lean teams the operating power of a much larger marketing organization—without adding more tools, handoffs, or noise."
+      "PostPlus helps your agent turn public research, product facts, and media references into useful marketing decisions and creative assets.",
+      "Describe the result you want. The matching skill guides the task directly, while the CLI handles execution, account access, cost confirmation, and clear recovery actions.",
+      "Human judgment stays central: you set the direction, approve important decisions, and review the result. Current capabilities are listed by the CLI from its bundled catalog."
     ]
   },
   "releaseNotes": {
     "schemaVersion": 1,
-    "releaseId": "skills-2026-09-09.2-unified-integration",
-    "title": "Connected work, recoverable media tasks.",
-    "summary": "Connect your account, continue safely through compatible updates, and keep media reports and visual evidence together with clear progress and recovery steps.",
+    "releaseId": "skills-2026-09-18.1-cli-mechanism-hardening",
+    "title": "Reliable installation and clear recovery.",
+    "summary": "Install the skills paired with your CLI, reuse correct installations, and get a clear next step when work cannot continue.",
     "highlights": [
-      "First-time installation includes a concise product introduction; later updates show release-specific changes without repeating the welcome.",
-      "Compatible updates can resume the original command once. If new agent instructions are required or verification fails, PostPlus explains why it stopped.",
-      "Login opens your browser by default and keeps a clickable link available. Connect once; the CLI confirms success only after saving and validating the connection.",
-      "Insufficient-credit errors include the relevant personal or team billing link, with agent guidance to resume existing work rather than blindly submit it again.",
-      "Safer concurrent updates and credential saving, with Windows npm command handling that preserves arguments and reports failures clearly.",
-      "Agents can correct an unambiguous local command mistake once before remote work starts; generated examples use supported command arguments.",
-      "Media analysis combines video reports, native image posts, and real frame evidence in one skill; missing visual evidence is listed and recovered separately without automatically buying another analysis.",
-      "Media recovery keeps the original task identity. Unknown outcomes remain explicit, and confirmed reports are retained while billing or missing evidence is resolved."
+      "Skills ship with the CLI. Once the package is available, skill installation and content checks do not need GitHub.",
+      "Installation verifies supported agent targets, skips correct content, and repairs missing targets without repeating completed work.",
+      "Local changes and content without a trusted prior fingerprint are protected until backup and replacement are approved.",
+      "Public command help is available without login or business requests, with examples and useful next steps.",
+      "Failures retain structured diagnostics; exhausted automatic recovery stops instead of starting another update or task retry.",
+      "Shared guidance is shorter and selected by task. Disk installation and a refreshed agent session are reported separately."
     ]
   },
   "source": "PostPlusAI/postplus-skills",
+  "discoveryCategories": {
+    "research": {
+      "title": "Research and discover"
+    },
+    "analyze": {
+      "title": "Analyze and develop briefs"
+    },
+    "advertise": {
+      "title": "Design ads"
+    },
+    "generate": {
+      "title": "Generate images, video, and voice"
+    },
+    "transcribe": {
+      "title": "Transcribe and create subtitles"
+    },
+    "publish": {
+      "title": "Prepare and publish"
+    },
+    "workspace": {
+      "title": "Supporting project workspace"
+    }
+  },
   "skills": [
     {
       "familyId": "routing-contracts",
       "familyName": "Routing & Contracts",
       "name": "audio-generation",
+      "description": "Plan TTS, voice cloning, voice change, translated dub, or lip-sync audio. Resolve voice and reference policy before handing a ready request to voice-batch-runner.",
+      "category": "generate",
+      "example": "Plan a translated dub that preserves the speaker’s approved voice.",
       "path": "skills/10-routing/audio-generation/SKILL.md",
       "status": "released",
       "supportedModels": []
@@ -43,6 +63,9 @@
       "familyId": "media-production",
       "familyName": "Media and Creative Production",
       "name": "audio-transcription",
+      "description": "Transcribe local or remote audio into text and timestamps. Convert an existing timed transcript locally into SRT or ASS without another transcription job.",
+      "category": "transcribe",
+      "example": "Transcribe this interview audio and give me an SRT subtitle file.",
       "path": "skills/40-creative/audio-transcription/SKILL.md",
       "status": "released",
       "supportedModels": [
@@ -65,6 +88,9 @@
       "familyId": "media-production",
       "familyName": "Media and Creative Production",
       "name": "authority-ad",
+      "description": "Design or review expert-led, insider, case-story, or interview ads that explain a problem mechanism using approved evidence and a credible product solution.",
+      "category": "advertise",
+      "example": "Write an expert-led ad explaining the problem this product solves.",
       "path": "skills/40-creative/authority-ad/SKILL.md",
       "status": "released",
       "supportedModels": []
@@ -73,6 +99,9 @@
       "familyId": "media-production",
       "familyName": "Media and Creative Production",
       "name": "before-after-ad",
+      "description": "Design or review before-and-after ads with matched comparisons, approved transformation evidence, and a clear product role. Produce a grounded shot script.",
+      "category": "advertise",
+      "example": "Create a before-and-after ad using these approved product results.",
       "path": "skills/40-creative/before-after-ad/SKILL.md",
       "status": "released",
       "supportedModels": []
@@ -81,6 +110,9 @@
       "familyId": "media-production",
       "familyName": "Media and Creative Production",
       "name": "benchmark-to-brief",
+      "description": "Turn existing benchmark reports, pattern tables, or audience evidence into grounded campaign briefs, concepts, hooks, and test plans.",
+      "category": "analyze",
+      "example": "Turn this competitor research into a campaign brief and three testable concepts.",
       "path": "skills/40-creative/benchmark-to-brief/SKILL.md",
       "status": "released",
       "supportedModels": []
@@ -89,6 +121,9 @@
       "familyId": "media-production",
       "familyName": "Media and Creative Production",
       "name": "cartoon-ad",
+      "description": "Design or review animated ads that explain a product through visual arguments, metaphors, and grounded proof. Produce a script ready for creative production.",
+      "category": "advertise",
+      "example": "Make an animated ad concept that explains this product visually.",
       "path": "skills/40-creative/cartoon-ad/SKILL.md",
       "status": "released",
       "supportedModels": []
@@ -97,6 +132,9 @@
       "familyId": "media-production",
       "familyName": "Media and Creative Production",
       "name": "commercial-ad",
+      "description": "Design or review product commercials with a controlled visual mechanism, observable product behavior, sound, and payoff. Produce a brief or shot script.",
+      "category": "advertise",
+      "example": "Write a short product commercial with a striking reveal and clear proof.",
       "path": "skills/40-creative/commercial-ad/SKILL.md",
       "status": "released",
       "supportedModels": []
@@ -104,23 +142,10 @@
     {
       "familyId": "media-production",
       "familyName": "Media and Creative Production",
-      "name": "creative-qa",
-      "path": "skills/40-creative/creative-qa/SKILL.md",
-      "status": "released",
-      "supportedModels": []
-    },
-    {
-      "familyId": "media-production",
-      "familyName": "Media and Creative Production",
-      "name": "editing-decision-engine",
-      "path": "skills/40-creative/editing-decision-engine/SKILL.md",
-      "status": "released",
-      "supportedModels": []
-    },
-    {
-      "familyId": "media-production",
-      "familyName": "Media and Creative Production",
       "name": "educational-ad",
+      "description": "Design or review educational and explainer ads that answer a viewer question with clear reasoning, visual evidence, and an earned product introduction.",
+      "category": "advertise",
+      "example": "Explain this customer problem in an educational ad for our product.",
       "path": "skills/40-creative/educational-ad/SKILL.md",
       "status": "released",
       "supportedModels": []
@@ -129,6 +154,9 @@
       "familyId": "platform-research",
       "familyName": "LinkedIn, Facebook, and YouTube",
       "name": "facebook-research",
+      "description": "Research public Facebook pages, groups, posts, reels, comments, ads, events, marketplace listings, and profiles for audience or competitor evidence.",
+      "category": "research",
+      "example": "Compare the public posts and comments on these competitor Facebook pages.",
       "path": "skills/20-research/facebook-research/SKILL.md",
       "status": "released",
       "supportedModels": [],
@@ -153,17 +181,12 @@
       }
     },
     {
-      "familyId": "routing-contracts",
-      "familyName": "Routing & Contracts",
-      "name": "generation-router",
-      "path": "skills/10-routing/generation-router/SKILL.md",
-      "status": "released",
-      "supportedModels": []
-    },
-    {
       "familyId": "marketplace-sourcing",
       "familyName": "Marketplace, Sourcing, and Growth",
       "name": "google-trends-research",
+      "description": "Research Google Trends keyword momentum, regional interest, and related queries. Use search-interest evidence without treating it as sales or total demand.",
+      "category": "research",
+      "example": "Compare search interest in these product ideas across two markets.",
       "path": "skills/20-research/google-trends-research/SKILL.md",
       "status": "released",
       "supportedModels": [],
@@ -180,6 +203,9 @@
       "familyId": "media-production",
       "familyName": "Media and Creative Production",
       "name": "image-batch-runner",
+      "description": "Execute ready image briefs and edits, including product or persona images and batch variants. Use resolved references and return image assets with saved run results.",
+      "category": "generate",
+      "example": "Generate these approved image variants using the supplied references.",
       "path": "skills/40-creative/image-batch-runner/SKILL.md",
       "status": "released",
       "supportedModels": [
@@ -286,6 +312,9 @@
       "familyId": "routing-contracts",
       "familyName": "Routing & Contracts",
       "name": "image-generation",
+      "description": "Plan image creation or edits from prompts, products, or references. Resolve task type, model, and reference rules before handing ready requests to image-batch-runner.",
+      "category": "generate",
+      "example": "Plan three product images using these photos and our launch brief.",
       "path": "skills/10-routing/image-generation/SKILL.md",
       "status": "released",
       "supportedModels": []
@@ -294,6 +323,9 @@
       "familyId": "instagram",
       "familyName": "Instagram",
       "name": "instagram-research",
+      "description": "Research public Instagram accounts, posts, Reels, comments, hashtags, and creators for audits, benchmarks, audience voice, or collaboration shortlists.",
+      "category": "research",
+      "example": "Find Instagram creators whose recent posts fit this product.",
       "path": "skills/20-research/instagram-research/SKILL.md",
       "status": "released",
       "supportedModels": [],
@@ -315,6 +347,9 @@
       "familyId": "media-production",
       "familyName": "Media and Creative Production",
       "name": "lifestyle-ad",
+      "description": "Design lifestyle ads where product capability supports a desirable human state. Produce or review shot scripts with grounded product behavior and subtle proof.",
+      "category": "advertise",
+      "example": "Turn these product features into a calm, aspirational lifestyle ad.",
       "path": "skills/40-creative/lifestyle-ad/SKILL.md",
       "status": "released",
       "supportedModels": []
@@ -323,6 +358,9 @@
       "familyId": "media-production",
       "familyName": "Media and Creative Production",
       "name": "media-analysis",
+      "description": "Analyze videos, images, or carousels with visible and audible evidence. Answer visual questions, inspect frames, or compare references shot by shot when requested.",
+      "category": "analyze",
+      "example": "Explain what happens in this video and show the frames supporting your analysis.",
       "path": "skills/40-creative/media-analysis/SKILL.md",
       "status": "released",
       "supportedModels": [
@@ -346,17 +384,12 @@
       }
     },
     {
-      "familyId": "routing-contracts",
-      "familyName": "Routing & Contracts",
-      "name": "media-router",
-      "path": "skills/10-routing/media-router/SKILL.md",
-      "status": "released",
-      "supportedModels": []
-    },
-    {
       "familyId": "pinterest",
       "familyName": "Pinterest",
       "name": "pinterest-search",
+      "description": "Find public Pinterest images from a keyword for moodboards and visual inspiration. Return usable image links, source pins, and titles.",
+      "category": "research",
+      "example": "Find minimalist kitchen images for a moodboard, with source links.",
       "path": "skills/20-research/pinterest-search/SKILL.md",
       "status": "released",
       "supportedModels": [],
@@ -370,17 +403,12 @@
       }
     },
     {
-      "familyId": "shared-rules",
-      "familyName": "Shared Rules",
-      "name": "postplus-shared",
-      "path": "skills/00-shared/postplus-shared/SKILL.md",
-      "status": "released",
-      "supportedModels": []
-    },
-    {
       "familyId": "workspace-publishing",
       "familyName": "Workspace, Publishing, and Meta",
       "name": "postplus-workspace",
+      "description": "Maintain a project folder with approved product facts, campaign context, and reusable results. Use for ongoing work, not required for one-off tasks.",
+      "category": "workspace",
+      "example": "Keep the approved product facts and results in this project folder.",
       "path": "skills/00-shared/postplus-workspace/SKILL.md",
       "status": "released",
       "supportedModels": [],
@@ -394,6 +422,9 @@
       "familyId": "reddit",
       "familyName": "Reddit",
       "name": "reddit-search",
+      "description": "Research public Reddit posts, comments, communities, and explicitly requested profiles for pain points, product opinions, and discussion evidence.",
+      "category": "research",
+      "example": "Find the problems people discuss about portable coffee makers on Reddit.",
       "path": "skills/20-research/reddit-search/SKILL.md",
       "status": "released",
       "supportedModels": [],
@@ -413,51 +444,10 @@
       "familyId": "routing-contracts",
       "familyName": "Routing & Contracts",
       "name": "reference-decode",
+      "description": "Turn reference videos, frames, or contact sheets into reusable hook and visual rules for new creative prompts, with clear imitation boundaries.",
+      "category": "analyze",
+      "example": "Extract reusable visual and hook rules from these reference frames.",
       "path": "skills/10-routing/reference-decode/SKILL.md",
-      "status": "released",
-      "supportedModels": []
-    },
-    {
-      "familyId": "media-production",
-      "familyName": "Media and Creative Production",
-      "name": "shot-by-shot-analysis",
-      "path": "skills/40-creative/shot-by-shot-analysis/SKILL.md",
-      "status": "released",
-      "supportedModels": []
-    },
-    {
-      "familyId": "media-production",
-      "familyName": "Media and Creative Production",
-      "name": "slideshow-producer",
-      "path": "skills/40-creative/slideshow-producer/SKILL.md",
-      "status": "released",
-      "supportedModels": [
-        {
-          "key": "image-gpt-image-2-edit",
-          "name": "Openai Gpt Image 2 Edit",
-          "source": "endpointKey"
-        },
-        {
-          "key": "image-gpt-image-2-text",
-          "name": "Openai Gpt Image 2 Text To Image",
-          "source": "endpointKey"
-        }
-      ],
-      "requirements": {
-        "capabilities": [
-          "media"
-        ],
-        "endpointKeys": [
-          "image-gpt-image-2-edit",
-          "image-gpt-image-2-text"
-        ]
-      }
-    },
-    {
-      "familyId": "routing-contracts",
-      "familyName": "Routing & Contracts",
-      "name": "social-media-extractor",
-      "path": "skills/10-routing/social-media-extractor/SKILL.md",
       "status": "released",
       "supportedModels": []
     },
@@ -465,6 +455,9 @@
       "familyId": "workspace-publishing",
       "familyName": "Workspace, Publishing, and Meta",
       "name": "social-media-publisher",
+      "description": "Prepare and manage social publishing requests through PostPlus, with explicit approval before publishing or other account changes.",
+      "category": "publish",
+      "example": "Prepare these posts for our connected channels and show me what needs approval.",
       "path": "skills/50-publishing/social-media-publisher/SKILL.md",
       "status": "released",
       "supportedModels": [],
@@ -478,34 +471,13 @@
       }
     },
     {
-      "familyId": "marketplace-sourcing",
-      "familyName": "Marketplace, Sourcing, and Growth",
-      "name": "sourcing-selection",
-      "path": "skills/30-strategy/sourcing-selection/SKILL.md",
-      "status": "released",
-      "supportedModels": []
-    },
-    {
-      "familyId": "media-production",
-      "familyName": "Media and Creative Production",
-      "name": "storyboard-grid-writer",
-      "path": "skills/40-creative/storyboard-grid-writer/SKILL.md",
-      "status": "released",
-      "supportedModels": []
-    },
-    {
       "familyId": "media-production",
       "familyName": "Media and Creative Production",
       "name": "street-interview-ad",
+      "description": "Design or review street-interview and vox-pop ads using candid conversation, a clear question, product interaction, and grounded proof.",
+      "category": "advertise",
+      "example": "Write a street-interview ad that tests this product claim with a demonstration.",
       "path": "skills/40-creative/street-interview-ad/SKILL.md",
-      "status": "released",
-      "supportedModels": []
-    },
-    {
-      "familyId": "media-production",
-      "familyName": "Media and Creative Production",
-      "name": "subtitle-packager",
-      "path": "skills/40-creative/subtitle-packager/SKILL.md",
       "status": "released",
       "supportedModels": []
     },
@@ -513,6 +485,9 @@
       "familyId": "tiktok",
       "familyName": "TikTok",
       "name": "tiktok-research",
+      "description": "Research public TikTok videos, comments, creators, profiles, related videos, and paid ad examples for audience evidence and creative benchmarks.",
+      "category": "research",
+      "example": "Find TikTok product demos and the questions viewers ask in their comments.",
       "path": "skills/20-research/tiktok-research/SKILL.md",
       "status": "released",
       "supportedModels": [],
@@ -534,6 +509,9 @@
       "familyId": "media-production",
       "familyName": "Media and Creative Production",
       "name": "ugc-ad",
+      "description": "Design or review creator-led product ads, testimonials, demos, tutorials, unboxings, or POV concepts with believable interaction and approved proof.",
+      "category": "advertise",
+      "example": "Write a natural creator-led product demo based on this brief.",
       "path": "skills/40-creative/ugc-ad/SKILL.md",
       "status": "released",
       "supportedModels": []
@@ -541,15 +519,10 @@
     {
       "familyId": "media-production",
       "familyName": "Media and Creative Production",
-      "name": "ugc-flow",
-      "path": "skills/40-creative/ugc-flow/SKILL.md",
-      "status": "released",
-      "supportedModels": []
-    },
-    {
-      "familyId": "media-production",
-      "familyName": "Media and Creative Production",
       "name": "video-batch-runner",
+      "description": "Generate videos from briefs, prompts, images, audio, or reference clips. Choose a supported model, submit one or many clips, resume runs, and download results.",
+      "category": "generate",
+      "example": "Generate a short video from this approved script and reference image.",
       "path": "skills/40-creative/video-batch-runner/SKILL.md",
       "status": "released",
       "supportedModels": [
@@ -674,6 +647,9 @@
       "familyId": "media-production",
       "familyName": "Media and Creative Production",
       "name": "video-transcription",
+      "description": "Transcribe speech in local or remote videos with timestamps. Convert existing timed transcripts locally into SRT or ASS; use media-analysis for visual understanding.",
+      "category": "transcribe",
+      "example": "Create a timed transcript and subtitles for this video.",
       "path": "skills/40-creative/video-transcription/SKILL.md",
       "status": "released",
       "supportedModels": [
@@ -696,6 +672,9 @@
       "familyId": "media-production",
       "familyName": "Media and Creative Production",
       "name": "voice-batch-runner",
+      "description": "Execute approved voice design or cloning requests from scripts and persona references. Return reusable audio takes and saved run results with consistent voice identity.",
+      "category": "generate",
+      "example": "Generate these approved voice takes from the scripts and voice reference.",
       "path": "skills/40-creative/voice-batch-runner/SKILL.md",
       "status": "released",
       "supportedModels": [
@@ -721,17 +700,12 @@
       }
     },
     {
-      "familyId": "media-production",
-      "familyName": "Media and Creative Production",
-      "name": "workflow-creation",
-      "path": "skills/40-creative/workflow-creation/SKILL.md",
-      "status": "released",
-      "supportedModels": []
-    },
-    {
       "familyId": "x",
       "familyName": "X",
       "name": "x-research",
+      "description": "Research public X posts, threads, replies, and accounts for audience language, creator discovery, competitor benchmarks, and campaign evidence.",
+      "category": "research",
+      "example": "Find X discussions and replies about this product category.",
       "path": "skills/20-research/x-research/SKILL.md",
       "status": "released",
       "supportedModels": [],
@@ -750,6 +724,9 @@
       "familyId": "platform-research",
       "familyName": "LinkedIn, Facebook, and YouTube",
       "name": "youtube-research",
+      "description": "Research public YouTube channels, video metrics, and comment samples; obtain downloadable video records when requested. Use for content and audience evidence.",
+      "category": "research",
+      "example": "Summarize this YouTube channel and the questions in its video comments.",
       "path": "skills/20-research/youtube-research/SKILL.md",
       "status": "released",
       "supportedModels": [],

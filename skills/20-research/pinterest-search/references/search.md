@@ -9,7 +9,7 @@ for X" or "build a moodboard source list for X".
 2. Set `filter` to `all` for image-address lists, or `videos` only when the user
    explicitly wants motion pins.
 3. Keep `limit` at the minimum of 20 for the first pass.
-4. Run the request from `references/shared-contract.md`.
+4. Run the command in SKILL.md.
 5. Normalize and deduplicate the results, then report scope and count.
 
 ## When to expand
