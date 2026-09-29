@@ -1,26 +1,26 @@
 {
   "schemaVersion": 2,
-  "releaseId": "skills-2026-09-18.1-cli-mechanism-hardening",
+  "releaseId": "skills-2026-09-29.1-marketing-channels",
   "productBrief": {
     "schemaVersion": 1,
     "paragraphs": [
-      "PostPlus helps your agent turn public research, product facts, and media references into useful marketing decisions and creative assets.",
+      "PostPlus helps your agent research a market, create marketing assets, manage advertising, and publish through your connected channels.",
       "Describe the result you want. The matching skill guides the task directly, while the CLI handles execution, account access, cost confirmation, and clear recovery actions.",
       "Human judgment stays central: you set the direction, approve important decisions, and review the result. Current capabilities are listed by the CLI from its bundled catalog."
     ]
   },
   "releaseNotes": {
     "schemaVersion": 1,
-    "releaseId": "skills-2026-09-18.1-cli-mechanism-hardening",
-    "title": "Reliable installation and clear recovery.",
-    "summary": "Install the skills paired with your CLI, reuse correct installations, and get a clear next step when work cannot continue.",
+    "releaseId": "skills-2026-09-29.1-marketing-channels",
+    "title": "Connect marketing channels and keep skills current.",
+    "summary": "Use task-specific guidance for advertising, social publishing, messaging, and measurement through your connected accounts.",
     "highlights": [
-      "Skills ship with the CLI. Once the package is available, skill installation and content checks do not need GitHub.",
-      "Installation verifies supported agent targets, skips correct content, and repairs missing targets without repeating completed work.",
-      "Local changes and content without a trusted prior fingerprint are protected until backup and replacement are approved.",
-      "Public command help is available without login or business requests, with examples and useful next steps.",
-      "Failures retain structured diagnostics; exhausted automatic recovery stops instead of starting another update or task retry.",
-      "Shared guidance is shorter and selected by task. Disk installation and a refreshed agent session are reported separately."
+      "Discover channel tools and their required inputs before executing a task, and use connections owned by your personal account.",
+      "Connect and manage personal channel accounts from Web Integrations or the CLI. Channel execution uses your own eligible subscription access.",
+      "Advertising and social publishing guidance covers target selection, explicit write approval, and verification of external results.",
+      "Official skills update automatically with the CLI, replacing same-name local edits and removing retired official skills while preserving unrelated skills.",
+      "Compatible updates continue the original task once; failed updates or a required new agent session stop with a clear next step.",
+      "The retired social publishing skill is replaced by channel-based social publishing guidance. Platform permissions and available account features still apply."
     ]
   },
   "source": "PostPlusAI/postplus-skills",
@@ -32,7 +32,7 @@
       "title": "Analyze and develop briefs"
     },
     "advertise": {
-      "title": "Design ads"
+      "title": "Plan, create, and manage ads"
     },
     "generate": {
       "title": "Generate images, video, and voice"
@@ -48,6 +48,17 @@
     }
   },
   "skills": [
+    {
+      "familyId": "ads",
+      "familyName": "Paid Advertising",
+      "name": "ads",
+      "description": "Plan paid campaigns, research ad angles, write ad copy, report and diagnose account performance, check conversion tracking, and carry out supported account changes within the user's authorization.",
+      "category": "advertise",
+      "example": "Review last week's Google and Meta ad results, explain the next tests, and prepare an account change for my approval.",
+      "path": "skills/60-ads/ads/SKILL.md",
+      "status": "released",
+      "supportedModels": []
+    },
     {
       "familyId": "routing-contracts",
       "familyName": "Routing & Contracts",
@@ -125,6 +136,17 @@
       "category": "advertise",
       "example": "Make an animated ad concept that explains this product visually.",
       "path": "skills/40-creative/cartoon-ad/SKILL.md",
+      "status": "released",
+      "supportedModels": []
+    },
+    {
+      "familyId": "channel-messaging",
+      "familyName": "Channel Messaging",
+      "name": "channel-messaging",
+      "description": "Draft or act in a specified Discord, Slack, or WhatsApp Business conversation, including supported sends, Slack file shares or edits, and follow-up verification.",
+      "category": "publish",
+      "example": "Reply in this Slack thread, or prepare a WhatsApp reply for the named customer.",
+      "path": "skills/50-publishing/channel-messaging/SKILL.md",
       "status": "released",
       "supportedModels": []
     },
@@ -355,6 +377,17 @@
       "supportedModels": []
     },
     {
+      "familyId": "measurement",
+      "familyName": "Website and Search Measurement",
+      "name": "measurement",
+      "description": "Investigate website behavior in GA4, Google search visibility in Search Console, and differences between those reports and ad-platform results using the user's connected properties.",
+      "category": "analyze",
+      "example": "Explain the change in organic search clicks and compare it with GA4 sessions for the same site.",
+      "path": "skills/30-measurement/measurement/SKILL.md",
+      "status": "released",
+      "supportedModels": []
+    },
+    {
       "familyId": "media-production",
       "familyName": "Media and Creative Production",
       "name": "media-analysis",
@@ -452,23 +485,15 @@
       "supportedModels": []
     },
     {
-      "familyId": "workspace-publishing",
-      "familyName": "Workspace, Publishing, and Meta",
-      "name": "social-media-publisher",
-      "description": "Prepare and manage social publishing requests through PostPlus, with explicit approval before publishing or other account changes.",
+      "familyId": "social",
+      "familyName": "Organic Social",
+      "name": "social",
+      "description": "Plan and improve organic social content, study public conversations, and draft, publish, schedule, reply, or manage content through the user's connected social accounts when authorized.",
       "category": "publish",
-      "example": "Prepare these posts for our connected channels and show me what needs approval.",
-      "path": "skills/50-publishing/social-media-publisher/SKILL.md",
+      "example": "Adapt this launch for Facebook, Instagram, and TikTok, then show me the posts and destinations for approval.",
+      "path": "skills/50-publishing/social/SKILL.md",
       "status": "released",
-      "supportedModels": [],
-      "requirements": {
-        "accountConnections": [
-          "social-publishing-workspace"
-        ],
-        "capabilities": [
-          "publishing"
-        ]
-      }
+      "supportedModels": []
     },
     {
       "familyId": "media-production",

@@ -3,7 +3,7 @@ export const RETIRED_PUBLIC_SKILLS = [
   'postplus-shared', 'social-media-extractor', 'generation-router', 'media-router',
   'editing-decision-engine', 'storyboard-grid-writer', 'creative-qa',
   'slideshow-producer', 'subtitle-packager', 'ugc-flow', 'workflow-creation',
-  'sourcing-selection', 'shot-by-shot-analysis',
+  'sourcing-selection', 'shot-by-shot-analysis', 'social-media-publisher',
 ];
 
 export function assertNoRetiredPublicSkillReferences(content, source) {
@@ -13,4 +13,3 @@ export function assertNoRetiredPublicSkillReferences(content, source) {
     }
   }
 }
-
