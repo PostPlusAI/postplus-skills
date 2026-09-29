@@ -166,22 +166,11 @@ for (const markdownFile of markdownFiles) {
       report(errors, `${repoPath}: contains ${label}.`);
     }
   }
-  if (
-    toSkillsPath(markdownFile).startsWith("20-research/") &&
-    /\bpostplus publish (?!schema\b)[\w-]+/u.test(text)
-  ) {
-    report(errors, `${repoPath}: research skills must not route through publish operations.`);
-  }
   const hostedCommandRules = [
     {
       command: /\bpostplus media (?:create|transcribe|analyze)\b/u,
       schema: /\bpostplus media schema\b/,
       message: "uses a hosted media verb without the public schema discovery command.",
-    },
-    {
-      command: /\bpostplus publish (?!schema\b)[\w-]+/u,
-      schema: /\bpostplus publish schema\b/,
-      message: "uses a hosted publish operation without the public schema discovery command.",
     },
   ];
   for (const rule of hostedCommandRules) {

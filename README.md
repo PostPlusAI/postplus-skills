@@ -6,12 +6,13 @@ You do not need to learn skill names or read a shared rulebook first.
 
 ## Install and start
 
-Requires Node.js >=24.5.0 and npm.
+Ask your agent to follow the [official installation guide](https://postplus.io/postplus-agent-install.md).
+The installer prepares PostPlus and its dedicated runtime automatically.
+You do not need to install or upgrade Node.js or npm, and your system Node is not changed.
 
-```bash
-npm install -g @postplus/cli@latest
-postplus install
-```
+After installation, the agent uses the command path returned by the installer
+for the current session, then continues your original task. New shells use the
+registered `postplus` command.
 
 The CLI includes its matching skills and verifies actual installed content.
 Follow the completion message for session reload and continuing your task.
@@ -29,15 +30,51 @@ your original task rather than repeating this introduction.
 
 Cloud tasks require a connected account. Run `postplus auth login` when the CLI
 requests it, and approve the real browser connection yourself. Never share
-credentials with the agent. Quotes, publishing, and replacing existing content
+credentials with the agent. Quotes, publishing, and replacing business content
 require the applicable user approval.
+
+## Connect a marketing channel
+
+Ask for the outcome you need: review Google or Meta ad performance, prepare a
+Facebook Page post, or adapt a video for Instagram and TikTok. Your agent uses
+the relevant skill, discovers the available tools, and checks their inputs and
+your account permissions before executing.
+
+Connect and manage accounts in Web **Integrations** or through the CLI:
+
+```bash
+postplus channels list
+postplus channels connect google-ads
+postplus channels tools list --toolkit googleads
+postplus channels tools show GOOGLEADS_LIST_ACCESSIBLE_CUSTOMERS
+```
+
+`postplus list` describes the tasks your agent can help with. `channels list`
+shows channels and your connections; `channels tools list` searches executable
+tools. Use `channels tools show` for the selected tool's inputs and availability.
+A listed tool does not prove that your account has the platform permissions to
+use it. Complete any browser authorization yourself; the agent checks connection
+status before continuing your original task.
+
+Channel connections belong to your personal account and can be reused across
+workspaces. Connecting or executing channel tools requires eligible subscription
+access on your own PostPlus account; a teammate's subscription does not cover
+you. Disconnecting a connection affects every workspace that uses it.
+
+For publishing or account changes, approve the exact destination and final
+content or change. If the result is unknown, the agent checks the original
+operation instead of sending a duplicate. Channel access is covered by your
+eligible subscription; research and media generation can have separate charges.
 
 ## Maintenance
 
-Run `postplus update` to update the CLI and its matching managed skills.
-Follow the exact reported action on failure; do not repeat maintenance blindly.
-The CLI identifies content conflicts and requests authorization before replacing
-protected content. Its session-reload message explains how to continue.
+Your agent continues the task while the CLI handles a required compatible update.
+You can also run `postplus update` to update the CLI and its matching skills.
+Official skill names are managed by PostPlus: local changes are overwritten and
+retired skills are removed without prompts or backups. Keep custom skills under
+separate names. Correct installations are reused.
+Follow the reported action only if an update fails or a new agent session is required;
+do not repeat maintenance blindly.
 
 ```bash
 postplus status
@@ -58,7 +95,7 @@ No disk check proves a running agent has loaded newly installed instructions.
 ## Product direction
 
 <!-- BEGIN POSTPLUS PRODUCT BRIEF -->
-PostPlus helps your agent turn public research, product facts, and media references into useful marketing decisions and creative assets.
+PostPlus helps your agent research a market, create marketing assets, manage advertising, and publish through your connected channels.
 
 Describe the result you want. The matching skill guides the task directly, while the CLI handles execution, account access, cost confirmation, and clear recovery actions.
 
