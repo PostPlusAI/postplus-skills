@@ -1,27 +1,27 @@
 {
   "schemaVersion": 2,
-  "releaseId": "skills-2026-09-29.2-marketing-channels",
+  "releaseId": "skills-2026-09-30.1-onboarding-copy",
   "productBrief": {
     "schemaVersion": 1,
     "paragraphs": [
-      "PostPlus helps your agent research a market, create marketing assets, manage advertising, and publish through your connected channels.",
-      "Describe the result you want. The matching skill guides the task directly, while the CLI handles execution, account access, cost confirmation, and clear recovery actions.",
-      "Human judgment stays central: you set the direction, approve important decisions, and review the result. Current capabilities are listed by the CLI from its bundled catalog."
+      "PostPlus helps your AI agent handle marketing work, from market research and content creation to social publishing and advertising management.",
+      "Research markets and audiences: explore popular content, competitors, and audience interests on TikTok, Instagram, Facebook, and YouTube to find the right marketing direction.",
+      "Create marketing content: write social posts and ad copy, and generate images, video, and voice for different platforms.",
+      "Connect social accounts: connect Instagram, Facebook, YouTube, and TikTok accounts to prepare content and, after your approval, carry out supported publishing, scheduling, or engagement actions.",
+      "Connect advertising accounts: connect Meta Ads, Google Ads, and other supported ad platforms to plan campaigns, analyze performance, and carry out supported campaign launches and adjustments after your approval.",
+      "Tell your agent what you want to promote and who you want to reach, and it will help you choose where to start. Available actions depend on platform support and account permissions. TikTok account connections are currently available only to invited test users."
     ]
   },
   "releaseNotes": {
     "schemaVersion": 1,
-    "releaseId": "skills-2026-09-29.2-marketing-channels",
-    "title": "Connect marketing channels and keep skills current.",
-    "summary": "Use task-specific guidance for advertising, social publishing, messaging, and measurement through your connected accounts.",
+    "releaseId": "skills-2026-09-30.1-onboarding-copy",
+    "title": "Connect your social and advertising accounts.",
+    "summary": "PostPlus helps you prepare content for Instagram, Facebook, and YouTube, and carry out supported publishing or engagement actions after your approval. Connect Meta Ads and Google Ads to plan campaigns, analyze results, and approve supported campaign launches and adjustments. Available actions depend on platform support and account permissions; TikTok account connections are currently limited to invited test users.",
     "highlights": [
-      "The official installer prepares a dedicated PostPlus runtime automatically, so you do not need to install or upgrade your system Node.js. Existing account configuration is preserved during migration.",
-      "Discover channel tools and their required inputs before executing a task, and use connections owned by your personal account.",
-      "Connect and manage personal channel accounts from Web Integrations or the CLI. Channel execution uses your own eligible subscription access.",
-      "Advertising and social publishing guidance covers target selection, explicit write approval, and verification of external results.",
-      "Official skills update automatically with the CLI, replacing same-name local edits and removing retired official skills while preserving unrelated skills.",
-      "Compatible updates continue the original task once; failed updates or a required new agent session stop with a clear next step.",
-      "The retired social publishing skill is replaced by channel-based social publishing guidance. Platform permissions and available account features still apply."
+      "Connect social accounts to take content from preparation to supported publishing, scheduling, and engagement, with your approval.",
+      "Connect Meta Ads and Google Ads to plan campaigns, review performance, and carry out supported launches and adjustments after your approval.",
+      "The official installer handles the PostPlus runtime for you, without changing your system Node.js, and preserves existing account configuration.",
+      "After updating, continue your original task. If the agent needs a new session to load the updated skills, follow the returned continuation guidance."
     ]
   },
   "source": "PostPlusAI/postplus-skills",

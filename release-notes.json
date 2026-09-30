@@ -1,15 +1,12 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-2026-09-29.2-marketing-channels",
-  "title": "Connect marketing channels and keep skills current.",
-  "summary": "Use task-specific guidance for advertising, social publishing, messaging, and measurement through your connected accounts.",
+  "releaseId": "skills-2026-09-30.1-onboarding-copy",
+  "title": "Connect your social and advertising accounts.",
+  "summary": "PostPlus helps you prepare content for Instagram, Facebook, and YouTube, and carry out supported publishing or engagement actions after your approval. Connect Meta Ads and Google Ads to plan campaigns, analyze results, and approve supported campaign launches and adjustments. Available actions depend on platform support and account permissions; TikTok account connections are currently limited to invited test users.",
   "highlights": [
-    "The official installer prepares a dedicated PostPlus runtime automatically, so you do not need to install or upgrade your system Node.js. Existing account configuration is preserved during migration.",
-    "Discover channel tools and their required inputs before executing a task, and use connections owned by your personal account.",
-    "Connect and manage personal channel accounts from Web Integrations or the CLI. Channel execution uses your own eligible subscription access.",
-    "Advertising and social publishing guidance covers target selection, explicit write approval, and verification of external results.",
-    "Official skills update automatically with the CLI, replacing same-name local edits and removing retired official skills while preserving unrelated skills.",
-    "Compatible updates continue the original task once; failed updates or a required new agent session stop with a clear next step.",
-    "The retired social publishing skill is replaced by channel-based social publishing guidance. Platform permissions and available account features still apply."
+    "Connect social accounts to take content from preparation to supported publishing, scheduling, and engagement, with your approval.",
+    "Connect Meta Ads and Google Ads to plan campaigns, review performance, and carry out supported launches and adjustments after your approval.",
+    "The official installer handles the PostPlus runtime for you, without changing your system Node.js, and preserves existing account configuration.",
+    "After updating, continue your original task. If the agent needs a new session to load the updated skills, follow the returned continuation guidance."
   ]
 }
