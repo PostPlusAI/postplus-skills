@@ -105,6 +105,8 @@ Connect social accounts: connect Instagram, Facebook, YouTube, and TikTok accoun
 
 Connect advertising accounts: connect Meta Ads, Google Ads, and other supported ad platforms to plan campaigns, analyze performance, and carry out supported campaign launches and adjustments after your approval.
 
+Explore 28 advertising strategy templates for performance monitoring, budget adjustments, stop loss, and creative testing at https://postplus.io/ad-strategy. Choose a strategy and copy its prompt to your agent to adapt it to your goals and account.
+
 Tell your agent what you want to promote and who you want to reach, and it will help you choose where to start. Available actions depend on platform support and account permissions. TikTok account connections are currently available only to invited test users.
 <!-- END POSTPLUS PRODUCT BRIEF -->
 

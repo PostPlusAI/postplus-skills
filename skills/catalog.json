@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "releaseId": "skills-2026-09-30.1-onboarding-copy",
+  "releaseId": "skills-2026-10-07.1-ad-strategy",
   "productBrief": {
     "schemaVersion": 1,
     "paragraphs": [
@@ -9,19 +9,21 @@
       "Create marketing content: write social posts and ad copy, and generate images, video, and voice for different platforms.",
       "Connect social accounts: connect Instagram, Facebook, YouTube, and TikTok accounts to prepare content and, after your approval, carry out supported publishing, scheduling, or engagement actions.",
       "Connect advertising accounts: connect Meta Ads, Google Ads, and other supported ad platforms to plan campaigns, analyze performance, and carry out supported campaign launches and adjustments after your approval.",
+      "Explore 28 advertising strategy templates for performance monitoring, budget adjustments, stop loss, and creative testing at https://postplus.io/ad-strategy. Choose a strategy and copy its prompt to your agent to adapt it to your goals and account.",
       "Tell your agent what you want to promote and who you want to reach, and it will help you choose where to start. Available actions depend on platform support and account permissions. TikTok account connections are currently available only to invited test users."
     ]
   },
   "releaseNotes": {
     "schemaVersion": 1,
-    "releaseId": "skills-2026-09-30.1-onboarding-copy",
-    "title": "Connect your social and advertising accounts.",
-    "summary": "PostPlus helps you prepare content for Instagram, Facebook, and YouTube, and carry out supported publishing or engagement actions after your approval. Connect Meta Ads and Google Ads to plan campaigns, analyze results, and approve supported campaign launches and adjustments. Available actions depend on platform support and account permissions; TikTok account connections are currently limited to invited test users.",
+    "releaseId": "skills-2026-10-07.1-ad-strategy",
+    "title": "Turn an advertising strategy into your next action.",
+    "summary": "Bring a strategy from the PostPlus library to your agent. Adjust its goals and rules, review account evidence, and carry out supported actions within your authorization. PostPlus now offers 28 advertising strategy templates: https://postplus.io/ad-strategy. Choose a strategy and copy its prompt to your agent.",
     "highlights": [
-      "Connect social accounts to take content from preparation to supported publishing, scheduling, and engagement, with your approval.",
-      "Connect Meta Ads and Google Ads to plan campaigns, review performance, and carry out supported launches and adjustments after your approval.",
-      "The official installer handles the PostPlus runtime for you, without changing your system Node.js, and preserves existing account configuration.",
-      "After updating, continue your original task. If the agent needs a new session to load the updated skills, follow the returned continuation guidance."
+      "Explore 28 advertising strategy templates at https://postplus.io/ad-strategy, covering performance monitoring, budget adjustments, stop loss, and creative testing.",
+      "Apply copied strategies with platform-specific metrics and action guidance.",
+      "Preserve your selected goals, budget limits and execution mode.",
+      "Verify changed objects after supported account actions; recurring execution requires a configured scheduler.",
+      "After installing or updating PostPlus, continue your original task."
     ]
   },
   "source": "PostPlusAI/postplus-skills",

@@ -2,6 +2,38 @@
 
 Use this reference for Meta account reviews, creative decisions, and specific account operations. Use [channel execution](channel-execution.md) for connection, authorization, operation identity, and recovery; use [performance reporting](performance-report.md) for date windows, comparisons, and metric math. `B` below means the business data at `output.result.data` in the first successful CLI response.
 
+## Strategy field lookup
+
+For a copied Strategy, read only the rows needed by its lookup keys. `B` is
+`output.result.data`. Common formulas, business targets and window rules live in
+[strategy execution](strategy-execution.md#bind-metrics-before-evaluating-conditions).
+
+| Metric | Tool | Returned fields | Interpretation |
+| --- | --- | --- | --- |
+| Account context | `METAADS_GET_AD_ACCOUNTS` | `B.data[].id`, `B.data[].account_id`, `B.data[].currency`, `B.data[].timezone_name` | Input `fields` is CSV; select the actual account, currency and timezone. |
+| Spend; impressions; CTR; CPM | `METAADS_GET_INSIGHTS` | `B.data[].spend`, `B.data[].impressions`, `B.data[].clicks` | Numeric strings; spend in account currency; clicks means all clicks. |
+| CTR (Link clicks); CPC (Link) | `METAADS_GET_INSIGHTS` | `B.data[].inline_link_clicks` | Combine with impressions or spend; do not replace with all clicks. |
+| Frequency | `METAADS_GET_INSIGHTS` | `B.data[].frequency` | Exact scope/window aggregate, never daily averages. |
+| Purchases; website/app purchases; installs; leads; event costs | `METAADS_GET_INSIGHTS` | `B.data[].actions` | Match one verified `action_type`, parse its `value`; event cost uses spend. `cpp` is cost per 1,000 people reached. |
+| Purchase/app/lead ROAS; leads value | `METAADS_GET_INSIGHTS` | `B.data[].action_values` | Match the event's monetary value; ROAS also needs spend. Leads require an approved value source. |
+| Identity, parents, name and state | `METAADS_GET_OBJECT` | `B.id`, `B.account_id`, `B.campaign_id`, `B.adset_id`, `B.name`, `B.status`, `B.effective_status` | Input `object_id`, `fields` array; request fields applicable to that object. |
+| Hours since creation | `METAADS_GET_OBJECT` | `B.created_time` | Evaluation instant minus creation instant in hours, not first delivery. |
+| Campaign daily budget | `METAADS_GET_OBJECT` | `B.daily_budget` | Raw amount; verify units before comparison/write. |
+| Ad-set budget/bid; active ad sets in campaign | `METAADS_READ_ADSETS` | `B.data[].id`, `B.data[].campaign_id`, `B.data[].daily_budget`, `B.data[].bid_amount`, `B.data[].bid_strategy`, `B.data[].status`, `B.data[].effective_status` | Input `ad_account_id`, enum-array `fields`; match parent and agreed active state. |
+| Ads/active ads in ad set; ad bid | `METAADS_LIST_ADS` | `B.data[].id`, `B.data[].adset_id`, `B.data[].bid_amount`, `B.data[].status`, `B.data[].effective_status` | Input `ad_account_id`, CSV `fields`; count unique matching IDs, not first-page rows. |
+
+Insights requires `object_id`; set matching `level`, array `fields`, explicit
+`time_range.since/until` and selected `action_attribution_windows`. Omit
+`date_preset` for explicit dates; Maximum is not a supported preset. Date-only
+increments cannot prove hourly rules. Parent/account metrics require separate
+scope reads. Use the read recipes below for pagination; READ_ADSETS/LIST_ADS
+cannot accept their output continuation, so truncated counts remain unknown.
+
+CAC/CPL/Target CPA, Conversion Rate, Time and CBO Dynamic Budget use the common
+business definitions; CBO uses final Target CPA × complete active ad-set count.
+For manual amount changes, verify the platform-displayed currency and amount.
+A readable bid does not establish an AI bid-write operation.
+
 ## Establish the decision before collecting data
 
 Record the account, currency, time zone, objective, optimization event, evaluation window, attribution window, and business target. Separate a platform lead from a qualified lead or customer. If qualification comes from a CRM, record its definition, join key, observation date, and unresolved records; see [B2B growth](b2b-growth.md). Without that evidence, report cost per platform lead and mark qualified-lead economics unknown.
@@ -163,6 +195,27 @@ executed agreement.
 - Creator partnerships require audience fit, actual usage permissions, and evidence from the content. They are an experiment in message and audience access, not a guaranteed source of incremental reach.
 - Discuss scaling only when economics remain acceptable over mature windows and creative supply, audience capacity, and fulfillment support it. Meta budget amount writes are excluded below; deliver a specific budget proposal and the evidence needed to revisit it.
 
+## Strategy action coverage
+
+| Requested action and target | Current AI-direct execution mapping |
+| --- | --- |
+| Pause or start a campaign | `METAADS_UPDATE_CAMPAIGN` with campaign `status`; use the exact campaign ID and independently read it through `METAADS_GET_OBJECT`. See the complete pause/readback recipe in [Meta Ads](meta-ads.md). |
+| Add/remove a name marker on a campaign | `METAADS_UPDATE_CAMPAIGN` with `name`; read the existing name, change only the requested marker and read back the same campaign. Do not append a marker twice. |
+| Pause/start or rename an ad set or ad | No general `UPDATE_AD_SET` or `UPDATE_AD` tool is available in the current fixed directory. A campaign update is not an equivalent action. `METAADS_UPDATE_AD_CREATIVE` changes a creative's name/status, not ad delivery or ad-set state. |
+| Increase, decrease or set a campaign budget | `METAADS_UPDATE_CAMPAIGN` exposes amount fields, but the input amount-unit contract remains unresolved as documented in [Meta Ads](meta-ads.md). Keep the exact calculated proposal; an amount write needs verified units and independent readback. |
+| Increase, decrease or set an ad-set budget | The general ad-set update operation is absent, and Meta amount-unit semantics remain unresolved. Do not move the budget to a parent campaign to execute a different change. |
+| Increase a bid amount | No matching bid-amount update path is available. A campaign `bid_strategy` field selects a strategy; it cannot implement a numeric bid increase or its cap. |
+| Duplicate an ad, ad set or campaign | No duplicate operation is available. Creation tools do not preserve a source object's complete settings or implement a once-in-a-lifetime duplication guard. |
+| Notify | Return the matched conditions in the current conversation for this evaluation. External delivery requires the user's requested destination and an available authorized messaging path. Neither is an installed recurring notification. |
+| Unattended recurring execution through Ads/Channels | This path has no strategy scheduler, durable rule state or cadence/cooldown executor. That mode needs these capabilities; one-time execution and user-performed reviews do not. A one-time call does not install recurrence. |
+
+New campaign creation is a separate supported path: `METAADS_CREATE_CAMPAIGN`,
+`METAADS_CREATE_AD_SET`, `METAADS_CREATE_AD_CREATIVE` and `METAADS_CREATE_AD`
+are available subject to their actual prerequisites and the existing amount
+contract. Use the creation recipes in [Meta Ads](meta-ads.md); do not invent a
+`creative_id` handoff that `CREATE_AD` does not accept. Missing update, duplicate
+or scheduling operations do not establish that campaign creation is absent.
+
 ## Supported changes and exact limitations
 
 Read [channel execution](channel-execution.md) before any remote change. A paused object is still a real object creation. Prepare the exact account/object, current value, requested value, rationale, expected effect, and recovery plan within the user's authorization.
@@ -235,3 +288,102 @@ Current boundaries:
 ## Deliverable
 
 Provide an object-level table containing ID/name, window, spend, chosen conversion definition, observed result, business target, evidence coverage, diagnosis, proposed action, and review date. Attach the saved request/result files and any exact change receipt. Name missing CRM joins, incomplete listings, untested field combinations, or unsupported operations explicitly. A clear partial review is useful; a falsely complete account verdict is not.
+
+<!-- strategy-parameters:generated:start -->
+## Prompt parameter bindings
+
+These bindings are generated from the same internal parameter source as copied Strategy prompts. Use only the required metrics, dependencies, target and campaign type. These are semantic bindings, not replacement tool schemas.
+
+When platform and campaign type match, use embedded parameters directly. Read this section only for a platform change, missing/inapplicable binding or actual tool conflict. Preserve user rules and thresholds; explain unsupported scope/actions and let the user choose an adjustment.
+
+| Context | Parameters |
+| --- | --- |
+| report | METAADS_GET_INSIGHTS: object_id=exact scoped ID, level=account/campaign/adset/ad matching that ID, fields=[only needed fields], time_range={since,until}; omit date_preset. Reuse action_attribution_windows (1d_click/7d_click/1d_view); do not add overlapping windows. Read numeric strings at B.data[]. |
+
+| Metric / target / campaign type | Binding |
+| --- | --- |
+| CAC | User-set acquisition-cost ceiling, in account currency/customer; reuse the approved customer definition and value. |
+| CPL | User-set lead-cost ceiling, in account currency/lead; distinct from observed Cost per lead. |
+| Target CPA | User-set target acquisition cost in account currency/conversion; do not substitute the bidding target. |
+| Conversion Rate | User-defined numerator/denominator and percent-or-ratio convention. Reuse the supplied formula; if absent, propose and confirm it before evaluation. |
+| Time | Evaluation clock in the rule timezone; preserve explicit timezone and whole-week execution hours. |
+| CBO Dynamic Budget | Target CPA × Active ad sets in campaign, in account currency; preserve the rule multiplier and budget owner. Inputs: Target CPA; Active ad sets in campaign. |
+| Spend | spend → B.data[].spend; account currency. Context: report. |
+| Impressions | impressions → B.data[].impressions; count. Context: report. |
+| _allClicks | clicks → B.data[].clicks; all-click count. Context: report. |
+| _linkClicks | inline_link_clicks → B.data[].inline_link_clicks; link-click count. Context: report. |
+| Frequency | frequency → B.data[].frequency; same-scope whole-window time_increment=all_days, not averaged daily frequency. Context: report. |
+| CTR | 100 × _allClicks / Impressions; percentage points (1%=1). Inputs: _allClicks; Impressions. |
+| CTR (Link clicks) | 100 × _linkClicks / Impressions; percentage points (1%=1). Inputs: _linkClicks; Impressions. |
+| CPC (Link) | Spend / _linkClicks; currency/link click. Inputs: Spend; _linkClicks. |
+| CPM | 1000 × Spend / Impressions; currency/1000 impressions. Inputs: Spend; Impressions. |
+| Purchases | actions → B.data[].actions[action_type=the bound event].value; parse numeric strings as event counts. Inputs: Event: Purchases. Context: report. |
+| Website purchases | actions → B.data[].actions[action_type=the bound event].value; parse numeric strings as event counts. Inputs: Event: Website purchases. Context: report. |
+| Mobile app purchases | actions → B.data[].actions[action_type=the bound event].value; parse numeric strings as event counts. Inputs: Event: Mobile app purchases. Context: report. |
+| Mobile app installs | actions → B.data[].actions[action_type=the bound event].value; parse numeric strings as event counts. Inputs: Event: Mobile app installs. Context: report. |
+| Leads | actions → B.data[].actions[action_type=the bound event].value; parse numeric strings as event counts. Inputs: Event: Leads. Context: report. |
+| Cost per purchase | Spend / Purchases; account currency/event. Inputs: Spend; Purchases. |
+| Cost per website purchase | Spend / Website purchases; account currency/event. Inputs: Spend; Website purchases. |
+| Cost per mobile app purchase | Spend / Mobile app purchases; account currency/event. Inputs: Spend; Mobile app purchases. |
+| Cost per mobile app install | Spend / Mobile app installs; account currency/event. Inputs: Spend; Mobile app installs. |
+| Cost per lead | Spend / Leads; account currency/event. Inputs: Spend; Leads. |
+| Purchase ROAS | action_values → B.data[].action_values[action_type=same event as Purchases].value / Spend; currency/currency ratio, not percent. Inputs: Spend; Event: Purchases. Context: report. |
+| Website purchase ROAS | action_values → B.data[].action_values[action_type=same event as Website purchases].value / Spend; currency/currency ratio, not percent. Inputs: Spend; Event: Website purchases. Context: report. |
+| Mobile app purchase ROAS | action_values → B.data[].action_values[action_type=same event as Mobile app purchases].value / Spend; currency/currency ratio, not percent. Inputs: Spend; Event: Mobile app purchases. Context: report. |
+| Leads value | action_values → B.data[].action_values[action_type=same verified lead event].value; account currency. Use approved CRM value if supplied; missing value is unknown, not lead count. Inputs: Event: Leads. Context: report. |
+| ROAS (Leads) | Leads value / Spend; currency/currency ratio. Inputs: Leads value; Spend. |
+| Hours since creation | METAADS_GET_OBJECT(object_id,fields=[id,created_time]): (evaluation timestamp − B.created_time)/3600 seconds; hours since actual creation. |
+| Daily budget / campaign | METAADS_GET_OBJECT(object_id=campaign ID,fields=[daily_budget]): B.daily_budget; currency/day after verifying raw units. |
+| Daily budget / adset | METAADS_READ_ADSETS(ad_account_id,fields=[id,campaign_id,daily_budget]): B.data[].daily_budget for the exact ad-set ID; verify raw units and ABO/CBO owner. |
+| Daily budget / ad | No ad-owned daily budget. Resolve budget ownership with the user; do not substitute its parent. |
+| Daily budget / selected | Resolve the exact budget-owning object and units before choosing a budget field. |
+| Bid amount / adset | METAADS_READ_ADSETS(ad_account_id,fields=[id,bid_amount,bid_strategy]): B.data[].bid_amount for the exact ad-set ID; verify raw units and bidding applicability. |
+| Bid amount / ad | METAADS_LIST_ADS(ad_account_id,fields=CSV id,bid_amount): B.data[].bid_amount for the exact ad ID; verify raw units and bidding applicability. |
+| Bid amount / campaign | No campaign bid-amount binding; do not substitute an ad-set bid. |
+| Bid amount / selected | Resolve the exact bid-owning object and unit before using bid_amount. |
+| Ads in ad set | METAADS_LIST_ADS(ad_account_id,fields=CSV id,adset_id,status,effective_status): count distinct B.data[].id matching the parent adset_id. Incomplete pagination means unknown. |
+| Active ads in ad set | METAADS_LIST_ADS(ad_account_id,fields=CSV id,adset_id,status,effective_status): count distinct B.data[].id matching the parent adset_id and agreed active status/effective_status. Incomplete pagination means unknown. |
+| Active ad sets in campaign | METAADS_READ_ADSETS(ad_account_id,fields=[id,campaign_id,status,effective_status]): count distinct B.data[].id under the exact campaign and agreed active definition; incomplete pagination means unknown. |
+| Event: Purchases | action_type=omni_purchase (all purchase channels; verify this matches the chosen business scope). Verify this event in the returned data and reuse its attribution; never add overlapping action types. |
+| Event: Website purchases | action_type=offsite_conversion.fb_pixel_purchase (website purchase). Verify this event in the returned data and reuse its attribution; never add overlapping action types. |
+| Event: Mobile app purchases | action_type=app_custom_event.fb_mobile_purchase (in-app purchase). Verify this event in the returned data and reuse its attribution; never add overlapping action types. |
+| Event: Mobile app installs | action_type=mobile_app_install (app install). Verify this event in the returned data and reuse its attribution; never add overlapping action types. |
+| Event: Leads | action_type=lead (aggregate lead; verify website/instant-form scope against the chosen event). Verify this event in the returned data and reuse its attribution; never add overlapping action types. |
+
+| Action / target / campaign type | Binding |
+| --- | --- |
+| Notify | Return matching values here; external delivery requires the user-selected destination and sending capability. |
+| Duplicate | No verified exact-duplication binding for this target. Preserve source/copy count and let the user choose manual duplication or another supported operation; creation alone is not duplication. |
+| Pause / campaign | METAADS_UPDATE_CAMPAIGN(campaign_id,status=PAUSED); read back same ID with METAADS_GET_OBJECT(fields=[id,status,effective_status]). |
+| Pause / adset | No verified AI-direct Pause binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
+| Pause / ad | No verified AI-direct Pause binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
+| Pause / selected | No verified AI-direct Pause binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
+| Start / campaign | METAADS_UPDATE_CAMPAIGN(campaign_id,status=ACTIVE); read back same ID with METAADS_GET_OBJECT(fields=[id,status,effective_status]). |
+| Start / adset | No verified AI-direct Start binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
+| Start / ad | No verified AI-direct Start binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
+| Start / selected | No verified AI-direct Start binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
+| Increase budget / campaign | METAADS_UPDATE_CAMPAIGN(campaign_id,daily_budget=calculated amount) exposes the field but its write-unit contract is unresolved. Verify units first or offer exact manual amount; read back same campaign. Never assume ×100. |
+| Increase budget / adset | No verified AI-direct Increase budget binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
+| Increase budget / ad | No verified AI-direct Increase budget binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
+| Increase budget / selected | No verified AI-direct Increase budget binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
+| Decrease budget / campaign | METAADS_UPDATE_CAMPAIGN(campaign_id,daily_budget=calculated amount) exposes the field but its write-unit contract is unresolved. Verify units first or offer exact manual amount; read back same campaign. Never assume ×100. |
+| Decrease budget / adset | No verified AI-direct Decrease budget binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
+| Decrease budget / ad | No verified AI-direct Decrease budget binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
+| Decrease budget / selected | No verified AI-direct Decrease budget binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
+| Set budget / campaign | METAADS_UPDATE_CAMPAIGN(campaign_id,daily_budget=calculated amount) exposes the field but its write-unit contract is unresolved. Verify units first or offer exact manual amount; read back same campaign. Never assume ×100. |
+| Set budget / adset | No verified AI-direct Set budget binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
+| Set budget / ad | No verified AI-direct Set budget binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
+| Set budget / selected | No verified AI-direct Set budget binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
+| Increase bid / campaign | No verified AI-direct Increase bid binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
+| Increase bid / adset | No verified AI-direct Increase bid binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
+| Increase bid / ad | No verified AI-direct Increase bid binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
+| Increase bid / selected | No verified AI-direct Increase bid binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
+| Add to name / campaign | METAADS_UPDATE_CAMPAIGN(campaign_id,name=final name); change only the requested marker once; GET_OBJECT readback of the same campaign name. |
+| Add to name / adset | No verified AI-direct Add to name binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
+| Add to name / ad | No verified AI-direct Add to name binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
+| Add to name / selected | No verified AI-direct Add to name binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
+| Remove from name / campaign | METAADS_UPDATE_CAMPAIGN(campaign_id,name=final name); change only the requested marker once; GET_OBJECT readback of the same campaign name. |
+| Remove from name / adset | No verified AI-direct Remove from name binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
+| Remove from name / ad | No verified AI-direct Remove from name binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
+| Remove from name / selected | No verified AI-direct Remove from name binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
+<!-- strategy-parameters:generated:end -->
