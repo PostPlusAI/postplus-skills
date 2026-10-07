@@ -127,11 +127,12 @@ consult it only when required for processing, not before every request.
 <!-- BEGIN GENERATED EXECUTION EXAMPLE -->
 ```bash
 postplus research run reddit-search \
+  --query "example topic" \
   --wait \
   --output ./result.json
 ```
 
 Follow the CLI's structured result and reported next action; do not infer recovery from free-text messages.
-Wait for explicit user approval when requested; an action does not authorize spending, publishing, or overwriting.
+Reuse explicit user approval that already covers the requested scope and maximum cost; otherwise obtain approval before confirming a quote. Never infer spending authorization from a task alone.
 Resume the same operation through its returned checkpoint or action; never resubmit uncertain work, repeat exhausted recovery, or switch providers to bypass failure.
 <!-- END GENERATED EXECUTION EXAMPLE -->

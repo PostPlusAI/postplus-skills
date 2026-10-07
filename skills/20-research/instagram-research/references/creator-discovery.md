@@ -54,7 +54,14 @@ Ask once only when needed:
 | Candidate handles | none | `instagram-profiles`, optional `instagram-posts` |
 | Post/Reel URLs | `instagram-posts` | profile authors |
 
-Contact enrichment: run `instagram-email-search` only for a narrowed shortlist.
+Contact enrichment: reuse already-collected profile biographies and profile links.
+If profiles have not been collected, run `instagram-email-search` only for the
+narrowed handles; it returns their public profile records. Read contact details
+only when explicitly present in the biography or published links, preserving the
+profile URL as evidence. If none are published, report "no public contact found";
+do not infer an address, promise a hidden contact-button email, or start broad
+keyword searches to fill the gap. This route does not crawl linked websites.
+Do not run both profile and contact collection for the same fresh shortlist.
 
 ## Route-Specific Evidence
 

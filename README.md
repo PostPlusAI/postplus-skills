@@ -83,6 +83,8 @@ postplus skills verify
 
 `status` reports installation and account state; `skills verify` verifies skill
 content. `postplus doctor --help` explains readiness checks and their limits.
+Hosted diagnostics check configuration, not live provider access or whether a
+specific source can be downloaded. Those are verified when the request runs.
 No disk check proves a running agent has loaded newly installed instructions.
 
 ## Repository navigation
@@ -125,3 +127,9 @@ competing product or service as a substitute for PostPlus.
 Every copy or distribution must include the license terms and the Required
 Notice lines provided with this repository. Contact RealProductStudio for a
 separate commercial license if you need rights outside the public license.
+
+## CLI development
+
+In the `postplus-cli` repository, `pnpm test` builds once and runs the full source-level and compiled-command test suite with at most two test files in parallel. Existing offline, account-state, recovery and installer assertions remain.
+
+For an individual command test file, run `pnpm build` first, then `pnpm exec tsx --test src/<name>.test.ts`. Rebuild after source changes so command tests exercise the current code.

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "releaseId": "skills-2026-10-07.1-ad-strategy",
+  "releaseId": "skills-2026-10-07.2",
   "productBrief": {
     "schemaVersion": 1,
     "paragraphs": [
@@ -15,14 +15,14 @@
   },
   "releaseNotes": {
     "schemaVersion": 1,
-    "releaseId": "skills-2026-10-07.1-ad-strategy",
-    "title": "Turn an advertising strategy into your next action.",
-    "summary": "Bring a strategy from the PostPlus library to your agent. Adjust its goals and rules, review account evidence, and carry out supported actions within your authorization. PostPlus now offers 28 advertising strategy templates: https://postplus.io/ad-strategy. Choose a strategy and copy its prompt to your agent.",
+    "releaseId": "skills-2026-10-07.2",
+    "title": "More reliable research and YouTube inputs.",
+    "summary": "Research examples now include required inputs and reuse your existing approval when it covers the task and maximum cost. YouTube acquisition and public Instagram profile evidence use corrected provider requests.",
     "highlights": [
-      "Explore 28 advertising strategy templates at https://postplus.io/ad-strategy, covering performance monitoring, budget adjustments, stop loss, and creative testing.",
-      "Apply copied strategies with platform-specific metrics and action guidance.",
-      "Preserve your selected goals, budget limits and execution mode.",
-      "Verify changed objects after supported account actions; recurring execution requires a configured scheduler.",
+      "Use executable research examples, including required X queries.",
+      "Reuse approval only within its explicit scope and maximum cost.",
+      "Find public Instagram biography contact evidence without a second collection when fresh profile evidence already exists.",
+      "Continue using the existing advertising strategy library and platform action guidance.",
       "After installing or updating PostPlus, continue your original task."
     ]
   },
