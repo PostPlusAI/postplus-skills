@@ -55,7 +55,7 @@ choices, retries, credentials, hidden filters, or internal routing.
 ## Run Discipline
 
 1. Pick one reference and one lane.
-2. Run the smallest real collection that can answer the decision.
+2. For ads, first read the stored public library as described in `references/ads-and-funnel.md`; distinguish snapshots from fresh evidence. Otherwise run the smallest real collection that can answer the decision.
 3. Parallelize independent sources when they do not depend on each other.
 4. If execution succeeds but evidence is empty, sparse, noisy, or off-topic,
    apply the quality rules below before accepting or

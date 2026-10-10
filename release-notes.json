@@ -1,13 +1,11 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-2026-10-07.2",
-  "title": "More reliable research and YouTube inputs.",
-  "summary": "Research examples now include required inputs and reuse your existing approval when it covers the task and maximum cost. YouTube acquisition and public Instagram profile evidence use corrected provider requests.",
+  "releaseId": "skills-2026-10-11.1",
+  "title": "Discover real ads and bring references to your agent.",
+  "summary": "Browse stored AI brand ads with PostPlus CLI and analyze original media through stable PostPlus links. Research guidance also supports collecting ads from a verified advertiser page.",
   "highlights": [
-    "Use executable research examples, including required X queries.",
-    "Reuse approval only within its explicit scope and maximum cost.",
-    "Find public Instagram biography contact evidence without a second collection when fresh profile evidence already exists.",
-    "Continue using the existing advertising strategy library and platform action guidance.",
-    "After installing or updating PostPlus, continue your original task."
+    "Discover stored ads by brand, category, and search without a new paid collection.",
+    "Open the original media reference and use media analysis for evidence-based creative breakdowns.",
+    "Use exact advertiser page identifiers when collecting new Meta ads."
   ]
 }
