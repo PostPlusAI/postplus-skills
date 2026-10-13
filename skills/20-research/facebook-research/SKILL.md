@@ -44,10 +44,14 @@ size, or output shape.
 
 | Missing | Ask |
 | --- | --- |
-| Seed | `What Facebook source should anchor this: page, profile, group, post URL, keyword, or event?` |
+| Non-ad seed | `What Facebook source should anchor this: page, profile, group, post URL, keyword, or event?` |
 | Decision | `What decision should this support: audit, benchmark, voice, ads, events, marketplace, or discovery?` |
 | Private target | `Can you provide a public URL or exported dataset instead?` |
-| Too broad | `Which 1-5 sources matter most for the first pass?` |
+| Non-ad scope too broad | `Which 1-5 sources matter most for the first pass?` |
+
+For ads, a product URL, unfamiliar brand, category, or problem is a sufficient
+seed. Discover related products yourself; follow the ad-specific quantity and
+stopping rules in `references/ads-and-funnel.md`.
 
 Do not ask the user for internal route identifiers, schemas, implementation
 choices, retries, credentials, hidden filters, or internal routing.
@@ -58,8 +62,7 @@ choices, retries, credentials, hidden filters, or internal routing.
 2. For ads, first read the stored public library as described in `references/ads-and-funnel.md`; distinguish snapshots from fresh evidence. Otherwise run the smallest real collection that can answer the decision.
 3. Parallelize independent sources when they do not depend on each other.
 4. If execution succeeds but evidence is empty, sparse, noisy, or off-topic,
-   apply the quality rules below before accepting or
-   exhausting the evidence.
+   apply the quality rules below before accepting or exhausting the evidence.
 5. Produce JSON as the source of truth and a compact HTML evidence artifact when
    item-level evidence was collected.
 6. Return a short chat answer: scope, counts, strongest finding, biggest gap,
@@ -78,7 +81,8 @@ Use only the public filters shown by the selected route.
 - Run `postplus research run <route> --<semantic flags> --wait --output
   <result.json>`.
 - Pass only public URLs, search terms, locations, scope, and result limits.
-- Keep the first pass bounded; expand only after inspecting the first result.
+- For non-ad routes, keep the first pass bounded; expand only after inspecting the first result.
+  For ads, collect toward the requested evidence outcome, using the ad reference.
   Stop on hard errors. Do not silently swap sources or invent missing data.
 - If the CLI returns a quote-confirmation challenge, reuse existing explicit user approval only when it covers the challenge scope and maximum cost; otherwise obtain approval before running
   `postplus quote confirm --json --challenge-file <challenge.json>` and retry
@@ -91,7 +95,7 @@ Use only the public filters shown by the selected route.
 | Public page/profile posts | `facebook-profile-posts` | `--url`, `--limit` | 1-5 URLs, 20 posts |
 | Direct post evidence | `facebook-post-by-url` | `--url` | 1-10 URLs |
 | Public group posts | `facebook-group-posts` | `--url`, `--limit` | 1-3 groups, 20 posts |
-| Ad-library creative | `facebook-ads-library` | `--query`, `--country`, `--status`, `--limit` | 20 ads |
+| Ad-library creative | `facebook-ads-library` | `--query`, `--country`, `--status`, `--limit` | See ad reference: outcome-sized collection |
 | Post/reel comments | `facebook-comments` | `--url`, `--limit` | 1-5 URLs, 20 comments |
 | Public group discussion | `facebook-groups` | `--url`, optional `--query`, `--limit` | 20 posts |
 | Events/local activity | `facebook-events` | `--query` or `--url`, `--limit` | 10 events |
@@ -108,8 +112,8 @@ Only if platform scope or evidence interpretation remains unclear, consult
 
 1. Check that page/post/comment/ad records match the requested lane; public group posts are not automatically comment evidence.
 2. Change the public source URL or a supported query when evidence misses; keep ad creative separate from organic posts.
-3. Allow at most two changed follow-up passes after successful but insufficient results, within approved scope and budget; do not repeat an identical request or hide a failed/pending operation.
-4. Stop when sufficient, at the bound, or when another pass would not help. Report useful evidence and uncertainty; preserve raw results and source links.
+3. For non-ad routes, allow at most two changed follow-up passes after successful but insufficient results, within approved scope and budget; do not repeat an identical request or hide a failed/pending operation.
+4. For ads, use the ad reference's evidence-based stopping conditions. Otherwise stop when sufficient, at the bound, or when another pass would not help. Report useful evidence and uncertainty; preserve raw results and source links.
 
 Ad-library visibility is not spend or ROAS; preserve the source URL and observed dates, and distinguish comments from post text.
 Full machine fields belong to `postplus research schema --route <route> --json`;

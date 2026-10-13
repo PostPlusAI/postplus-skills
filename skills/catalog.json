@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "releaseId": "skills-2026-10-11.1",
+  "releaseId": "skills-2026-10-13.1",
   "productBrief": {
     "schemaVersion": 1,
     "paragraphs": [
@@ -15,13 +15,13 @@
   },
   "releaseNotes": {
     "schemaVersion": 1,
-    "releaseId": "skills-2026-10-11.1",
-    "title": "Discover real ads and bring references to your agent.",
-    "summary": "Browse stored AI brand ads with PostPlus CLI and analyze original media through stable PostPlus links. Research guidance also supports collecting ads from a verified advertiser page.",
+    "releaseId": "skills-2026-10-13.1",
+    "title": "Explore more ad references with reusable research reports.",
+    "summary": "Research related advertisers from a product or topic, collect broader evidence, and browse saved results in a consistent HTML report.",
     "highlights": [
-      "Discover stored ads by brand, category, and search without a new paid collection.",
-      "Open the original media reference and use media analysis for evidence-based creative breakdowns.",
-      "Use exact advertiser page identifiers when collecting new Meta ads."
+      "Research guidance targets 150 relevant video references when sufficient evidence is available, with explicit coverage gaps when sources are exhausted.",
+      "Generate a searchable HTML report with advertiser filters, original ad copy, media, and observed delivery details.",
+      "Reuse published library references before collecting fresh ads, and distinguish failed searches from verified empty results."
     ]
   },
   "source": "PostPlusAI/postplus-skills",

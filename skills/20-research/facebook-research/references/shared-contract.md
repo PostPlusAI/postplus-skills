@@ -27,7 +27,8 @@ privacy boundary, sample, or deliverable. Do not ask for implementation details.
 
 ## Bounds And Recovery
 
-- Start with one route and the smallest useful sample.
+- For non-ad routes, start with one route and the smallest useful sample.
+  Ads follow the outcome-sized collection rules in `ads-and-funnel.md`.
 - Keep independent sources separately attributable.
 - Follow the CLI action for execution failures; successful but insufficient evidence follows the quality limits in this skill’s SKILL.md.
 - Resume a pending checkpoint with
