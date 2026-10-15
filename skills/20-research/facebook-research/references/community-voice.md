@@ -45,6 +45,10 @@ Group evidence into:
 - content or offer ideas
 - weak or noisy threads
 
+## Group Sample Boundary
+
+Group collection returns a chronological sample, not a server-side keyword search. Read `output.items[]`: `text`, `time`, `commentsCount`, `sharesCount`, `likesCount`, `groupTitle`, and `legacyId`. Group media is in `attachments[]`, not the ordinary-post `media[]` shape. Analyze relevant text within the returned sample and disclose that sample scope; do not claim exhaustive keyword coverage or treat post text as comments.
+
 ## Output
 
 Create `result.json` and `evidence.html`.

@@ -33,3 +33,7 @@ content, with a claim or example only the user can credibly make. Do not copy
 another creator's prose, images, testimonials, or performance claims. Report
 sample size, selection method, exceptions, and what an experiment would need
 to measure.
+
+## Collection Field Reading
+
+Read research records from `output.items[]`. Facebook ordinary posts use `text`, `time`, `comments`, `shares` and `media[]`; group posts use `text`, `time`, `commentsCount` and `sharesCount`. YouTube videos use `text` for description, `viewCount`, `commentsCount` and `subtitles[].srt` for timestamped captions. Captions and descriptions are not audience comments. Preserve subtitle language/type. Mark missing metrics, sponsorship, verification, group size and founding dates unavailable; never replace missing values with zero or false.

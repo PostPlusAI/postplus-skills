@@ -25,3 +25,7 @@ poll is still pending, retain the recovery command and state the current stage.
 Follow typed failure and quote instructions. Retain any original report and shown
 billing even when delivery is incomplete. Neither missing usage nor an unknown
 result proves that no charge occurred.
+
+## Public Reel Sources
+
+Pass the original public Reel URL. Source resolution must identify the requested video and obtain readable media; a post identifier alone does not identify that video. If media cannot be resolved or read, stop and report the source failure. Do not replace it with another post or present text-only observations as video analysis. Signed media URLs expire; preserve the original URL as evidence.

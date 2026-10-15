@@ -20,6 +20,7 @@ Ask only if no page, profile, or reel URL exists:
 
 | Evidence need | Route | First pass |
 | --- | --- | --- |
+| One direct public Reel | `facebook-post-by-url` | One Reel URL |
 | Reels from a page/profile | `facebook-reels` | `1-5` page/profile URLs, small reel bound |
 | Page/profile posts for a mixed benchmark | `facebook-posts` | `1-5` page/profile URLs, up to `10` posts each |
 
@@ -27,6 +28,8 @@ For a mixed video and post benchmark, run reels and posts in parallel and keep
 them in separate lanes.
 
 ## Read Fields
+
+Read records from `output.items[]`. For a direct Reel, follow [Public Content](public-content.md#read-fields): `message.text`, `creation_time`, and `short_form_video_context` carry its text, time and video identity; the root `post_id` is not the video ID. Page reel collection has a separate shape (`text`, `time`, `shareable_url`, `video_owner`, `playback_video`); use only fields actually returned.
 
 Use the fields present in the result: source and shareable URL, text or caption,
 date, public play-count clue, media and playback fields, owner or page name, and

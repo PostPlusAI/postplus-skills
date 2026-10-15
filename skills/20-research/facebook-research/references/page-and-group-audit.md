@@ -25,10 +25,10 @@ Ask only if the source is missing:
 
 Run independent pages and groups in parallel.
 
-This route audits from the recent-post scrape sample. For page identity,
+This route audits from the recent-post collection sample. For page identity,
 category, and activity beyond the post sample, add the `facebook-pages` route in
-`partner-discovery.md`; for deeper group discussion, add the `facebook-groups`
-route in `community-voice.md`. Keep each added lane separate in the evidence.
+`partner-discovery.md`; for deeper discussion analysis, use `community-voice.md`. The `facebook-groups`
+route and `facebook-group-posts` read the same collection, so do not count them as independent evidence. Keep page identity separate from post evidence.
 
 ## Judge
 
@@ -40,6 +40,10 @@ Score only from public post evidence:
 - creative: media, video posts, links, offers, calls to action
 - group quality: discussion text, spam/noise ratio
 - gaps: empty, stale, private, off-topic, or low-signal evidence
+
+## Read Fields
+
+Use `output.items[]` and the record-specific field table in [Public Content](public-content.md#read-fields). Exclude missing counts from comparisons; report unavailable fields explicitly. Group size, founding date and verification cannot be inferred from post activity.
 
 ## Output
 

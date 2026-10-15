@@ -39,13 +39,6 @@ consult it only when required for processing, not before every request.
 
 <!-- BEGIN GENERATED EXECUTION EXAMPLE -->
 ```bash
-postplus research run youtube-videos \
-  --url "https://example.com/source" \
-  --wait \
-  --output ./result.json
-```
-
-```bash
 postplus research run youtube-channel-summary \
   --channel "@example" \
   --wait \
@@ -70,6 +63,14 @@ Resume the same operation through its returned checkpoint or action; never resub
 
 While a run is pending, tell the user the research is continuing from a saved
 checkpoint and continue independent brief or source-review work.
+
+## Read Video Records
+
+Read `youtube-videos` records from `output.items[]`: `id`, `url`, `title`, `text` (description), `date`, `viewCount`, `likes`, `commentsCount`, `channelName`, `channelUrl`, `channelUsername`, `numberOfSubscribers`, and `thumbnailUrl`. Fields are optional: mark absent metrics unavailable, never zero.
+
+`duration` is a time string (`HH:MM:SS`), not a numeric seconds field. Existing captions appear in `subtitles[]` with `srt`, `language`, and `type`; preserve their timestamps and language. Missing subtitles mean no captions were obtained. Do not substitute the description for a transcript or imply new speech transcription occurred.
+
+`hashtags` are not the complete video tags. `isPaidContent` means paid access, not sponsorship. Sponsorship is unavailable; absent verification is unknown. Do not interpret channel age restrictions as verified video age restrictions. Download URLs and quality are not provided by this metadata route; use the separate download route only when requested.
 
 ## Output
 

@@ -45,6 +45,10 @@ Extract:
 
 Do not infer causality. Rank examples only inside the collected sample.
 
+## Read Fields
+
+Use `output.items[]` and the record-specific field table in [Public Content](public-content.md#read-fields). Exclude missing counts from comparisons; report unavailable fields explicitly. Group size, founding date and verification cannot be inferred from post activity.
+
 ## Output
 
 Create `result.json` and `evidence.html`.

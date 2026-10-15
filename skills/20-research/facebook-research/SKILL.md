@@ -16,11 +16,15 @@ creator, community, competitor, or funnel decision.
 
 Read only the one narrow reference matching the job.
 
-## Two Lanes
+## Collection Routes
 
 Facebook has URL-led routes for public page/profile/group/post content and
 specialized routes for reels, comments, ads, events, marketplace, pages, and
 search. Pick the route by user intent; PostPlus handles execution details.
+
+All post collections return `output.items[]`; fields differ between ordinary posts, group posts and Reels. Follow the selected reference. `facebook-group-posts` and `facebook-groups` sample the same public group posts; do not run both as independent corroboration. Both group routes return a chronological post sample with no server-side keyword filter. Missing group membership, founding dates or verification are unavailable, not zero or false.
+
+Use `web-search` for external source discovery only; its snippets are not Facebook post or comment evidence. Follow `references/public-content.md` for search-page field reading.
 
 ## Route
 
@@ -97,7 +101,7 @@ Use only the public filters shown by the selected route.
 | Public group posts | `facebook-group-posts` | `--url`, `--limit` | 1-3 groups, 20 posts |
 | Ad-library creative | `facebook-ads-library` | `--query`, `--country`, `--status`, `--limit` | See ad reference: outcome-sized collection |
 | Post/reel comments | `facebook-comments` | `--url`, `--limit` | 1-5 URLs, 20 comments |
-| Public group discussion | `facebook-groups` | `--url`, optional `--query`, `--limit` | 20 posts |
+| Public group discussion | `facebook-groups` | `--url`, `--limit` | 20 posts |
 | Events/local activity | `facebook-events` | `--query` or `--url`, `--limit` | 10 events |
 | Marketplace listings | `facebook-marketplace` | `--url`, `--limit` | 10 listings |
 | Page identity | `facebook-pages` | `--url` | 1-5 pages |
@@ -120,13 +124,6 @@ Full machine fields belong to `postplus research schema --route <route> --json`;
 consult it only when required for processing, not before every request.
 
 <!-- BEGIN GENERATED EXECUTION EXAMPLE -->
-```bash
-postplus research run facebook-group-posts \
-  --url "https://example.com/source" \
-  --wait \
-  --output ./result.json
-```
-
 ```bash
 postplus research run facebook-ads-library \
   --query "example topic" \

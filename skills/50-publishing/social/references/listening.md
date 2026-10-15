@@ -60,3 +60,7 @@ For an ongoing listening request, keep a project source list of actual links,
 queries, date windows, and exclusions. Reuse the user's existing customer
 definition; do not duplicate a separate “ideal customer” database in the
 Skill. Refresh the list only as the user's request requires.
+
+## Collection Field Reading
+
+Read research records from `output.items[]`. Facebook ordinary posts use `text`, `time`, `comments`, `shares` and `media[]`; group posts use `text`, `time`, `commentsCount` and `sharesCount`. YouTube videos use `text` for description, `viewCount`, `commentsCount` and `subtitles[].srt` for timestamped captions. Captions and descriptions are not audience comments. Preserve subtitle language/type. Mark missing metrics, sponsorship, verification, group size and founding dates unavailable; never replace missing values with zero or false.
