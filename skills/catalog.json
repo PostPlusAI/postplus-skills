@@ -1,12 +1,12 @@
 {
   "schemaVersion": 2,
-  "releaseId": "skills-2026-10-13.1",
+  "releaseId": "skills-2026-10-15.1",
   "productBrief": {
     "schemaVersion": 1,
     "paragraphs": [
       "PostPlus helps your AI agent handle marketing work, from market research and content creation to social publishing and advertising management.",
       "Research markets and audiences: explore popular content, competitors, and audience interests on TikTok, Instagram, Facebook, and YouTube to find the right marketing direction.",
-      "Create marketing content: write social posts and ad copy, and generate images, video, and voice for different platforms.",
+      "Create marketing content: write social posts and ad copy, and generate images and video for different platforms.",
       "Connect social accounts: connect Instagram, Facebook, YouTube, and TikTok accounts to prepare content and, after your approval, carry out supported publishing, scheduling, or engagement actions.",
       "Connect advertising accounts: connect Meta Ads, Google Ads, and other supported ad platforms to plan campaigns, analyze performance, and carry out supported campaign launches and adjustments after your approval.",
       "Explore 28 advertising strategy templates for performance monitoring, budget adjustments, stop loss, and creative testing at https://postplus.io/ad-strategy. Choose a strategy and copy its prompt to your agent to adapt it to your goals and account.",
@@ -15,13 +15,13 @@
   },
   "releaseNotes": {
     "schemaVersion": 1,
-    "releaseId": "skills-2026-10-13.1",
-    "title": "Explore more ad references with reusable research reports.",
-    "summary": "Research related advertisers from a product or topic, collect broader evidence, and browse saved results in a consistent HTML report.",
+    "releaseId": "skills-2026-10-15.1",
+    "title": "Create videos with Seedance 2.5.",
+    "summary": "Video generation uses Seedance 2.5 for text, frames, references, editing, and extending clips.",
     "highlights": [
-      "Research guidance targets 150 relevant video references when sufficient evidence is available, with explicit coverage gaps when sources are exhausted.",
-      "Generate a searchable HTML report with advertiser filters, original ad copy, media, and observed delivery details.",
-      "Reuse published library references before collecting fresh ads, and distinguish failed searches from verified empty results."
+      "Choose from six video generation modes using the same video skill.",
+      "Use existing audio alongside image and video references where the selected mode supports it.",
+      "Continue tracking and downloading your existing generation results."
     ]
   },
   "source": "PostPlusAI/postplus-skills",
@@ -36,7 +36,7 @@
       "title": "Plan, create, and manage ads"
     },
     "generate": {
-      "title": "Generate images, video, and voice"
+      "title": "Generate images and video"
     },
     "transcribe": {
       "title": "Transcribe and create subtitles"
@@ -57,17 +57,6 @@
       "category": "advertise",
       "example": "Review last week's Google and Meta ad results, explain the next tests, and prepare an account change for my approval.",
       "path": "skills/60-ads/ads/SKILL.md",
-      "status": "released",
-      "supportedModels": []
-    },
-    {
-      "familyId": "routing-contracts",
-      "familyName": "Routing & Contracts",
-      "name": "audio-generation",
-      "description": "Plan TTS, voice cloning, voice change, translated dub, or lip-sync audio. Resolve voice and reference policy before handing a ready request to voice-batch-runner.",
-      "category": "generate",
-      "example": "Plan a translated dub that preserves the speaker’s approved voice.",
-      "path": "skills/10-routing/audio-generation/SKILL.md",
       "status": "released",
       "supportedModels": []
     },
@@ -546,42 +535,12 @@
       "familyId": "media-production",
       "familyName": "Media and Creative Production",
       "name": "video-batch-runner",
-      "description": "Generate videos from briefs, prompts, images, audio, or reference clips. Choose a supported model, submit one or many clips, resume runs, and download results.",
+      "description": "Generate videos from briefs, prompts, images, audio, or reference clips. Choose a Seedance 2.5 generation mode, submit one or many clips, resume runs, and download results.",
       "category": "generate",
       "example": "Generate a short video from this approved script and reference image.",
       "path": "skills/40-creative/video-batch-runner/SKILL.md",
       "status": "released",
       "supportedModels": [
-        {
-          "key": "video-seedance-2-image",
-          "name": "Doubao Seedance 2 0 260128",
-          "source": "endpointKey"
-        },
-        {
-          "key": "video-seedance-2-text",
-          "name": "Doubao Seedance 2 0 260128",
-          "source": "endpointKey"
-        },
-        {
-          "key": "video-seedance-2-fast-image",
-          "name": "Doubao Seedance 2 0 Fast 260128",
-          "source": "endpointKey"
-        },
-        {
-          "key": "video-seedance-2-fast-text",
-          "name": "Doubao Seedance 2 0 Fast 260128",
-          "source": "endpointKey"
-        },
-        {
-          "key": "video-seedance-2-mini-image",
-          "name": "Doubao Seedance 2 0 Mini 260615",
-          "source": "endpointKey"
-        },
-        {
-          "key": "video-seedance-2-mini-text",
-          "name": "Doubao Seedance 2 0 Mini 260615",
-          "source": "endpointKey"
-        },
         {
           "key": "video-seedance-2-5-edit",
           "name": "Doubao Seedance 2.5",
@@ -611,36 +570,6 @@
           "key": "video-seedance-2-5-text",
           "name": "Doubao Seedance 2.5",
           "source": "endpointKey"
-        },
-        {
-          "key": "video-infinitetalk",
-          "name": "InfiniteTalk",
-          "source": "endpointKey"
-        },
-        {
-          "key": "video-kling-v2-6-pro-motion-control",
-          "name": "Kwaivgi Kling v2.6 Pro Motion Control",
-          "source": "endpointKey"
-        },
-        {
-          "key": "video-kling-v3-0-pro-image",
-          "name": "Kwaivgi Kling v3.0 Pro Image To Video",
-          "source": "endpointKey"
-        },
-        {
-          "key": "video-kling-v3-0-pro-text",
-          "name": "Kwaivgi Kling v3.0 Pro Text To Video",
-          "source": "endpointKey"
-        },
-        {
-          "key": "video-kling-v3-0-std-image",
-          "name": "Kwaivgi Kling v3.0 Std Image To Video",
-          "source": "endpointKey"
-        },
-        {
-          "key": "video-kling-v3-0-std-text",
-          "name": "Kwaivgi Kling v3.0 Std Text To Video",
-          "source": "endpointKey"
         }
       ],
       "requirements": {
@@ -648,24 +577,12 @@
           "media"
         ],
         "endpointKeys": [
-          "video-infinitetalk",
-          "video-kling-v2-6-pro-motion-control",
-          "video-kling-v3-0-pro-image",
-          "video-kling-v3-0-pro-text",
-          "video-kling-v3-0-std-image",
-          "video-kling-v3-0-std-text",
           "video-seedance-2-5-edit",
           "video-seedance-2-5-extend",
           "video-seedance-2-5-first-frame",
           "video-seedance-2-5-first-last-frame",
           "video-seedance-2-5-reference",
-          "video-seedance-2-5-text",
-          "video-seedance-2-fast-image",
-          "video-seedance-2-fast-text",
-          "video-seedance-2-image",
-          "video-seedance-2-mini-image",
-          "video-seedance-2-mini-text",
-          "video-seedance-2-text"
+          "video-seedance-2-5-text"
         ]
       }
     },
@@ -691,37 +608,6 @@
         ],
         "endpointKeys": [
           "transcription-video"
-        ]
-      }
-    },
-    {
-      "familyId": "media-production",
-      "familyName": "Media and Creative Production",
-      "name": "voice-batch-runner",
-      "description": "Execute approved voice design or cloning requests from scripts and persona references. Return reusable audio takes and saved run results with consistent voice identity.",
-      "category": "generate",
-      "example": "Generate these approved voice takes from the scripts and voice reference.",
-      "path": "skills/40-creative/voice-batch-runner/SKILL.md",
-      "status": "released",
-      "supportedModels": [
-        {
-          "key": "voice-clone",
-          "name": "Qwen3 TTS Voice Clone",
-          "source": "endpointKey"
-        },
-        {
-          "key": "voice-design",
-          "name": "Qwen3 TTS Voice Design",
-          "source": "endpointKey"
-        }
-      ],
-      "requirements": {
-        "capabilities": [
-          "media"
-        ],
-        "endpointKeys": [
-          "voice-clone",
-          "voice-design"
         ]
       }
     },

@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-2026-10-13.1",
-  "title": "Explore more ad references with reusable research reports.",
-  "summary": "Research related advertisers from a product or topic, collect broader evidence, and browse saved results in a consistent HTML report.",
+  "releaseId": "skills-2026-10-15.1",
+  "title": "Create videos with Seedance 2.5.",
+  "summary": "Video generation uses Seedance 2.5 for text, frames, references, editing, and extending clips.",
   "highlights": [
-    "Research guidance targets 150 relevant video references when sufficient evidence is available, with explicit coverage gaps when sources are exhausted.",
-    "Generate a searchable HTML report with advertiser filters, original ad copy, media, and observed delivery details.",
-    "Reuse published library references before collecting fresh ads, and distinguish failed searches from verified empty results."
+    "Choose from six video generation modes using the same video skill.",
+    "Use existing audio alongside image and video references where the selected mode supports it.",
+    "Continue tracking and downloading your existing generation results."
   ]
 }

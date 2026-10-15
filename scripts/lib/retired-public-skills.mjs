@@ -1,5 +1,6 @@
 // Authoring source; the public repository receives an exact generated projection.
 export const RETIRED_PUBLIC_SKILLS = [
+  'voice-batch-runner', 'audio-generation',
   'postplus-shared', 'social-media-extractor', 'generation-router', 'media-router',
   'editing-decision-engine', 'storyboard-grid-writer', 'creative-qa',
   'slideshow-producer', 'subtitle-packager', 'ugc-flow', 'workflow-creation',

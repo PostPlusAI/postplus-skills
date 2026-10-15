@@ -1,6 +1,6 @@
 ---
 name: video-batch-runner
-description: Generate videos from briefs, prompts, images, audio, or reference clips. Choose a supported model, submit one or many clips, resume runs, and download results.
+description: Generate videos from briefs, prompts, images, audio, or reference clips. Choose a Seedance 2.5 generation mode, submit one or many clips, resume runs, and download results.
 metadata:
   postplus:
     familyId: media-production
@@ -10,14 +10,14 @@ metadata:
 # Video Batch Runner
 
 This is the single PostPlus video-generation skill. It owns creative request
-assembly and execution across released video models; do not create a separate
+assembly and execution across the six Seedance 2.5 generation modes; do not create a separate
 architect, preflight report, reference contract, or model-specific submitter.
 
 ## Workflow
 
 1. Read the brief and inspect the supplied media. Use `media-analysis` first only
    when understanding an existing video materially changes the new render.
-2. Run `postplus media schema --json`, choose the smallest released endpoint
+2. Run `postplus media schema --json`, choose the smallest Seedance 2.5 endpoint
    whose input roles match the job, then load its exact fields with `postplus
    media schema --endpoint <endpoint> --json`:
    - no driving media: text-to-video
@@ -26,8 +26,6 @@ architect, preflight report, reference contract, or model-specific submitter.
    - several images, videos, or audios that guide the result: reference video
    - change an existing video's content: video edit
    - continue an existing video: video extend
-   - portrait plus approved audio: talking head
-   - identity image plus motion source video: motion transfer
 3. Decide each asset's role from the task. Bind identity, product, first/last
    frame, timing, or motion only when the asset must control that property. Treat
    style and benchmark media as inspiration, and omit media that should not
@@ -91,7 +89,7 @@ architect, preflight report, reference contract, or model-specific submitter.
 
 <!-- BEGIN GENERATED EXECUTION EXAMPLE -->
 ```bash
-postplus media create video-kling-v3-0-pro-text \
+postplus media create video-seedance-2-5-text \
   --prompt "Describe the result you need" \
   --wait \
   --output ./result.json

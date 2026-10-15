@@ -101,7 +101,7 @@ PostPlus helps your AI agent handle marketing work, from market research and con
 
 Research markets and audiences: explore popular content, competitors, and audience interests on TikTok, Instagram, Facebook, and YouTube to find the right marketing direction.
 
-Create marketing content: write social posts and ad copy, and generate images, video, and voice for different platforms.
+Create marketing content: write social posts and ad copy, and generate images and video for different platforms.
 
 Connect social accounts: connect Instagram, Facebook, YouTube, and TikTok accounts to prepare content and, after your approval, carry out supported publishing, scheduling, or engagement actions.
 

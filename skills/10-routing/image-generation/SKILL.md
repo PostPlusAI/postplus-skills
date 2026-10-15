@@ -62,7 +62,6 @@ It must:
 | Needs storyboard panels | Prepare the panel plan here before `image-batch-runner` |
 | Needs execution with normalized request | `image-batch-runner` |
 | Final output is video | `video-batch-runner` |
-| Final output is audio | `audio-generation` |
 
 ## Output Shape
 Return:
