@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "releaseId": "skills-2026-10-15.2",
+  "releaseId": "skills-2026-10-18.2",
   "productBrief": {
     "schemaVersion": 1,
     "paragraphs": [
@@ -15,13 +15,13 @@
   },
   "releaseNotes": {
     "schemaVersion": 1,
-    "releaseId": "skills-2026-10-15.2",
-    "title": "Research public sources with clearer evidence.",
-    "summary": "Facebook, YouTube, and web research use consistent result collections with explicit field meanings and missing-data limits.",
+    "releaseId": "skills-2026-10-18.2",
+    "title": "Cloud video uploads with the same analysis format.",
+    "summary": "Adds private Google Cloud uploads for video analysis while preserving the analysis model, prompts, and report format.",
     "highlights": [
-      "Read public Facebook posts, group samples, and direct Reels with the correct record fields.",
-      "Keep YouTube descriptions separate from existing captions, including caption language and timestamps.",
-      "Treat failed or duplicate search pages as failures, and distinguish unavailable metrics from zero."
+      "Analyze local videos and supported video links through the existing video-analysis command.",
+      "Keep interrupted uploads tied to their original operation for recovery.",
+      "Receive the same report structure after a completed analysis."
     ]
   },
   "source": "PostPlusAI/postplus-skills",
