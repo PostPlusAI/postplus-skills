@@ -85,10 +85,9 @@ parallel, but their result sets remain separate until presentation.
 - If a run returns a saved async checkpoint, resume it with
   `postplus research run --resume-from <result.json>` rather than starting
   a duplicate run.
-- If a quote-confirmation challenge appears, show its scope and PostPlus credits. Only
-  after the user confirms, run
-  `postplus quote confirm --json --challenge-file <challenge.json>` and retry
-  with the returned token.
+- Requested tasks use existing PostPlus credits after the current price and balance are checked.
+  Estimate-only requests do not execute. Stop on insufficient credits; do not
+  recharge, buy a subscription, or repeat an uncertain paid operation.
 
 
 ## Scope Boundary

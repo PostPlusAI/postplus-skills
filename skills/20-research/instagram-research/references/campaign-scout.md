@@ -1,80 +1,29 @@
 # Instagram Campaign Scout
 
-Use when the user wants bounded public Instagram campaign evidence: branded
-hashtags, campaign names, launch phrases, brand/competitor posts, sampled UGC,
-watchlists, or creator leads from campaign activity.
+Use for campaign hashtags, launch phrases, branded content, creator leads, and
+public campaign watchlists. Apply [shared contract](shared-contract.md).
 
+A campaign name/tag, brand, known post, or product plus campaign goal is enough.
+If a generic campaign name could identify unrelated campaigns, ask for the brand;
+otherwise derive the phrases and tags rather than requiring the user to supply
+search batches.
 
-## User Jobs
+Use `instagram-hashtags --hashtag <tag>` for a tag, or `--query <phrase>` for
+topic content; do not mix modes. Use `instagram-search --query <brand> --kind
+user`, then `instagram-profiles --handle <candidate>` to verify unknown brand
+accounts. Use `instagram-posts --handle <brand>` for owned posts and `--url
+<post-url>` for known content. Tagged-tab coverage is not supported; hashtag
+samples must not be labeled the complete tagged tab.
 
-- Check public evidence for a campaign hashtag, slogan, launch phrase, event, or
-  product term.
-- Review brand-owned or competitor-owned campaign posts.
-- Sample public UGC tied to campaign hashtags or search terms.
-- Build a watchlist of hashtags, accounts, posts, or campaign phrases.
-- Find creator leads only when they are tied to campaign evidence.
-- Identify noisy, sparse, or ambiguous campaign signals before deeper work.
+Keep owned posts, hashtag/search samples, third-party content, and visibly
+disclosed collaborations distinct. A brand mention is not proof of sponsorship;
+a hashtag sample is not full campaign spread. Verify selected authors with
+`instagram-profiles --handle <author>` before recommending them as creator
+leads. Use actual comments for audience reactions.
 
-## Alignment
-
-Infer whether the user wants owned posts, hashtag/search samples, UGC examples,
-creator leads, campaign themes, or a watchlist. Ask only when the output would
-change.
-
-Use this question when needed:
-
-`Should I prioritize brand-owned posts, hashtag/search samples, UGC examples, creator leads, or a watchlist?`
-
-## Inputs
-
-Minimum: campaign hashtag, campaign name, slogan, event/product term, brand
-account, known campaign post, competitor account, competitor campaign seed, or
-brand/category plus a clear campaign-scout goal.
-
-Ask once only when needed:
-
-| Situation | Ask |
-| --- | --- |
-| No seed | `Send one campaign hashtag, campaign name, brand handle, competitor account, or example post to start.` |
-| Generic campaign name | `Which brand or product line should I pair with this campaign name?` |
-| UGC ambiguity | `Do you mean brand-owned posts, hashtag/search samples, or the account tagged tab? Tagged tab is not currently supported.` |
-| Watchlist ambiguity | `Should the watchlist prioritize hashtags, creator accounts, competitor posts, or campaign search terms?` |
-
-## Run
-
-| Seed | Key | Rule |
-| --- | --- | --- |
-| Explicit hashtag | `instagram-hashtags` | Sample posts/authors; no full spread claim. |
-| Campaign name / phrase | `instagram-search` | Recall candidate posts/accounts/hashtags. |
-| Brand/competitor account | `instagram-posts` | Sample owned public posts. |
-| Known campaign post URLs | `instagram-posts` | Analyze selected posts. |
-
-Optional: profile-enrich narrowed authors with `instagram-profiles`; route to
-`creator-discovery.md` if campaign authors become outreach candidates.
-
-## Route-Specific Evidence
-
-- Label evidence as hashtag sample, search recall, owned-account posts, or
-  direct post sample.
-- Hashtag/search samples are not tagged-tab coverage.
-- Brand-owned posts are not third-party UGC.
-- Campaign authors are leads only when tied to source campaign evidence.
-
-If results are noisy or sparse, ask for a stronger seed or one narrowing axis;
-do not fill gaps with guesses.
-
-## Output Focus
-
-Return the decision supported, campaign scope, seed type, evidence table with
-URLs/accounts/hashtags/authors, themes, notable examples, watchlist or creator
-leads when supported, gaps, and next action.
-
-## HTML Artifact Focus
-
-Make the HTML useful as a campaign evidence board:
-
-- evidence table grouped by hashtag sample, search recall, owned-account post,
-  or direct post sample
-- notable examples with URL, account/author, campaign term, and source type
-- themes, watchlist seeds, and creator leads linked to campaign evidence
-- noise, sparse results, and unsupported surfaces shown as gaps
+Expand grounded phrases, tags, brands, and authors when completed results are
+sparse/noisy. Keep scope and changed searches attributable; do not fabricate a
+trend, reach, or complete campaign graph. Deliver the standard report with
+source-linked patterns, authors, useful watchlist terms, coverage gaps, and cost.
+A watchlist document is not an automatically scheduled monitor. End with one
+concrete next action and its corresponding PostPlus skill.

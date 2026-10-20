@@ -1,86 +1,43 @@
 # TikTok Organic Benchmark
 
-Use when the user wants public TikTok organic videos, hooks, formats, hashtags,
-competitor content, related examples, or category creative patterns.
+Use for content references, competitor content, formats, openings, topics,
+and creative-pattern research. Apply [shared contract](shared-contract.md).
 
+## Research the decision
 
-## User Jobs
+Infer whether the user needs examples, competitor strategy, or creative work
+from their request. A product/category/problem is enough; read its official
+source, identify relevant brands and scenarios, then derive names/aliases,
+product terms, problem phrases, and tags. Do not demand a competitor list or
+ask the user to choose a table versus summary.
 
-- Find public organic examples for a category, topic, profile, hashtag,
-  competitor, or product.
-- Understand openings, formats, captions, text overlays, creator style, and
-  reusable content patterns.
-- Compare competitor organic content without claiming full performance truth.
-- Build an inspiration board, content brief, or shortlist for comment analysis.
-- Expand from strong examples into related videos only when adjacency matters.
+Use `tiktok-videos --query <phrase>`, `--hashtag <tag>`, `--handle <account>`,
+or `--url <video-url>` according to the source. Verify unknown brand accounts
+with `tiktok-users --query <brand>` and `tiktok-profiles --handle <candidate>`.
+Use query-only `--sort`/`--time-range` only for an actual recency/ranking need;
+these can add cost. Expand relevant selected videos with
+`tiktok-related-videos --url <video-url>` when adjacency helps the question.
 
-## Alignment
+For competitor work, separate official brand content, third-party reviews,
+visible collaborations, and content addressing the same problem. The last
+category is inspiration unless it is actually related to the competitor.
+Do not call every mention a sponsored collaboration.
 
-Infer whether the user needs examples, competitor readout, pattern summary,
-related expansion, or a creative handoff. Ask only when the output would change.
+Inspect completed batches, deduplicate, and expand grounded new brands, authors,
+phrases, or tags. Measure unique relevant yield and coverage gaps, not the number
+of commands. Keep exact-account/URL requests within their scope; broad discovery
+uses the shared adjustable evidence goal. No mechanical two-follow-up limit.
 
-Use this question when needed:
+## Analyze and deliver
 
-`Should I return a content example table, competitor readout, pattern summary, related-video board, or creative brief?`
+Filter the whole candidate set from available metadata. Analyze selected media
+with `media-analysis` before claiming visual hooks, shots, sound, or proof
+moments. Label metadata-only observations accordingly. For consumer language,
+read `audience-voice.md` and collect actual comments from selected content.
 
-## Inputs
-
-Minimum: keyword, hashtag, profile/handle, public video URL, competitor, product
-category, customer type, topic, or query phrase.
-
-Ask once only when needed:
-
-| Situation | Ask |
-| --- | --- |
-| No seed | `Give one TikTok keyword, hashtag, profile, video URL, competitor, product, or category to start.` |
-| Many broad seeds | `Which 3-5 queries or 2-4 hashtags should I sample first?` |
-| Profile-only ambiguity | `Should I pull profile facts, or benchmark this account's public videos?` |
-| Paid/organic ambiguity | `Do you want organic TikTok examples, paid ad examples, or separated lanes?` |
-
-## Run
-
-| Seed | Key | Rule |
-| --- | --- | --- |
-| Keyword, hashtag, profile, or direct video | `tiktok-videos` | Primary organic sample. |
-| Strong seed video URLs | `tiktok-related-videos` | Expansion only after seed videos exist. |
-| Known handles for facts | `tiktok-profiles` | Profile snapshot, not content benchmark. |
-
-Bounds: `3-5` queries or `2-4` hashtags; `5-12` videos per seed; related
-videos from `1-5` seed URLs.
-
-Run independent query/hashtag/profile samples in parallel only when each request
-is bounded and saved separately. Do not parallel related expansion until seed
-videos are selected.
-
-## Route-Specific Evidence
-
-- Video evidence supports hooks, formats, captions/text, creator style, visible
-  engagement fields when returned, and source links.
-- Do not claim platform-wide ranking, full trend truth, or causal performance
-  from a bounded sample.
-- Related video output is adjacency evidence, not a full trend graph.
-- Profile snapshots are context; they do not prove content performance.
-- Comments require `audience-voice.md`.
-
-## Stop
-
-Stop for backend reach, watch time, retention, conversion, Shop/LIVE metrics,
-music downloads, exact trend ranking, full market coverage, or unsupported
-filters. If the sample is noisy, report it and ask for a narrower seed.
-
-## Output Focus
-
-Return the decision supported, sampled scope, seeds, content table with
-URL/creator/caption or text signal, hook and format patterns, creator signals,
-weak evidence or missing fields, and next collection or creative handoff.
-
-## HTML Artifact Focus
-
-Make the HTML useful as an inspiration and evidence board:
-
-- content table with URL, creator, source seed, caption/text signal, hook, and
-  format
-- grouped sections for hook, format, creator, hashtag, topic, and related-video
-  expansion when present
-- reusable patterns linked back to supporting videos
-- weak evidence and missing fields kept visible near the relevant samples
+Generate the fixed content report with all raw batches and evidence-linked
+relevance/pattern analysis. Preserve format differences, unknown metrics,
+unavailable media, source phrases, observation dates, and cost. Cite concrete
+examples for each reusable pattern; visible engagement does not prove causality
+or sales. Complete brief/script work when included in the original request;
+otherwise end with one concrete next action and corresponding PostPlus skill.

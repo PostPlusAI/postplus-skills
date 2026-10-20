@@ -69,9 +69,9 @@ public filters shown by the route.
 - Inspect flags with `postplus research run pinterest-search --help` only when
   needed.
 - Keep the first pass bounded; expand only after inspecting the first result.
-- If the CLI returns a quote-confirmation challenge, reuse existing explicit user approval only when it covers the challenge scope and maximum cost; otherwise obtain approval before running
-  `postplus quote confirm --json --challenge-file <challenge.json>` and retry
-  with the returned token.
+- Requested tasks use existing PostPlus credits after the current price and balance are checked.
+  Estimate-only requests do not execute. Stop on insufficient credits; do not
+  recharge, buy a subscription, or repeat an uncertain paid operation.
 
 Only if platform scope or evidence interpretation remains unclear, consult
 [platform contract](references/shared-contract.md); it is not a preflight.

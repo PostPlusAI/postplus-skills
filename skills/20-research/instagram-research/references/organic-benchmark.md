@@ -1,75 +1,43 @@
 # Instagram Organic Benchmark
 
-Use when the user wants public Instagram organic content examples, hooks,
-formats, captions, content pillars, competitor posts, hashtag samples, or
-category/topic creative patterns.
+Use for content references, competitor content, formats, openings, topics,
+and creative-pattern research. Apply [shared contract](shared-contract.md).
 
+## Research the decision
 
-## User Jobs
+Infer whether the user needs examples, competitor strategy, or creative work
+from their request. A product/category/problem is enough; read its official
+source, identify relevant brands and scenarios, then derive names/aliases,
+product terms, problem phrases, and tags. Do not demand a competitor list or
+ask the user to choose a table versus summary.
 
-- Find public organic examples for a category, topic, account, hashtag, or
-  competitor set.
-- Understand hooks, formats, captions, content pillars, and reusable patterns.
-- Compare competitor organic content strategy.
-- Build a creative brief or inspiration board from public examples.
-- Shortlist posts for later comment analysis or campaign scouting.
+Use `instagram-posts --handle <account>` for known accounts and
+`instagram-posts --url <post-or-reel-url>` for supplied posts. For a product,
+problem, or category, use `instagram-hashtags --query <phrase> --kind reels`
+(or `--kind posts` for mixed post formats), plus grounded `--hashtag` searches
+in separate requests. Use `instagram-search --query <brand> --kind user` and
+`instagram-profiles --handle <candidate>` to verify unknown brand accounts.
 
-## Alignment
+For competitor work, separate official brand content, third-party reviews,
+visible collaborations, and content addressing the same problem. The last
+category is inspiration unless it is actually related to the competitor.
+Do not call every mention a sponsored collaboration.
 
-Infer whether the user wants examples, competitor readout, strategy patterns,
-or a creative handoff. Ask only when the output would change.
+Inspect completed batches, deduplicate, and expand grounded new brands, authors,
+phrases, or tags. Measure unique relevant yield and coverage gaps, not the number
+of commands. Keep exact-account/URL requests within their scope; broad discovery
+uses the shared adjustable evidence goal. No mechanical two-follow-up limit.
 
-Use this question when needed:
+## Analyze and deliver
 
-`Should I return a content example table, competitor readout, pattern summary, or creative brief?`
+Filter the whole candidate set from available metadata. Analyze selected media
+with `media-analysis` before claiming visual hooks, shots, sound, or proof
+moments. Label metadata-only observations accordingly. For consumer language,
+read `audience-voice.md` and collect actual comments from selected content.
 
-## Inputs
-
-Minimum: account handle/profile URL, post/Reel/carousel URL, hashtag, brand,
-product category, competitor name, campaign term, topic, or query phrase.
-
-Ask once only when needed:
-
-| Situation | Ask |
-| --- | --- |
-| No seed | `Send one Instagram account, post/Reel URL, hashtag, or category phrase to start the benchmark.` |
-| Brand without handle | `Do you have the official handle, or should I first run search recall?` |
-| Many accounts/hashtags | `Which 3-8 seeds should I compare first?` |
-| Paid/organic ambiguity | `Do you want organic Instagram examples, paid ad examples, or a separated paid-vs-organic report?` |
-| Reels ambiguity | `Do you want public Reel-like examples, or private Reels analytics such as reach/saves/retention?` |
-
-## Run
-
-| Seed | Key | Rule |
-| --- | --- | --- |
-| Direct post/Reel/carousel URLs | `instagram-posts` | Analyze supplied content. |
-| Account handles | `instagram-posts` | Sample recent public posts. |
-| Explicit hashtags | `instagram-hashtags` | Sample hashtag content; enrich selected URLs only if needed. |
-| Category/product/topic/competitor name | `instagram-search` | Recall candidates first; verify selected posts/accounts later. |
-
-## Route-Specific Evidence
-
-- Organic conclusions come only from public organic post evidence.
-- Search results are candidates until collected as post/profile evidence.
-- Hashtag samples do not prove total hashtag volume or related hashtag graph.
-- Reel-like URLs may be analyzed as post-level evidence only. Stop if the user
-  needs Reels-specific analytics or audio trends.
-
-If the user asks for comment language, create a post shortlist and route to
-`audience-voice.md`.
-
-## Output Focus
-
-Return the decision supported, sampled scope, seeds, content table with
-URL/account/format/caption signal, hooks, formats, topics, reusable patterns,
-weak evidence or missing fields, and suggested next collection or creative
-handoff.
-
-## HTML Artifact Focus
-
-Make the HTML easy to browse as an inspiration and evidence board:
-
-- content table with URL, account, format, caption signal, topic, and source type
-- filters or grouped sections for hook, format, account, hashtag, and theme
-- reusable patterns linked back to supporting posts
-- weak evidence and missing fields kept visible near the relevant samples
+Generate the fixed content report with all raw batches and evidence-linked
+relevance/pattern analysis. Preserve format differences, unknown metrics,
+unavailable media, source phrases, observation dates, and cost. Cite concrete
+examples for each reusable pattern; visible engagement does not prove causality
+or sales. Complete brief/script work when included in the original request;
+otherwise end with one concrete next action and corresponding PostPlus skill.

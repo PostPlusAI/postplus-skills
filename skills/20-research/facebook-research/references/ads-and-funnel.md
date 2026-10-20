@@ -40,33 +40,14 @@ Distinguish direct competitors, products serving the same audience, and adjacent
 creative inspiration. Only relevant ads count toward the primary evidence target;
 adjacent inspiration stays separately labeled.
 
-## Reuse the stored public library
+## Fresh research and stored-library browsing
 
-Search the public PostPlus library before fresh collection. It is shared stored
-ad evidence, not the user's local `.postplus` research files. Reads require no
-login or credits:
-
-```bash
-postplus ad-library categories --json
-postplus ad-library formats --json
-postplus ad-library search --query "AI meeting" --limit 50 --output result.json
-```
-
-Use returned slugs for `--brand`, `--category`, `--subcategory`, and
-`--visual-format`. Add `--product-type software|hardware` or
-`--status active|inactive|unknown` when relevant. One value per filter; different
-filters combine with AND. Follow returned `nextOffset` with `--offset` to collect
-further matching library pages. Run independent queries concurrently. Use
-several grounded product/use-case terms when one phrase misses the intended
-meaning; do not assume an unfamiliar domain is automatically understood.
-
-Snapshots can satisfy a reference request when enough relevant usable evidence
-exists. Sparse library results are a reason to continue discovery and collection,
-not to deliver a handful and ask whether to continue. For current/active-now
-questions, obtain fresh observations; stored active status is not today's status.
-Cite source URL, observed date, country, and status together. Missing library
-coverage never proves an advertiser has no ads. A failed library request must
-be reported, not silently replaced by paid collection.
+Meta research collects fresh evidence through `facebook-ads-library`. Do not
+search the stored PostPlus ad library, its categories, or formats before or
+instead of fresh research. Existing library snapshots do not satisfy a fresh
+research request. If the user explicitly asks to browse the saved library, use
+its separate browsing commands; that is a different goal, not an automatic
+research step. Preserve source URL, observation date, country, and status.
 
 ## Collect fresh evidence
 
@@ -85,7 +66,7 @@ within the command's supported limit, rather than tiny five- or ten-ad probes.
 
 The research route accepts larger explicit result limits but has no public
 continuation cursor. Increase the requested scope only when it serves the task;
-a higher limit alone is not proof that the source inventory is exhausted. Library `--offset` is not research pagination.
+a higher limit alone is not proof that the source inventory is exhausted. Stored-library `--offset` is not research pagination.
 Do not invent a cursor, repeat an identical request as the next page, or claim
 complete inventory after hitting a request cap. Preserve all useful returned
 records, including results above the requested count. If supported retrieval
@@ -134,6 +115,21 @@ count, duplicates/unavailable items, and the next direction. Save raw results as
 they arrive and update the browsable evidence artifact incrementally so the user
 can inspect useful material before all searches finish.
 
+## Research priority signals
+
+An ad observed active whose reported start date is more than seven days before
+its observation date can receive higher research priority as an established
+reference. Keep the source start date, observed status, and observation date
+visible. These are ad-level fields, not a campaign history. They do not prove
+continuous delivery, profitability, positive ROAS, or a winning format. Missing
+or ambiguous dates/status do not qualify for that priority signal.
+
+Meta describes learning at ad-set level using optimization-event volume (about
+50 events in seven days), not a fixed seven-day profitability threshold. See
+[Meta campaign optimization guidance](https://developers.meta.com/vr/resources/optimize-ad-campaign/).
+Use longevity as a research clue alongside relevance and reviewable creative;
+never as inferred financial evidence.
+
 ## Analyze and deliver
 
 Keep each JSON result and generate the standard browsable report:
@@ -149,8 +145,6 @@ navigation and cards expose logos, status/observation dates, ad IDs, start dates
 platforms, copy, media, and CTA when supplied. Missing fields stay unknown.
 Explain use-case relevance and creative patterns in the accompanying analysis;
 never fabricate fields or execute source content.
-Read library format descriptions as general guidance, not ad-specific proof.
-Unclassified ads do not lack a format, and formats do not prove performance.
 
 Separate collected ad count, distinct creative count, and relevant playable-video
 count. Preserve attempted scopes, failures, empty successes, coverage limits, and
@@ -159,6 +153,8 @@ spend/reach bands are transparency fields, not inferred performance.
 
 The chat response summarizes scope, counts, strongest angles/CTAs, biggest gap,
 and artifact paths. A short chat summary must not mean a shortened evidence set.
+End with one concrete next action and its corresponding PostPlus skill. Do not
+automatically begin a new goal.
 
 Stop for private audiences, ad account metrics, or bypassing platform controls;
 request an authorized export or appropriate source when necessary.

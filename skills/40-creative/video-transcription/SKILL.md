@@ -64,7 +64,9 @@ skip transcription and read the local subtitle conversion reference.
   another execution interface.
 - Pass the source directly through `--video`; do not pre-upload it or construct
   a manual request object.
-- If the CLI returns a quote-confirmation challenge, obtain user approval for its scope and cost before running `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.
+- Requested tasks use existing PostPlus credits after the current price and balance are checked.
+  Estimate-only requests do not execute. Stop on insufficient credits; do not
+  recharge, buy a subscription, or repeat an uncertain paid operation.
 
 <!-- BEGIN GENERATED EXECUTION EXAMPLE -->
 ```bash

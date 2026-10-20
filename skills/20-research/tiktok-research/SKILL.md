@@ -9,16 +9,12 @@ metadata:
 
 # TikTok Research
 
-Use this as the TikTok research entrypoint when the user wants public TikTok
-evidence for a growth, marketing, creator, audience, competitor, or paid
-creative decision.
-
-TikTok music/archive download is not part of the released public surface.
+Research public TikTok evidence for the user's marketing decision. A product,
+category, problem, competitor, account, or content URL is enough to start.
+Use the task reference below and [shared contract](references/shared-contract.md)
+for research completion, reporting, and downstream handoffs.
 
 ## Reference Index
-
-Read only the one route reference matching the request. The local contract is
-optional detail when platform scope remains unclear.
 
 | User asks for | Apply |
 | --- | --- |
@@ -36,81 +32,47 @@ optional detail when platform scope remains unclear.
 | Music/archive download or audio extraction | Not provided on the current public surface. Say so and stop; analyze user-provided local files through `media-analysis` instead |
 | Cross-platform request | Run only the TikTok lane here; hand off other platforms |
 
-## First Question
+## Understand the request
 
-Ask one question only when the answer changes platform, route,
-public/private boundary, first-pass scope, or output shape.
+Infer the intended decision and useful deliverable from the request. Read an
+unfamiliar product's official page before deriving brands, use cases, problem
+phrases, and hashtags. Verify brand/account identity instead of guessing from a
+name. Do not ask the user to supply competitor lists or choose search batches.
 
-| Missing | Ask |
-| --- | --- |
-| Platform | `Which platform should I use first?` |
-| TikTok seed | `Please give one TikTok seed: keyword, hashtag, profile, video URL, competitor, product, creator criteria, or paid-ad scope.` |
-| Account audit without account | `Send the TikTok handle/profile URL, or tell me the brand and closest competitors to use as search seeds.` |
-| Ecommerce fit without product | `What product, audience, market, or offer should I test against TikTok evidence?` |
-| Campaign scout without campaign seed | `Send one campaign hashtag, slogan, brand profile, competitor, launch term, or example video.` |
-| Localization without market | `Which market or language should I compare first?` |
-| Audience voice without videos | `Send public TikTok video URLs, or give a keyword, hashtag, profile, or competitor so I can build a shortlist first.` |
-| Creator discovery without seed | `Give one niche, product, hashtag, competitor, customer type, video URL, or collaboration goal.` |
-| Paid ads without scope | `What paid scope should I sample: category, competitor, region/language, objective, hook, offer, or keyword?` |
-| Private/backend request | `This needs public evidence. Should I continue with public TikTok examples instead?` |
+Ask one focused question only when missing product identity, subject, market,
+or a public/private boundary would materially change the work. If the user has
+provided a usable product/category/account/URL, start; do not ask for another
+seed or an output-format choice. Preserve all platforms the user requested.
 
-Do not ask for credentials, private exports, retry strategy, cookies, or music
-archive details.
-
-## Run Discipline
-
-1. Route the request with the table above.
-2. Read only the selected workflow reference.
-3. Run the narrowest collection chain that can answer the first pass.
-4. Stop after the first pass and report scope, evidence, limits, and next
-   action.
-
-
-Do not present a public sample as full TikTok truth. Do not use paid ads as
-organic creator evidence. Do not use organic videos as paid ad proof. Use only
-the filters shown by the selected route.
-
-For local testing, optimize for a fast real first pass. Use the command selection below; do not inspect fixtures or product mappings.
+Keep explicit requirements, inferred search directions, and unknown conditions
+separate. Inferred directions are not hidden exclusion rules. Unsupported
+private metrics remain unknown; use the available public evidence only when it
+can still answer the requested decision.
 
 ## Public Command Boundary
 
-- Choose the smallest matching command or workflow from the user input and run
-  it directly.
-- Readiness diagnostics: `postplus doctor --skill tiktok-research`.
+Run the selected route with its declared semantic flags:
 
-- Inspect a route with `postplus research run <route> --help` only when its
-  semantic flags are not already clear.
-- Run `postplus research run <route> --<query/url/handle/hashtag flags> --limit
-  <n> --wait --output <result.json>`.
-- Keep the first pass bounded; expand only after inspecting the first result.
-- If the CLI returns a quote-confirmation challenge, reuse existing explicit user approval only when it covers the challenge scope and maximum cost; otherwise obtain approval before running
-  `postplus quote confirm --json --challenge-file <challenge.json>` and retry
-  with the returned token.
+```bash
+postplus research run <route> --<query/url/handle/hashtag flags> --limit <n> --wait --output result.json
+```
 
-## Command Selection
+| Evidence need | Route | Inputs |
+| --- | --- | --- |
+| Organic videos | `tiktok-videos` | query, hashtag, handle, or URL flags |
+| Known profiles | `tiktok-profiles` | repeat `--handle` |
+| Account discovery | `tiktok-users` | repeat `--query` |
+| Related-video discovery | `tiktok-related-videos` | repeat `--url`, after selecting relevant seed videos |
+| Actual comments | `tiktok-comments` | repeat `--url`; optional `--include-replies` |
+| Paid examples | `tiktok-ads-top` | `--limit` only; no keyword/brand/market targeting |
 
-| Evidence need | Route | Semantic input | First pass |
-| --- | --- | --- | --- |
-| Organic videos | `tiktok-videos` | query/handle/hashtag/URL, country, limit | 20 videos |
-| Comments/audience voice | `tiktok-comments` | repeat `--url`, `--limit` | 1-5 videos, 20 comments |
-| Known profiles | `tiktok-profiles` | repeat `--handle`, `--limit` | 1-5 profiles |
-| Account recall | `tiktok-users` | repeat `--query`, `--limit` | 20 accounts |
-| Related videos | `tiktok-related-videos` | repeat `--url`, country, limit | 20 videos |
-| Paid examples | `tiktok-ads-top` | `--limit` | 20 ads |
-
-Only if platform scope or evidence interpretation remains unclear, consult
-[platform contract](references/shared-contract.md); it is not a preflight.
-
-## Evidence Quality
-
-1. Check whether results are organic videos, comments, profiles, or paid examples; never substitute one lane for another.
-2. Change one supported seed, market, or query when a completed result misses; collect comments only from relevant shortlisted video URLs.
-3. Allow at most two changed follow-up passes after successful but insufficient results, within approved scope and budget; do not repeat an identical request or hide a failed/pending operation.
-4. Stop when sufficient, at the bound, or when another pass would not help. Report useful evidence and uncertainty; preserve raw results and source links.
-
-Captions and views are not audience voice or sales; preserve the paid/organic source and observed date.
-Full machine fields belong to `postplus research schema --route <route> --json`;
-consult it only when required for processing, not before every request.
+Use `postplus research run <route> --help` when flags, enums, or bounds are
+unclear; inspect `postplus research schema --route <route> --json` only when
+processing needs exact result fields. `postplus doctor --skill tiktok-research`
+is a diagnostic, not a compulsory preflight. Never use private supplier inputs.
+Save independent batches separately; run them concurrently only after their
+inputs are known. Follow the returned structured action for pending/failed
+operations; resume the same operation, not a replacement submission.
 
 <!-- BEGIN GENERATED EXECUTION EXAMPLE -->
 ```bash

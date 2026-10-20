@@ -1,80 +1,23 @@
 # TikTok Market Localization Scout
 
-Use when the user wants to compare TikTok public evidence across markets,
-regions, languages, or buyer contexts for cross-border marketing or ecommerce
-localization.
+Use for content language, local usage scenes, creator styles, and message
+comparisons. Apply [shared contract](shared-contract.md).
 
+Use the supplied markets/languages. Ask one question only when none is known
+and the choice changes the study. Derive local product/problem phrases and
+collect separate `tiktok-videos --query <local-phrase>` requests; known local
+accounts use `--handle <account>`. Verify profile clues with `tiktok-profiles`
+and inspect returned content before assigning a sample to a language/market.
+`--country` controls proxy location, not audience demographics or guaranteed
+local creators. The route has no audience-country or language filter.
 
-## User Jobs
+Select relevant local videos before `tiktok-comments --url <video-url>` for
+consumer language. Query-only recency/sort fields can add cost and must match
+the user need. `tiktok-ads-top` cannot target local paid examples; do not claim
+that a general paid sample represents the selected market.
 
-- Compare how a category, product, problem, or competitor is framed in different
-  markets or languages.
-- Find local hooks, usage scenes, creator styles, objections, and offer cues.
-- Decide which market should get the first content test or deeper research.
-- Avoid pretending samples prove market size, sales, or audience demographics.
-
-## Alignment
-
-Infer whether the user needs market comparison, language adaptation, content
-angle localization, creator style, or launch priority. Ask only when the output
-would change.
-
-Use this question when needed:
-
-`Should I compare markets for content angles, language adaptation, creator style, objections, or launch priority?`
-
-## Inputs
-
-Minimum: product/category/topic plus one market/language, or `2-4`
-markets/languages to compare.
-
-Ask once only when needed:
-
-| Situation | Ask |
-| --- | --- |
-| No market/language | `Which market or language should I compare first?` |
-| Too many markets | `Which 2-4 markets or languages should define the first pass?` |
-| Needs sales proof | `I can compare public content evidence, not sales, GMV, or conversion. Should I continue?` |
-
-## Run
-
-| Source | Key | Rule |
-| --- | --- | --- |
-| Market/category query | `tiktok-videos` | One bounded request per market/language seed. |
-| Competitor/profile in market | `tiktok-videos` or `tiktok-profiles` | Profile context plus content sample when needed. |
-| Comment language | `tiktok-comments` | Only after local video shortlist exists. |
-| Paid local examples | `tiktok-ads-top` | Paid lane only when scope is clear. |
-
-If schema supports region/language fields, use them. If not, encode market in
-the query and label it as query-scoped recall. Run independent market samples in
-parallel with separate output files.
-
-## Route-Specific Evidence
-
-- Compare only fields returned in each market sample.
-- Do not force metric parity when one market has weaker or noisier evidence.
-- Region/language constraints are request filters only when schema supports
-  them; otherwise they are query terms.
-- Public samples do not prove market size, purchase power, or conversion.
-
-## Stop
-
-Stop for exact market demand, demographic truth, GMV, TikTok Shop rank, ad
-account metrics, or unsupported region/language filters. Report the gap and
-recommend a narrower market or supplied dataset.
-
-## Output Focus
-
-Return markets compared, seeds, sample counts, local hooks, usage scenes,
-objections, creator styles, paid/organic differences when collected, gaps, and
-next action.
-
-## HTML Artifact Focus
-
-Make the HTML easy to compare by market:
-
-- market tabs or grouped sections with seeds, counts, and evidence quality
-- comparison table for hook, demo, offer, objection, creator style, and source
-  URLs
-- evidence cards grouped by market and lane
-- gaps where a market lacks comparable evidence
+Compare only supported fields with comparable observation windows. Keep
+uneven sample sizes and weak market evidence visible; do not rank market size,
+purchase power, demand, sales, or launch ROI from these samples. Deliver the
+standard report with sources, explicit local-language judgments, gaps, and cost.
+End with one concrete next action and its corresponding PostPlus skill.

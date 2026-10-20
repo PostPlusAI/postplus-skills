@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "releaseId": "skills-2026-10-18.2",
+  "releaseId": "skills-2026-10-20.1",
   "productBrief": {
     "schemaVersion": 1,
     "paragraphs": [
@@ -15,13 +15,13 @@
   },
   "releaseNotes": {
     "schemaVersion": 1,
-    "releaseId": "skills-2026-10-18.2",
-    "title": "Cloud video uploads with the same analysis format.",
-    "summary": "Adds private Google Cloud uploads for video analysis while preserving the analysis model, prompts, and report format.",
+    "releaseId": "skills-2026-10-20.1",
+    "title": "More precise social research and evidence-led reports.",
+    "summary": "Improves Instagram, TikTok and Meta ad research guidance, parameter selection and reusable evidence.",
     "highlights": [
-      "Analyze local videos and supported video links through the existing video-analysis command.",
-      "Keep interrupted uploads tied to their original operation for recovery.",
-      "Receive the same report structure after a completed analysis."
+      "Distinguish topical ad discovery from verified advertiser research.",
+      "Use collected post, creator and comment evidence in Instagram and TikTok reports.",
+      "Reuse existing research results before starting additional paid collection."
     ]
   },
   "source": "PostPlusAI/postplus-skills",

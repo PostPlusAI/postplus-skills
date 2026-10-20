@@ -1,99 +1,45 @@
 # TikTok Creator Discovery
 
-Use when the user wants TikTok creators, UGC makers, affiliates, KOL/KOC lists,
-profile enrichment, or outreach-ready creator shortlists from public TikTok
-evidence.
+Use for creator/influencer/UGC-maker/affiliate discovery, candidate validation,
+or a collaboration shortlist. Apply [shared contract](shared-contract.md).
 
+## Understand and discover
 
-## User Jobs
+A product, niche, customer, competitor, account, or content URL is sufficient.
+Separate discovery clues from conditions used to evaluate creators. Ask about
+the product/niche only if none exists; do not make users choose search batches.
 
-- Discover creators, UGC makers, KOLs, KOCs, affiliates, or niche accounts from
-  a public content seed.
-- Rank creators for collaboration, seeding, affiliate, or outreach fit.
-- Enrich known handles or candidates with public profile facts and content
-  evidence.
-- Separate creator recall from ranking constraints such as follower band,
-  region, language, format, or audience.
-- Build a shortlist that can be handed to outreach without claiming hidden
-  contact access.
+Expand product use cases, problem terms, relevant brands, and tags. Keep user
+requirements distinct from inferred directions. Do not impose an unstated
+follower floor, country, or creator style.
 
-## Alignment
+Use `tiktok-videos --query <phrase>` or `--hashtag <tag>` to discover relevant
+content. Extract authors, then run `tiktok-profiles --handle <author>` for facts
+and `tiktok-videos --handle <author>` for other works. Use `tiktok-users --query
+<name>` for name lookup, not proof of creator fit. After selecting a strong
+seed video, `tiktok-related-videos --url <video-url>` can expand related content.
 
-Separate recall seeds from ranking constraints. Niche, hashtag, competitor,
-product, audience, profile, or video can recall candidates. Region, language,
-follower band, creator type, and budget usually rank candidates after recall.
+Run independent discovery requests concurrently; author enrichment depends on
+actual discovered handles. Continue promising directions until the requested
+shortlist is supported or the shared stopping condition applies. Do not rank a
+whole account from one viral post.
 
-Ask only when the user gives ranking constraints without a recall seed.
+## Validate and deliver
 
-Use this question when needed:
+For each recommended creator, retain profile/source IDs, representative content,
+fit reasons, explicit criterion judgments, and unknowns. Conditions can be met,
+not met, partially evidenced, or unknown; use the report schema's actual enums.
+Check follower range from returned snapshots, language from inspected content,
+and consistent subject fit from multiple works where available. Neither content
+language nor collection location proves audience country. Public data cannot
+confirm collaboration budget, availability, conversion, or audience authenticity.
 
-`Those constraints can help rank candidates; what should I use as the recall seed: niche, hashtag, competitor, product, audience, profile, or video?`
+Exclude brand stores/agencies only when required by the user's creator goal;
+retain evidence for that classification. Keep rejected/uncertain candidates
+inspectable, separate from the recommended set.
 
-## Inputs
-
-Minimum: TikTok is clear and one discovery seed exists:
-
-- niche/category/product/customer type
-- hashtag or query
-- brand, competitor, creator, or profile
-- public video URL
-- existing candidate handles
-
-Ask once only when needed:
-
-| Situation | Ask |
-| --- | --- |
-| Platform missing | `Which platform should I use first?` |
-| TikTok clear but no seed | `Give one TikTok niche, product, hashtag, competitor, customer type, video URL, or collaboration goal.` |
-| Only region/language/follower band/type | `That can rank candidates, but it cannot recall them. Give one content or account seed too.` |
-| Too many creators requested | `Which first batch should I use: seed group, market, language, follower band, hashtag set, or batch size?` |
-
-## Run
-
-Prefer content-first discovery:
-
-| Seed | Recall | Enrich |
-| --- | --- | --- |
-| Niche, category, customer, or query | `tiktok-videos` | extract authors, then `tiktok-profiles` |
-| Hashtag | `tiktok-videos` | profile authors |
-| Strong seed video | `tiktok-related-videos` | profile authors |
-| Known handles | none | `tiktok-profiles` |
-| Names-only account lookup | `tiktok-users` | optional `tiktok-profiles` after handles are confirmed |
-
-Bounds: collect enough videos to identify candidates, then enrich `10-30`
-profiles. Related expansion only after strong seed videos.
-
-Run profile enrichments in parallel only after candidate handles are known. Do
-not parallel content recall -> author extraction -> profile enrichment as if the
-handles already exist.
-
-## Route-Specific Evidence
-
-- Creator ranking needs content evidence plus profile facts when possible.
-- `tiktok-users` is account recall, not creator fit proof.
-- Follower band, region, language, and format preference are ranking constraints
-  unless schema supports them as filters.
-- Public profile facts do not prove authenticity, audience quality, willingness,
-  deliverability, or private contact access.
-
-## Stop
-
-Stop for all creators, full market coverage, hidden contacts, private followers,
-audience demographics, affiliate performance, GMV, conversion, Shop/LIVE
-metrics, or impossible filters. If recall is weak, ask for a stronger seed.
-
-## Output Focus
-
-Return the decision supported, seed path, collection path, shortlisted creators,
-evidence video/profile links, fit reason, caution, missing evidence, and next
-action.
-
-## HTML Artifact Focus
-
-Make the HTML useful as a creator shortlist workspace:
-
-- creator table with handle, source seed, fit reason, evidence URL, caution,
-  and missing evidence
-- grouped sections for recalled candidates and verified profiles
-- ranking constraints shown separately from recall seeds
-- selected candidates easy to copy into outreach or deeper account audit
+Generate the fixed report's creator view with all batches and evidence-linked
+analysis. Public contact enrichment is optional after narrowing the shortlist:
+the current public surface does not provide hidden contact enrichment.
+Do not contact anyone automatically. End with one specific next action and
+its corresponding PostPlus skill, within the shared downstream rule.

@@ -64,9 +64,9 @@ architect, preflight report, reference contract, or model-specific submitter.
   invent private fields, or create a service-specific submitter skill.
 - Keep private request/result files under the active work folder's `.postplus/`
   state; do not manufacture contract or planning artifacts for handoff.
-- If the CLI returns a quote-confirmation challenge, show it to the user, run
-  `postplus quote confirm --json --challenge-file <challenge.json>` only after
-  approval, then retry the exact operation with the returned token.
+- Requested tasks use existing PostPlus credits after the current price and balance are checked.
+  Estimate-only requests do not execute. Stop on insufficient credits; do not
+  recharge, buy a subscription, or repeat an uncertain paid operation.
 - On an auth, transport, quota, malformed-request, capability, or execution
   failure, report the typed error and stop. Do not switch endpoints, rewrite the
   request, or claim a local plan is an executed render.

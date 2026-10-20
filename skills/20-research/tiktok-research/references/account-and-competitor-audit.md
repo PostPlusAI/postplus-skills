@@ -1,80 +1,29 @@
 # TikTok Account And Competitor Audit
 
-Use when the user gives TikTok accounts, brands, competitors, or profiles and
-wants a public account readout, competitor comparison, positioning check, or
-content shortlist for deeper research.
+Use for known-account health, positioning, content strategy, comparisons, or
+known-creator fit. Apply [shared contract](shared-contract.md).
 
+Use supplied handles/profile URLs directly. For a brand name, establish official
+identity using its website and `tiktok-users --query <brand>`, then verify candidates
+with `tiktok-profiles --handle <account>`. Ask only if credible conflicting
+identities remain. A content URL can identify its author; do not demand another
+seed if the author is returned.
 
-## User Jobs
+Collect profile facts with `tiktok-profiles --handle <account>` and account
+content with `tiktok-videos --handle <account>` when strategy, cadence, creator
+fit, or creative gaps are requested. Run independent accounts concurrently,
+saving each batch. Search must finish before dependent account lookups.
 
-- Diagnose whether a brand account looks active, clear, and content-ready.
-- Compare competitors by profile positioning, recent public videos, hooks, and
-  content pillars.
-- Find account-level gaps: stale content, unclear offer, weak proof, missing
-  demo, or sparse public evidence.
-- Build a shortlist for audience voice, product-content fit, creator discovery,
-  or paid-vs-organic comparison.
+Check returned dates for requested time coverage. Do not claim full history or
+use a profile-only snapshot to judge video hooks, cadence, or formats. Analyze
+selected media with `media-analysis` before visual/audio conclusions; use actual
+comments for audience questions. Follow `audience-voice.md` when needed.
 
-## Alignment
+Public counts are snapshots, not growth or private performance. Distinguish
+unavailable accounts, missing fields, sparse samples, and genuine evidence of
+inactivity. Do not expand beyond exact accounts merely to reach a broad research
+target. For similar-creator discovery, use `creator-discovery.md`.
 
-Infer whether the user needs brand health, competitor comparison, content
-strategy, ecommerce fit, or a shortlist. Ask only when the output would change.
-
-Use this question when needed:
-
-`Should I focus on brand health, competitor comparison, content strategy, ecommerce fit, or a shortlist for the next step?`
-
-## Inputs
-
-Minimum: one TikTok handle/profile URL, a brand plus likely account seed, or
-`2-8` competitor handles/profiles.
-
-Ask once only when needed:
-
-| Situation | Ask |
-| --- | --- |
-| Brand name only | `Do you have the official TikTok handle, or should I start from brand/competitor search seeds?` |
-| Many accounts | `Which 2-8 accounts should I audit first?` |
-| Private/backend request | `Can you provide public TikTok handles, public videos, or an exported dataset instead?` |
-
-## Run
-
-| Source | Key | Rule |
-| --- | --- | --- |
-| Known handles/profiles | `tiktok-profiles` | Account/profile sample first; use returned `authorMeta` and recent video rows when present. |
-| Account content benchmark | `tiktok-videos` | Recent public videos only when content evidence is needed. |
-| Brand/competitor name recall | `tiktok-users` | Candidate recall only; verify handles before judging. |
-
-Run independent profile lookups or account video samples in parallel only when
-each account has its own bounded request and output file. Do not parallel a
-dependent search -> verify chain.
-
-## Route-Specific Evidence
-
-- Profile facts can support positioning, public counts, bio/link signals, and
-  availability when returned.
-- Video evidence is required before judging hooks, formats, content pillars,
-  cadence, or creative gaps.
-- Account-search recall is not official-account proof.
-- Public counts are snapshots, not growth or backend performance.
-
-## Stop
-
-Stop for private account analytics, follower lists, backend reach, watch time,
-conversion, full history, or unavailable accounts. If official-account identity
-is ambiguous, report candidates and ask for confirmation.
-
-## Output Focus
-
-Return the decision supported, accounts checked, profile facts, content sample
-when collected, strongest account patterns, gaps, and next action.
-
-## HTML Artifact Focus
-
-Make the HTML easy to audit by account:
-
-- account comparison table with handle, profile URL, bio/positioning, public
-  counts, links, and availability
-- recent-video section grouped by account when video evidence was collected
-- findings tied to profile rows or video rows
-- next-step shortlist for comments, product-content fit, or creator discovery
+Deliver account facts, inspected content range, source-linked patterns,
+criterion judgments, gaps, and cost in the standard report. Complete requested
+downstream work; otherwise offer one concrete next action with its PostPlus skill.

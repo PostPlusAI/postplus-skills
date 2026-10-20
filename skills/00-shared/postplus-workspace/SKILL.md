@@ -120,7 +120,7 @@ is missing, conflicting, or a repair could change meaning.
 ```
 
 Treat `BLOCKED` as a stop for the affected stage. A local `READY` result does
-not replace current CLI validation, quote confirmation, or launch approval.
+not replace current CLI validation, credit checks, or launch approval.
 
 ## Status
 

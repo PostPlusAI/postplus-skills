@@ -28,7 +28,7 @@ Use this question when needed:
 ## Inputs
 
 Minimum: product name/category, product URL or description, target customer,
-competitor, hashtag/query, brand profile, paid-ad scope, or example videos.
+competitor, hashtag/query, brand profile, example videos, or an accepted general paid-sample scope.
 
 Ask once only when needed:
 
@@ -44,7 +44,7 @@ Ask once only when needed:
 | --- | --- | --- |
 | Organic demos/examples | `tiktok-videos` | Use product, problem, competitor, or hashtag seeds. |
 | Comment objections | `tiktok-comments` | Only after `3-8` source videos exist. |
-| Paid creative examples | `tiktok-ads-top` | Paid lane only. |
+| Paid creative examples | `tiktok-ads-top` | General paid samples only; no category/brand/market targeting. |
 | Brand/competitor profile context | `tiktok-profiles` | Optional context; not content proof. |
 
 Run independent organic and paid lanes in parallel only when both scopes are
@@ -68,12 +68,8 @@ private ad metrics, hidden creator contacts, or unsupported product filters.
 Return the decision supported, evidence lanes, product angle map, demo ideas,
 buyer objections, paid/organic differences, weak evidence, and next action.
 
-## HTML Artifact Focus
+## Report and handoff
 
-Make the HTML useful as a product evidence board:
-
-- overview with product, audience, market, seeds, lanes, and counts
-- angle table with hook, demo/proof moment, evidence links, and confidence
-- objection/FAQ section tied to comment rows
-- paid and organic examples kept in separate grouped tables
-- gaps for missing sales, Shop, ROAS, or backend evidence
+Use the fixed report and downstream rules in [shared contract](shared-contract.md).
+Preserve all useful evidence and gaps; add source-linked judgments. End with one
+concrete next action and its corresponding PostPlus skill.

@@ -1,96 +1,43 @@
 # TikTok Audience Voice
 
-Use when the user wants public TikTok comment language: objections, questions,
-pain points, praise, purchase intent, comparison language, FAQ, phrase bank, or
-copy insights.
+Use for real comment pain points, objections, questions, praise, comparison
+language, FAQ, and copy insight. Apply [shared contract](shared-contract.md).
 
+## Select sources and collect
 
-## User Jobs
+Prefer supplied post/video URLs, an existing relevant shortlist, or a supplied
+comment dataset. Otherwise build a relevant content set from the user's product,
+competitor, account, problem, or hashtag. Do not ask for URLs if a usable research
+direction already exists.
 
-- Extract pain points, objections, repeated questions, praise, buying intent,
-  comparison language, and FAQ from public comments.
-- Turn audience language into ad copy, landing-page copy, scripts, content
-  hooks, or comment replies.
-- Validate whether a product claim, offer, feature, or creative angle appears
-  in real comments.
-- Identify low-signal, spam-heavy, disabled, or off-topic comment samples
-  before over-summarizing them.
+Content collection: `tiktok-videos --handle <account>`, `--query <phrase>`, or `--hashtag <tag>`.
+`tiktok-profiles` supplies profile context, not the required account videos.
 
-## Alignment
+Choose sources spanning the relevant products, use cases, and viewpoints;
+3–8 sources can be a starting point, not a fixed cap. Inspect returned dates
+when a time window matters. Then collect comments:
 
-Infer whether the user needs copy handoff, FAQ, objection handling, product
-insight, competitor insight, or content hooks. Ask only when the output would
-change.
+```bash
+postplus research run tiktok-comments --url "<selected-content-url>" --limit 100 --wait --output comments.json
+```
 
-Use this question when needed:
+Parallelize only independent known source URLs; save outputs separately.
+`--limit` is per video and includes replies. `--include-replies true` requests
+at most five replies per top-level comment; false requests none. It is not a
+guarantee of complete threads.
+Continue sources when useful grounded coverage gaps remain. Empty, disabled,
+unavailable, spam-heavy, or repetitive comments are gaps, not invented themes.
 
-`Should I organize the comments for ad copy, FAQ, objection handling, product insight, or content hooks?`
+## Interpret and deliver
 
-## Inputs
+Each theme needs actual comment evidence, source content, and enough context to
+review it. Distinguish observation from inference and questions from proven
+purchase behavior. Captions, snippets, and likes are not audience voice. Counts
+refer only to collected comments; do not label samples platform-wide sentiment.
 
-Minimum source, in order:
-
-1. public TikTok video URLs
-2. a bounded video shortlist from another workflow
-3. keyword, hashtag, profile, competitor, product, or category seed that can
-   create a shortlist
-4. user-provided comment dataset with source video metadata
-
-Ask once only when needed:
-
-| Situation | Ask |
-| --- | --- |
-| No platform and no seed | `Which platform should I research, or can you send one video URL, keyword, hashtag, profile, competitor, or dataset?` |
-| TikTok clear but no video source | `Send public TikTok video URLs, or give a keyword, hashtag, profile, or competitor so I can build a shortlist first.` |
-| Too many URLs / exhaustive ask | `Do you want a representative first pass first, or an exhaustive export for these exact videos?` |
-
-## Run
-
-| Source | First step | Comment step |
-| --- | --- | --- |
-| Video URLs | none | `tiktok-comments` |
-| Profile/handle | `tiktok-profiles` recent-video sample | `tiktok-comments` |
-| Keyword, hashtag, product, topic, or competitor phrase | `tiktok-videos` shortlist | `tiktok-comments` |
-| User dataset | no collection unless enrichment requested | analyze rows |
-
-Bounds: direct URLs `1-8`; generated shortlist `3-8` videos.
-
-Run comment collection in parallel only for independent direct video URLs with
-separate outputs. If videos must be shortlisted first, collect comments after
-the shortlist exists.
-
-For account comment research, use the known-account request card in
-the command selection in SKILL.md, filter returned videos by the requested time window, then
-run `tiktok-comments` on the selected `webVideoUrl` values. Do not inspect
-fixtures or product code to rediscover this path.
-
-## Route-Specific Evidence
-
-- Every theme must tie back to source video and comment evidence.
-- Video captions, search snippets, likes, shares, or views are not audience
-  voice.
-- Comment evidence represents commenters on selected videos, not all followers,
-  viewers, buyers, or TikTok users.
-- Empty, private, disabled, spam-heavy, repetitive, or low-signal comments
-  produce a gap, not a fabricated insight.
-
-## Stop
-
-Stop for private comments, DMs, buyer identity, demographics, Shop buyer data,
-paid delivery comments, backend sentiment, or platform-wide sentiment. If
-comments are unavailable or empty, report the gap and recommend a better source.
-
-## Output Focus
-
-Return the decision supported, source videos, comment count, evidence quality,
-theme buckets, repeated questions, objections, praise, copy-language phrases,
-limits, and next action.
-
-## HTML Artifact Focus
-
-Make the HTML easy to inspect from theme back to comment:
-
-- theme buckets with counts, representative phrases, and source videos
-- objection, FAQ, praise, buying-intent, and copy-language sections when present
-- comment rows with source video URL and enough context to review the claim
-- low-signal, spam-heavy, disabled, or empty comment gaps kept visible
+Include theme counts, representative actual phrases, source IDs/URLs, research
+scope, low-signal gaps, and reported cost in the fixed report and analysis.
+When the original goal is a brief/copy/FAQ, continue through the appropriate
+skill using these sources; otherwise end with one concrete next action and its
+PostPlus skill. Reddit long-form validation is a targeted downstream option,
+not an automatic step for every search.

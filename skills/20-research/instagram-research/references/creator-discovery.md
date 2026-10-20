@@ -1,93 +1,47 @@
 # Instagram Creator Discovery
 
-Use when the user wants Instagram creators, influencers, KOLs, KOCs, UGC makers,
-affiliates, niche accounts, similar accounts, or outreach-ready shortlists.
+Use for creator/influencer/UGC-maker/affiliate discovery, candidate validation,
+or a collaboration shortlist. Apply [shared contract](shared-contract.md).
 
+## Understand and discover
 
-## User Jobs
+A product, niche, customer, competitor, account, or content URL is sufficient.
+Separate discovery clues from conditions used to evaluate creators. Ask about
+the product/niche only if none exists; do not make users choose search batches.
 
-- Discover creators, influencers, KOLs, KOCs, UGC makers, affiliates, or niche
-  accounts from a public seed.
-- Find accounts similar to a brand, competitor, creator, hashtag, or campaign.
-- Rank an existing candidate list for collaboration fit.
-- Build an outreach-ready shortlist with public evidence and cautions.
-- Enrich public contact signals only after a shortlist exists.
+Expand product use cases, problem terms, relevant brands, and tags. Keep user
+requirements distinct from inferred directions. Do not impose an unstated
+follower floor, country, or creator style.
 
-## Alignment
+Use `instagram-search --query <phrase> --kind user` for account recall and
+`instagram-hashtags --query <phrase> --kind reels` or `--hashtag <tag>` for
+content-first discovery. Extract relevant authors, then verify with
+`instagram-profiles --handle <author>` and inspect multiple works with
+`instagram-posts --handle <author>`. A known post can be collected with
+`instagram-posts --url <post-url>`.
 
-Separate recall seeds from ranking constraints. Niche, hashtag, competitor,
-product, audience, account, or post can recall candidates. Region, language,
-follower band, creator type, and budget usually rank candidates after recall.
+Run independent discovery requests concurrently; author enrichment depends on
+actual discovered handles. Continue promising directions until the requested
+shortlist is supported or the shared stopping condition applies. Do not rank a
+whole account from one viral post.
 
-Ask only when the user gives ranking constraints without a recall seed.
+## Validate and deliver
 
-Use this question when needed:
+For each recommended creator, retain profile/source IDs, representative content,
+fit reasons, explicit criterion judgments, and unknowns. Conditions can be met,
+not met, partially evidenced, or unknown; use the report schema's actual enums.
+Check follower range from returned snapshots, language from inspected content,
+and consistent subject fit from multiple works where available. Neither content
+language nor collection location proves audience country. Public data cannot
+confirm collaboration budget, availability, conversion, or audience authenticity.
 
-`Those constraints can help rank candidates; what should I use as the recall seed: niche, hashtag, competitor, product, audience, account, or post?`
+Exclude brand stores/agencies only when required by the user's creator goal;
+retain evidence for that classification. Keep rejected/uncertain candidates
+inspectable, separate from the recommended set.
 
-## Inputs
-
-Minimum: Instagram is clear and one discovery seed exists:
-
-- niche/category/product/customer type
-- hashtag/campaign term
-- brand, competitor, or creator account
-- public post/Reel URL
-- existing candidate handles
-
-Ask once only when needed:
-
-| Situation | Ask |
-| --- | --- |
-| Platform missing | `Which platform should I use first?` |
-| Instagram clear but no seed | `Give one starting point: niche, category, hashtag, competitor account, product direction, or target customer.` |
-| Only region/language/follower band/type | `That can rank candidates, but it cannot recall them. Give one niche, hashtag, competitor, product, or audience seed.` |
-| Contact request before shortlist | `Should I first build a creator shortlist, then enrich public contacts only for selected candidates?` |
-
-## Run
-
-| Seed | Recall | Enrich |
-| --- | --- | --- |
-| Niche/category/customer/query | `instagram-search` | `instagram-profiles`, optional `instagram-posts` |
-| Hashtag/campaign tag | `instagram-hashtags` | `instagram-profiles` for authors |
-| Competitor/brand account | `instagram-profiles`, optional `instagram-posts` | `instagram-search` for similar creators |
-| Candidate handles | none | `instagram-profiles`, optional `instagram-posts` |
-| Post/Reel URLs | `instagram-posts` | profile authors |
-
-Contact enrichment: reuse already-collected profile biographies and profile links.
-If profiles have not been collected, run `instagram-email-search` only for the
-narrowed handles; it returns their public profile records. Read contact details
-only when explicitly present in the biography or published links, preserving the
-profile URL as evidence. If none are published, report "no public contact found";
-do not infer an address, promise a hidden contact-button email, or start broad
-keyword searches to fill the gap. This route does not crawl linked websites.
-Do not run both profile and contact collection for the same fresh shortlist.
-
-## Route-Specific Evidence
-
-- Search and hashtag results are candidate recall, not confirmed profile facts.
-- Ranking needs at least one public fit reason per creator.
-- Follower band, geography, language, and creator type are ranking constraints
-  unless the selected collection path can apply them directly.
-- Public contact signal is not guaranteed deliverability, willingness, or hidden
-  email ownership.
-
-If tagged-tab UGC is requested, offer hashtag/search/content samples only after
-the user accepts the narrower scope.
-
-## Output Focus
-
-Return the decision supported, recall seeds, collection path, creator shortlist
-table, evidence URL or handle for each candidate, reason, caution, missing
-evidence, and contact status only when contact enrichment ran.
-
-## HTML Artifact Focus
-
-Make the HTML useful as a creator shortlist workspace:
-
-- creator table with handle, source seed, fit reason, evidence URL, caution, and
-  missing evidence
-- grouped sections for recalled candidates, verified profiles, and enriched
-  public contact signals
-- ranking constraints shown separately from recall seeds
-- selected candidates easy to copy into outreach or deeper account audit
+Generate the fixed report's creator view with all batches and evidence-linked
+analysis. Public contact enrichment is optional after narrowing the shortlist:
+`instagram-email-search --handle <selected-author>`. Public signals do not
+prove deliverability, willingness, or hidden email ownership.
+Do not contact anyone automatically. End with one specific next action and
+its corresponding PostPlus skill, within the shared downstream rule.

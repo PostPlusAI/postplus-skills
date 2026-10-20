@@ -71,4 +71,6 @@ The artifact contains `hookEssence`, `viewerQuestion`, `mustCopyVisualGrammar`, 
 
 - This public skill is instruction-driven. Produce the artifact described by the workflow directly from the available evidence.
 - Do not use unpublished execution paths or local tools.
-- If the CLI returns a quote-confirmation challenge, obtain user approval for its scope and cost before running `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.
+- Requested tasks use existing PostPlus credits after the current price and balance are checked.
+  Estimate-only requests do not execute. Stop on insufficient credits; do not
+  recharge, buy a subscription, or repeat an uncertain paid operation.

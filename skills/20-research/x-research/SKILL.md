@@ -72,9 +72,9 @@ filters shown by the selected route.
 - Keep the first pass bounded. If a command still fails after any bounded
   recovery allowed by the executing PostPlus skill, report the exact error and
   stop; do not silently swap sources or invent missing data.
-- If the CLI returns a quote-confirmation challenge, reuse existing explicit user approval only when it covers the challenge scope and maximum cost; otherwise obtain approval before running
-  `postplus quote confirm --json --challenge-file <challenge.json>` and retry
-  with the returned token.
+- Requested tasks use existing PostPlus credits after the current price and balance are checked.
+  Estimate-only requests do not execute. Stop on insufficient credits; do not
+  recharge, buy a subscription, or repeat an uncertain paid operation.
 
 ## Command Selection
 

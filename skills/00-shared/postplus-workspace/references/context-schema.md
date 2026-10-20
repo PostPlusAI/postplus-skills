@@ -73,7 +73,7 @@ Read more only when it changes the task. Do not load every historical campaign.
 - Approval records must retain status, approver, approval time, and campaign
   binding when the approval is campaign-specific.
 - Live launch authorization is not durable workspace truth. The current CLI
-  quote-confirmation boundary remains authoritative.
+  balance and operation-authorization boundaries remain authoritative.
 
 ## Traceability
 

@@ -63,7 +63,7 @@ choices, retries, credentials, hidden filters, or internal routing.
 ## Run Discipline
 
 1. Pick one reference and one lane.
-2. For ads, first read the stored public library as described in `references/ads-and-funnel.md`; distinguish snapshots from fresh evidence. Otherwise run the smallest real collection that can answer the decision.
+2. For ads, collect fresh evidence as described in `references/ads-and-funnel.md`; do not automatically search the stored ad library. Explicit library browsing is a separate user goal. Otherwise run the smallest real collection that can answer the decision.
 3. Parallelize independent sources when they do not depend on each other.
 4. If execution succeeds but evidence is empty, sparse, noisy, or off-topic,
    apply the quality rules below before accepting or exhausting the evidence.
@@ -88,9 +88,9 @@ Use only the public filters shown by the selected route.
 - For non-ad routes, keep the first pass bounded; expand only after inspecting the first result.
   For ads, collect toward the requested evidence outcome, using the ad reference.
   Stop on hard errors. Do not silently swap sources or invent missing data.
-- If the CLI returns a quote-confirmation challenge, reuse existing explicit user approval only when it covers the challenge scope and maximum cost; otherwise obtain approval before running
-  `postplus quote confirm --json --challenge-file <challenge.json>` and retry
-  with the returned token.
+- Requested tasks use existing PostPlus credits after the current price and balance are checked.
+  Estimate-only requests do not execute. Stop on insufficient credits; do not
+  recharge, buy a subscription, or repeat an uncertain paid operation.
 
 ## Command Selection
 

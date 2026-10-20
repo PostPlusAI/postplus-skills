@@ -115,4 +115,6 @@ missing evidence layer.
 - Run `postplus research run google-trends-fast --query <term> --country <code>
   --time-range <window> --wait --output <result.json>`.
 - Preview and approval boundaries stay explicit; do not execute irreversible publishing without the required approval artifact.
-- If the CLI returns a quote-confirmation challenge, reuse existing explicit user approval only when it covers the challenge scope and maximum cost; otherwise obtain approval before running `postplus quote confirm --json --challenge-file <challenge.json>` and retry with the returned token.
+- Requested tasks use existing PostPlus credits after the current price and balance are checked.
+  Estimate-only requests do not execute. Stop on insufficient credits; do not
+  recharge, buy a subscription, or repeat an uncertain paid operation.

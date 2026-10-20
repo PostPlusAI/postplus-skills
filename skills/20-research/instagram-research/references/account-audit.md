@@ -1,75 +1,29 @@
-# Instagram Account Audit
+# Instagram Account And Competitor Audit
 
-Use when the user gives known Instagram accounts and wants account health,
-competitor comparison, known creator fit, or a post shortlist for later comment
-or outreach work.
+Use for known-account health, positioning, content strategy, comparisons, or
+known-creator fit. Apply [shared contract](shared-contract.md).
 
+Use supplied handles/profile URLs directly. For a brand name, establish official
+identity using its website and `instagram-search --query <brand> --kind user`, then verify candidates
+with `instagram-profiles --handle <account>`. Ask only if credible conflicting
+identities remain. A content URL can identify its author; do not demand another
+seed if the author is returned.
 
-## User Jobs
+Collect profile facts with `instagram-profiles --handle <account>` and account
+content with `instagram-posts --handle <account>` when strategy, cadence, creator
+fit, or creative gaps are requested. Run independent accounts concurrently,
+saving each batch. Search must finish before dependent account lookups.
 
-- Diagnose brand account health, positioning, bio clarity, links, and public
-  availability.
-- Compare competitors by profile positioning and recent public content.
-- Judge whether a known creator or partner account fits a collaboration.
-- Build a post shortlist for comment analysis, content benchmark, or outreach.
-- Find account-level risks, weak signals, and missing public evidence.
+Check returned dates for requested time coverage. Do not claim full history or
+use a profile-only snapshot to judge video hooks, cadence, or formats. Analyze
+selected media with `media-analysis` before visual/audio conclusions; use actual
+comments for audience questions. Follow `audience-voice.md` when needed.
 
-## Alignment
+Public counts are snapshots, not growth or private performance. Distinguish
+unavailable accounts, missing fields, sparse samples, and genuine evidence of
+inactivity. Do not expand beyond exact accounts merely to reach a broad research
+target. For similar-creator discovery, use `creator-discovery.md`.
 
-Infer whether the user needs brand health, competitor comparison, creator fit,
-content strategy, or a downstream shortlist. Ask only when the output would
-change.
-
-Use this question when needed:
-
-`Should I focus the audit on brand health, competitor comparison, creator fit, content strategy, or a shortlist for the next step?`
-
-## Inputs
-
-Minimum: one handle/profile URL, a user-confirmed brand account, or `2-15`
-competitor handles.
-
-Ask once only when needed:
-
-| Missing / ambiguous | Ask |
-| --- | --- |
-| Brand name only | `Do you have the official Instagram handle, or should I first run search recall for candidate accounts?` |
-| Post/Reel URL used as account seed | `Do you want account audit? If yes, send the profile URL or handle; otherwise I will analyze this content only.` |
-| `16+` accounts | `Which first batch should I audit: closest competitors, largest accounts, market/language, or creator-fit?` |
-
-## Run
-
-1. Normalize handles/profile URLs.
-2. Collect `instagram-profiles`.
-3. Collect `instagram-posts` only when content strategy, cadence, partnership
-   fit, or engagement proxy is needed.
-4. Keep profile facts and post evidence separate.
-
-## Route-Specific Evidence
-
-- Profile facts can support identity, bio positioning, public counts, links, and
-  account availability.
-- Post evidence is required before judging hooks, format mix, cadence, content
-  quality, or creative strategy.
-- Current public follower count is not follower growth.
-- Private, deleted, suspended, login-gated, or unavailable accounts stop at
-  availability status.
-
-If the user asks for similar creators, route to `creator-discovery.md`. If they
-ask for comment language, create a post shortlist and route to
-`audience-voice.md`.
-
-## Output Focus
-
-Return the decision supported, accounts, profile snapshot, recent-post evidence
-when collected, supported engagement proxy, risks/gaps, and the next action.
-
-## HTML Artifact Focus
-
-Make the HTML easy to audit by account:
-
-- account comparison table with handle, bio position, public counts, links, and
-  availability
-- recent-post section only when post evidence was collected
-- risks and gaps tied to accounts or posts
-- next-step shortlist for comment analysis, benchmark, or creator discovery
+Deliver account facts, inspected content range, source-linked patterns,
+criterion judgments, gaps, and cost in the standard report. Complete requested
+downstream work; otherwise offer one concrete next action with its PostPlus skill.
