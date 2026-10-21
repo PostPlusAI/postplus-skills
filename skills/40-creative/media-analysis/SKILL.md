@@ -9,29 +9,20 @@ metadata:
 
 # Media Analysis
 
-Analyze the user's link, local file, or visible images and deliver readable
-findings with the actual visual evidence. Choose the necessary work internally.
+For video, submit the original local path or supported URL, wait or resume the same operation, and
+hand over the original full-timeline report. PostPlus owns one fixed analysis
+prompt shared by CLI and MCP. Do not supply, replace, or append custom questions,
+formats, or marketing instructions. Every video gets the same detailed record;
+there is no short/deep analysis branch.
 
-For multi-reference comparison or requested detailed shot-by-shot evidence, read
-[multi-source shot analysis](references/multi-source-shot-analysis.md). This branch
-keeps sources independent before synthesis; ordinary analysis skips it.
+Use [execution and recovery](references/video-analysis.md) for source handling.
+For multiple videos, submit each separately and retain a separate original report.
 
-## Choose the work
-
-- **Video understanding:** use `postplus media analyze video-analysis` for
-  actions, sound, dialogue, and development over time. Pass the original source;
-  the CLI owns acquisition and transfer. Read [execution and recovery](references/video-analysis.md).
-- **Readable images:** view them directly. No download, upload, or Gemini call
-  is needed for images already accessible in the conversation or locally.
-- **Native image posts:** use `postplus media prepare --source <url>`, then
-  inspect the ordered originals. Read [image evidence](references/ordered-image-evidence.md).
-- **Screenshots, text, color, or layout:** inspect sufficient images or local
-  video frames without purchasing full video analysis. Read [video frames](references/video-frames.md).
-
-An MP4 made from stills remains a video with a real timeline. Preparation must
-return an actual local file before you treat it as downloaded evidence.
-Keep multiple sources, failures, and outputs separate. Answer
-follow-ups from existing reports and evidence without another paid analysis.
+Images remain direct visual inspection: view accessible images, or use
+`postplus media prepare --source <url>` for ordered image posts (see
+[image evidence](references/ordered-image-evidence.md)). If the task only asks for
+specific screenshots, use [video frames](references/video-frames.md); label them
+as partial frame observations, never as completed full-video analysis.
 
 ## Video command
 
@@ -47,45 +38,39 @@ Wait for explicit user approval when requested; an action does not authorize spe
 Resume the same operation through its returned checkpoint or action; never resubmit uncertain work, repeat exhausted recovery, or switch providers to bypass failure.
 <!-- END GENERATED EXECUTION EXAMPLE -->
 
-Omit `--prompt` for the default shot table and production notes described in
-[video report](references/single-video-report.md). Supply it for the user's
-specific question or requested format; do not append an unrelated full report.
-`video-analysis` is the CLI capability key, not another Skill.
-Use `postplus media schema --json` only when constructing or repairing an
-unknown hosted media request shape; keep the generated command above for the
-normal analysis path.
+`video-analysis` is the CLI capability key, not another skill. With MCP, submit
+the same video through its declared capability input; the server supplies the
+same fixed prompt. Use `postplus media schema --json` only when repairing an unknown CLI input.
 
 ## Deliver
 
-Embed inspected images or real screenshots in the conversation or Markdown,
-with source, original page index or measured video timestamp, and the observation
-each supports. Paths or folder links alone are not visual delivery. Never replace
-missing evidence with a cover, generated image, or guessed description.
+Deliver the returned model Markdown unchanged, linking the complete report when
+long. Do not substitute a summary, marketing verdict, cleaned-up transcript or
+rewritten shot list. See [report scope](references/single-video-report.md).
+Do not schedule an extra Agent completeness review, strategy synthesis, or paid
+rerun as part of this flow. If separately asked for interpretation or strategy,
+use the saved original report and deliver that work separately without changing
+the analysis prompt or replacing the original record.
 
-For a long report, show representative frames in chat and link the full Markdown.
-Preserve returned model Markdown unchanged; add Agent-viewed screenshots and any
-corrections in a separate evidence note. Save attachments beside the report using
-relative links, verify those links, and retain them after temporary cleanup.
-Never delete user files or delivered evidence.
+Keep sources, reports and failures separate. Preserve user files and delivered
+evidence. Screenshots are optional supporting evidence and cannot establish full
+motion or audio coverage. A failed analysis remains failed; partial screenshots
+or subtitle observations must be labeled with their limits.
 
-State missing pages, unreadable text, unavailable audio, and inspected subsets.
-A few frames do not prove full audio/video coverage. Distinguish visible facts,
-captured wording, interpretation, and claims that need external verification.
+## Wait and recover
 
-## Recover
+Follow structured progress and next actions. After a disconnected wait, use the
+returned poll/checkpoint action for the same task, account and environment.
+Do not restart an uncertain paid analysis. Let PostPlus perform bounded recovery;
+do not resubmit uncertain work, repeat
+exhausted recovery, or switch providers to bypass failure.
 
-Report observed progress while waiting. Let the CLI perform bounded recovery;
-after a disconnected wait use its emitted poll or checkpoint command for the
-same task, account, and environment. Do not restart an uncertain paid analysis.
-A content-quality concern or rewording request does not authorize a paid redo.
-
-For an unambiguous local parameter rejection before remote work starts, use the
-command's `--help` and existing user input for one correction. If submission may
-have started, follow only its emitted recovery command. Use `postplus doctor --skill media-analysis` for readiness
-diagnostics after a readiness failure. Preserve task identity if submission may have happened.
+For a clear local parameter rejection before submission, use command help for
+one correction. For readiness failures, use `postplus doctor --skill media-analysis`.
 Honor quote challenges using existing explicit cost authorization when sufficient;
-otherwise ask for approval, then use the provided confirmation/retry commands.
+otherwise ask for approval and use the returned confirmation/retry action.
+Do not purchase a redo for wording or perceived content quality.
 
-For a terminal failure, give its stage, reason, operation id when present, cost
-status, and concrete next step. Unknown results do not mean no charge. Deliver
-useful partial evidence with its limits; never claim unseen material was analyzed.
+On terminal failure, report stage, reason, operation id, known cost status and
+the returned next action. An unknown result or missing usage does not mean no
+charge. Do not claim unseen or unheard material was analyzed.

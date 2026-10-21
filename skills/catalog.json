@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "releaseId": "skills-2026-10-20.1",
+  "releaseId": "skills-2026-10-21.1",
   "productBrief": {
     "schemaVersion": 1,
     "paragraphs": [
@@ -15,13 +15,13 @@
   },
   "releaseNotes": {
     "schemaVersion": 1,
-    "releaseId": "skills-2026-10-20.1",
-    "title": "More precise social research and evidence-led reports.",
-    "summary": "Improves Instagram, TikTok and Meta ad research guidance, parameter selection and reusable evidence.",
+    "releaseId": "skills-2026-10-21.1",
+    "title": "Detailed video evidence through one fixed analysis flow.",
+    "summary": "CLI and MCP use the same full-timeline video-analysis prompt and deliver the original model report unchanged.",
     "highlights": [
-      "Distinguish topical ad discovery from verified advertiser research.",
-      "Use collected post, creator and comment evidence in Instagram and TikTok reports.",
-      "Reuse existing research results before starting additional paid collection."
+      "Record dialogue, brief acknowledgments, overlaps, actions, screen text and audiovisual timing across the original timeline.",
+      "Remove custom analysis questions, short/deep branches and default marketing summaries.",
+      "Submit, wait or resume the same operation, then deliver the original report without an added Agent review or automatic quality rerun."
     ]
   },
   "source": "PostPlusAI/postplus-skills",
