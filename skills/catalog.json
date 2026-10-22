@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "releaseId": "skills-2026-10-21.1",
+  "releaseId": "skills-2026-10-22.2",
   "productBrief": {
     "schemaVersion": 1,
     "paragraphs": [
@@ -15,13 +15,13 @@
   },
   "releaseNotes": {
     "schemaVersion": 1,
-    "releaseId": "skills-2026-10-21.1",
-    "title": "Detailed video evidence through one fixed analysis flow.",
-    "summary": "CLI and MCP use the same full-timeline video-analysis prompt and deliver the original model report unchanged.",
+    "releaseId": "skills-2026-10-22.2",
+    "title": "Focus on video generation and detailed media analysis.",
+    "summary": "Deliver generated videos with their actual inputs and run details; keep full-timeline analysis a separate requested action.",
     "highlights": [
-      "Record dialogue, brief acknowledgments, overlaps, actions, screen text and audiovisual timing across the original timeline.",
-      "Remove custom analysis questions, short/deep branches and default marketing summaries.",
-      "Submit, wait or resume the same operation, then deliver the original report without an added Agent review or automatic quality rerun."
+      "Deliver the raw generated video with the actual model, submitted prompt, reference roles and original run details.",
+      "Inspect completed videos only when requested; generation delivery does not wait for transcription, analysis or editing.",
+      "Record observable on-screen text timing, placement and styling during video analysis without guessing font names."
     ]
   },
   "source": "PostPlusAI/postplus-skills",

@@ -51,10 +51,10 @@ architect, preflight report, reference contract, or model-specific submitter.
 8. When a local final file is needed, download the completed output with
    `postplus media-file download --url <fresh-output-url> --output-file <path>
    --skill video-batch-runner`.
-9. Return the actual result, downloaded media or result path, endpoint, prompt,
-   submitted media roles, and run handle. Send the finished render to
-   `media-analysis` only when deeper final-media inspection is requested;
-   otherwise check the render against the approved brief yourself.
+9. On successful generation, deliver the raw result, actual model/endpoint,
+   submitted prompt and reference roles, and original run information. Inspect
+   the finished clip only when the user asks for that check. Generation delivery
+   does not wait for transcription, frame extraction or editing.
 
 ## Execution Rules
 
