@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-2026-10-21.1",
-  "title": "Detailed video evidence through one fixed analysis flow.",
-  "summary": "CLI and MCP use the same full-timeline video-analysis prompt and deliver the original model report unchanged.",
+  "releaseId": "skills-2026-10-22.1",
+  "title": "Add video captions and titles when requested.",
+  "summary": "Deliver generated video directly, then use optional text postproduction when captions or overlays are needed.",
   "highlights": [
-    "Record dialogue, brief acknowledgments, overlaps, actions, screen text and audiovisual timing across the original timeline.",
-    "Remove custom analysis questions, short/deep branches and default marketing summaries.",
-    "Submit, wait or resume the same operation, then deliver the original report without an added Agent review or automatic quality rerun."
+    "Keep the raw video and deliver its actual model, prompt, reference roles and run details without automatic analysis.",
+    "Use an explicit timed text plan for captions, static overlays and simple fades; retain the plan and original for later changes.",
+    "Record observable on-screen text timing, placement and styling during video analysis without guessing font names."
   ]
 }
