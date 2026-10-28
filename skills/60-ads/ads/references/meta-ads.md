@@ -1,5 +1,12 @@
 # Meta Ads: evidence, diagnosis, and supported changes
 
+For a complete new image or video website-conversion campaign, use
+[paused build and preview](meta-paused-build.md). Discover `POSTPLUS_METAADS_`
+tools with `postplus channels tools list --toolkit metaads`, inspect with
+`postplus channels tools show`, and use `channels tools run` with an exact
+account target. Retain the first result and operation ID. Stop at paused
+objects and previews; both building and existing-budget updates use explicit decimal amount and currency through the owned tools below.
+
 Use this reference for Meta account reviews, creative decisions, and specific account operations. Use [channel execution](channel-execution.md) for connection, authorization, operation identity, and recovery; use [performance reporting](performance-report.md) for date windows, comparisons, and metric math. `B` below means the business data at `output.result.data` in the first successful CLI response.
 
 ## Strategy field lookup
@@ -174,8 +181,7 @@ scope, evidence, proposed decision, and condition that would reverse it.
    acceptable cost, recent delivery, enough reachable audience, prepared
    replacements, and fulfillment capacity. Propose the next spend and review
    bound from this account's economics; no fixed percentage increase is a
-   universal rule, and the current CLI budget-unit ambiguity blocks an
-   automated Meta budget amount write.
+   universal rule. Use the explicit money and verified object tools below for an authorized amount change.
 
 For an account with rising frequency, compare equal-length period reach,
 spend, CPM, response and qualified outcomes. If net-new reach is flattening,
@@ -193,28 +199,23 @@ executed agreement.
 - Keep replacements prepared before rotating a productive ad. A loss limit, broken destination, or disallowed claim may justify stopping even without a replacement; never keep spending solely to satisfy a rotation schedule.
 - For low-intent leads, propose a clear next-step confirmation and only the qualification friction needed for the business: a suitable form mode, work-email field when appropriate, or a few useful questions. Compare qualified acquisition cost, not form conversion rate alone.
 - Creator partnerships require audience fit, actual usage permissions, and evidence from the content. They are an experiment in message and audience access, not a guaranteed source of incremental reach.
-- Discuss scaling only when economics remain acceptable over mature windows and creative supply, audience capacity, and fulfillment support it. Meta budget amount writes are excluded below; deliver a specific budget proposal and the evidence needed to revisit it.
+- Discuss scaling only when economics remain acceptable over mature windows and creative supply, audience capacity, and fulfillment support it. Use the verified amount workflow below for an authorized budget change; budget structure changes require their separate validation.
 
 ## Strategy action coverage
 
 | Requested action and target | Current AI-direct execution mapping |
 | --- | --- |
-| Pause or start a campaign | `METAADS_UPDATE_CAMPAIGN` with campaign `status`; use the exact campaign ID and independently read it through `METAADS_GET_OBJECT`. See the complete pause/readback recipe in [Meta Ads](meta-ads.md). |
-| Add/remove a name marker on a campaign | `METAADS_UPDATE_CAMPAIGN` with `name`; read the existing name, change only the requested marker and read back the same campaign. Do not append a marker twice. |
-| Pause/start or rename an ad set or ad | No general `UPDATE_AD_SET` or `UPDATE_AD` tool is available in the current fixed directory. A campaign update is not an equivalent action. `METAADS_UPDATE_AD_CREATIVE` changes a creative's name/status, not ad delivery or ad-set state. |
-| Increase, decrease or set a campaign budget | `METAADS_UPDATE_CAMPAIGN` exposes amount fields, but the input amount-unit contract remains unresolved as documented in [Meta Ads](meta-ads.md). Keep the exact calculated proposal; an amount write needs verified units and independent readback. |
-| Increase, decrease or set an ad-set budget | The general ad-set update operation is absent, and Meta amount-unit semantics remain unresolved. Do not move the budget to a parent campaign to execute a different change. |
+| Pause, resume or rename a campaign, ad set or ad | Discover `POSTPLUS_METAADS_INSPECT_OBJECT` and `POSTPLUS_METAADS_UPDATE_OBJECT`. Inspect the exact object, retain its snapshot, then change only authorized status/name. The result verifies configured state, not delivery. If these tools are absent, campaign status/name still use the exact `METAADS_UPDATE_CAMPAIGN` and independent readback; do not substitute a campaign for an ad set or ad. |
+| Add/remove a name marker | Read the current name and change only the agreed marker through the exact object update. Do not append a marker twice. |
+| Unsupported object update | When the exact PostPlus object tool is absent, explain the missing action. A campaign update or creative update is not an equivalent ad/ad-set operation. |
+| Change a campaign or ad-set budget amount | Use `POSTPLUS_METAADS_UPDATE_BUDGET` with explicit major-unit amount, currency, period and the inspection snapshot. It changes an existing budget amount and performs independent readback. Never send raw `METAADS_UPDATE_CAMPAIGN` budget fields. |
+| Enable one shared campaign budget | `POSTPLUS_METAADS_SET_CAMPAIGN_BUDGET` is a separate structural change. Use `apply:false` when only validation is requested. An authorized `apply:true` already validates before applying. Applying requires authorization for the whole affected campaign and a current inspection snapshot; it validates again before applying. Do not promise the account will allow migration from existing lifetime ad-set budgets. |
 | Increase a bid amount | No matching bid-amount update path is available. A campaign `bid_strategy` field selects a strategy; it cannot implement a numeric bid increase or its cap. |
-| Duplicate an ad, ad set or campaign | No duplicate operation is available. Creation tools do not preserve a source object's complete settings or implement a once-in-a-lifetime duplication guard. |
+| Duplicate a paused ad, ad set or campaign | Use POSTPLUS_METAADS_READ_BUILD_OBJECT then POSTPLUS_METAADS_DUPLICATE_PAUSED_OBJECT with its snapshot and the requested name. Native copies preserve the hierarchy; verify paused objects and IDs. This one-time action does not install recurring or lifetime-once rule state. |
 | Notify | Return the matched conditions in the current conversation for this evaluation. External delivery requires the user's requested destination and an available authorized messaging path. Neither is an installed recurring notification. |
 | Unattended recurring execution through Ads/Channels | This path has no strategy scheduler, durable rule state or cadence/cooldown executor. That mode needs these capabilities; one-time execution and user-performed reviews do not. A one-time call does not install recurrence. |
 
-New campaign creation is a separate supported path: `METAADS_CREATE_CAMPAIGN`,
-`METAADS_CREATE_AD_SET`, `METAADS_CREATE_AD_CREATIVE` and `METAADS_CREATE_AD`
-are available subject to their actual prerequisites and the existing amount
-contract. Use the creation recipes in [Meta Ads](meta-ads.md); do not invent a
-`creative_id` handoff that `CREATE_AD` does not accept. Missing update, duplicate
-or scheduling operations do not establish that campaign creation is absent.
+New image or video website-conversion campaigns use [paused build and preview](meta-paused-build.md), including explicit currency/amount, a creative ID handoff and native preview. Existing generic creation tools retain only their inspected schema; raw budget fields are rejected. Creation does not authorize activation.
 
 ## Supported changes and exact limitations
 
@@ -279,11 +280,94 @@ Check `B.success` and `B.id`, then read the created ad and its parents. Creation
 
 Current boundaries:
 
-- Do not automate Meta budget amounts through this Skill. The fixed tool schema exposes numeric `daily_budget`, `lifetime_budget`, and `spend_cap` inputs described only as "account currency"; it does not establish whether to pass major or minor currency units. Campaign inspection retains budget values as raw platform strings and marks conversion unverified. The generic tool path does not add a Meta amount preflight or independent budget readback. Prepare a concrete proposal, but require verified input-unit semantics and a readback path before executing it; never assume multiplication by 100 or reuse the `spend` metric's parsing rule.
-- There is no general `UPDATE_AD` or `UPDATE_AD_SET` operation here. A request to pause one ad must not become a campaign pause. `METAADS_UPDATE_AD_CREATIVE` changes name/status, not the ad's copy or delivery state.
-- Creative preview is not an available execution path. Review the actual asset and use an authorized platform UI inspection when a placement preview is needed.
+- Use only the inspected PostPlus amount/currency tools below for budget updates. Raw upstream `daily_budget`, `lifetime_budget`, and `spend_cap` inputs have no verified user-unit contract and are rejected by the updated execution service. Creating a budget or changing a spend cap is not covered by the existing-amount update tool. If the required tool is not listed, preserve the proposal and explain the missing operation; never guess a multiplier or use a broader object.
+- PostPlus object updates cover status and name only. They do not change targeting, bids or creative copy. A request to pause one ad must not become a campaign pause. `METAADS_UPDATE_AD_CREATIVE` does not control the ad's delivery state.
+- Use `POSTPLUS_METAADS_PREVIEW_AD` for a native placement preview of an exact paused ad, following [paused build and preview](meta-paused-build.md).
 - `METAADS_LIST_LEADS` requires an ad or lead-form `source_object_id`, not an account/campaign/ad-set ID, and exact target binding to that field. Request `field_data` only if answers are needed. Follow `after` pagination and keep lead data out of public deliverables.
 - Pixel setup and event receipt use [measurement](measurement.md). Never send fabricated conversion events to make an audit pass. Activity logs are partial platform evidence, not a complete record of PostPlus actions.
+
+## Explicit money and verified object updates
+
+Discover these tools with `channels tools list/show` before using them. Their
+availability depends on the deployed service. The user may say “100 US dollars”,
+“100 yuan” or any supported currency; normalize this to an explicit amount and
+currency, not a fixed currency or a required user syntax. Use major currency
+units as decimal text (`"100.00"` plus `"USD"` or `"CNY"`). Never pre-multiply,
+round unsupported precision, silently convert currencies, or assume every
+currency has two decimal places. The service checks the account currency and
+uses Meta's currency offsets. A mismatch requires an explicit revised proposal.
+
+A daily budget is an average, not a guaranteed actual daily spending ceiling.
+A lifetime budget and a campaign spending limit have different meanings. “Two
+ad sets share 100 per day” means a campaign-level budget; two separate budgets
+of 50 do not implement that allocation. Inspect the existing budget level,
+period, sharing, schedule and all affected ad sets before proposing a change.
+
+Save an exact inspection request as `meta-inspect.json`:
+
+<!-- tool-input: POSTPLUS_METAADS_INSPECT_OBJECT -->
+```json
+{
+  "account_id": "act_123456789",
+  "object_id": "238500000000002",
+  "object_type": "campaign"
+}
+```
+
+```sh
+postplus channels tools show POSTPLUS_METAADS_INSPECT_OBJECT --json
+postplus channels tools run POSTPLUS_METAADS_INSPECT_OBJECT --connection "<connection-id>" --target-id 238500000000002 --target-path object_id --input-file meta-inspect.json --operation-id "<inspection-operation-id>" --wait --json > meta-inspect-result.json
+```
+
+Read the normalized `B.budget` and `B.budgetImpact` amounts/currencies and
+`B.snapshot`, the exact
+`B.object`, parent campaign and complete ad-set impact. The budget fields inside
+raw object records are native platform values, not user-unit amounts. A missing
+budget is not zero spend. Replace the illustrative snapshot below with the real
+snapshot from this inspection, and retain the user's exact authorized scope.
+
+For an existing daily campaign budget, save `meta-budget.json`:
+
+<!-- tool-input: POSTPLUS_METAADS_UPDATE_BUDGET -->
+```json
+{
+  "account_id": "act_123456789",
+  "object_id": "238500000000002",
+  "object_type": "campaign",
+  "expected_snapshot": "0000000000000000000000000000000000000000000000000000000000000000",
+  "amount": "100.00",
+  "currency": "USD",
+  "period": "daily"
+}
+```
+
+```sh
+postplus channels tools show POSTPLUS_METAADS_UPDATE_BUDGET --json
+postplus channels tools run POSTPLUS_METAADS_UPDATE_BUDGET --connection "<connection-id>" --target-id 238500000000002 --target-path object_id --input-file meta-budget.json --operation-id "<budget-operation-id>" --wait --json > meta-budget-result.json
+```
+
+This operation does not change daily/lifetime type or move budgets between
+levels. A stale snapshot requires another inspection and review of the changed
+facts. It is not permission to repeat an uncertain mutation.
+
+To enable a shared campaign budget where none exists, inspect and show
+`POSTPLUS_METAADS_SET_CAMPAIGN_BUDGET`. Use `apply:false` when only validation is requested, with the exact
+amount/currency/period and inspection snapshot. An already authorized
+`apply:true` validates internally; no separate validation call is required.
+`validation_only` means the
+platform accepted a validation request; no budget was applied. Actual applying
+uses a new operation ID with `apply:true` only within the user's authorization
+for the full campaign. It validates again, checks for intervening configuration
+changes, then verifies the campaign and all affected ad sets. The platform may
+reject existing lifetime budgets, schedules, bid settings or other eligibility
+conditions. Do not recreate/duplicate ads, remove schedules or change bids to
+force a migration without separate authorization.
+
+For status/name, use `POSTPLUS_METAADS_UPDATE_OBJECT` with the same identity and
+snapshot, and `status:"ACTIVE"`/`"PAUSED"` and/or `name`. Preserve the original
+operation ID. Report `changed:false` as an inspected no-op, `readback_verified`
+as confirmed configuration, and `unknown` as unfinished. Neither a successful
+configuration update nor ACTIVE proves review approval, delivery or conversions.
 
 ## Deliverable
 
@@ -353,37 +437,39 @@ When platform and campaign type match, use embedded parameters directly. Read th
 | Action / target / campaign type | Binding |
 | --- | --- |
 | Notify | Return matching values here; external delivery requires the user-selected destination and sending capability. |
-| Duplicate | No verified exact-duplication binding for this target. Preserve source/copy count and let the user choose manual duplication or another supported operation; creation alone is not duplication. |
-| Pause / campaign | METAADS_UPDATE_CAMPAIGN(campaign_id,status=PAUSED); read back same ID with METAADS_GET_OBJECT(fields=[id,status,effective_status]). |
-| Pause / adset | No verified AI-direct Pause binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
-| Pause / ad | No verified AI-direct Pause binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
-| Pause / selected | No verified AI-direct Pause binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
-| Start / campaign | METAADS_UPDATE_CAMPAIGN(campaign_id,status=ACTIVE); read back same ID with METAADS_GET_OBJECT(fields=[id,status,effective_status]). |
-| Start / adset | No verified AI-direct Start binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
-| Start / ad | No verified AI-direct Start binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
-| Start / selected | No verified AI-direct Start binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
-| Increase budget / campaign | METAADS_UPDATE_CAMPAIGN(campaign_id,daily_budget=calculated amount) exposes the field but its write-unit contract is unresolved. Verify units first or offer exact manual amount; read back same campaign. Never assume ×100. |
-| Increase budget / adset | No verified AI-direct Increase budget binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
+| Duplicate | For an explicitly authorized one-time paused copy, POSTPLUS_METAADS_READ_BUILD_OBJECT supplies snapshot; POSTPLUS_METAADS_DUPLICATE_PAUSED_OBJECT(ad_account_id,object_id,object_kind=campaign/adset/ad,expected_snapshot,name) uses native copies and verifies the paused hierarchy. Preserve source/copy identities; never retry an unknown copy. Recurring/lifetime-once rule execution remains unsupported. |
+| Pause / campaign | POSTPLUS_METAADS_INSPECT_OBJECT(account_id,object_id,object_type=campaign); pass its returned snapshot as expected_snapshot in POSTPLUS_METAADS_UPDATE_OBJECT(account_id,object_id,object_type=campaign,status=PAUSED). Verify the exact object; configured status is not delivery. |
+| Pause / adset | POSTPLUS_METAADS_INSPECT_OBJECT(account_id,object_id,object_type=adset); pass its returned snapshot as expected_snapshot in POSTPLUS_METAADS_UPDATE_OBJECT(account_id,object_id,object_type=adset,status=PAUSED). Verify the exact object; configured status is not delivery. |
+| Pause / ad | POSTPLUS_METAADS_INSPECT_OBJECT(account_id,object_id,object_type=ad); pass its returned snapshot as expected_snapshot in POSTPLUS_METAADS_UPDATE_OBJECT(account_id,object_id,object_type=ad,status=PAUSED). Verify the exact object; configured status is not delivery. |
+| Pause / selected | POSTPLUS_METAADS_INSPECT_OBJECT(account_id,object_id,object_type=exact campaign/adset/ad); pass its returned snapshot as expected_snapshot in POSTPLUS_METAADS_UPDATE_OBJECT(account_id,object_id,object_type=exact campaign/adset/ad,status=PAUSED). Verify the exact object; configured status is not delivery. |
+| Start / campaign | POSTPLUS_METAADS_INSPECT_OBJECT(account_id,object_id,object_type=campaign); pass its returned snapshot as expected_snapshot in POSTPLUS_METAADS_UPDATE_OBJECT(account_id,object_id,object_type=campaign,status=ACTIVE). Verify the exact object; configured status is not delivery. |
+| Start / adset | POSTPLUS_METAADS_INSPECT_OBJECT(account_id,object_id,object_type=adset); pass its returned snapshot as expected_snapshot in POSTPLUS_METAADS_UPDATE_OBJECT(account_id,object_id,object_type=adset,status=ACTIVE). Verify the exact object; configured status is not delivery. |
+| Start / ad | POSTPLUS_METAADS_INSPECT_OBJECT(account_id,object_id,object_type=ad); pass its returned snapshot as expected_snapshot in POSTPLUS_METAADS_UPDATE_OBJECT(account_id,object_id,object_type=ad,status=ACTIVE). Verify the exact object; configured status is not delivery. |
+| Start / selected | POSTPLUS_METAADS_INSPECT_OBJECT(account_id,object_id,object_type=exact campaign/adset/ad); pass its returned snapshot as expected_snapshot in POSTPLUS_METAADS_UPDATE_OBJECT(account_id,object_id,object_type=exact campaign/adset/ad,status=ACTIVE). Verify the exact object; configured status is not delivery. |
+| Increase budget / campaign | Inspect the exact campaign with POSTPLUS_METAADS_INSPECT_OBJECT. POSTPLUS_METAADS_UPDATE_BUDGET(account_id,object_id,object_type=campaign,expected_snapshot,amount=authorized major-unit decimal string,currency=account currency,period=existing daily/lifetime). Preserve budget owner/type; no raw provider units or rounding. Independently verify the same object. |
+| Increase budget / adset | Inspect the exact adset with POSTPLUS_METAADS_INSPECT_OBJECT. POSTPLUS_METAADS_UPDATE_BUDGET(account_id,object_id,object_type=adset,expected_snapshot,amount=authorized major-unit decimal string,currency=account currency,period=existing daily/lifetime). Preserve budget owner/type; no raw provider units or rounding. Independently verify the same object. |
 | Increase budget / ad | No verified AI-direct Increase budget binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
-| Increase budget / selected | No verified AI-direct Increase budget binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
-| Decrease budget / campaign | METAADS_UPDATE_CAMPAIGN(campaign_id,daily_budget=calculated amount) exposes the field but its write-unit contract is unresolved. Verify units first or offer exact manual amount; read back same campaign. Never assume ×100. |
-| Decrease budget / adset | No verified AI-direct Decrease budget binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
+| Increase budget / selected | Resolve the exact existing campaign/adset budget owner with POSTPLUS_METAADS_INSPECT_OBJECT before using POSTPLUS_METAADS_UPDATE_BUDGET; ads have no owned budget. Never silently replace the requested owner. |
+| Decrease budget / campaign | Inspect the exact campaign with POSTPLUS_METAADS_INSPECT_OBJECT. POSTPLUS_METAADS_UPDATE_BUDGET(account_id,object_id,object_type=campaign,expected_snapshot,amount=authorized major-unit decimal string,currency=account currency,period=existing daily/lifetime). Preserve budget owner/type; no raw provider units or rounding. Independently verify the same object. |
+| Decrease budget / adset | Inspect the exact adset with POSTPLUS_METAADS_INSPECT_OBJECT. POSTPLUS_METAADS_UPDATE_BUDGET(account_id,object_id,object_type=adset,expected_snapshot,amount=authorized major-unit decimal string,currency=account currency,period=existing daily/lifetime). Preserve budget owner/type; no raw provider units or rounding. Independently verify the same object. |
 | Decrease budget / ad | No verified AI-direct Decrease budget binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
-| Decrease budget / selected | No verified AI-direct Decrease budget binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
-| Set budget / campaign | METAADS_UPDATE_CAMPAIGN(campaign_id,daily_budget=calculated amount) exposes the field but its write-unit contract is unresolved. Verify units first or offer exact manual amount; read back same campaign. Never assume ×100. |
-| Set budget / adset | No verified AI-direct Set budget binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
+| Decrease budget / selected | Resolve the exact existing campaign/adset budget owner with POSTPLUS_METAADS_INSPECT_OBJECT before using POSTPLUS_METAADS_UPDATE_BUDGET; ads have no owned budget. Never silently replace the requested owner. |
+| Set budget / campaign | Inspect the exact campaign with POSTPLUS_METAADS_INSPECT_OBJECT. POSTPLUS_METAADS_UPDATE_BUDGET(account_id,object_id,object_type=campaign,expected_snapshot,amount=authorized major-unit decimal string,currency=account currency,period=existing daily/lifetime). Preserve budget owner/type; no raw provider units or rounding. Independently verify the same object. |
+| Set budget / adset | Inspect the exact adset with POSTPLUS_METAADS_INSPECT_OBJECT. POSTPLUS_METAADS_UPDATE_BUDGET(account_id,object_id,object_type=adset,expected_snapshot,amount=authorized major-unit decimal string,currency=account currency,period=existing daily/lifetime). Preserve budget owner/type; no raw provider units or rounding. Independently verify the same object. |
 | Set budget / ad | No verified AI-direct Set budget binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
-| Set budget / selected | No verified AI-direct Set budget binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
+| Set budget / selected | Resolve the exact existing campaign/adset budget owner with POSTPLUS_METAADS_INSPECT_OBJECT before using POSTPLUS_METAADS_UPDATE_BUDGET; ads have no owned budget. Never silently replace the requested owner. |
 | Increase bid / campaign | No verified AI-direct Increase bid binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
 | Increase bid / adset | No verified AI-direct Increase bid binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
 | Increase bid / ad | No verified AI-direct Increase bid binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
 | Increase bid / selected | No verified AI-direct Increase bid binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
-| Add to name / campaign | METAADS_UPDATE_CAMPAIGN(campaign_id,name=final name); change only the requested marker once; GET_OBJECT readback of the same campaign name. |
-| Add to name / adset | No verified AI-direct Add to name binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
-| Add to name / ad | No verified AI-direct Add to name binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
-| Add to name / selected | No verified AI-direct Add to name binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
-| Remove from name / campaign | METAADS_UPDATE_CAMPAIGN(campaign_id,name=final name); change only the requested marker once; GET_OBJECT readback of the same campaign name. |
-| Remove from name / adset | No verified AI-direct Remove from name binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
-| Remove from name / ad | No verified AI-direct Remove from name binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
-| Remove from name / selected | No verified AI-direct Remove from name binding at this exact level. Explain the limitation and ask the user to choose an adjustment or manual operation; do not substitute a parent. |
+| Add to name / campaign | POSTPLUS_METAADS_INSPECT_OBJECT(account_id,object_id,object_type=campaign); pass its returned snapshot as expected_snapshot in POSTPLUS_METAADS_UPDATE_OBJECT(account_id,object_id,object_type=campaign,name=final authorized name; add/remove only the agreed marker once). Verify the exact object; configured status is not delivery. |
+| Add to name / adset | POSTPLUS_METAADS_INSPECT_OBJECT(account_id,object_id,object_type=adset); pass its returned snapshot as expected_snapshot in POSTPLUS_METAADS_UPDATE_OBJECT(account_id,object_id,object_type=adset,name=final authorized name; add/remove only the agreed marker once). Verify the exact object; configured status is not delivery. |
+| Add to name / ad | POSTPLUS_METAADS_INSPECT_OBJECT(account_id,object_id,object_type=ad); pass its returned snapshot as expected_snapshot in POSTPLUS_METAADS_UPDATE_OBJECT(account_id,object_id,object_type=ad,name=final authorized name; add/remove only the agreed marker once). Verify the exact object; configured status is not delivery. |
+| Add to name / selected | POSTPLUS_METAADS_INSPECT_OBJECT(account_id,object_id,object_type=exact campaign/adset/ad); pass its returned snapshot as expected_snapshot in POSTPLUS_METAADS_UPDATE_OBJECT(account_id,object_id,object_type=exact campaign/adset/ad,name=final authorized name; add/remove only the agreed marker once). Verify the exact object; configured status is not delivery. |
+| Remove from name / campaign | POSTPLUS_METAADS_INSPECT_OBJECT(account_id,object_id,object_type=campaign); pass its returned snapshot as expected_snapshot in POSTPLUS_METAADS_UPDATE_OBJECT(account_id,object_id,object_type=campaign,name=final authorized name; add/remove only the agreed marker once). Verify the exact object; configured status is not delivery. |
+| Remove from name / adset | POSTPLUS_METAADS_INSPECT_OBJECT(account_id,object_id,object_type=adset); pass its returned snapshot as expected_snapshot in POSTPLUS_METAADS_UPDATE_OBJECT(account_id,object_id,object_type=adset,name=final authorized name; add/remove only the agreed marker once). Verify the exact object; configured status is not delivery. |
+| Remove from name / ad | POSTPLUS_METAADS_INSPECT_OBJECT(account_id,object_id,object_type=ad); pass its returned snapshot as expected_snapshot in POSTPLUS_METAADS_UPDATE_OBJECT(account_id,object_id,object_type=ad,name=final authorized name; add/remove only the agreed marker once). Verify the exact object; configured status is not delivery. |
+| Remove from name / selected | POSTPLUS_METAADS_INSPECT_OBJECT(account_id,object_id,object_type=exact campaign/adset/ad); pass its returned snapshot as expected_snapshot in POSTPLUS_METAADS_UPDATE_OBJECT(account_id,object_id,object_type=exact campaign/adset/ad,name=final authorized name; add/remove only the agreed marker once). Verify the exact object; configured status is not delivery. |
 <!-- strategy-parameters:generated:end -->
+
+Paused draft copy/image/video edits and audience/schedule revisions use the shared [build and revision method](meta-paused-build.md). Use native paginated `POSTPLUS_METAADS_LIST_OBJECTS` for complete object discovery. Ordinary amount updates have no fixed wait; structural shared-budget setup reports its approximately 31-second Meta interval before execution.

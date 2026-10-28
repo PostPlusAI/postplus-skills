@@ -1,4 +1,21 @@
-# Video execution
+# Cloud video execution
+
+Use only after inspecting the local contact sheets and finding important spoken
+content needed for the answer that readable subtitles cannot establish:
+
+```bash
+postplus media analyze video-analysis \
+  --video ./retained-original.mp4 \
+  --cloud \
+  --output ./analysis.md
+```
+
+Reuse the returned local original to avoid another source acquisition. Local
+frame-range flags cannot be combined with `--cloud`; cloud input retains the
+original full timeline and audio. The CLI also prepares contact sheets before
+cloud upload. Do not use cloud inference to bypass local preparation errors.
+Use `postplus media schema --json` only when repairing an unknown cloud input;
+it is not a preflight step.
 
 Pass the original local path or supported URL in `--video`, preserving required
 query parameters. The CLI handles source acquisition and transfer; do not author

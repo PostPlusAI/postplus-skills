@@ -115,7 +115,7 @@ search when the original request includes that work.
 Reuse saved evidence and completed analyses. Read only the downstream skill
 needed for the current decision:
 
-- `media-analysis`: selected original URLs plus the precise visual/audio question.
+- `media-analysis`: selected original URLs for the fixed full analysis report; answer the user question from that saved report.
 - `reddit-search`: product/problem hypotheses and existing evidence when long-form
   discussion is requested or needed by the original research scope.
 - `benchmark-to-brief`: product facts, patterns, source references, and uncertainties.
@@ -124,6 +124,8 @@ needed for the current decision:
 - Creator/account audit: shortlisted handles, content evidence, explicit criteria,
   and unresolved conditions. Contacting creators requires explicit authorization.
 
-At the end, offer **one concrete next action with its corresponding PostPlus
-skill**. Do not offer a menu or automatically begin a new goal. For example,
-“Analyze the three selected review videos' openings with `media-analysis`.”
+At the end, offer one concrete next action in the user's language when useful.
+Keep the corresponding skill and routing choice internal. Do not automatically
+begin a new goal.
+
+For media follow-up, obtain or reuse the fixed full media-analysis report, then answer the user question from that evidence. Do not pass a custom analysis prompt or purchase another analysis merely to change the question. Keep skill names and routing choices internal unless the user asks about the workflow.

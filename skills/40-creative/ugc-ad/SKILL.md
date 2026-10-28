@@ -93,11 +93,11 @@ After the table, provide:
 
 ### 5. Ask For Approval
 
-Ask one concise question:
+If production authorization is missing, ask one concise question:
 
 `Does this UGC direction feel right? If yes, I will hand it directly to production.`
 
-Stop before production until the user approves.
+Reuse explicit authorization that already covers the creative direction and production scope; continue directly when it does. Ask before production only when that authorization is missing or a material direction or output constraint would change.
 
 ### 6. Handoff On Approval
 
@@ -137,3 +137,4 @@ Do not treat creator excitement alone as proof.
 - Do not copy creator identity, exact rooms, brand marks, package designs, exact scenes, signature jokes, or recognizable spectacle devices.
 - Translate references into generic camera behavior, framing, action order, sound intent, proof logic, and state change.
 - Treat unusual animals, giant replicas, extreme environments, and historical staging as optional mechanisms, not reusable identity details.
+Keep grammar plans, rubrics and continuity checks as working context. Present the requested script or assets and decisions that affect the result; do not require a separate handoff file or repeated approval when the same agent can continue within existing authorization.

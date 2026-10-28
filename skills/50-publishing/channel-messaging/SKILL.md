@@ -93,8 +93,9 @@ unclear, stop before sending and report the missing fact.
 ## Return the observed result
 
 For a draft, return the text. For an operation, name the sending identity,
-target, content scope, requested time, operation ID, platform message or
-schedule ID when supplied, and the strongest independently observed status.
+target, content scope, requested time and the strongest independently observed
+status. Save operation and platform message/schedule identifiers in execution
+records; show them only when needed for support or requested by the user.
 Distinguish submitted, scheduled, visible in the conversation, and delivered
 to the recipient. If evidence is unavailable, say so without claiming
 completion or retrying an uncertain write.

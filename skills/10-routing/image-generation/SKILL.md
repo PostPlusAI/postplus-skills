@@ -63,8 +63,8 @@ It must:
 | Needs execution with normalized request | `image-batch-runner` |
 | Final output is video | `video-batch-runner` |
 
-## Output Shape
-Return:
+## Internal Handoff
+Keep these fields as agent context for execution; show them only when requested:
 
 - `taskClass`
 - `inputType`

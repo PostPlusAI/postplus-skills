@@ -51,8 +51,10 @@ architect, preflight report, reference contract, or model-specific submitter.
 8. When a local final file is needed, download the completed output with
    `postplus media-file download --url <fresh-output-url> --output-file <path>
    --skill video-batch-runner`.
-9. On successful generation, deliver the raw result, actual model/endpoint,
-   submitted prompt and reference roles, and original run information. Inspect
+9. On successful generation, deliver the video and known cost or cost status.
+   Save the actual model, submitted prompt, reference roles and original run
+   information in execution records; provide these when the user asks how it
+   was made, translating the actual prompt into their language. Inspect
    the finished clip only when the user asks for that check. Generation delivery
    does not wait for transcription, frame extraction or editing.
 
@@ -67,13 +69,19 @@ architect, preflight report, reference contract, or model-specific submitter.
 - Requested tasks use existing PostPlus credits after the current price and balance are checked.
   Estimate-only requests do not execute. Stop on insufficient credits; do not
   recharge, buy a subscription, or repeat an uncertain paid operation.
-- On an auth, transport, quota, malformed-request, capability, or execution
-  failure, report the typed error and stop. Do not switch endpoints, rewrite the
-  request, or claim a local plan is an executed render.
-- In a batch, only the typed error
-  `postplus_cli_hosted_media_content_policy_blocked` is item-local: record that
-  item as blocked without rewriting or retrying it, continue the independent
-  items, and report the incomplete set. Every other error stops the batch.
+- Correct definite pre-submission field or format errors yourself when the
+  correction preserves the user's intent, selected mode, ratio and duration.
+  A provider's edit-versus-reference interpretation is not a harmless format
+  correction: do not silently inherit source dimensions or duration.
+- Once submitted or uncertain, follow the original operation's structured
+  recovery action. A new paid attempt requires a definite outcome, known cost
+  status and coverage by the existing task and spending authorization.
+- For batches, complete the first viable item before expanding. An item-local
+  input error or content-policy rejection affects that item; record it and
+  continue independent items. Do not rewrite blocked content to evade a limit.
+  Shared authentication, balance, configuration or service failures stop new
+  submissions. Continue checking and delivering already submitted items through
+  their original identities. Unknown scope stops expansion until resolved.
 
 ## Public Command Boundary
 
@@ -96,6 +104,7 @@ postplus media create video-seedance-2-5-text \
 ```
 
 Follow the CLI's structured result and reported next action; do not infer recovery from free-text messages.
-Wait for explicit user approval when requested; an action does not authorize spending, publishing, or overwriting.
-Resume the same operation through its returned checkpoint or action; never resubmit uncertain work, repeat exhausted recovery, or switch providers to bypass failure.
+Use existing PostPlus credits for requested work within existing authorization; estimate-only requests do not execute. Do not recharge, buy subscriptions, publish or change external advertising spend without applicable authorization. An initial reservation is not a final price or a hard cost cap. If a required hard final-cost limit cannot be enforced, do not execute; explain that limit.
+Correct definite pre-submission field or format errors without changing the requested intent, mode or output constraints. After submission or an unknown outcome, resume the same operation through its returned checkpoint or action; never resubmit uncertain work, repeat exhausted recovery, or switch providers to bypass failure.
+Keep raw results, operation identifiers and recovery commands in execution records. In ordinary chat, give the result, meaningful limitations, known cost and any necessary user decision; do not narrate uploads, polling, internal identifiers or JSON. When asked how media was made, provide the actual model, submitted prompt in the user language and references actually submitted with their roles.
 <!-- END GENERATED EXECUTION EXAMPLE -->

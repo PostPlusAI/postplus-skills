@@ -79,8 +79,9 @@ postplus media transcribe transcription \
 ```
 
 Follow the CLI's structured result and reported next action; do not infer recovery from free-text messages.
-Wait for explicit user approval when requested; an action does not authorize spending, publishing, or overwriting.
-Resume the same operation through its returned checkpoint or action; never resubmit uncertain work, repeat exhausted recovery, or switch providers to bypass failure.
+Use existing PostPlus credits for requested work within existing authorization; estimate-only requests do not execute. Do not recharge, buy subscriptions, publish or change external advertising spend without applicable authorization. An initial reservation is not a final price or a hard cost cap. If a required hard final-cost limit cannot be enforced, do not execute; explain that limit.
+Correct definite pre-submission field or format errors without changing the requested intent, mode or output constraints. After submission or an unknown outcome, resume the same operation through its returned checkpoint or action; never resubmit uncertain work, repeat exhausted recovery, or switch providers to bypass failure.
+Keep raw results, operation identifiers and recovery commands in execution records. In ordinary chat, give the result, meaningful limitations, known cost and any necessary user decision; do not narrate uploads, polling, internal identifiers or JSON. When asked how media was made, provide the actual model, submitted prompt in the user language and references actually submitted with their roles.
 <!-- END GENERATED EXECUTION EXAMPLE -->
 
 - Requested tasks use existing PostPlus credits after the current price and balance are checked.

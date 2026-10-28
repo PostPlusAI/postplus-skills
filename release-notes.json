@@ -1,11 +1,13 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-2026-10-22.2",
-  "title": "Focus on video generation and detailed media analysis.",
-  "summary": "Deliver generated videos with their actual inputs and run details; keep full-timeline analysis a separate requested action.",
+  "releaseId": "skills-2026-10-27.1",
+  "title": "Reliable task recovery, local video inspection and focused creative methods",
+  "summary": "Inspect local video before optional cloud speech analysis, recover original tasks, and use the retained creative methods with current channel tools.",
   "highlights": [
-    "Deliver the raw generated video with the actual model, submitted prompt, reference roles and original run details.",
-    "Inspect completed videos only when requested; generation delivery does not wait for transcription, analysis or editing.",
-    "Record observable on-screen text timing, placement and styling during video analysis without guessing font names."
+    "Keep internal identifiers and recovery mechanics in execution records; explain results, limits and known cost in chat.",
+    "Reuse existing authorization and preserve user intent when correcting definite pre-submission input errors.",
+    "Recover interrupted research by its saved original identity; preserve already submitted batch results.",
+    "Start CLI video analysis with local contact sheets, refine visual questions locally, and use cloud analysis only for important speech that subtitles cannot establish.",
+    "Retire cartoon-ad, street-interview-ad, authority-ad and commercial-ad. Existing image/video generation and the other creative methods remain available."
   ]
 }

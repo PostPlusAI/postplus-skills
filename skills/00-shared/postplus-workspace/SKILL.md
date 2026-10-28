@@ -42,7 +42,8 @@ permissions, and provider execution.
 | Continue an existing project | Resume workspace |
 | Diagnose missing context | Check the requested stage |
 | Research, strategy, testing, or production | Read stage context, then route to the current specialist skill |
-| Quote, launch, publish, or change spend | Validate with the current CLI, then obtain explicit approval |
+| Quote or requested work using existing credits | Validate current price and balance; reuse existing task and spending authorization |
+| Launch, publish, or change external advertising spend | Validate exact targets and applicable authorization |
 | Analyze performance | Record observations, conclusions, scope, and next hypothesis |
 
 ## Initialize Workspace
@@ -124,7 +125,7 @@ not replace current CLI validation, credit checks, or launch approval.
 
 ## Status
 
-End substantive tasks with:
+Keep this status in workspace records. In chat, explain the result, meaningful blocker and next decision concisely; do not print the fixed block unless requested:
 
 ```text
 STAGE: <stage>

@@ -62,7 +62,7 @@ metadata:
   what must stay fixed versus vary.
 - After generation, check realism, benchmark fit, repeatability across videos,
   copied-creator risk, and ad-like drift.
-- If processing is still pending, return the manifest/request paths and the poll
+- If processing is still pending, keep the manifest/request paths and the poll
   command `postplus media poll --handle <output.data.id> --output path/to/generation-result.json`.
   Reuse the exact `--output` path from the initial submit. A completed poll
   atomically replaces the processing JSON at that path with the completed result;
@@ -73,29 +73,16 @@ metadata:
 - Stop when required user intent, source evidence, or owned input artifacts are
   missing and guessing would change the result.
 
-- Batch canary: before fanning out a batch of independent items, submit item 1
-  alone and poll it to a terminal state. If the canary is content-policy
-  blocked (the per-item typed code below), record and skip it per batch
-  isolation, then canary the next item; fan out only after a non-blocked
-  canary completes successfully. Every other canary failure is systemic: stop.
-  Some failures are only visible on poll (async terminal states), so a
-  submit-accepted batch can still be 100% doomed — a canary caps the blast
-  radius of any systemic defect (bad reference form, service outage, auth) at
-  one item instead of the whole batch.
-- Batch isolation: when producing a batch of independent items, a per-item
-  content/safety rejection is isolated to that item. It is identified
-  only by the typed code `postplus_cli_hosted_media_content_policy_blocked`,
-  never by matching error prose, and it surfaces at either boundary: a failed
-  `postplus media create` whose typed error `code` is that code, or a
-  submitted run whose poll result carries `output.data.status: failed` and
-  `output.data.error.code` set to that code. On either, record which item was
-  blocked and its exact reason, skip it, and continue submitting and polling
-  the remaining items, then report the incomplete set at the end. Do not retry,
-  soften, or re-submit the blocked item — that is a forbidden payload rewrite.
-  Every other failure (a failed owned CLI/script command whose typed `code` is
-  not that content-policy code, or a run whose `error.code` is not that
-  content-policy code — auth, transport, quota, malformed request, service
-  outage) is systemic: stop per the rule above.
+- Before expanding a batch, complete the first viable item. Isolate definite
+  item-local input errors and typed content-policy rejections; preserve other
+  independent items. Do not soften blocked content to evade a restriction.
+- Shared authentication, balance, configuration or service failures stop new
+  submissions. Continue checking and delivering already submitted items using
+  their original identities. Unknown failure scope stops expansion.
+- Correct definite pre-submission field or format errors without changing the
+  requested intent, mode or output constraints. After submission or an unknown
+  outcome, follow the same operation's structured recovery action. Do not buy a
+  replacement merely because a status query failed.
 
 ## Public Command Boundary
 
@@ -121,8 +108,9 @@ postplus media create image-gpt-image-2-text \
 ```
 
 Follow the CLI's structured result and reported next action; do not infer recovery from free-text messages.
-Wait for explicit user approval when requested; an action does not authorize spending, publishing, or overwriting.
-Resume the same operation through its returned checkpoint or action; never resubmit uncertain work, repeat exhausted recovery, or switch providers to bypass failure.
+Use existing PostPlus credits for requested work within existing authorization; estimate-only requests do not execute. Do not recharge, buy subscriptions, publish or change external advertising spend without applicable authorization. An initial reservation is not a final price or a hard cost cap. If a required hard final-cost limit cannot be enforced, do not execute; explain that limit.
+Correct definite pre-submission field or format errors without changing the requested intent, mode or output constraints. After submission or an unknown outcome, resume the same operation through its returned checkpoint or action; never resubmit uncertain work, repeat exhausted recovery, or switch providers to bypass failure.
+Keep raw results, operation identifiers and recovery commands in execution records. In ordinary chat, give the result, meaningful limitations, known cost and any necessary user decision; do not narrate uploads, polling, internal identifiers or JSON. When asked how media was made, provide the actual model, submitted prompt in the user language and references actually submitted with their roles.
 <!-- END GENERATED EXECUTION EXAMPLE -->
 
 - Requested tasks use existing PostPlus credits after the current price and balance are checked.

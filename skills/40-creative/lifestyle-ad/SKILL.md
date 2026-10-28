@@ -91,3 +91,5 @@ Let the downstream production runner handle missing product, creator, audio, mod
 - Make product gestures ordinary: touch, adjust, lift, place, glance, close, carry.
 - Treat UI, results, labels, and text as proof glimpses, not tutorials.
 - Prefer identity-style endings over hard CTAs unless the user asks for direct response.
+
+Keep grammar plans, rubrics and continuity checks as working context. Present the requested script or assets and decisions that affect the result; do not require a separate handoff file or repeated approval when the same agent can continue within existing authorization.

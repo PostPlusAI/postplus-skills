@@ -38,7 +38,7 @@ chemistry". Extract four objects:
 3. Separate structure from identity. Keep camera grammar, shot order, object
    logic, timing, and relationship logic; do not keep exact identity details.
 4. Create a compact decode artifact when it is useful.
-5. Print or return the decode block before storyboard or request writing.
+5. Carry the decode block into storyboard or request writing as internal context. Show it only when requested or needed to explain a creative choice.
 
 ## No-Reference Mode
 When no usable reference exists, operate in proxy mode:

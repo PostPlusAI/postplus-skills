@@ -137,3 +137,4 @@ render execution, polling, and manifests.
 - Stop when required product appearance lacks an approved reference or creation permission.
 - Stop when the requested result or timeline exceeds the approved claim boundary.
 - Stop when comparison cannot be honest or references contain no transferable grammar.
+Keep grammar plans, rubrics and continuity checks as working context. Present the requested script or assets and decisions that affect the result; do not require a separate handoff file or repeated approval when the same agent can continue within existing authorization.

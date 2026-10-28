@@ -108,11 +108,11 @@ Give each shot one dominant action, one causal idea, and one evidence job. Keep 
 
 ### 4. Ask For Approval
 
-Ask one concise approval question in the user's language. English default:
+If production authorization is missing, ask one concise approval question in the user's language. English default:
 
 `Does this educational-ad direction feel right? If yes, I will hand it directly to production.`
 
-Stop before production until the user approves.
+Reuse explicit authorization that already covers the creative direction and production scope; continue directly when it does. Ask before production only when that authorization is missing or a material direction or output constraint would change.
 
 ### 5. Handoff On Approval
 
@@ -137,3 +137,4 @@ Do not output a separate production brief or ask a second generation confirmatio
 - Do not copy reference creators, faces, voices, credentials, wardrobe, exact sets, characters, brand marks, packaging, dialogue, websites, proprietary interfaces, or recognizable scenes.
 - Treat benchmark videos as inspiration-only for rhythm, framing, evidence linkage, and argument structure unless the user explicitly supplies separate binding persona, product, or audio references.
 - Do not prompt for a named creator, studio, or advertisement style. Translate references into generic production attributes.
+Keep grammar plans, rubrics and continuity checks as working context. Present the requested script or assets and decisions that affect the result; do not require a separate handoff file or repeated approval when the same agent can continue within existing authorization.

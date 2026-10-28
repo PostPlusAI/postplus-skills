@@ -1,6 +1,6 @@
-# Video report
+# Cloud video report
 
-Every video uses the same server-owned full-timeline prompt through CLI or MCP.
+Every cloud video analysis uses the same server-owned full-timeline prompt.
 It requests detailed timestamped visual, camera, editing, action, prop/product,
 speech, screen-text and sound observations across the original timeline.
 Original verbatim audio and on-screen subtitles are separate tracks, including

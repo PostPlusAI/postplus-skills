@@ -9,5 +9,5 @@
 7. Preserve existing user files and edits. Do not overwrite initialized files.
 8. Use current installed PostPlus capabilities and inspect CLI help or schema only when required arguments are unclear.
 9. Ask only for blockers that change truth, strategy, identity, execution, compliance, spend, or publishing.
-10. Obtain explicit approval before changing approved truth, approving a test plan, spending credits, launching, publishing, or changing live ads.
+10. Obtain explicit approval before changing approved truth, approving a test plan, launching, publishing, or changing live ads. Reuse existing authorization for requested work using existing PostPlus credits; do not recharge or buy subscriptions.
 11. Return test results and decisions to the active campaign files.
