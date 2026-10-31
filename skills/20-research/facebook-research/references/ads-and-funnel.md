@@ -49,6 +49,67 @@ research request. If the user explicitly asks to browse the saved library, use
 its separate browsing commands; that is a different goal, not an automatic
 research step. Preserve source URL, observation date, country, and status.
 
+## Resolve advertiser identity
+
+For a named brand, use existing discovery and page collection before ad collection:
+
+1. Take Facebook links from the official site when available. If there is no
+   direct Facebook link, check the official social profiles linked by that site
+   (for example a YouTube About page) for a Facebook link before paying for a
+   broad name search. Preserve the official-site → social-profile → Facebook
+   link chain and verify the candidate below; a matching name alone is not proof.
+   If those first-party links do not resolve identity, search the brand name,
+   aliases or former names with `facebook-search`. Its
+   `categories` input is a list of free-text search terms, not a taxonomy or a
+   brand filter. Search results supply candidate page URLs, not verified identity.
+   Prefer a candidate's `pageUrl` or page-specific `url`; a `facebookUrl` that
+   names the search page is search provenance, not the candidate page.
+2. Read candidate URLs with `facebook-pages`. Preserve returned `pageId` and
+   `facebookId` separately from `pageAdLibrary.id`, alongside `pageUrl` and
+   `website`. Keep numeric IDs as strings. Do not invent a missing ID from the
+   page name or ask the user to find it.
+3. Verify the association using sourced first-party evidence, such as the brand's
+   official site linking to that Facebook page, or a page website linked to the
+   verified product. A matching name or matching returned Page ID alone does not
+   verify the brand. Distinguish namesakes, regional pages, former names and
+   agency-managed pages; record which pages belong to the requested market and
+   why. Destination domains may legitimately be regional, redirected, affiliated
+   or agency-managed: investigate the relationship rather than requiring exact
+   domain equality or accepting every similar domain.
+4. Use the verified `pageAdLibrary.id` as the advertiser ID for ad collection
+   when returned. `pageId` or `facebookId` may be profile IDs that differ from
+   the ad-library advertiser ID; do not substitute them when they differ. If no
+   ad-library ID is returned, use an existing numeric Page ID only with sourced evidence
+   associating it with the requested brand.
+5. Collect ads by that verified advertiser ID within scope. Compare returned
+   advertiser Page IDs with the requested ID; preserve a mismatch as a source
+   error and do not attribute those ads to the requested advertiser. A brand
+   mention in another advertiser's copy is comparison evidence, not that brand's
+   own advertising.
+
+If grounded discovery cannot establish identity, report **identity unresolved**
+with the candidates and missing association evidence. Continue other independent
+verified sources; do not replace identity verification with a broad keyword ad
+collection and label its hits as the brand's ads. Ask for business context only
+when it can resolve a real ambiguity, not for internal IDs or permission to continue.
+
+For competitor requests, first establish the seed product and explain each
+candidate's competing product, audience and use case. Then use this identity chain.
+For category requests, search product/problem/offer terms directly and review
+records against that category; no advertiser identity is required to begin.
+
+The CLI uses the same discovery chain. `--category` carries a search term:
+
+```bash
+postplus research run facebook-search --category "Example Brand" --category "Example former name" --limit 20 --wait --output candidates.json
+postplus research run facebook-pages --url https://www.facebook.com/examplebrand --wait --output pages.json
+postplus research run facebook-ads-library --page-id 123456789 --sort most_recent --country ALL --status all --limit 150 --wait --output ads.json
+```
+
+Replace the example URL and ID with actual discovered and verified values before
+running each dependent step. Choose the user's market/status; search candidates
+and returned IDs alone are not proof of brand identity.
+
 ## Collect fresh evidence
 
 Inspect `postplus research run facebook-ads-library --help` when needed for the
@@ -58,10 +119,10 @@ both. A URL passed as a keyword does not select an advertiser.
 For a verified numeric advertiser Page ID, use `--page-id` and
 `--sort most_recent`. Choose country and status from the question; `ALL` and
 `all` cover both active and inactive ads across countries when no narrower scope
-was requested. Verify returned Page IDs and destination domains before assigning
-ads to a brand. Keywords support discovery when advertiser identity is not yet
-known; combine verified names/aliases and problem/offer phrases in separate
-queries. Request substantial batches appropriate to the remaining evidence need,
+was requested. Check returned Page IDs against the verified target and assess
+destination relationships before assigning ads to a brand. Keyword ads support
+category inspiration and comparison discovery; they do not resolve brand identity.
+Combine grounded names/aliases and problem/offer phrases in separate queries. Request substantial batches appropriate to the remaining evidence need,
 within the command's supported limit, rather than tiny five- or ten-ad probes.
 
 The research route accepts larger explicit result limits but has no public
@@ -72,9 +133,12 @@ complete inventory after hitting a request cap. Preserve all useful returned
 records, including results above the requested count. If supported retrieval
 cannot establish exhaustion, report partial coverage and the limit reached.
 
-Run independent advertiser/query requests concurrently, within existing
-authorization. Inspect relevance and unique-video yield, then expand promising
-brands, aliases, use cases, or supported country/status scopes. Do not silently
+Prepare independent advertiser/query requests from verified inputs, then run
+the existing execution calls concurrently within existing authorization. Retain
+each original operation; do not invent a batch execution API. Shared auth, balance
+or service failures stop new submissions while already submitted sources still
+need their results collected. Inspect relevance and unique-video yield, then
+expand promising brands, aliases, use cases, or supported country/status scopes. Do not silently
 relax the user's market or active-only requirement to inflate the count.
 
 ## Quality, progress, and stopping
@@ -100,12 +164,18 @@ Distinguish these outcomes explicitly:
 - **Successful empty:** that query found no records within its scope. It does
   not prove the product does not advertise. Check identity and other grounded
   queries before drawing a coverage conclusion.
+- **Identity unresolved:** the brand-to-page association is not verified. This
+  is an identity gap, not empty ad inventory.
 - **Partial coverage:** useful records exist, but request limits, unavailable
   media, missing dates, or unexplored sources prevent an exhaustive claim.
 
-Continue after successful sparse/noisy results while grounded new searches add
-useful evidence. Ads have no mechanical two-follow-up limit. Stop when the
-requested evidence outcome is met, supported exact-advertiser retrieval is
+Continue in the same turn after successful sparse/noisy results while grounded
+new searches add useful evidence. A displayed pending gallery does not finish
+the task. Follow each original operation and its returned recovery action until
+its business outcome is final and its charge is settled, or an explicit
+unrecoverable error blocks further progress; report any unresolved cost status.
+Do not wait for the user to say "continue" or "are you done?". Ads have no
+mechanical two-follow-up limit. Stop when the requested evidence outcome is met, supported exact-advertiser retrieval is
 exhausted, an explicit user limit is reached, a hard error blocks progress, or
 changed grounded searches stop adding useful distinct material. Report the
 actual count and remaining gap; never pad the gallery or promise completeness.
@@ -132,7 +202,14 @@ never as inferred financial evidence.
 
 ## Analyze and deliver
 
-Keep each JSON result and generate the standard browsable report:
+Read each saved result's compact summary for source outcomes, advertiser counts
+and coverage, then inspect its complete saved `output.items` and actual media for
+the requested relevance/creative judgments. The summary is not an item-level
+review. Keep reviewed original ad IDs, relevance reasons and observed media scope
+in the accompanying analysis. A video field alone is not visual or playback
+evidence.
+
+Keep each complete JSON result and generate the standard browsable report:
 
 ```bash
 postplus ad-library report --input result.json --input more-results.json --output evidence.html
@@ -143,6 +220,11 @@ both useful ads and coverage gaps. Re-run it as batches complete; do not replace
 it with an ad hoc gallery or feed it a five-ad highlights subset. Its advertiser
 navigation and cards expose logos, status/observation dates, ad IDs, start dates,
 platforms, copy, media, and CTA when supplied. Missing fields stay unknown.
+The CLI report preserves **all collected** evidence; it does not accept a
+reviewed-selection flag or default to only reviewed IDs. Keep the qualified
+reference list and its reasons in the accompanying analysis without rewriting
+raw JSON or filtering report inputs. Zero relevant ads stays zero in that
+analysis while the full evidence remains browsable.
 Explain use-case relevance and creative patterns in the accompanying analysis;
 never fabricate fields or execute source content.
 

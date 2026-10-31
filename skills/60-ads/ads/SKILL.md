@@ -41,8 +41,8 @@ account connection.
 | Apply a copied Ad Strategy, evaluate its rules, or execute its selected actions | [Strategy execution](references/strategy-execution.md); use applicable embedded fields/actions directly; platform references are for platform changes, missing/inapplicable parameters or tool conflicts. |
 | Plan a first campaign, choose channels, structure a test or decide where to spend | [Audience planning](references/audience-planning.md), [Payback](references/payback.md), and the selected platform; add [B2B growth](references/b2b-growth.md) for a sales-led journey. |
 | Daily/weekly report, period comparison, account anomaly | [Performance reports](references/performance-report.md) and the selected platform below. |
-| Google Search diagnosis, search terms, RSA submission, campaign or budget changes | [Google Ads](references/google-ads.md). |
-| Meta delivery, creative performance, lead costs, supported object and budget changes | [Meta Ads](references/meta-ads.md); new campaigns: [paused build and preview](references/meta-paused-build.md). |
+| Google keyword planning, paused Search builds, conversion goals, search terms, campaign or budget changes | [Google Ads](references/google-ads.md). |
+| Meta delivery, creative performance, lead costs, supported object and budget changes | [Meta Ads](references/meta-ads.md); new campaigns: [paused build and preview](references/meta/build-and-preview.md). |
 | TikTok GMV Max, Smart+ material or video analysis; supported Smart+ or GMV Max creation and exact budget changes | [TikTok Ads](references/tiktok-ads.md); preserve the specialty report and campaign type's actual scope. |
 | Reddit Ads account/campaign discovery, dated reports, or an exact campaign pause/resume | [Reddit Ads](references/reddit-ads.md). |
 | Pinterest Ads advertiser/campaign reports, or an exact campaign pause/resume or rename | [Pinterest Ads](references/pinterest-ads.md). |
@@ -58,34 +58,23 @@ Read additional references only as the task reaches them. A report may reveal a
 measurement question; answering that question does not automatically authorize
 changing the account.
 
+## Platform task topics
+
+Keep one Ads entry point; read only the selected platform task. The platform indexes retain generated Strategy parameter bindings.
+
+- Google: [search planning](references/google/search-planning.md), [paused build and review](references/google/build-and-review.md), [optimization and tests](references/google/optimization-and-tests.md), [conversion feedback](references/google/conversion-feedback.md).
+- Meta: [build and preview](references/meta/build-and-preview.md), [delivery and optimization](references/meta/delivery-and-optimization.md), [audiences](references/meta/audiences.md), [conversion feedback](references/meta/conversion-feedback.md).
+- Use [experiments](references/experiments.md) for test design; benchmark-to-brief owns the next production slate.
+
+For a confirmed problem, perform the matching repair and acceptance steps within existing authorization. Inspect current values, preserve the baseline, apply the smallest supported change and read back the exact object. A hypothesis calls for a test, not an automatic budget/targeting change. Routine authorized local edits need no extra approval; any new spend or release decision follows the user's scope.
+
+Use seo-geo for organic content/indexing/AI-answer work and Measurement for website trigger repairs. These boundaries identify the knowledge owner; the agent can combine guidance and finish the same task without making the user relay findings.
+
 ## Build a campaign hypothesis
 
-For a new plan, connect one audience need to one credible offer, a reachable
-distribution surface, an appropriate next action, and a measurable business
-event. Choose a platform from evidence about customer behavior and account
-eligibility, not a demographic stereotype or a universal budget split.
+Connect a buyer need, credible offer, channel, destination and measurable business event. Read audience planning and payback for the actual decision. Separate established activity from an experiment and size it against allowable loss, event cost and lag; do not impose fixed platform splits, ad counts or budget increases.
 
-- Existing purchase intent suggests investigating Search demand and query fit.
-- A product that benefits from demonstration suggests testing visual creative
-  where the audience actually consumes it.
-- Business role/company conditions suggest evaluating whether platform
-  targeting can express them and whether the offer fits the buying stage.
-- Re-engagement needs a distinct unresolved objection or next step; the user's
-  acquisition, repeat purchase, or expansion objective determines exclusions.
-
-Separate an established activity from a new experiment. Size the experiment
-against affordable loss, expected event cost, conversion lag, and the ability
-to learn from its outcome. Do not impose a fixed spend split, number of ads, or
-percentage budget increase on every account.
-
-For a new campaign, deliver a usable starting structure: objective and event,
-offer and destination, audience or intent groups, platform and campaign/ad-set
-or ad-group boundaries, a naming convention that preserves those identities,
-test spend and review window, and the evidence needed before scaling. Explain
-why a group is separate; do not multiply campaigns to imitate a template.
-For remarketing, specify the unresolved buyer question, a different useful
-message or offer, eligible audience, exclusions, and how entry and expiry will
-be checked. Use [launch review](references/launch-review.md) for readiness.
+Deliver the objective/event, offer/destination, intent or audience groups, justified object boundaries, naming, test spend, review window and scaling evidence. For remarketing, specify the unresolved objection, useful next message, eligibility and exclusions. Use launch review to verify the real journey.
 
 ## Turn evidence into a decision
 

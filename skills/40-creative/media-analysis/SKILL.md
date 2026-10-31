@@ -22,9 +22,13 @@ preparing images alone is not a completed analysis.
   and action order with denser local frames; read [local frames](references/video-frames.md).
   A one-second survey can miss an entire short shot. Scene candidates and ending
   frames improve coverage but do not prove every cut or action was captured.
-- **Use cloud analysis only for a remaining important speech gap.** If spoken
-  content needed to answer the question cannot be established from readable
-  subtitles, use the original retained local video with `--cloud`. Read
+- **Use cloud analysis only for a remaining important speech gap.** Judge the
+  gap against the requested use, reusing existing audiovisual evidence first.
+  If important spoken content or delivery remains unassessed, use the original
+  retained local video with `--cloud`.
+  For faithful recreation, readable subtitles alone do not establish fillers,
+  pauses, laughter, interruptions, overlapping speech, speaker attribution or
+  vocal delivery; these are important gaps when they affect the requested work. Read
   [cloud execution and recovery](references/video-analysis.md). A talking person,
   an MP4 extension or a desire for a more complete-looking report is not enough.
 - **Stop when the evidence answers the question.** Existing readable reports and
@@ -83,6 +87,11 @@ readable after temporary source cleanup; preserve user files.
 For cloud analysis, deliver the returned model Markdown unchanged, linking the complete report when
 long. Do not substitute a summary, marketing verdict, cleaned-up transcript or
 rewritten shot list. See [report scope](references/single-video-report.md).
+Keeping the report unchanged does not make every statement verified. When
+existing file metadata or directly inspected evidence contradicts it, retain
+the original and state the correction and its evidence separately. Keep
+unresolved wording, timing and speaker attribution uncertain; frames cannot
+resolve unheard speech.
 Do not schedule an extra Agent completeness review, strategy synthesis, or paid
 rerun as part of this flow. If separately asked for interpretation or strategy,
 use the saved original report and deliver that work separately without changing
@@ -92,6 +101,12 @@ Keep sources, reports and failures separate. Preserve user files and delivered
 evidence. Screenshots cannot establish full
 motion or audio coverage. A failed analysis remains failed; partial screenshots
 or subtitle observations must be labeled with their limits.
+
+## Handoff for reference-based prompts
+
+Read [reference fidelity](references/reference-fidelity.md) when the user also
+requests faithful recreation or adaptation. Carry the existing evidence into
+that work without another analysis run or a separate handoff report.
 
 ## Wait and recover
 

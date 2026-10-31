@@ -1,7 +1,8 @@
 # Cloud video execution
 
-Use only after inspecting the local contact sheets and finding important spoken
-content needed for the answer that readable subtitles cannot establish:
+Use only after local inspection identifies an important speech gap for the
+requested use, under the main skill's criteria. Reuse existing audiovisual
+evidence first; readable captions alone do not establish how speech was delivered:
 
 ```bash
 postplus media analyze video-analysis \

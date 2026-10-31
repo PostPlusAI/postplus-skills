@@ -36,6 +36,10 @@ If evidence is incomplete, separate:
 - `Inference`
 - `Open question`
 
+## Plan and learn from a creative cycle
+
+For deciding the next batch from account/customer evidence, capacity or a prior test, read [creative cycle](references/creative-cycle.md). Deliver a feasible evidence-backed slate and update the existing results/strategy records. Ads owns delivery decisions and platform experiments; the production skills own actual assets.
+
 ## Default Workflow
 1. Use the smallest sufficient evidence set already supplied or explicitly identified by the user.
 2. Prefer structured artifacts first: final report, strategy table, pattern table, master table, then comment summaries.

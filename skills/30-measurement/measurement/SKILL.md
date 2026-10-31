@@ -1,6 +1,6 @@
 ---
 name: measurement
-description: Investigate website behavior in GA4, Google search visibility in Search Console, and differences between those reports and ad-platform results using the user's connected properties.
+description: Investigate GA4 and Search Console results, reconcile marketing data, and diagnose or repair confirmed website conversion-tracking defects when authorized editing is available. Use Ads for campaign goals and event imports, and seo-geo for search content and indexing improvements.
 metadata:
   postplus:
     familyId: measurement
@@ -20,6 +20,8 @@ tracking failure.
 | Website sessions, engagement, events, key events, traffic sources or property configuration | [GA4](references/ga4.md). |
 | Organic Google search clicks, impressions, queries, pages or a particular URL's indexing evidence | [Search Console](references/search-console.md). |
 | “Why do Ads, GA4 and Search Console disagree?” | The relevant reports above, then [source reconciliation](references/source-reconciliation.md). |
+
+For accepted form/booking/order triggers, duplicate sends, value/currency or cross-domain failures, read [conversion diagnostics](references/conversion-diagnostics.md). Complete confirmed local repairs and acceptance checks when the task and available editor permit them. A cloud connection alone does not provide site-edit access; return the applicable patch and missing operation when unavailable. Use seo-geo for search-content and technical-indexing improvements, retaining Measurement as owner of report scope and event evidence.
 
 An advertising-platform conversion setting or campaign change belongs to the
 Ads task. This skill can identify which additional advertising evidence is

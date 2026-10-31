@@ -64,8 +64,9 @@ Embed the real frames with measured times and the observations they support.
 Retain readable attachments beside the report. Do not delete user footage.
 Frame-only evidence cannot establish unheard speech, music or sound. Subtitles
 are visible text; uninspected audio is unassessed, not absent. Stay local for
-visual gaps. Escalate only when important spoken information needed for the
-answer remains unavailable from subtitles; use the cloud reference for that step.
+visual gaps. Escalate only for an important speech gap under the main skill's
+criteria, including delivery details needed for faithful recreation; use the
+cloud reference for that step.
 
 For login, compatibility, or local usage failures, follow the typed CLI action. If a task may already exist, use only its emitted recovery
 command.

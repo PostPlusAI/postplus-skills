@@ -51,3 +51,9 @@ changing the website.
 
 Return the aligned comparison, verified reasons for differences, unresolved
 causes and the next smallest read or inspection that would distinguish them.
+
+## AI visibility and qualified customer results
+
+AI citations, mentions, recommendations, referral sessions and settled orders count different observations. Use seo-geo for captured answers and a stable prompt cohort. Keep engine/locale/date/prompt version and raw answers; a changed prompt set is not a comparable visibility trend. AI referral sessions alone do not measure all AI-influenced visits, and increased branded queries do not prove AI caused them. Use real customer evidence and the stated attribution basis without reallocating platform credit to force a match.
+
+For confirmed trigger defects, follow [conversion diagnostics](conversion-diagnostics.md); report which configuration/trigger/receipt/attribution/outcome stages are observed and which remain unresolved.

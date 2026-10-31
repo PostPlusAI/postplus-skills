@@ -15,7 +15,8 @@ for the current session, then continues your original task. New shells use the
 registered `postplus` command.
 
 The CLI includes its matching skills and verifies actual installed content.
-Follow the completion message for session reload and continuing your task.
+After a change, your agent reads the updated instructions needed for your task
+and continues in the current conversation. You do not need to open a new chat.
 Correct installations are reused; do not run a separate skills installer.
 Use `postplus install --current-directory` for a project-only installation.
 
@@ -67,6 +68,22 @@ content or change. If the result is unknown, the agent checks the original
 operation instead of sending a duplicate. Channel access is covered by your
 eligible subscription; research and media generation can have separate charges.
 
+## Saved results
+
+Research and generated media use the same saved-file backend as the chat connector.
+`--wait` waits for saving as well as the final charge. An interrupted save resumes
+on the original run without another collection or generation. Explicitly reopening
+a completed research checkpoint with `--resume-from` reads the original run and
+can save its still-available legacy media; it never submits the collection again.
+Permanent source
+failures are reported instead of waiting forever.
+
+Research HTML exports include a **Saved media** section. Those links reopen the
+owned files through your configured PostPlus site after sign-in, even when an
+original source preview has expired. Offline HTML previews themselves cannot
+renew private playback access. Keep the original result JSON and its saved
+`postplus-media://` references to retrieve the same files with the CLI.
+
 ## Maintenance
 
 Your agent continues the task while the CLI handles a required compatible update.
@@ -74,8 +91,8 @@ You can also run `postplus update` to update the CLI and its matching skills.
 Official skill names are managed by PostPlus: local changes are overwritten and
 retired skills are removed without prompts or backups. Keep custom skills under
 separate names. Correct installations are reused.
-Follow the reported action only if an update fails or a new agent session is required;
-do not repeat maintenance blindly.
+After a successful update, continue the original task in the current conversation.
+If the update fails, follow its reported action; do not repeat maintenance blindly.
 
 ```bash
 postplus status

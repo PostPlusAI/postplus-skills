@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "releaseId": "skills-2026-10-27.1",
+  "releaseId": "skills-2026-10-30.1",
   "productBrief": {
     "schemaVersion": 1,
     "paragraphs": [
@@ -15,15 +15,17 @@
   },
   "releaseNotes": {
     "schemaVersion": 1,
-    "releaseId": "skills-2026-10-27.1",
-    "title": "Reliable task recovery, local video inspection and focused creative methods",
-    "summary": "Inspect local video before optional cloud speech analysis, recover original tasks, and use the retained creative methods with current channel tools.",
+    "releaseId": "skills-2026-10-30.1",
+    "title": "Google Ads, saved media and faithful reference-video workflows",
+    "summary": "Plan and operate Google Ads with shared CLI/MCP rules, reuse saved research and generated files, and develop reference-led videos with detailed analysis and the new street-interview skill.",
     "highlights": [
-      "Keep internal identifiers and recovery mechanics in execution records; explain results, limits and known cost in chat.",
-      "Reuse existing authorization and preserve user intent when correcting definite pre-submission input errors.",
-      "Recover interrupted research by its saved original identity; preserve already submitted batch results.",
-      "Start CLI video analysis with local contact sheets, refine visual questions locally, and use cloud analysis only for important speech that subtitles cannot establish.",
-      "Retire cartoon-ad, street-interview-ad, authority-ad and commercial-ad. Existing image/video generation and the other creative methods remain available."
+      "Use 76 Google Ads tools through CLI and MCP, with shared budget and conversion-goal checks and recoverable resource IDs.",
+      "Read new SEO/GEO guidance and dedicated Google/Meta methods for planning, conversion diagnosis, experiments and creative iteration.",
+      "Continue authorized work in the original conversation after compatible updates, preserving the original task and recovery state.",
+      "Preserve supported shot order, full dialogue, pauses, interruptions and reaction timing when analyzing references for faithful adaptation.",
+      "Use street-interview for blind tests, problem-to-replacement interviews and playful challenges, with concrete scripts and prompts reviewed before generation.",
+      "Reopen saved research and generated files from their original tasks, resume incomplete saving, and distinguish missing media from successful delivery.",
+      "Browse Meta research results continuously in the existing viewer while keeping selected and complete result sets available."
     ]
   },
   "source": "PostPlusAI/postplus-skills",
@@ -340,7 +342,7 @@
       "familyId": "measurement",
       "familyName": "Website and Search Measurement",
       "name": "measurement",
-      "description": "Investigate website behavior in GA4, Google search visibility in Search Console, and differences between those reports and ad-platform results using the user's connected properties.",
+      "description": "Investigate GA4 and Search Console results, reconcile marketing data, and diagnose or repair confirmed website conversion-tracking defects when authorized editing is available. Use Ads for campaign goals and event imports, and seo-geo for search content and indexing improvements.",
       "category": "analyze",
       "example": "Explain the change in organic search clicks and compare it with GA4 sessions for the same site.",
       "path": "skills/30-measurement/measurement/SKILL.md",
@@ -445,6 +447,17 @@
       "supportedModels": []
     },
     {
+      "familyId": "measurement",
+      "familyName": "Website and Search Measurement",
+      "name": "seo-geo",
+      "description": "Diagnose organic search and AI answer visibility, prioritize content, and repair confirmed website issues through available authorized tools. Use for SEO, AI citations and answer accuracy; use Ads for paid changes and Measurement for event tracking.",
+      "category": "analyze",
+      "example": "Find search content opportunities, repair confirmed website SEO issues, and check whether AI answers accurately recommend our product.",
+      "path": "skills/30-measurement/seo-geo/SKILL.md",
+      "status": "released",
+      "supportedModels": []
+    },
+    {
       "familyId": "social",
       "familyName": "Organic Social",
       "name": "social",
@@ -452,6 +465,17 @@
       "category": "publish",
       "example": "Adapt this launch for Facebook, Instagram, and TikTok, then show me the posts and destinations for approval.",
       "path": "skills/50-publishing/social/SKILL.md",
+      "status": "released",
+      "supportedModels": []
+    },
+    {
+      "familyId": "media-production",
+      "familyName": "Media and Creative Production",
+      "name": "street-interview",
+      "description": "Adapt user-supplied street-interview reference videos to new products and people. Deliver detailed shot scripts or complete AI videos, including blind tests, problem-to-replacement interviews, and playful street challenges.",
+      "category": "advertise",
+      "example": "Adapt this street-interview reference into a shot script for our product, preserving the full exchange.",
+      "path": "skills/40-creative/street-interview/SKILL.md",
       "status": "released",
       "supportedModels": []
     },

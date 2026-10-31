@@ -54,8 +54,10 @@ size, or output shape.
 | Non-ad scope too broad | `Which 1-5 sources matter most for the first pass?` |
 
 For ads, a product URL, unfamiliar brand, category, or problem is a sufficient
-seed. Discover related products yourself; follow the ad-specific quantity and
-stopping rules in `references/ads-and-funnel.md`.
+seed. Read `references/ads-and-funnel.md`: discover candidate Facebook pages,
+verify their identity, then collect by Page ID. Establish competitor relationships;
+review category relevance. Continue within the same turn through review, delivery
+and that reference's stopping conditions.
 
 Do not ask the user for internal route identifiers, schemas, implementation
 choices, retries, credentials, hidden filters, or internal routing.
@@ -67,11 +69,11 @@ choices, retries, credentials, hidden filters, or internal routing.
 3. Parallelize independent sources when they do not depend on each other.
 4. If execution succeeds but evidence is empty, sparse, noisy, or off-topic,
    apply the quality rules below before accepting or exhausting the evidence.
-5. Produce JSON as the source of truth and a compact HTML evidence artifact when
-   item-level evidence was collected.
+5. Preserve complete JSON results. For ads, use `postplus ad-library report` with
+   all inputs and keep reviewed ad IDs and reasons in the analysis. Other research
+   uses a compact evidence artifact.
 6. Return a short chat answer: scope, counts, strongest finding, biggest gap,
    artifact path, and next action.
-
 
 Use only the public filters shown by the selected route.
 
@@ -79,7 +81,6 @@ Use only the public filters shown by the selected route.
 
 - Choose the smallest matching research route and run it directly.
 - Readiness diagnostics: `postplus doctor --skill facebook-research`.
-
 - Inspect one route with `postplus research run <route> --help` when its semantic
   flags are not already clear.
 - Run `postplus research run <route> --<semantic flags> --wait --output
@@ -99,7 +100,7 @@ Use only the public filters shown by the selected route.
 | Public page/profile posts | `facebook-profile-posts` | `--url`, `--limit` | 1-5 URLs, 20 posts |
 | Direct post evidence | `facebook-post-by-url` | `--url` | 1-10 URLs |
 | Public group posts | `facebook-group-posts` | `--url`, `--limit` | 1-3 groups, 20 posts |
-| Ad-library creative | `facebook-ads-library` | `--query`, `--country`, `--status`, `--limit` | See ad reference: outcome-sized collection |
+| Ad-library creative | `facebook-ads-library` | `--query` OR `--page-id`, `--sort`, `--country`, `--status`, `--limit` | See ad reference: outcome-sized collection |
 | Post/reel comments | `facebook-comments` | `--url`, `--limit` | 1-5 URLs, 20 comments |
 | Public group discussion | `facebook-groups` | `--url`, `--limit` | 20 posts |
 | Events/local activity | `facebook-events` | `--query` or `--url`, `--limit` | 10 events |
@@ -107,7 +108,7 @@ Use only the public filters shown by the selected route.
 | Page identity | `facebook-pages` | `--url` | 1-5 pages |
 | Rich page/profile posts | `facebook-posts` | `--url`, `--limit` | 20 posts |
 | Reels | `facebook-reels` | `--url`, `--limit` | 20 reels |
-| Broad public search | `facebook-search` | `--category`, `--location`, `--limit` | 20 results |
+| Broad public search | `facebook-search` | `--category` (search term), `--location`, `--limit` | 20 results |
 
 Only if platform scope or evidence interpretation remains unclear, consult
 [platform contract](references/shared-contract.md); it is not a preflight.

@@ -7,6 +7,8 @@ tracking, or when preparing a launch. Read
 measurement audit reads configuration and evidence; it does not install tags,
 change bidding goals, or send conversion events without the requested scope.
 
+For a confirmed site trigger, duplicate-send, value/currency or cross-domain defect, use Measurement's conversion-diagnostics reference. It owns the site patch and its acceptance; this reference owns platform reads and advertising configuration. For Google goal selection and real customer imports, use [Google conversion feedback](google/conversion-feedback.md); for Meta use [Meta conversion feedback](meta/conversion-feedback.md). A conversion-action configuration change does not itself submit outcomes.
+
 ## Separate four claims
 
 | Claim | Evidence needed | What it does not establish |
