@@ -28,12 +28,12 @@ metadata:
   auto-downloaded; see the download command below).
 - This runner validates and executes resolved requests. It must not make creative
   strategy, task-classification, or reference-policy decisions.
-- A higher-quality default and faster or cheaper model families are available;
-  prefer the default unless the user or upstream brief asks for a specific family,
-  ratio, quality, or resolution. The generated example below shows the default
-  endpoint key.
+- Unless the user or upstream brief specifies a model, use Nano Banana 2.1:
+  `image-nano-banana-2-1-text` for text-only generation and
+  `image-nano-banana-2-1-edit` for reference-bound generation or edits.
+  Preserve an explicit model choice; do not silently switch on failure.
 - Only edit endpoints accept `--reference-image` (default edit endpoint:
-  `image-gpt-image-2-edit`). Text endpoints such as `image-gpt-image-2-text`
+  `image-nano-banana-2-1-edit`). Text endpoints such as `image-nano-banana-2-1-text`
   reject the flag with `Unknown option`, so any reference-bound generation must
   target an edit endpoint, not a text endpoint.
 - Reference-based edits pass each source image via a repeated
@@ -49,19 +49,16 @@ metadata:
   from the result for the next handoff.
 
 ## Source And Path
-- Ground every request in a benchmark-backed persona lock, concept or shot need,
-  visual constraints, `assetPurpose`, and `sourceBasis`.
+- Use the requested brief, supplied references and explicit visual constraints.
 - Use source files from the active project/client folder first. Do not treat one
   client directory as the default for all image work.
 - Keep internal requests, responses, and manifests under `.postplus`; keep final
   user-facing images and manifests in the active asset folder. If no asset folder
   exists, choose one explicit workspace path.
 
-## Review And Handoff
-- Before submission, verify persona grounding, asset purpose, source basis, and
-  what must stay fixed versus vary.
-- After generation, check realism, benchmark fit, repeatability across videos,
-  copied-creator risk, and ad-like drift.
+## Delivery And Handoff
+- Deliver the generated images and known cost or cost status. Inspect the
+  finished images only when the user asks for that check.
 - If processing is still pending, keep the manifest/request paths and the poll
   command `postplus media poll --handle <output.data.id> --output path/to/generation-result.json`.
   Reuse the exact `--output` path from the initial submit. A completed poll
@@ -73,7 +70,7 @@ metadata:
 - Stop when required user intent, source evidence, or owned input artifacts are
   missing and guessing would change the result.
 
-- Before expanding a batch, complete the first viable item. Isolate definite
+- Isolate definite
   item-local input errors and typed content-policy rejections; preserve other
   independent items. Do not soften blocked content to evade a restriction.
 - Shared authentication, balance, configuration or service failures stop new
@@ -100,8 +97,27 @@ metadata:
   execution interface.
 
 <!-- BEGIN GENERATED EXECUTION EXAMPLE -->
+## Batch generation
+
+For one complete requested video in a mode with an explicit duration input,
+allocate the entire approved script across the fewest supported clips. Prefer
+its maximum clip duration, with a shorter final clip when needed; respect its
+minimum duration as well. Set each clip's duration explicitly. Preserve the
+requested total duration, complete approved dialogue, speaker assignments,
+pauses, reactions, action order, reference roles and continuity across boundaries.
+
+For source-derived modes, retain their existing schema and media-derived duration.
+
+Independent alternatives are separate requests, not segments to concatenate.
+Keep each alternative's requested settings, prompt and references.
+
+Submit all authorized independent image or video requests concurrently, then
+follow their original runs to completion. Do not wait for the first result before
+submitting the others. Hold a request only for an actual input dependency or an
+explicit user instruction.
+
 ```bash
-postplus media create image-gpt-image-2-text \
+postplus media create image-nano-banana-2-1-text \
   --prompt "Describe the result you need" \
   --wait \
   --output ./result.json

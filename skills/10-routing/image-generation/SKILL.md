@@ -45,6 +45,13 @@ It must:
 | `batch_variant` | many variants or personas | preserve shared rules and vary only declared fields |
 
 ## Model And Reference Rules
+
+- When no model is specified, select Nano Banana 2.1: use
+  `image-nano-banana-2-1-text` for text-only generation and
+  `image-nano-banana-2-1-edit` for any reference-bound generation or edit.
+- Honor an explicitly requested model, including GPT Image 2, Nano Banana 2 Lite
+  or Nano Banana 2. If the selected model cannot satisfy the required inputs,
+  explain the constraint before changing models; do not silently switch.
 - Text-only drafts may use a text-to-image endpoint.
 - Edits require a bound source image and an edit-capable endpoint.
 - Persona, product, and brand identity are `binding` references unless the user

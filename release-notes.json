@@ -1,15 +1,14 @@
 {
   "schemaVersion": 1,
-  "releaseId": "skills-2026-10-30.1",
-  "title": "Google Ads, saved media and faithful reference-video workflows",
-  "summary": "Plan and operate Google Ads with shared CLI/MCP rules, reuse saved research and generated files, and develop reference-led videos with detailed analysis and the new street-interview skill.",
+  "releaseId": "skills-2026-11-05.1",
+  "title": "Shared Brand Kits, company Cloud images and concurrent media batches",
+  "summary": "Create and update shared brand facts from websites or supplied materials, reuse personal files across clients, and submit independent image and video work concurrently with the current generation models.",
   "highlights": [
-    "Use 76 Google Ads tools through CLI and MCP, with shared budget and conversion-goal checks and recoverable resource IDs.",
-    "Read new SEO/GEO guidance and dedicated Google/Meta methods for planning, conversion diagnosis, experiments and creative iteration.",
-    "Continue authorized work in the original conversation after compatible updates, preserving the original task and recovery state.",
-    "Preserve supported shot order, full dialogue, pauses, interruptions and reaction timing when analyzing references for faithful adaptation.",
-    "Use street-interview for blind tests, problem-to-replacement interviews and playful challenges, with concrete scripts and prompts reviewed before generation.",
-    "Reopen saved research and generated files from their original tasks, resume incomplete saving, and distinguish missing media from successful delivery.",
-    "Browse Meta research results continuously in the existing viewer while keeping selected and complete result sets available."
+    "Organize website and supplied brand materials with one evidence-based analysis guide, preserving sourced facts, qualified analysis and unrelated human edits.",
+    "Save Brand Kit updates for immediate use across Web, CLI and MCP, including custom chapters and the current revision.",
+    "Browse, search and organize personal uploads, generated files and imported assets through the shared library; recover saved outputs without generating again.",
+    "Use Nano Banana 2.1 by default for unspecified image requests, with Nano Banana 2 Lite and Nano Banana 2 also available for generation and reference edits.",
+    "Prepare the complete requested media batch and submit independent image or video jobs concurrently, preserving original task identities and recovery.",
+    "Continue supported social account work through the existing seven connected social channels; public X research remains available through its dedicated research skill."
   ]
 }

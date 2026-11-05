@@ -35,15 +35,13 @@ architect, preflight report, reference contract, or model-specific submitter.
    continuity, and the role of every submitted reference. Use explicit
    `[image N]`, `[video N]`, and `[audio N]` bindings when the selected endpoint
    accepts numbered references.
-5. Validate fields, enum values, defaults, cardinality, and duration against the
-   current schema. Do not carry private execution field tables in this skill. If one clip
-   exceeds the supported duration or creative load, split it into independent
-   prompts before spending.
+5. Use the current schema for fields, enum values, defaults, cardinality and
+   duration. Do not carry private execution field tables in this skill.
 6. Pass each local path, HTTPS URL, existing PostPlus media reference, or data
    URI directly to the matching role flag. The CLI validates and prepares local
    media before a single hosted submit. Use only fields published by the
    selected endpoint; do not pre-upload media or construct private payloads.
-7. Prefer `--wait` when the expected runtime fits the command budget. If create
+7. For each started run, prefer `--wait` when its runtime fits the command budget. If create
    still returns pending, poll the same run with `postplus media poll
    --handle <output.data.id>`. Prefer the CLI-returned action or resume command
    for the same operation. Honor its wait/recovery boundary and never submit
@@ -76,8 +74,7 @@ architect, preflight report, reference contract, or model-specific submitter.
 - Once submitted or uncertain, follow the original operation's structured
   recovery action. A new paid attempt requires a definite outcome, known cost
   status and coverage by the existing task and spending authorization.
-- For batches, complete the first viable item before expanding. An item-local
-  input error or content-policy rejection affects that item; record it and
+- An item-local input error or content-policy rejection affects that item; record it and
   continue independent items. Do not rewrite blocked content to evade a limit.
   Shared authentication, balance, configuration or service failures stop new
   submissions. Continue checking and delivering already submitted items through
@@ -96,6 +93,25 @@ architect, preflight report, reference contract, or model-specific submitter.
   <path> --skill video-batch-runner`
 
 <!-- BEGIN GENERATED EXECUTION EXAMPLE -->
+## [Batch generation](references/batch-generation.md)
+
+For one complete requested video in a mode with an explicit duration input,
+allocate the entire approved script across the fewest supported clips. Prefer
+its maximum clip duration, with a shorter final clip when needed; respect its
+minimum duration as well. Set each clip's duration explicitly. Preserve the
+requested total duration, complete approved dialogue, speaker assignments,
+pauses, reactions, action order, reference roles and continuity across boundaries.
+
+For source-derived modes, retain their existing schema and media-derived duration.
+
+Independent alternatives are separate requests, not segments to concatenate.
+Keep each alternative's requested settings, prompt and references.
+
+Submit all authorized independent image or video requests concurrently, then
+follow their original runs to completion. Do not wait for the first result before
+submitting the others. Hold a request only for an actual input dependency or an
+explicit user instruction.
+
 ```bash
 postplus media create video-seedance-2-5-text \
   --prompt "Describe the result you need" \

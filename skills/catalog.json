@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "releaseId": "skills-2026-10-30.1",
+  "releaseId": "skills-2026-11-05.1",
   "productBrief": {
     "schemaVersion": 1,
     "paragraphs": [
@@ -15,17 +15,16 @@
   },
   "releaseNotes": {
     "schemaVersion": 1,
-    "releaseId": "skills-2026-10-30.1",
-    "title": "Google Ads, saved media and faithful reference-video workflows",
-    "summary": "Plan and operate Google Ads with shared CLI/MCP rules, reuse saved research and generated files, and develop reference-led videos with detailed analysis and the new street-interview skill.",
+    "releaseId": "skills-2026-11-05.1",
+    "title": "Shared Brand Kits, company Cloud images and concurrent media batches",
+    "summary": "Create and update shared brand facts from websites or supplied materials, reuse personal files across clients, and submit independent image and video work concurrently with the current generation models.",
     "highlights": [
-      "Use 76 Google Ads tools through CLI and MCP, with shared budget and conversion-goal checks and recoverable resource IDs.",
-      "Read new SEO/GEO guidance and dedicated Google/Meta methods for planning, conversion diagnosis, experiments and creative iteration.",
-      "Continue authorized work in the original conversation after compatible updates, preserving the original task and recovery state.",
-      "Preserve supported shot order, full dialogue, pauses, interruptions and reaction timing when analyzing references for faithful adaptation.",
-      "Use street-interview for blind tests, problem-to-replacement interviews and playful challenges, with concrete scripts and prompts reviewed before generation.",
-      "Reopen saved research and generated files from their original tasks, resume incomplete saving, and distinguish missing media from successful delivery.",
-      "Browse Meta research results continuously in the existing viewer while keeping selected and complete result sets available."
+      "Organize website and supplied brand materials with one evidence-based analysis guide, preserving sourced facts, qualified analysis and unrelated human edits.",
+      "Save Brand Kit updates for immediate use across Web, CLI and MCP, including custom chapters and the current revision.",
+      "Browse, search and organize personal uploads, generated files and imported assets through the shared library; recover saved outputs without generating again.",
+      "Use Nano Banana 2.1 by default for unspecified image requests, with Nano Banana 2 Lite and Nano Banana 2 also available for generation and reference edits.",
+      "Prepare the complete requested media batch and submit independent image or video jobs concurrently, preserving original task identities and recovery.",
+      "Continue supported social account work through the existing seven connected social channels; public X research remains available through its dedicated research skill."
     ]
   },
   "source": "PostPlusAI/postplus-skills",
@@ -195,12 +194,32 @@
       "supportedModels": [
         {
           "key": "image-nano-banana-2-edit",
-          "name": "Nano Banana 2 Edit",
+          "name": "Nano Banana 2",
           "source": "endpointKey"
         },
         {
           "key": "image-nano-banana-2-text",
-          "name": "Nano Banana 2 Text To Image",
+          "name": "Nano Banana 2",
+          "source": "endpointKey"
+        },
+        {
+          "key": "image-nano-banana-2-lite-edit",
+          "name": "Nano Banana 2 Lite",
+          "source": "endpointKey"
+        },
+        {
+          "key": "image-nano-banana-2-lite-text",
+          "name": "Nano Banana 2 Lite",
+          "source": "endpointKey"
+        },
+        {
+          "key": "image-nano-banana-2-1-edit",
+          "name": "Nano Banana 2.1",
+          "source": "endpointKey"
+        },
+        {
+          "key": "image-nano-banana-2-1-text",
+          "name": "Nano Banana 2.1",
           "source": "endpointKey"
         },
         {
@@ -277,7 +296,11 @@
           "image-gpt-image-2-edit",
           "image-gpt-image-2-text",
           "image-higgsfield-soul-text",
+          "image-nano-banana-2-1-edit",
+          "image-nano-banana-2-1-text",
           "image-nano-banana-2-edit",
+          "image-nano-banana-2-lite-edit",
+          "image-nano-banana-2-lite-text",
           "image-nano-banana-2-text",
           "image-nano-banana-pro-edit-1k",
           "image-nano-banana-pro-edit-2k",
@@ -401,9 +424,9 @@
       "familyId": "workspace-publishing",
       "familyName": "Workspace, Publishing, and Meta",
       "name": "postplus-workspace",
-      "description": "Maintain a project folder with approved product facts, campaign context, and reusable results. Use for ongoing work, not required for one-off tasks.",
+      "description": "Establish reusable brand facts from an official website, use the shared PostPlus brand and file library, and maintain optional local project context. Keep saved brand facts and research separate.",
       "category": "workspace",
-      "example": "Keep the approved product facts and results in this project folder.",
+      "example": "Set up our brand from its official website and reuse the same adopted facts and saved files.",
       "path": "skills/00-shared/postplus-workspace/SKILL.md",
       "status": "released",
       "supportedModels": [],
